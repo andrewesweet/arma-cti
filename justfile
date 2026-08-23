@@ -38,8 +38,8 @@ generate:
     uv run python tools/generate_seats.py
 
 # Render/check project-owned harness bundles through their tracked manifest.
-# Promotion remains contained by the tool's write boundary; this recipe grants
-# no dispatched-session exception.
+# The tool's dispatch-identity refusal is a floor against accident and shortcut,
+# never containment; see tools/harness_surface.py's boundary paragraph.
 [positional-arguments]
 harness-render *args:
     uv run python tools/harness_surface.py render --manifest config/harness-surfaces.json --source-root . "$@"

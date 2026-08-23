@@ -9,6 +9,14 @@ separate, guarded operation for the later installation issue (#505).
 Deterministic rendering covers destination ordering, file bytes, and generated
 file modes. File mtimes and created-directory modes are intentionally outside
 the contract: writes occur now, and directory modes remain subject to umask.
+
+The dispatch-identity refusal on caller-selected destinations is a floor
+against accident and shortcut, not containment: a same-user in-process caller
+can strip ``CTI_DISPATCH_ID``, rebind this module's names, or write destination
+bytes directly, and no in-process guard prevents that. Enforcement is out of
+process — ``tools/gated_paths.py`` refuses a gated-path change (including
+``AGENTS.md``) at ``just check`` on every lane however the write happened
+(#500), and a dispatched session cannot write under ``.claude/`` at all (#294).
 """
 
 from __future__ import annotations
@@ -20,11 +28,11 @@ import re
 import stat
 import sys
 from collections.abc import Iterable, Iterator, Mapping, Sequence
-from contextlib import AbstractContextManager, contextmanager
+from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 from tempfile import TemporaryDirectory
-from typing import ClassVar, Final, NoReturn, Protocol, cast
+from typing import ClassVar, Final, NoReturn, cast
 
 SCHEMA_VERSION: Final = 1
 DISPATCH_ID_ENV: Final = "CTI_DISPATCH_ID"
@@ -619,108 +627,51 @@ def _ensure_directory(path: Path) -> None:
         _surface_error(f"destination_directory_unusable={path}")
 
 
-class _PlanWriter(Protocol):
-    def __call__(
-        self,
-        target: str,
-        plans: Sequence[PlannedFile],
-        destination: Path | TemporaryDirectory[str],
-        *,
-        promotion_preflight: bool,
-    ) -> RenderResult:
-        """Write plans through the central destination boundary."""
+def _refuse_live_dispatch() -> None:
+    """Refuse caller-selected live writes from a process carrying a dispatch identity.
+
+    A floor against accident and shortcut, never containment — the boundary the
+    module docstring states. The rendered layouts' real bars are out of process:
+    ``just check`` (#500) and the dispatched-session ``.claude/`` write bar (#294).
+    """
+    dispatch_id = os.environ.get(DISPATCH_ID_ENV, "").strip()
+    if dispatch_id:
+        _promotion_refusal("dispatch_identity_present", f"{DISPATCH_ID_ENV}={dispatch_id}")
 
 
-class _TemporaryRenderer(Protocol):
-    def __call__(
-        self,
-        manifest: Manifest,
-        source_root: Path,
-        target: str,
-        *,
-        bundle_names: Iterable[str] | None = None,
-    ) -> AbstractContextManager[TemporaryRender]:
-        """Render through a destination created inside the boundary."""
+def _write_destination(
+    target: str,
+    plans: Sequence[PlannedFile],
+    destination_root: Path,
+    *,
+    promotion_preflight: bool,
+) -> RenderResult:
+    """Write planned files under one destination root."""
+    if promotion_preflight:
+        _promotion_destination_check(destination_root, plans)
+    _ensure_directory(destination_root)
+    for plan in plans:
+        destination_path = _destination_path(destination_root, plan.destination)
+        _ensure_directory(destination_path.parent)
+        destination_path.write_bytes(plan.content)
+        destination_path.chmod(plan.mode)
+    return RenderResult(target, tuple(plan.destination for plan in plans))
 
 
-def _validated_temporary_root(temporary: TemporaryDirectory[str], recorded_root: Path) -> Path:
-    """Require a usable temporary path equal to the renderer's creation record."""
-    if Path(temporary.name) != recorded_root:
-        _surface_error("temporary_destination_retargeted")
-    if recorded_root.is_symlink() or not recorded_root.is_dir():
-        _surface_error(f"temporary_destination_unusable={recorded_root}")
-    return recorded_root
-
-
-def _build_write_boundary() -> tuple[_PlanWriter, _TemporaryRenderer]:
-    """Keep renderer-created temporary paths outside caller-reachable state."""
-    temporary_type = TemporaryDirectory
-
-    def write_destination(
-        target: str,
-        plans: Sequence[PlannedFile],
-        destination_root: Path,
-        *,
-        promotion_preflight: bool,
-    ) -> RenderResult:
-        """Write to a path selected by one of the boundary's two entry points."""
-        if promotion_preflight:
-            _promotion_destination_check(destination_root, plans)
-        _ensure_directory(destination_root)
-        for plan in plans:
-            destination_path = _destination_path(destination_root, plan.destination)
-            _ensure_directory(destination_path.parent)
-            destination_path.write_bytes(plan.content)
-            destination_path.chmod(plan.mode)
-        return RenderResult(target, tuple(plan.destination for plan in plans))
-
-    def write_plans(
-        target: str,
-        plans: Sequence[PlannedFile],
-        destination: Path | TemporaryDirectory[str],
-        *,
-        promotion_preflight: bool,
-    ) -> RenderResult:
-        """Refuse dispatched writes to every caller-selected destination."""
-        if not isinstance(destination, Path):
-            _surface_error(f"destination_authority_unusable={type(destination).__name__}")
-        dispatch_id = os.environ.get(DISPATCH_ID_ENV, "").strip()
-        if dispatch_id:
-            _promotion_refusal("dispatch_identity_present", f"{DISPATCH_ID_ENV}={dispatch_id}")
-        return write_destination(
-            target,
-            plans,
-            destination,
-            promotion_preflight=promotion_preflight,
-        )
-
-    @contextmanager
-    def render_temporary(
-        manifest: Manifest,
-        source_root: Path,
-        target: str,
-        *,
-        bundle_names: Iterable[str] | None = None,
-    ) -> Iterator[TemporaryRender]:
-        """Render into a renderer-owned temporary layout, including during dispatch."""
-        plans = _read_plan(manifest, source_root, target, bundle_names)
-        temporary = temporary_type(prefix="cti-harness-surface-")
-        recorded_root = Path(temporary.name)
-        with temporary:
-            destination_root = _validated_temporary_root(temporary, recorded_root)
-            result = write_destination(
-                target,
-                plans,
-                destination_root,
-                promotion_preflight=False,
-            )
-            yield TemporaryRender(destination_root, result)
-
-    return write_plans, render_temporary
-
-
-_write_plans, render_temporary = _build_write_boundary()
-del _build_write_boundary
+@contextmanager
+def render_temporary(
+    manifest: Manifest,
+    source_root: Path,
+    target: str,
+    *,
+    bundle_names: Iterable[str] | None = None,
+) -> Iterator[TemporaryRender]:
+    """Render into a renderer-owned temporary layout, including during dispatch."""
+    plans = _read_plan(manifest, source_root, target, bundle_names)
+    with TemporaryDirectory(prefix="cti-harness-surface-") as temporary_name:
+        destination_root = Path(temporary_name)
+        result = _write_destination(target, plans, destination_root, promotion_preflight=False)
+        yield TemporaryRender(destination_root, result)
 
 
 def render(
@@ -731,9 +682,10 @@ def render(
     *,
     bundle_names: Iterable[str] | None = None,
 ) -> RenderResult:
-    """Render into a caller-selected layout from a non-dispatched process."""
+    """Render into a caller-selected layout, refusing a live dispatch identity."""
+    _refuse_live_dispatch()
     plans = _read_plan(manifest, source_root, target, bundle_names)
-    return _write_plans(
+    return _write_destination(
         target,
         plans,
         destination_root,
@@ -873,6 +825,7 @@ def promote(
     bundle_names: Sequence[str],
 ) -> RenderResult:
     """Promote explicit bundles only from a non-dispatched, writable process."""
+    _refuse_live_dispatch()
     if not bundle_names:
         _promotion_refusal("bundle_selection_empty", "name at least one bundle")
     if len(set(bundle_names)) != len(bundle_names):
@@ -885,7 +838,7 @@ def promote(
                 f"target={target} bundle={name} capability={bundle.capability}",
             )
     plans = _read_plan(manifest, source_root, target, bundle_names)
-    return _write_plans(
+    return _write_destination(
         target,
         plans,
         destination_root,
@@ -957,7 +910,7 @@ def _run(args: argparse.Namespace) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Run one contained renderer/checker operation."""
+    """Run one renderer/checker operation."""
     args = _parser().parse_args(argv)
     try:
         result = _run(args)

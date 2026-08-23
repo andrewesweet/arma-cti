@@ -1,4 +1,4 @@
-"""Black-box tests for the contained harness-surface renderer (#504)."""
+"""Black-box tests for the harness-surface renderer (#504)."""
 
 from __future__ import annotations
 
@@ -8,7 +8,6 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
-from tempfile import TemporaryDirectory
 from typing import Any, cast
 
 import pytest
@@ -67,7 +66,7 @@ def current_dispatch_identity() -> str:
     """Return this test process's real dispatch identity when one exists."""
     dispatch_id = os.environ.get(surface.DISPATCH_ID_ENV, "").strip()
     if not dispatch_id:
-        pytest.skip("live containment requires a dispatched test process")
+        pytest.skip("live refusal coverage requires a dispatched test process")
     return dispatch_id
 
 
@@ -112,32 +111,6 @@ def test_manifest_rejects_caller_declared_codex_hooks_with_a_destination() -> No
 
     with pytest.raises(surface.ManifestError, match="harness support"):
         surface.parse(document_with(declare_codex_hooks))
-
-
-def test_rebinding_declared_capabilities_cannot_invent_adapter_support(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    def declare_codex_hooks(document: dict[str, object]) -> None:
-        targets = cast("dict[str, dict[str, object]]", document["targets"])
-        capabilities = cast("list[str]", targets["codex"]["capabilities"])
-        capabilities.append("hooks")
-        hooks = bundle_table(document, "claude-hooks")
-        destinations = cast("dict[str, object]", hooks["destinations"])
-        destinations["codex"] = ".codex/hooks"
-
-    forged_document = document_with(declare_codex_hooks)
-    monkeypatch.setattr(
-        surface,
-        "HARNESS_TARGET_CAPABILITIES",
-        {
-            "claude-code": frozenset({"hooks", "project_instructions"}),
-            "codex": frozenset({"hooks", "project_instructions"}),
-        },
-        raising=False,
-    )
-
-    with pytest.raises(surface.ManifestError, match="harness support"):
-        surface.parse(forged_document)
 
 
 def test_manifest_constructor_cannot_bypass_target_capability_support() -> None:
@@ -201,35 +174,6 @@ def test_temporary_render_destination_expires_with_its_capability(tmp_path: Path
         assert destination.is_dir()
 
     assert not destination.exists()
-
-
-def test_write_boundary_refuses_retargeted_caller_temporary_directory(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    document = manifest()
-    source = copied_sources(tmp_path, document)
-    plans = surface._read_plan(  # noqa: SLF001 — exercise central write boundary
-        document, source, "codex"
-    )
-    monkeypatch.setenv(surface.DISPATCH_ID_ENV, "test-dispatch")
-    live_root = tmp_path / "live-root"
-    live_root.mkdir()
-    temporary = TemporaryDirectory(prefix="cti-harness-test-", dir=tmp_path)
-    recorded_name = temporary.name
-    try:
-        temporary.name = str(live_root)
-        with pytest.raises(surface.HarnessSurfaceError):
-            surface._write_plans(  # noqa: SLF001 — exercise central write boundary
-                "codex",
-                plans,
-                temporary,
-                promotion_preflight=False,
-            )
-
-        assert not (live_root / "AGENTS.md").exists()
-    finally:
-        temporary.name = recorded_name
-        temporary.cleanup()
 
 
 def test_source_perturbation_is_reported_without_editing_generated_output(tmp_path: Path) -> None:
