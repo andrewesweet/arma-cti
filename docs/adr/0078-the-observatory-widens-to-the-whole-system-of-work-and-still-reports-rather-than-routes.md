@@ -11,34 +11,6 @@ Claimed: 0078 — baseline `origin/main` at `29cf0e8` tops out at ADR-0077. The 
 2026-08-21 scan of sixty then-open issue comments found ADR-0071, ADR-0075 and ADR-0077 and
 no number at or above 0078; that dated scan has the blind window `AGENTS.md` records
 
-## Orchestrator working convention pending human ruling: reading this draft
-
-The 2026-08-21 session supplied the rulings recorded below. The corrected record and its
-unresolved authority choices still require the human's sign-off under `AGENTS.md`'s
-human-sign-off gate.
-
-Pending that sign-off, the orchestrator uses four labels to keep supplied rulings separate
-from unruled material:
-
-- **Recorded ruling** — binding after the human signs off this corrected ADR.
-- **Research fact or proposal** — evidence or a non-binding design from
-  `docs/research/system-of-work-observability.md`; a later issue may adopt, change or reject it.
-- **Open ruling question** — no option is selected and no default is implied.
-- **Orchestrator working convention pending human ruling** — temporary handling by the
-  orchestrator, not a human ruling and not authority granted to another issue.
-
-The label on a heading applies to every statement beneath it until the next labelled
-heading. Human sign-off on the recorded rulings does not silently promote the research
-proposals into policy.
-
-Pending sign-off, the orchestrator does not treat that labelling as certified complete.
-It has been corrected in three review passes, and each pass found additional unmarked
-normative text. No fourth pass is claimed: another inspection could establish only what
-that reader found. Human sign-off therefore still requires line-by-line classification.
-One bounded result is established: all twelve `Human choice` cells in the open-ruling
-table are `pending`; every capability question remains unanswered and no mode is selected.
-That boundary does not establish classification completeness elsewhere.
-
 ## Recorded rulings
 
 ### R1 — recorded ruling: widen the observatory's input scope
@@ -71,8 +43,8 @@ The human ruled “Read only”. The boundary already stated by ADR-0071 ruling 
 binding: nothing derived from observatory telemetry excludes a profile, reroutes work or
 trips a breaker.
 
-That sentence does not answer every other way a reading could affect work. The unanswered
-capabilities are returned to the human in the open ruling question below; this record does
+That sentence does not answer every other way a reading could affect work. Those
+capabilities were returned to the human and are ruled by R6 below; this record does
 not extend “Read only” by guessing.
 
 ### R4 — recorded ruling: consumer order
@@ -229,9 +201,42 @@ The proposed non-dispatched-session cost input depends explicitly on #464 landin
 that dependency is satisfied, a rebuild may report available spool coverage but may not
 call its denominator complete.
 
-## Open ruling question: may a reading influence work?
+## R6 — recorded ruling: what a reading may influence
 
-The human must choose one mode for each row; there is no default:
+Each capability below carries one mode. The mode governs readings derived from observatory
+telemetry only: existing mechanisms that consult live state — the breaker's own read, the
+failure-class table's re-dispatch response, `config/escalation-conditions.json` — are
+unaffected by every row.
+
+| Capability | Mode |
+|---|---|
+| Reorder queue work | advise |
+| Admit WIP | advise |
+| Select an initial lane | observe |
+| Select a reviewer | observe |
+| Trigger watching | control |
+| Trigger escalation | advise |
+| Select an arbiter for an escalated finding | observe |
+| Retry a dispatch | observe |
+| Affect gate acceptance | observe |
+| Affect repository landing acceptance | observe |
+| Affect audit posting | observe |
+| Affect issue closing | observe |
+| Select which gate tier runs | observe |
+
+The thirteenth row is added by this ruling and was not in the draft's table. `just brief`
+derives the gate tier from the in-world surface list, so a reading that selects a cheaper
+tier resembles scheduling and is acceptance.
+
+Lane selection and reviewer selection are the rerouting R3 already forbids. They are ruled
+`observe` here for completeness, and a future `control` on either is an amendment to R3
+carrying its own record, never a scope choice made in this table.
+
+Watching is the one live authority granted, and it is bounded: a telemetry-armed watcher may
+report, and may not stop, retry or re-dispatch. Retry stays `observe` on its own row, and
+`child_state_unknown` keeps #495's inspect-and-reconcile action and never looks safe to retry.
+
+The three modes mean:
 
 - **observe** — report facts only; neither a tool nor the in-loop orchestrator uses the
   reading to choose or cause the capability;
@@ -242,24 +247,31 @@ The human must choose one mode for each row; there is no default:
 
 | Capability needing a ruling | What `control` would permit | What `observe` or `advise` would forbid | #478–#493 consequence | Human choice |
 |---|---|---|---|---|
-| Reorder queue work | Work-item age, queue depth or another reading may change which eligible item runs next. | #486 and #492 remain reports or human recommendations; they cannot reorder the queue. | Changes the authority of #478/#482's query layer and #486/#492's leading indicators. | pending |
-| Admit WIP | Occupancy or queue readings may open capacity or admit another item. | #485 and #492 cannot change WIP state or admission. | Determines whether #485 occupancy and #492 depth are scheduler inputs or analysis only. | pending |
-| Select an initial lane | Per-lane cost, failures or history may influence lane selection within whatever registry rules remain. | #481, #482 and #488 stay outside dispatch resolution. | Must clarify whether this is the “reroutes work” already forbidden by R3 or an amendment to it. | pending |
-| Select a reviewer | Review-effectiveness or relation data may influence reviewer selection. | #487 and #491 cannot affect review dispatch. | Must clarify whether reviewer selection is routing under R3. | pending |
-| Trigger watching | Age, block reason or depth may arm or intensify a watcher. | #486 and #492 cannot replace or trigger fixed watcher behaviour. | Decides whether their leading indicators are operational or reported. | pending |
-| Trigger escalation | Rework, age, abandonment or queue readings may start an escalation. | #484, #487, #489 and #492 cannot add escalation triggers. | Existing review-loop escalation conditions remain the only automatic ones unless this is allowed. | pending |
-| Select an arbiter for an escalated finding | A reading may influence which otherwise eligible profile the existing arbiter walk resolves for the finding. | #487's rework and #491's relation data remain reports or human recommendations; they cannot alter the arbiter walk. | Determines whether #478/#482 may feed #487/#491 readings into arbiter routing or only report them. | pending |
-| Retry a dispatch | A terminal reading may cause a re-dispatch when existing safety checks allow it. | #489 and any dispatch lifecycle event remain evidence only. | Any permission must still forbid automatic retry of `child_state_unknown` until #495's reconciliation completes. | pending |
-| Affect gate acceptance | Historical or per-leg readings may contribute to a gate's green/red result. | #479/#483 recording stays advisory and fail-open. | `control` changes those issues' current acceptance contract; the other modes preserve it. | pending |
-| Affect repository landing acceptance | Conformance, first-pass, relation or summary readings may add a rung or refusal governing whether work reaches `origin/main`. | #487, #490, #491 and #493 remain analytical outputs; `just land` keeps its existing repository-landing authorities. | `control` requires an explicit acceptance rule and tests; the other modes add none. | pending |
-| Affect audit posting | After repository landing, a reading may influence whether or when the audit is posted. | Readings may describe or recommend audit posting, but no tool or in-loop orchestrator may cause, suppress or delay it from telemetry. | Determines whether readings exposed by #478/#482, including #490/#491/#493 outputs, may drive audit posting or remain analytical. | pending |
-| Affect issue closing | After repository landing, a reading may influence whether or when the issue is closed. | Readings may describe or recommend issue closing, but no tool or in-loop orchestrator may cause, suppress or delay it from telemetry. | Determines whether readings exposed by #478/#482, including #490/#491/#493 outputs, may drive issue closing or remain analytical. | pending |
+| Reorder queue work | Work-item age, queue depth or another reading may change which eligible item runs next. | #486 and #492 remain reports or human recommendations; they cannot reorder the queue. | Changes the authority of #478/#482's query layer and #486/#492's leading indicators. | advise |
+| Admit WIP | Occupancy or queue readings may open capacity or admit another item. | #485 and #492 cannot change WIP state or admission. | Determines whether #485 occupancy and #492 depth are scheduler inputs or analysis only. | advise |
+| Select an initial lane | Per-lane cost, failures or history may influence lane selection within whatever registry rules remain. | #481, #482 and #488 stay outside dispatch resolution. | Must clarify whether this is the “reroutes work” already forbidden by R3 or an amendment to it. | observe |
+| Select a reviewer | Review-effectiveness or relation data may influence reviewer selection. | #487 and #491 cannot affect review dispatch. | Must clarify whether reviewer selection is routing under R3. | observe |
+| Trigger watching | Age, block reason or depth may arm or intensify a watcher. | #486 and #492 cannot replace or trigger fixed watcher behaviour. | Decides whether their leading indicators are operational or reported. | control |
+| Trigger escalation | Rework, age, abandonment or queue readings may start an escalation. | #484, #487, #489 and #492 cannot add escalation triggers. | Existing review-loop escalation conditions remain the only automatic ones unless this is allowed. | advise |
+| Select an arbiter for an escalated finding | A reading may influence which otherwise eligible profile the existing arbiter walk resolves for the finding. | #487's rework and #491's relation data remain reports or human recommendations; they cannot alter the arbiter walk. | Determines whether #478/#482 may feed #487/#491 readings into arbiter routing or only report them. | observe |
+| Retry a dispatch | A terminal reading may cause a re-dispatch when existing safety checks allow it. | #489 and any dispatch lifecycle event remain evidence only. | Any permission must still forbid automatic retry of `child_state_unknown` until #495's reconciliation completes. | observe |
+| Affect gate acceptance | Historical or per-leg readings may contribute to a gate's green/red result. | #479/#483 recording stays advisory and fail-open. | `control` changes those issues' current acceptance contract; the other modes preserve it. | observe |
+| Affect repository landing acceptance | Conformance, first-pass, relation or summary readings may add a rung or refusal governing whether work reaches `origin/main`. | #487, #490, #491 and #493 remain analytical outputs; `just land` keeps its existing repository-landing authorities. | `control` requires an explicit acceptance rule and tests; the other modes add none. | observe |
+| Affect audit posting | After repository landing, a reading may influence whether or when the audit is posted. | Readings may describe or recommend audit posting, but no tool or in-loop orchestrator may cause, suppress or delay it from telemetry. | Determines whether readings exposed by #478/#482, including #490/#491/#493 outputs, may drive audit posting or remain analytical. | observe |
+| Affect issue closing | After repository landing, a reading may influence whether or when the issue is closed. | Readings may describe or recommend issue closing, but no tool or in-loop orchestrator may cause, suppress or delay it from telemetry. | Determines whether readings exposed by #478/#482, including #490/#491/#493 outputs, may drive issue closing or remain analytical. | observe |
+| Select which gate tier runs | A reading may choose which gate tier a change runs — for example, a cheaper tier than the in-world surface list implies. | `just brief` keeps deriving the gate tier from the in-world surface list; no reading selects or cheapens the tier. | A reading that selects a cheaper tier resembles scheduling and is acceptance; this row keeps #478/#482's readings analytical. | observe |
 
-## Orchestrator working convention pending human ruling: issue drafting
+## R7 — recorded ruling: only a marked statement binds
 
-Pending a human choice for each row, the orchestrator will describe #478–#493 dependencies
-on that capability as conditional. This convention binds no issue and grants none authority
-from this ADR's research sections.
+Only a statement beneath a **Recorded ruling** heading in this record is binding. Every other
+statement here, and the whole of `docs/research/system-of-work-observability.md`, is advisory
+by default. Citing an unmarked sentence as policy is an error however that sentence is worded,
+and a later issue adopting one adopts it by its own ruling rather than by citation.
+
+This ruling replaces the completeness the draft could not establish. Three labelling passes each
+found further unmarked normative text, and the terminal review recorded that inspection cannot
+prove a fourth would be the last. A default that unmarked text does not bind removes the failure
+class without anyone having to prove a negative.
 
 ## Orchestrator working convention pending human ruling: changing this draft
 
