@@ -103,12 +103,15 @@ def _pieces(text: str, path: str) -> tuple[list[tuple[str, bool]], list[Finding]
     return pieces, failures
 
 
+# Optional prefix letters (`r`, `b`, `f` and friends), either quote, anything, the
+# same quote closing — the tokeniser already guaranteed the shape, this only unwraps it.
+QUOTED_BODY: Final = re.compile(r"""[A-Za-z]*(['"])(.*)\1""", re.DOTALL)
+
+
 def _strip_quotes(token_text: str) -> str:
-    """A STRING token's content: prefix letters and both quote halves removed."""
-    body = token_text.strip()
-    while body and body[0] not in "\"'":
-        body = body[1:]
-    return body[1:-1] if len(body) >= 2 else body
+    """Strip a STRING token to its content: prefix letters and both quote halves."""
+    match = QUOTED_BODY.fullmatch(token_text.strip())
+    return match.group(2) if match else token_text.strip()
 
 
 def names_in(text: str, path: str = "<text>") -> tuple[set[str], set[str], list[Finding]]:
@@ -165,7 +168,7 @@ def tracked_sources(root: Path) -> dict[str, str]:
     rather than inheriting it.
     """
     done = subprocess.run(  # noqa: S603 — argv is fixed here
-        [
+        [  # noqa: S607 — git off PATH, as elsewhere in tools/
             "git",
             "-C",
             str(root),
@@ -203,14 +206,15 @@ def main(argv: list[str] | None = None) -> int:
     root = Path(__file__).resolve().parent.parent
     sources = tracked_sources(root)
     if not sources:
-        print("check-attributes: no tracked sources read — refusing to claim green")
+        print("check-attributes: no tracked sources read — refusing to claim green")  # noqa: T201 — the refusal is the output
         return 1
     findings = check(sources)
     for finding in findings:
-        print(
-            f"check-attributes: {finding.path}: {finding.name} ({finding.form}) is not in the registry"
+        print(  # noqa: T201 — the finding list is the output
+            f"check-attributes: {finding.path}: "
+            f"{finding.name} ({finding.form}) is not in the registry"
         )
-    print(
+    print(  # noqa: T201 — the count line is the output
         f"attributes: files={len(sources)} registry={len(attribute_registry.NAMES)}"
         f" findings={len(findings)}"
     )

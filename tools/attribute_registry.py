@@ -42,7 +42,10 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Final, Mapping, NamedTuple
+from typing import TYPE_CHECKING, Final, NamedTuple
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
 
 # tools/ holds standalone scripts rather than an importable package, so a sibling import
 # needs the script's own directory on the path — the device `breaker.py` uses to reach here.
@@ -88,7 +91,11 @@ NAMES: Final[dict[str, Name]] = {
         "event", "required", "One loop's terminal filing and dismissal record."
     ),
     "cti.review.arbiter.resolved": Name(
-        "event", "required", "One arbiter resolution, from the walk's own module."
+        "event, attribute",
+        "required",
+        "One arbiter resolution, from the walk's own module; the same string is"
+        " the event's name and the attribute saying it resolved — one name, two"
+        " OTel positions, as `cti.review.round`'s row says.",
     ),
     "cti.wait.blocked": Name(
         "event",
@@ -215,11 +222,6 @@ NAMES: Final[dict[str, Name]] = {
     "cti.review.arbiter.refusal": Name(
         "attribute", "conditionally_required", "The refusal the walk stopped on, where one did."
     ),
-    "cti.review.arbiter.resolved": Name(
-        "attribute",
-        "conditionally_required",
-        "Whether the walk resolved, an attribute beside its event-name twin.",
-    ),
     "cti.review.arbiter.unchecked": Name(
         "attribute", "conditionally_required", "Checks the walk could not read, kept visible."
     ),
@@ -315,7 +317,7 @@ _BREAKER_QUALITY: Final = "provider_refused"
 
 
 def block_reason_for(refusal: object) -> str | None:
-    """The wait cause a refusal names, `None` where it names no wait at all.
+    """Return the wait cause a refusal names, `None` where it names no wait at all.
 
     `lane_breaker_open` reads its failure class — quota reopens at a published
     boundary and a quality trip waits on a human, and those are different rows
@@ -339,9 +341,9 @@ def wait_event(
     reason: str,
     surface: str,
     at: float,
+    *,
     refusal: str = "",
     issue: int | None = None,
-    lane: str = "",
 ) -> otel_event.Event:
     """Build one `cti.wait.blocked` event; the only place its attributes are spelled.
 
@@ -350,7 +352,8 @@ def wait_event(
     `emit_wait` stays fail-open over the *emission*, never over the spelling.
     """
     if reason not in BLOCK_REASONS:
-        raise ValueError(f"block_reason not in the closed vocabulary: {reason!r}")
+        message = f"block_reason not in the closed vocabulary: {reason!r}"
+        raise ValueError(message)
     attributes: dict[str, object] = {
         "cti.wait.block_reason": reason,
         "cti.wait.surface": surface,
@@ -359,8 +362,6 @@ def wait_event(
         attributes["cti.wait.refusal"] = refusal
     if issue is not None:
         attributes["cti.issue"] = issue
-    if lane:
-        attributes["cti.lane"] = lane
     return otel_event.Event(
         name=WAIT_EVENT,
         at=at,

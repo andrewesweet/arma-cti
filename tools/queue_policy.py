@@ -77,9 +77,8 @@ from typing import TYPE_CHECKING, Final, NamedTuple
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-import otel_event  # the path insert above is what makes this importable
-
-import attribute_registry  # as above
+import attribute_registry  # the path insert above is what makes this importable
+import otel_event  # as above
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable, Mapping, Sequence

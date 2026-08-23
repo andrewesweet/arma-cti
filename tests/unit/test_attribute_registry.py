@@ -13,14 +13,15 @@ including the journal's `exported` flag; `tests/unit/test_routing_policy.py`'s
 
 from __future__ import annotations
 
-import io
 import json
-import sys
 from pathlib import Path
-from types import ModuleType
-from typing import Any, Final
+from typing import TYPE_CHECKING, Any, Final
 
+import pytest
 from conftest import load_tool
+
+if TYPE_CHECKING:
+    from types import ModuleType
 
 attribute_registry: ModuleType = load_tool("attribute_registry")
 check_attributes: ModuleType = load_tool("check_attributes")
@@ -129,12 +130,8 @@ def test_a_value_outside_the_closed_vocabulary_is_refused_not_journalled(
     spelling: a misspelt cause journalled quietly would be the fourth spelling
     arriving through the side door.
     """
-    try:
+    with pytest.raises(ValueError, match="closed vocabulary"):
         attribute_registry.wait_event("waiting_on_human", "queue", NOW)
-    except ValueError as failure:
-        assert "closed vocabulary" in str(failure)
-    else:
-        raise AssertionError("a value outside the vocabulary must raise, not render")
 
     assert not (tmp_path / "waits.jsonl").exists(), "and nothing was journalled for it"
 
@@ -225,8 +222,8 @@ def test_a_historical_journal_line_without_the_new_field_still_parses() -> None:
     """Optional on read: the six families' lines predate the wait fields (#480 story 19)."""
     old = otel_event.journal_line(
         otel_event.Event("cti.breaker.transition", NOW, {"cti.lane": "zai"}, {}),
-        False,
-        "unreachable:ConnectionRefusedError",
+        exported=False,
+        detail="unreachable:ConnectionRefusedError",
     )
     row = json.loads(old)
     assert row["event"] == "cti.breaker.transition"
@@ -234,13 +231,14 @@ def test_a_historical_journal_line_without_the_new_field_still_parses() -> None:
 
     new = otel_event.journal_line(
         attribute_registry.wait_event("waiting_reviewer", "review", NOW, issue=332),
-        False,
-        "unreachable:ConnectionRefusedError",
+        exported=False,
+        detail="unreachable:ConnectionRefusedError",
     )
     later = json.loads(new)
     assert later["attributes"]["cti.wait.block_reason"] == "waiting_reviewer"
     # And the old reader's view of the new line keeps every old key intact.
-    assert later["event"] and later["exported"] is False
+    assert later["event"] == "cti.wait.blocked"
+    assert later["exported"] is False
 
 
 def test_the_rendered_document_carries_the_reason_where_a_reader_looks() -> None:
