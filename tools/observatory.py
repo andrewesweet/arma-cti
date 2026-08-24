@@ -148,6 +148,7 @@ from typing import TYPE_CHECKING, Any, Final, NamedTuple
 # import needs the script's own directory on the path — the device `ledger.py` uses.
 sys.path.insert(0, str(Path(__file__).parent))
 
+import attribute_registry
 import dispatch
 import ledger
 import review_loop
@@ -155,7 +156,7 @@ import review_loop
 if TYPE_CHECKING:
     from collections.abc import Container
 
-SCHEMA: Final = "cti.observatory/5"
+SCHEMA: Final = "cti.observatory/6"
 STORE_NAME: Final = "store.json"
 
 EXIT_REFUSED: Final = 1
@@ -464,6 +465,22 @@ ISSUE_REWORK_COLUMNS: Final = (
     # ranking key would be a ruling, not a preference (ADR-0071 ruling 6).
     "ranked",
     "measures",
+)
+
+# The stage view (#490): one row per stage of `attribute_registry.STAGES`, the yield
+# derived from the arrivals' own first-pass statuses — never from correlating rounds
+# or timestamps, which is the inference this column exists to spare the reader.
+# `undetermined` sits beside the yield and never inside its denominator.
+STAGE_FIRST_PASS_COLUMNS: Final = (
+    "stage",
+    "arrivals",
+    "first_time",
+    "after_rework",
+    "undetermined",
+    "first_pass_yield",
+    "first_pass_yield_reason",
+    # Never null, no reason sibling — the boundary, like `measures`.
+    "boundary",
 )
 
 # The session view's spool: the live file plus its rolled generations, the source
@@ -1213,6 +1230,104 @@ def read_review_rounds(review_root: Path) -> tuple[dict[int, int], tuple[str, ..
     return rounds, tuple(unreadable)
 
 
+# ------------------------------------------------------------------- the stage view
+
+
+# The yield's own absence, where no arrival of a stage carries a determinable
+# first-pass status: `undetermined` arrivals sit beside the yield, never inside
+# its denominator, because a denominator padded with guesses is the defaulted
+# true one stage over (#490's central criterion).
+NO_DETERMINED_ARRIVALS_REASON: Final = (
+    "no arrival of this stage carries a determinable first-pass status"
+)
+# The view's boundary, carried as a column on every row: the stage journals begin
+# at #490, so every arrival before it is invisible here and the yield reads over
+# journalled arrivals alone. The `measures` pattern — the reader quoting one
+# number meets the boundary in the table itself, never only in the cookbook.
+STAGE_BOUNDARY: Final = (
+    "journalled arrivals only: the stage journals begin at #490, so arrivals "
+    "before it are absent from this figure rather than counted as rework, and "
+    "first_pass_yield excludes undetermined arrivals from its denominator while "
+    "carrying their count beside it"
+)
+
+
+def read_stage_arrivals(review_root: Path) -> tuple[list[dict[str, Any]], dict[str, int], int]:
+    """Count every stage journal's arrivals into one row per stage of the closed set.
+
+    The stage names, the first-pass vocabulary and the journal's file name all come
+    from `attribute_registry` — the registry is their one home and this view derives
+    (#490). A journal line that will not parse, or names a stage or a first-pass
+    value outside the vocabularies, is malformed and counted as such rather than
+    bucketed as `undetermined`: an arrival the recorder could not read was already
+    journalled `undetermined` by the recorder itself, so a line that is wrong on its
+    face is a different fact — damage to the record, not an undeterminable status.
+
+    Every stage of the closed set gets a row, zeros included, so an empty stage
+    states itself rather than vanishing from the answer.
+    """
+    counts = {
+        stage: {"first_time": 0, "after_rework": 0, "undetermined": 0}
+        for stage in attribute_registry.STAGES
+    }
+    malformed: dict[str, int] = {}
+
+    def damaged(key: str) -> None:
+        malformed[key] = malformed.get(key, 0) + 1
+
+    journals = 0
+    for entry in sorted(review_root.iterdir()):
+        if not entry.is_dir() or not entry.name.isdecimal():
+            continue
+        path = entry / attribute_registry.STAGE_JOURNAL
+        if not path.is_file():
+            continue
+        journals += 1
+        key = f"{entry.name}/{path.name}"
+        try:
+            lines = path.read_text(encoding="utf-8").splitlines()
+        except OSError:
+            damaged(key)
+            continue
+        for line in lines:
+            try:
+                document = json.loads(line)
+            except ValueError:
+                damaged(key)
+                continue
+            attributes = document.get("attributes") if isinstance(document, dict) else None
+            named = attributes.get("cti.stage.name") if isinstance(attributes, dict) else None
+            status = (
+                attributes.get("cti.stage.first_pass") if isinstance(attributes, dict) else None
+            )
+            if (
+                not isinstance(document, dict)
+                or document.get("event") != attribute_registry.STAGE_EVENT
+                or named not in counts
+                or status not in attribute_registry.FIRST_PASS
+            ):
+                damaged(key)
+                continue
+            counts[named][status] += 1  # type: ignore[index] — status is a FIRST_PASS key by the check above
+    rows: list[dict[str, Any]] = []
+    for stage, tally in counts.items():
+        arrivals = sum(tally.values())
+        determined = tally["first_time"] + tally["after_rework"]
+        rows.append(
+            {
+                "stage": stage,
+                "arrivals": arrivals,
+                "first_time": tally["first_time"],
+                "after_rework": tally["after_rework"],
+                "undetermined": tally["undetermined"],
+                "first_pass_yield": (tally["first_time"] / determined) if determined else None,
+                "first_pass_yield_reason": None if determined else NO_DETERMINED_ARRIVALS_REASON,
+                "boundary": STAGE_BOUNDARY,
+            }
+        )
+    return rows, malformed, journals
+
+
 # ------------------------------------------------------------------- the session view
 
 
@@ -1692,9 +1807,10 @@ def rebuild(  # noqa: PLR0913, PLR0917 — the six paths are the rebuild's own s
     spool_entries = _source_entries(spool.parent, "spool")
     rounds, unreadable_loops = read_review_rounds(review_root)
     unreadable_issues = {int(name) for name in unreadable_loops}
+    stage_rows, stage_malformed, stage_journals = read_stage_arrivals(review_root)
 
     rows: list[dict[str, Any]] = []
-    malformed_files: dict[str, int] = {}
+    malformed_files: dict[str, int] = dict(stage_malformed)
     for entry in entries:
         if not (entry / DISPATCH_FILE).is_file():
             continue
@@ -1768,6 +1884,9 @@ def rebuild(  # noqa: PLR0913, PLR0917 — the six paths are the rebuild's own s
             "review_loops": len(rounds),
             "review_loops_round_zero": sum(1 for value in rounds.values() if not value),
             "review_loops_unreadable": list(unreadable_loops),
+            "stage_journals": stage_journals,
+            "stage_arrivals": sum(int(row["arrivals"]) for row in stage_rows),
+            "stage_arrivals_undetermined": sum(int(row["undetermined"]) for row in stage_rows),
             "session_renders": len(spool_read.renders),
             "session_renders_untimestamped": spool_read.untimestamped,
             "session_renders_without_session_id": spool_read.without_session,
@@ -1783,6 +1902,7 @@ def rebuild(  # noqa: PLR0913, PLR0917 — the six paths are the rebuild's own s
         "work_items": work_items,
         "issue_rework": issue_rework,
         "profile_rework": profile_rework,
+        "stage_first_pass": stage_rows,
         "session_period": session_period,
         "period_overhead": period_overhead,
     }
@@ -1869,6 +1989,21 @@ def summary_lines(store: Mapping[str, Any], store_dir: Path) -> tuple[str, ...]:
         )
     )
     lines.extend(f"unreadable loop issue={issue}" for issue in coverage["review_loops_unreadable"])
+    # The stage line carries counts and the boundary's own name, never a yield: the
+    # per-stage rates and the product over them are a query against `stage_first_pass`,
+    # and a summary yield over stages whose undetermined arrivals vary would be the
+    # confident number the boundary column exists to qualify.
+    lines.append(
+        " ".join(
+            (
+                "stages",
+                f"journals={coverage['stage_journals']}",
+                f"arrivals={coverage['stage_arrivals']}",
+                f"undetermined={coverage['stage_arrivals_undetermined']}",
+                "history=journalled_only",
+            )
+        )
+    )
     # The session line names the source's largest omission in its own words — the seat
     # the figure cannot see is the orchestrator, and `orchestrator=absent` says so
     # where a coverage count alone would read as completeness. `meter=` names the
@@ -1933,8 +2068,9 @@ def connect(store_dir: Path) -> sqlite3.Connection:
     document = json.loads((store_dir / STORE_NAME).read_text(encoding="utf-8"))
     found = document.get("schema") if isinstance(document, dict) else None
     if found != SCHEMA:
-        # A `/1` store predates `work_items`, and the KeyError its load would raise on
-        # that absent table is a traceback where a named refusal belongs.
+        # A `/1` store predates `work_items` and a `/5` one `stage_first_pass`, and the
+        # KeyError their loads would raise on those absent tables is a traceback where
+        # a named refusal belongs.
         raise _RefusedError(
             Refusal(
                 "schema_mismatch",
@@ -1949,6 +2085,7 @@ def connect(store_dir: Path) -> sqlite3.Connection:
         ("work_items", WORK_ITEM_COLUMNS),
         ("issue_rework", ISSUE_REWORK_COLUMNS),
         ("profile_rework", PROFILE_REWORK_COLUMNS),
+        ("stage_first_pass", STAGE_FIRST_PASS_COLUMNS),
         ("session_period", SESSION_PERIOD_COLUMNS),
         ("period_overhead", PERIOD_OVERHEAD_COLUMNS),
     ):

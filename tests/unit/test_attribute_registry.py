@@ -362,3 +362,170 @@ def test_the_rendered_document_carries_the_reason_where_a_reader_looks() -> None
     assert pairs["event.name"] == {"stringValue": "cti.wait.blocked"}
     assert pairs["cti.wait.block_reason"] == {"stringValue": "lane_peak_band"}
     assert pairs["cti.wait.refusal"] == {"stringValue": "lane_peak_hours"}
+
+
+# --------------------------------------------------- the stage family and its journal (#490)
+
+
+def stage_rows(journal: Path) -> list[dict[str, Any]]:
+    """Read a stage journal as its reader finds it, one object per line."""
+    return [json.loads(line) for line in journal.read_text(encoding="utf-8").splitlines()]
+
+
+def test_the_stage_set_is_the_six_in_pipeline_order() -> None:
+    """Closed and ordered: the order is data, because first-pass status is decided by it."""
+    assert list(attribute_registry.STAGES) == [
+        "brief",
+        "implementation",
+        "own_gate",
+        "exchange",
+        "review",
+        "land",
+    ]
+
+
+def test_the_first_pass_vocabulary_is_the_three_states() -> None:
+    """`undetermined` is a state, not a soft true — yield multiplies the per-stage rates."""
+    assert list(attribute_registry.FIRST_PASS) == ["first_time", "after_rework", "undetermined"]
+
+
+def test_every_stage_reason_is_a_sentence_not_a_blank() -> None:
+    for vocabulary in (attribute_registry.STAGES, attribute_registry.FIRST_PASS):
+        for reason in vocabulary.values():
+            assert reason
+            assert reason.strip()
+
+
+def test_every_seat_the_seams_map_is_a_stage_the_registry_holds() -> None:
+    """The seat map derives its values from STAGES; a value it does not hold is a typo."""
+    for stage in attribute_registry.STAGE_OF_SEAT.values():
+        assert stage in attribute_registry.STAGES
+
+
+def test_a_stage_event_carries_the_stage_its_status_and_the_item() -> None:
+    event = attribute_registry.stage_event(
+        "implementation", "first_time", NOW, issue=490, dispatch_id="d-1"
+    )
+    assert event.name == "cti.stage.transition"
+    assert dict(event.attributes) == {
+        "cti.stage.name": "implementation",
+        "cti.stage.first_pass": "first_time",
+        "cti.issue": 490,
+        "cti.dispatch_id": "d-1",
+    }
+
+
+def test_a_stage_or_status_outside_the_vocabularies_is_refused_not_journalled(
+    tmp_path: Path,
+) -> None:
+    journal = attribute_registry.stage_journal(490, tmp_path)
+    for bad in (
+        lambda: attribute_registry.stage_event("dispatch", "first_time", NOW, issue=490),
+        lambda: attribute_registry.stage_event("brief", "probably", NOW, issue=490),
+    ):
+        with pytest.raises(ValueError, match="closed"):
+            bad()
+    assert not journal.exists(), "and nothing was journalled for either"
+
+
+def test_a_stage_arrival_journals_fail_open_with_its_export_outcome(tmp_path: Path) -> None:
+    """A collector that refuses is a recorded fact, never a lost arrival (#496's shape)."""
+    status = attribute_registry.record_stage_arrival("brief", 490, tmp_path, NOW)
+    assert status == "first_time"
+    (row,) = stage_rows(attribute_registry.stage_journal(490, tmp_path))
+    assert row["event"] == "cti.stage.transition"
+    assert row["attributes"]["cti.stage.first_pass"] == "first_time"  # noqa: S105 — the attribute's own name carries "pass"; a stage status, never a credential
+    assert row["exported"] is False, "the dead port refuses, and the journal says so"
+
+
+def test_a_clean_forward_pass_reaches_every_stage_first_time(tmp_path: Path) -> None:
+    statuses = [
+        attribute_registry.record_stage_arrival(stage, 490, tmp_path, NOW, dispatch_id="d-1")
+        for stage in attribute_registry.STAGES
+    ]
+    assert statuses == ["first_time"] * 6
+
+
+def test_rework_upstream_makes_a_downstream_first_arrival_not_first_pass(
+    tmp_path: Path,
+) -> None:
+    """The rolled-throughput-yield reading: rework anywhere before a stage counts there."""
+    for stage in attribute_registry.STAGES:
+        attribute_registry.record_stage_arrival(stage, 490, tmp_path, NOW, dispatch_id="d-1")
+    # The fix round: a second brief, a second implementation and own gate — each a
+    # re-arrival — and the exchange that follows them is the item's first arrival at
+    # exchange but not on its first pass.
+    assert attribute_registry.record_stage_arrival("brief", 490, tmp_path, NOW) == "after_rework"
+    assert (
+        attribute_registry.record_stage_arrival(
+            "implementation", 490, tmp_path, NOW, dispatch_id="d-2"
+        )
+        == "after_rework"
+    )
+    assert (
+        attribute_registry.record_stage_arrival("own_gate", 490, tmp_path, NOW, dispatch_id="d-2")
+        == "after_rework"
+    )
+    assert attribute_registry.record_stage_arrival("exchange", 490, tmp_path, NOW) == "after_rework"
+    assert (
+        attribute_registry.record_stage_arrival("review", 490, tmp_path, NOW, dispatch_id="d-3")
+        == "after_rework"
+    )
+    assert attribute_registry.record_stage_arrival("land", 490, tmp_path, NOW) == "after_rework"
+
+
+def test_one_dispatch_reaching_a_stage_twice_is_one_arrival(tmp_path: Path) -> None:
+    """The own gate's shape: `just fast` re-runs inside one dispatched session."""
+    attribute_registry.record_stage_arrival("brief", 490, tmp_path, NOW)
+    attribute_registry.record_stage_arrival("implementation", 490, tmp_path, NOW, dispatch_id="d-1")
+    assert (
+        attribute_registry.record_stage_arrival("own_gate", 490, tmp_path, NOW, dispatch_id="d-1")
+        == "first_time"
+    )
+    again = attribute_registry.record_stage_arrival(
+        "own_gate", 490, tmp_path, NOW, dispatch_id="d-1"
+    )
+    assert again == attribute_registry.STAGE_ALREADY_REACHED
+    journal = stage_rows(attribute_registry.stage_journal(490, tmp_path))
+    assert [row["attributes"]["cti.stage.name"] for row in journal] == [
+        "brief",
+        "implementation",
+        "own_gate",
+    ], "the re-run journalled nothing"
+
+
+def test_an_unreadable_journal_records_undetermined_never_true(tmp_path: Path) -> None:
+    """#490's central criterion: the hole is stated, never padded with a clean past."""
+    journal = attribute_registry.stage_journal(490, tmp_path)
+    journal.parent.mkdir(parents=True)
+    journal.write_text("{not json\n", encoding="utf-8")
+    assert attribute_registry.record_stage_arrival("brief", 490, tmp_path, NOW) == "undetermined"
+    # The arrival is appended to the damaged journal; the last line is the new one.
+    row = json.loads(journal.read_text(encoding="utf-8").splitlines()[-1])
+    assert row["attributes"]["cti.stage.first_pass"] == "undetermined"  # noqa: S105 — a stage status, never a credential
+    assert row["attributes"]["cti.stage.first_pass"] != "first_time"  # noqa: S105 — a stage status, never a credential
+
+
+def test_a_journal_line_without_the_stage_field_parses_and_undetermines_the_next_arrival(
+    tmp_path: Path,
+) -> None:
+    """The historical shape (#490 criterion 5): a line the field predates still parses."""
+    journal = attribute_registry.stage_journal(490, tmp_path)
+    journal.parent.mkdir(parents=True)
+    # The journal_line shape as a line written before the stage name existed on it.
+    journal.write_text(
+        json.dumps(
+            {
+                "event": "cti.stage.transition",
+                "at": NOW - 10,
+                "attributes": {"cti.issue": 490},
+                "resource": {"service.name": "arma-cti-stage"},
+                "exported": False,
+                "export_detail": "unreachable:ConnectionRefusedError",
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    # The read did not crash, and the arrival the hole precedes says undetermined.
+    assert attribute_registry.record_stage_arrival("brief", 490, tmp_path, NOW) == "undetermined"

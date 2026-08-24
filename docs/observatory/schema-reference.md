@@ -26,15 +26,16 @@ silence. Both render as an absence with a reason, never as zero.
 
 | Key | Shape | Meaning |
 |---|---|---|
-| `schema` | string | `cti.observatory/5` |
+| `schema` | string | `cti.observatory/6` |
 | `inputs` | object | The five paths the rebuild read: `dispatch_root`, `export_dir`, `review_root`, `spool`, `repo` |
 | `coverage` | object | The rebuild's own denominators — see below |
-| `malformed` | array | One entry per source file with unparseable lines — export or spool: `file`, `lines` |
+| `malformed` | array | One entry per source file with unparseable lines — export, spool or stage journal: `file`, `lines` |
 | `dispatches` | array | One row per dispatch record — the `dispatches` table |
 | `issue_cost` | array | One row per (issue, lane) — the `issue_cost` table |
 | `work_items` | array | One row per issue — the `work_items` table |
 | `issue_rework` | array | One row per issue — the `issue_rework` table |
 | `profile_rework` | array | One row per (profile, seat) — the `profile_rework` table |
+| `stage_first_pass` | array | One row per stage of the closed set — the `stage_first_pass` table |
 | `session_period` | array | One row per (session, month) — the `session_period` table |
 | `period_overhead` | array | One row per period with overhead or a landing — the `period_overhead` table |
 
@@ -58,6 +59,9 @@ silence. Both render as an absence with a reason, never as zero.
 | `review_loops` | Issue loops read from the review journal, any round count |
 | `review_loops_round_zero` | Of those, how many sit at round zero — the key's own spread |
 | `review_loops_unreadable` | The issues whose `loop.json` exists but would not parse, named |
+| `stage_journals` | Issue stage journals read, any arrival count |
+| `stage_arrivals` | Stage arrivals those journals hold, across every stage |
+| `stage_arrivals_undetermined` | Of those, how many carry an `undetermined` first-pass status — counted beside the yield, never inside its denominator |
 | `session_renders` | Status-line renders the session view read — timestamped, with a session id |
 | `session_renders_untimestamped` | Renders the view could not place in a period — pre-#488 bare lines — counted, never summed |
 | `session_renders_without_session_id` | Timestamped renders carrying no session id, counted and never attributed — an untimestamped line without one counts as untimestamped, never here |
@@ -296,6 +300,42 @@ key barely varies; the rebuild's `rework` line carries `round_zero` against `loo
 states `key_varies=no` when the ranked key does not vary, and marks the sample limit
 `estimate_not_measurement` — the ADR's own account of its "20 to 30 landings" figure:
 no power calculation, base rate or effect size stands behind it.
+
+## The `stage_first_pass` table
+
+One row per stage of the closed set in `tools/attribute_registry.py`'s `STAGES`
+(#490) — zeros included, so a stage no journal names states itself rather than
+vanishing. The source is the per-issue stage journals under the review root, and
+every figure is a grouping over the arrivals' own recorded first-pass statuses:
+a reader never reconstructs first-pass yield by correlating timestamps, counting
+review rounds or re-deriving dispatch order.
+
+| Column | Null? | Meaning |
+|---|---|---|
+| `stage` | never | The pipeline stage — `attribute_registry.STAGES`' own key |
+| `arrivals` | never | Arrivals journalled at this stage, every status |
+| `first_time` | never | Of those, arrivals on the item's first pass |
+| `after_rework` | never | Of those, arrivals that follow rework |
+| `undetermined` | never | Of those, arrivals whose history could not be read — stated, never guessed |
+| `first_pass_yield` | + `first_pass_yield_reason` | `first_time` over `first_time + after_rework`; `undetermined` sits beside the yield, never inside its denominator |
+| `boundary` | never | The marker, like `measures`: the figure covers journalled arrivals only |
+
+**Rolled throughput yield is the product of the `first_pass_yield` column across
+stages**, read as a grouping over this table. The product multiplies the per-stage
+rates, which is exactly why an undeterminable status is recorded as `undetermined`
+rather than defaulted to true: five stages at ninety per cent is fifty-nine, and a
+single defaulted true turns a real fifty-nine into a reported sixty-six with
+nothing in the output saying so.
+
+**The boundary column is the view's largest omission.** The stage journals begin
+at #490, so every arrival before it — every brief, dispatch, gate run, exchange,
+review and landing in the store's dispatch history — is absent from this figure
+rather than counted as rework. `undetermined` arrivals are the recorder's own
+statement that an arrival's history had a hole in it, and a journal line that is
+wrong on its face (unparseable, or naming a stage or status outside the closed
+vocabularies) is malformed and counted in `malformed`, never bucketed as
+`undetermined`: damage to the record and an undeterminable status are different
+facts.
 
 ## The `session_period` table
 

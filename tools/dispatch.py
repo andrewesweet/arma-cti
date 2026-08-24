@@ -4547,12 +4547,30 @@ def plan_dispatch(  # noqa: PLR0911 — one return per refusal rung and per half
 
 
 def write_record(plan: Plan, brief: str) -> None:
-    """Lay down the dispatch record: the plan, and the brief exactly as it will be sent."""
+    """Lay down the dispatch record: the plan, and the brief exactly as it will be sent.
+
+    Writing the record is also the stage transition it records (#490): the dispatch
+    exists from here even where the child then refuses or dies, so an implementer
+    dispatch arrives at `implementation` and a review dispatch at `review` at this
+    moment, fail-open over the arrival the way every family is over its emission.
+    Seats that are not pipeline stages — planner, recon, retro, orchestrator — record
+    no arrival, because their dispatches are not passes through the work-item
+    pipeline.
+    """
     plan.record.mkdir(parents=True, exist_ok=True)
     (plan.record / "dispatch.json").write_text(
         json.dumps(plan.document(), indent=2) + "\n", encoding="utf-8"
     )
     (plan.record / "brief.md").write_text(brief, encoding="utf-8")
+    stage = attribute_registry.STAGE_OF_SEAT.get(plan.identity.seat)
+    if stage is not None:
+        attribute_registry.record_stage_arrival(
+            stage,
+            plan.identity.issue,
+            review_loop.review_root(),
+            plan.planned_at.timestamp(),
+            dispatch_id=plan.identity.dispatch_id,
+        )
 
 
 def load_record(record: Path) -> Plan:

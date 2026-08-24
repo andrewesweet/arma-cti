@@ -42,6 +42,7 @@ if TYPE_CHECKING:
 brief = load_tool("brief")
 gate = load_tool("gate")
 dispatch = load_tool("dispatch")
+attribute_registry = load_tool("attribute_registry")
 # A *separate* load of escalation from the one `brief` imports. `load_tool` re-execs the module on
 # every call, so this is a different module object than `brief.escalation`, and its `Firing` /
 # `Unreadable` classes are different class objects than the ones `brief.compose` narrows on. That
@@ -1902,3 +1903,60 @@ def test_a_gh_that_is_not_on_path_is_a_refusal_naming_the_reason(
     monkeypatch.setenv("PATH", "")
     with pytest.raises(brief.FetchError, match="not on PATH"):
         brief.fetch_issue(251)
+
+
+# ------------------------------------------------------- the brief stage arrival (#490)
+
+
+def _stage_journal(root: Path, issue: int) -> Path:
+    return root / str(issue) / attribute_registry.STAGE_JOURNAL
+
+
+def test_a_composed_brief_records_the_brief_arrival(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The pipeline's first stage, reached when the brief composes (#490)."""
+    root = tmp_path / "review"
+    monkeypatch.setenv("CTI_REVIEW_DIR", str(root))
+    code = brief.main(
+        ["490", "--out", str(tmp_path / "brief.md")],
+        read_issue=lambda _issue, _repo: {
+            "number": 490,
+            "title": "t",
+            "body": "rewrite tools/land.py",
+            "state": "OPEN",
+        },
+        read_open=lambda _repo: [],
+        read_handoff=lambda _issue: brief.Handoff(brief.HANDOFF_ABSENT),
+        repo=REPO,
+    )
+    assert code == 0
+    (row,) = [
+        json.loads(line)
+        for line in _stage_journal(root, 490).read_text(encoding="utf-8").splitlines()
+    ]
+    assert row["event"] == "cti.stage.transition"
+    assert row["attributes"]["cti.stage.name"] == "brief"
+    assert row["attributes"]["cti.stage.first_pass"] == "first_time"  # noqa: S105 — the attribute's own name carries "pass"; a stage status, never a credential
+
+
+def test_a_brief_for_a_review_seat_records_no_arrival(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A review dispatch's briefing is that stage's logistics, not the item re-briefed."""
+    root = tmp_path / "review"
+    monkeypatch.setenv("CTI_REVIEW_DIR", str(root))
+    code = brief.main(
+        ["490", "--seat", "review", "--reviewing", "opus-low", "--out", str(tmp_path / "b.md")],
+        read_issue=lambda _issue, _repo: {
+            "number": 490,
+            "title": "t",
+            "body": "rewrite tools/land.py",
+            "state": "OPEN",
+        },
+        read_open=lambda _repo: [],
+        read_handoff=lambda _issue: brief.Handoff(brief.HANDOFF_ABSENT),
+        repo=REPO,
+    )
+    assert code == 0
+    assert not (root / "490").exists(), "a review briefing is not a brief-stage arrival"

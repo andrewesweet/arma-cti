@@ -32,6 +32,7 @@ from conftest import REPO, load_tool, no_lane_network
 # `land` imports `worktree` as a sibling script, so the sibling is loaded first
 # and registered under its own name for that import to find.
 worktree = load_tool("worktree")
+attribute_registry = load_tool("attribute_registry")
 check_conflict_markers = load_tool("check_conflict_markers")
 pool_merge = load_tool("pool_merge")
 pool_comment = load_tool("pool_comment")
@@ -884,6 +885,31 @@ def test_a_landing_pushes_the_work_and_fast_forwards_the_main_checkout(
     assert _tip(origin) == _git("rev-parse", "HEAD", cwd=here).strip()
     assert _git("rev-parse", "main", cwd=main).strip() == _tip(origin)
     assert "\n".join(report.lines).count("merge=fast-forwarded") == 1
+
+
+def test_a_landing_arrives_at_the_land_stage(
+    repo: tuple[Path, Path, Path],
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The push is the land stage reached (#490), journalled with its first-pass status."""
+    review_root = tmp_path / "stage-review"
+    monkeypatch.setenv("CTI_REVIEW_DIR", str(review_root))
+    # The five earlier stages' first pass, so the landing is a first-pass arrival and
+    # not the honest `after_rework` an orphan arrival reads as.
+    now = 1_800_000_000.0
+    for stage in ("brief", "implementation", "own_gate", "exchange", "review"):
+        attribute_registry.record_stage_arrival(stage, 213, review_root, now, dispatch_id="d-1")
+    _origin, main, here = repo
+    _commit(here, "feature.txt", "work\n")
+
+    report = land.land(main, here, gate=_Gate(), review=_reviewed(here, tmp_path))
+
+    assert report.code == 0
+    journal = review_root / "213" / attribute_registry.STAGE_JOURNAL
+    rows = [json.loads(line) for line in journal.read_text(encoding="utf-8").splitlines()]
+    assert [row["attributes"]["cti.stage.name"] for row in rows][-1] == "land"
+    assert rows[-1]["attributes"]["cti.stage.first_pass"] == "first_time"  # noqa: S105 — the attribute's own name carries "pass"; a stage status, never a credential
 
 
 def test_the_gate_runs_on_the_rebased_tree_not_the_tree_as_it_was(

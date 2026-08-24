@@ -303,6 +303,18 @@ def exchange(  # noqa: PLR0911 — one return per refusal, so each stays a whole
         ),
         journal=wait_journal(),
     )
+    # The same success is the pipeline's exchange stage reached (#490), recorded with its
+    # first-pass status against the issue's own stage journal. The dispatch id names the
+    # implementer's session where the environment carries one, so a re-run inside that
+    # session is the same arrival rather than rework; an exchange by hand has none and
+    # counts, which is the journal's honest reading of the act.
+    attribute_registry.record_stage_arrival(
+        "exchange",
+        issue,
+        review_loop.review_root(),
+        datetime.now(tz=UTC).timestamp(),
+        dispatch_id=os.environ.get("CTI_DISPATCH_ID", ""),
+    )
     return Report(
         (
             "ok=review_branch_exchanged",

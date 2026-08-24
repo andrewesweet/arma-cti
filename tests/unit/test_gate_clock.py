@@ -78,6 +78,7 @@ if TYPE_CHECKING:
     import pytest
 
 gate_clock = load_tool("gate_clock")
+attribute_registry = load_tool("attribute_registry")
 # The exempt list is read from the tier rather than restated here, so an entry
 # added or removed there moves the target count's test with it (#466 round 2).
 mutation_smoke = load_tool("mutation_smoke")
@@ -1266,3 +1267,67 @@ def test_the_load_average_reads_its_own_kernel_file_and_can_be_staged(
     assert gate_clock.read_loadavg(tmp_path / "absent") is None
     staged.write_text("not a number 0.65 0.70 1/500 12345\n", encoding="utf-8")
     assert gate_clock.read_loadavg(staged) is None
+
+
+# ------------------------------------------------------ the own-gate stage arrival (#490)
+
+
+def _stage_journal(root: Path) -> Path:
+    return root / "490" / attribute_registry.STAGE_JOURNAL
+
+
+def test_a_dispatched_fast_run_arrives_at_own_gate(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """`just fast` inside a dispatched session is the own gate reached (#490)."""
+    root = tmp_path / "review"
+    monkeypatch.setenv("CTI_REVIEW_DIR", str(root))
+    monkeypatch.setenv("CTI_DISPATCH_ISSUE", "490")
+    monkeypatch.setenv("CTI_DISPATCH_ID", "d-1")
+    attribute_registry.record_stage_arrival("brief", 490, root, 1_800_000_000.0)
+    attribute_registry.record_stage_arrival(
+        "implementation", 490, root, 1_800_000_000.5, dispatch_id="d-1"
+    )
+    assert gate_clock.run_recipe("fast", [("fast", ["true"])], tmp_path / "clock") == 0
+    rows = [
+        json.loads(line) for line in _stage_journal(root).read_text(encoding="utf-8").splitlines()
+    ]
+    assert [row["attributes"]["cti.stage.name"] for row in rows] == [
+        "brief",
+        "implementation",
+        "own_gate",
+    ]
+    assert rows[-1]["attributes"]["cti.stage.first_pass"] == "first_time"  # noqa: S105 — the attribute's own name carries "pass"; a stage status, never a credential
+    # The re-run in the same session is the same arrival, never rework.
+    gate_clock.run_recipe("fast", [("fast", ["true"])], tmp_path / "clock")
+    assert (
+        len(
+            [
+                json.loads(line)
+                for line in _stage_journal(root).read_text(encoding="utf-8").splitlines()
+            ]
+        )
+        == 3
+    )
+
+
+def test_a_fast_run_no_dispatch_backs_records_no_arrival(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A human's or a test's gate run is no item's stage transition."""
+    root = tmp_path / "review"
+    monkeypatch.setenv("CTI_REVIEW_DIR", str(root))
+    monkeypatch.delenv("CTI_DISPATCH_ISSUE", raising=False)
+    assert gate_clock.run_recipe("fast", [("fast", ["true"])], tmp_path / "clock") == 0
+    assert not (root / "490").exists()
+
+
+def test_a_check_recipe_is_not_an_own_gate_arrival(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Only the whole gate is the own gate; a `just check` while iterating is not."""
+    root = tmp_path / "review"
+    monkeypatch.setenv("CTI_REVIEW_DIR", str(root))
+    monkeypatch.setenv("CTI_DISPATCH_ISSUE", "490")
+    gate_clock.run_recipe("check", [("check", ["true"])], tmp_path / "clock")
+    assert not (root / "490").exists()

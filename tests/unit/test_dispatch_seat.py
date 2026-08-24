@@ -29,6 +29,7 @@ if TYPE_CHECKING:
 
 dispatch = load_tool("dispatch")
 breaker = load_tool("breaker")
+attribute_registry = load_tool("attribute_registry")
 
 READY_BODY = REPO / "tests" / "fixtures" / "routing-eligible.md"
 
@@ -650,6 +651,60 @@ def test_a_record_written_before_routes_existed_reads_back_as_the_named_route_it
     assert route.named is True
     assert route.profile == "opus-high"
     assert route.passed_over == ()
+
+
+# ------------------------------------------------- the record as a stage arrival (#490)
+
+
+def test_writing_an_implementer_record_arrives_at_implementation(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The record laid down is the implementation stage reached (#490)."""
+    root = tmp_path / "review"
+    monkeypatch.setenv("CTI_REVIEW_DIR", str(root))
+    attribute_registry.record_stage_arrival("brief", 223, root, PEAK.timestamp())
+    plan, brief, _ = plan_for(tmp_path)
+    assert plan is not None
+    dispatch.write_record(plan, brief)
+    rows = [
+        json.loads(line)
+        for line in (root / "223" / attribute_registry.STAGE_JOURNAL)
+        .read_text(encoding="utf-8")
+        .splitlines()
+    ]
+    assert [row["attributes"]["cti.stage.name"] for row in rows] == ["brief", "implementation"]
+    assert rows[-1]["attributes"]["cti.dispatch_id"] == plan.identity.dispatch_id
+
+
+def test_writing_a_review_record_arrives_at_review_not_implementation(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = tmp_path / "review"
+    monkeypatch.setenv("CTI_REVIEW_DIR", str(root))
+    plan, brief, _ = plan_for(
+        tmp_path, seat="review", reviewing="opus-high", review_root=str(tmp_path / "review-records")
+    )
+    assert plan is not None
+    dispatch.write_record(plan, brief)
+    (row,) = [
+        json.loads(line)
+        for line in (root / "223" / attribute_registry.STAGE_JOURNAL)
+        .read_text(encoding="utf-8")
+        .splitlines()
+    ]
+    assert row["attributes"]["cti.stage.name"] == "review"
+
+
+def test_a_planner_dispatch_records_no_arrival(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A planner dispatch is not a pass through the work-item pipeline."""
+    root = tmp_path / "review"
+    monkeypatch.setenv("CTI_REVIEW_DIR", str(root))
+    plan, brief, _ = plan_for(tmp_path, seat="planner")
+    assert plan is not None
+    dispatch.write_record(plan, brief)
+    assert not (root / "223").exists()
 
 
 # ------------------------------------------------------------------ the registry listing

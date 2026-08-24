@@ -36,10 +36,21 @@ than a stated absence — "waiting for the human" and "waiting for a lane's peak
 band to close" are opposite interventions, and a plausible wrong cause sends
 the reader to fix the wrong thing. Absent, undetermined and a real value are
 three facts, and each renders differently.
+
+**The stage vocabulary is the same discipline one family over** (#490): the six
+stages of the work-item pipeline, stated once in `STAGES` and in pipeline
+order, and the three states of an arrival's first-pass status in `FIRST_PASS`.
+Rolled throughput yield multiplies the per-stage first-pass rates, so an
+undeterminable status is recorded as `undetermined` and never defaulted to
+true — a defaulted true does not flatter one stage, it inflates every stage
+after it. `record_stage_arrival` is the one entry the seams call; it decides
+the status against the issue's own stage journal, whose absences it states
+rather than borrows a clean past from.
 """
 
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, NamedTuple
@@ -259,6 +270,27 @@ NAMES: Final[dict[str, Name]] = {
         "The failure class the terminal state carries, always one of"
         " NOT_A_RESULT_CLASSES — the existing vocabulary, never a parallel one.",
     ),
+    # ---- attributes: stage transitions (#490) --------------------------------
+    "cti.stage.transition": Name(
+        "event",
+        "required",
+        "One arrival at a stage of the work-item pipeline (#490); the arrival the"
+        " first-pass yield of that stage is computed over.",
+    ),
+    "cti.stage.name": Name(
+        "attribute",
+        "required",
+        "The pipeline stage reached, always one of STAGES; the stage set is the"
+        " registry's own closed vocabulary, stated once.",
+    ),
+    "cti.stage.first_pass": Name(
+        "attribute",
+        "required",
+        "Whether this arrival was the item's first pass at the stage, always one of"
+        " FIRST_PASS — `undetermined` where the journal could not say, never a"
+        " defaulted true, because yield multiplies and one guess inflates every"
+        " stage after it.",
+    ),
     # ---- scope ---------------------------------------------------------------
     "cti.breaker": Name(
         "scope",
@@ -346,6 +378,237 @@ NOT_A_RESULT_CLASSES: Final[dict[str, str]] = {
 
 TERMINAL_EVENT: Final = "cti.terminal.state"
 TERMINAL_ABANDONED: Final = "abandoned"
+
+# The work-item pipeline's stages (#490), in pipeline order — the order is data,
+# not presentation: an arrival's first-pass status is decided by how many times
+# the stages up to and including it were reached before. The spellings carry no
+# spaces (`own_gate`, not "own gate") because these are query values. One home:
+# consumers — the recorder below, the observatory's stage view, the tests —
+# derive the set from here and never restate it (#501's defect class).
+STAGES: Final[dict[str, str]] = {
+    "brief": "The dispatch briefing composed for the issue; every later stage"
+    " arrives through work this one described.",
+    "implementation": "The implementer dispatch running the work (#490's stage"
+    " arrives when the dispatch record is laid down — the dispatch exists even"
+    " where the child then refuses or dies).",
+    "own_gate": "The implementer running `just fast` as its own gate; one arrival"
+    " per dispatch, because a gate re-run in the same dispatched session is the"
+    " same arrival, not a rework of it.",
+    "exchange": "The implementer pushing the review branch for the never-alone"
+    " handover; the moment the work stops being the implementer's alone.",
+    "review": "The review dispatch judging the work, arrived at when the review"
+    " dispatch's record is laid down.",
+    "land": "The push to `origin/main` that lands the work; reached where"
+    " `just land`'s own push succeeded, including the run whose merge step is"
+    " still outstanding.",
+}
+
+# The three states of a stage arrival's first-pass status (#490's central
+# criterion). `undetermined` is not a soft true: rolled throughput yield
+# multiplies the per-stage rates, so a defaulted true does not flatter one stage
+# — it inflates the product, and five stages at ninety per cent is fifty-nine,
+# not sixty-six. Undetermined arrivals are counted beside the yield and never
+# inside its denominator.
+FIRST_PASS: Final[dict[str, str]] = {
+    "first_time": "The item arrived on its first pass: every stage up to and"
+    " including this one had been reached exactly once before this arrival.",
+    "after_rework": "The item arrived again — some stage up to and including this"
+    " one had already been reached, so this pass follows rework.",
+    "undetermined": "The arrival's history could not be read — an unreadable"
+    " journal, or a line that predates the stage field — so the status is stated"
+    " as this rather than guessed, and never defaulted to true.",
+}
+
+# Which dispatch seats are arrivals at a pipeline stage. Only two are: the
+# implementer's dispatch is the implementation stage and the review seat's is the
+# review stage, while a planner, recon, retro or orchestrator dispatch is not a
+# pass through the work-item pipeline at all. Values are STAGES' own keys, and
+# the brief seam uses the same map — a brief composed for a seat this map leaves
+# out is not a brief-stage arrival, because a review dispatch's briefing is
+# review logistics rather than the item being re-briefed.
+STAGE_OF_SEAT: Final[Mapping[str, str]] = {
+    "implementer": "implementation",
+    "review": "review",
+}
+
+STAGE_EVENT: Final = "cti.stage.transition"
+
+# The stage family's journal (#490): one file per issue, beside the review
+# loop's own state under the review root — the per-issue home that already
+# exists, so the family adds no directory of its own. Every seam that records a
+# stage arrival knows the issue, and first-pass status is decided against this
+# journal's own history: a brief or dispatch that predates the first journal
+# line is invisible to it, and an arrival whose history cannot be read from the
+# journal says `undetermined` rather than borrowing a clean past it cannot see.
+STAGE_JOURNAL: Final = "stages.jsonl"
+
+# What `record_stage_arrival` returns where the caller's own dispatch already
+# reached this stage: not a first-pass value and never journalled — a gate
+# re-run in the same dispatched session is the same arrival, not a new one.
+STAGE_ALREADY_REACHED: Final = "already_reached"
+
+
+def stage_journal(issue: int, review_root: Path) -> Path:
+    """Return the per-issue stage journal's path under the review root."""
+    return review_root / str(issue) / STAGE_JOURNAL
+
+
+def _stage_line(line: str) -> tuple[str, str] | None:
+    """Parse one stage journal line into its stage and dispatch id, or say unreadable.
+
+    `None` is every way a line can fail to be a readable stage arrival: not
+    JSON, not an object, not this family's event, no attributes, or a stage
+    name outside the closed set — which includes the line that predates the
+    field and carries none (#490's historical-shape case, read as a hole in the
+    history rather than as an arrival).
+    """
+    try:
+        document = json.loads(line)
+    except ValueError:
+        return None
+    if not isinstance(document, dict) or document.get("event") != STAGE_EVENT:
+        # Not a stage line — a foreign or corrupt line in the family's own journal.
+        return None
+    attributes = document.get("attributes")
+    if not isinstance(attributes, dict):
+        return None
+    named = attributes.get("cti.stage.name")
+    if named not in STAGES:
+        return None
+    recorded = attributes.get("cti.dispatch_id")
+    return named, recorded if isinstance(recorded, str) else ""
+
+
+def _prior_arrivals(
+    journal: Path, stage: str, dispatch_id: str
+) -> tuple[dict[str, int], bool, bool]:
+    """Read the journal's arrival history, or say it cannot be read.
+
+    Returns the count of prior arrivals per stage, whether that count is
+    complete enough to decide a first-pass status, and whether this dispatch
+    already reached this stage. A journal that is absent is a readable zero —
+    the issue's first arrival is first-time against it. A journal that exists
+    and will not parse, or carries a stage line without a placeable stage name
+    (a line that predates the field), is not: the history has a hole in it, and
+    a hole is `undetermined` rather than a guess at what fell in.
+    """
+    counts = dict.fromkeys(STAGES, 0)
+    if not journal.is_file():
+        return counts, True, False
+    try:
+        lines = journal.read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return counts, False, False
+    for line in lines:
+        parsed = _stage_line(line)
+        if parsed is None:
+            return counts, False, False
+        named, recorded = parsed
+        counts[named] += 1
+        if dispatch_id and named == stage and recorded == dispatch_id:
+            return counts, True, True
+    return counts, True, False
+
+
+def _arrival_status(stage: str, counts: Mapping[str, int]) -> str:
+    """Decide first-pass status from the journal's own counts.
+
+    An arrival is first-time when the stages up to and including this one have
+    been reached exactly as many times as there are stages before it — each
+    earlier stage exactly once, and this one not at all. Any second arrival at
+    any stage up to here breaks that equality, which is the point: rework
+    upstream makes a downstream first arrival not-first-pass, exactly as rolled
+    throughput yield counts it.
+    """
+    order = list(STAGES)
+    position = order.index(stage)
+    reached = sum(counts[named] for named in order[: position + 1])
+    return "first_time" if reached == position else "after_rework"
+
+
+def stage_event(
+    stage: str,
+    first_pass: str,
+    at: float,
+    *,
+    issue: int,
+    dispatch_id: str = "",
+) -> otel_event.Event:
+    """Build one `cti.stage.transition` event; the only place its attributes are spelled.
+
+    Raises on a stage or first-pass value outside the closed vocabularies, as
+    `wait_event` does: a misspelling is a programming error this module exists
+    to make impossible, not a transport failure to swallow — `emit_stage` stays
+    fail-open over the emission, never over the spelling.
+    """
+    if stage not in STAGES:
+        message = f"stage not in the closed set: {stage!r}"
+        raise ValueError(message)
+    if first_pass not in FIRST_PASS:
+        message = f"first_pass not in the closed vocabulary: {first_pass!r}"
+        raise ValueError(message)
+    attributes: dict[str, object] = {
+        "cti.stage.name": stage,
+        "cti.stage.first_pass": first_pass,
+        "cti.issue": issue,
+    }
+    if dispatch_id:
+        attributes["cti.dispatch_id"] = dispatch_id
+    return otel_event.Event(
+        name=STAGE_EVENT,
+        at=at,
+        attributes=attributes,
+        resource={"service.name": "arma-cti-stage"},
+    )
+
+
+def emit_stage(
+    event: otel_event.Event,
+    journal: Path,
+    endpoint: str = "",
+) -> bool:
+    """Export one stage-transition event and journal it with its export's outcome.
+
+    Fail-open as every family is: the stage was reached whatever a collector or
+    a journal did, so a failure to record degrades to no record and never
+    reaches the dispatch, the gate or the landing the record is about (#490).
+    """
+    return otel_event.emit(event, journal=journal, endpoint=endpoint)
+
+
+def record_stage_arrival(
+    stage: str,
+    issue: int,
+    review_root: Path,
+    at: float,
+    *,
+    dispatch_id: str = "",
+) -> str:
+    """Record one stage arrival with its first-pass status, fail-open (#490).
+
+    The one entry the seams call. Reads the issue's stage journal, decides the
+    status against it, and emits — never raising, because an arrival the record
+    could not take must not fail the brief, dispatch, gate, exchange or landing
+    that was arriving. A dispatch that already reached this stage records
+    nothing and answers `STAGE_ALREADY_REACHED`, so a re-run inside one
+    dispatched session is the same arrival, not rework of it; arrivals with no
+    dispatch to name (a brief, an exchange by hand) cannot be deduplicated and
+    count every time, which is the journal's honest reading of a re-brief.
+    """
+    if stage not in STAGES:
+        message = f"stage not in the closed set: {stage!r}"
+        raise ValueError(message)
+    journal = stage_journal(issue, review_root)
+    counts, determinable, repeat = _prior_arrivals(journal, stage, dispatch_id)
+    if repeat:
+        return STAGE_ALREADY_REACHED
+    status = _arrival_status(stage, counts) if determinable else UNDETERMINED
+    emit_stage(
+        stage_event(stage, status, at, issue=issue, dispatch_id=dispatch_id),
+        journal=journal,
+    )
+    return status
+
 
 # Which refusal kind announces which cause, at the seams that emit waits. Kinds
 # not listed are not waits — a bad argument or an unknown seat refuses a request

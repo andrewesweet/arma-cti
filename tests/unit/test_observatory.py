@@ -106,6 +106,7 @@ from conftest import REPO, load_tool
 
 observatory = load_tool("observatory")
 ledger = observatory.ledger
+attribute_registry = load_tool("attribute_registry")
 dispatch = load_tool("dispatch")
 
 PLANNED = "2026-08-05T12:00:00+00:00"
@@ -1506,6 +1507,112 @@ def test_the_rework_summary_line_states_its_spread_and_its_estimate(world: World
     assert (
         "rework ranked_seats=implementer loops=3 round_zero=1 ranked_profiles=2 "
         "key_varies=yes measures=description sample_limit=estimate_not_measurement" in lines
+    )
+
+
+# ------------------------------------------------------------- the stage view (#490)
+
+
+def arrival_line(stage: str, status: str, *, issue: int) -> str:
+    """One stage journal line exactly as the recorder's emission journalled it."""
+    return (
+        json.dumps(
+            {
+                "event": "cti.stage.transition",
+                "at": 1_800_000_000.0,
+                "attributes": {
+                    "cti.stage.name": stage,
+                    "cti.stage.first_pass": status,
+                    "cti.issue": issue,
+                },
+                "resource": {"service.name": "arma-cti-stage"},
+                "exported": False,
+                "export_detail": "unreachable:ConnectionRefusedError",
+            },
+            sort_keys=True,
+        )
+        + "\n"
+    )
+
+
+def test_first_pass_yield_per_stage_is_a_grouping_over_the_record(world: World) -> None:
+    """No inference: the arrivals' own statuses are the whole of the derivation."""
+    one = world.review_root / "501" / attribute_registry.STAGE_JOURNAL
+    two = world.review_root / "502" / attribute_registry.STAGE_JOURNAL
+    one.parent.mkdir(parents=True)
+    two.parent.mkdir(parents=True)
+    # Two items through brief: one first-time, one after rework — yield two thirds.
+    # Two through implementation: one first-time, one undetermined — the undetermined
+    # sits beside the yield, never inside its denominator.
+    one.write_text(
+        arrival_line("brief", "first_time", issue=501)
+        + arrival_line("implementation", "first_time", issue=501),
+        encoding="utf-8",
+    )
+    two.write_text(
+        arrival_line("brief", "first_time", issue=502)
+        + arrival_line("brief", "after_rework", issue=502)
+        + arrival_line("implementation", "first_time", issue=502)
+        + arrival_line("implementation", "undetermined", issue=502),
+        encoding="utf-8",
+    )
+    store = rebuild_world(world)
+    by_stage = {row["stage"]: row for row in store["stage_first_pass"]}
+    assert set(by_stage) == set(attribute_registry.STAGES), "every stage states itself"
+    assert (by_stage["brief"]["arrivals"], by_stage["brief"]["first_time"]) == (3, 2)
+    assert by_stage["brief"]["first_pass_yield"] == 2 / 3
+    assert by_stage["implementation"]["undetermined"] == 1
+    assert by_stage["implementation"]["first_pass_yield"] == 1.0, (
+        "the undetermined arrival is not in the denominator"
+    )
+    assert by_stage["land"]["arrivals"] == 0
+    assert by_stage["land"]["first_pass_yield"] is None
+    assert by_stage["land"]["first_pass_yield_reason"] == observatory.NO_DETERMINED_ARRIVALS_REASON
+    assert store["coverage"]["stage_arrivals_undetermined"] == 1
+    # The stage summary line carries counts and the boundary's own name, never a yield.
+    assert (
+        "stages journals=2 arrivals=6 undetermined=1 history=journalled_only"
+        in observatory.summary_lines(store, world.store_dir)
+    )
+
+
+def test_a_damaged_journal_line_is_malformed_never_bucketed_undetermined(world: World) -> None:
+    """Damage to the record and an undeterminable status are different facts."""
+    damaged = world.review_root / "503" / attribute_registry.STAGE_JOURNAL
+    damaged.parent.mkdir(parents=True)
+    damaged.write_text(
+        arrival_line("brief", "first_time", issue=503)
+        + arrival_line("brief", "probably", issue=503)
+        + "{not json\n",
+        encoding="utf-8",
+    )
+    store = rebuild_world(world)
+    by_stage = {row["stage"]: row for row in store["stage_first_pass"]}
+    assert by_stage["brief"]["arrivals"] == 1, "the damaged lines counted as nothing"
+    assert {"file": "503/stages.jsonl", "lines": 2} in store["malformed"]
+
+
+def test_the_cookbook_s_stage_query_runs_against_the_shipped_store(world: World) -> None:
+    journal = world.review_root / str(ISSUE) / attribute_registry.STAGE_JOURNAL
+    journal.parent.mkdir(parents=True, exist_ok=True)
+    journal.write_text(
+        arrival_line("brief", "first_time", issue=ISSUE)
+        + arrival_line("brief", "after_rework", issue=ISSUE),
+        encoding="utf-8",
+    )
+    rebuild_world(world)
+    block = next(found for found in cookbook_blocks() if "stage_first_pass" in found)
+    rows = observatory.query(world.store_dir, block.strip().rstrip(";"))
+    by_stage = {row[0]: row for row in rows}
+    assert by_stage["brief"] == (
+        "brief",
+        2,
+        1,
+        1,
+        0,
+        0.5,
+        None,
+        observatory.STAGE_BOUNDARY,
     )
 
 

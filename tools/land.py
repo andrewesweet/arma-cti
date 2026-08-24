@@ -224,6 +224,7 @@ from typing import TYPE_CHECKING, Final, NamedTuple
 # enables, which is why the import below sits apart from the block above.
 sys.path.insert(0, str(Path(__file__).parent))
 
+import attribute_registry
 import corpus_gate
 import land_review
 import review_exchange
@@ -1240,6 +1241,19 @@ def land(  # noqa: PLR0913 — the protocol's inputs, one parameter apiece
     pushed = _push(here, ahead, lines)
     if isinstance(pushed, Report):
         return pushed
+    # The push is the pipeline's land stage reached (#490), recorded before the merge so
+    # the exit-2 run whose merge is still outstanding counts as the landing it is. The
+    # re-run that completes such a landing takes `_push`'s nothing-to-push branch and the
+    # recorder's own dispatch deduplication keeps it one arrival. A landing that names no
+    # issue records nothing — there is no work item to attach the arrival to.
+    if review_inputs.issue:
+        attribute_registry.record_stage_arrival(
+            "land",
+            review_inputs.issue,
+            review_loop.review_root(),
+            datetime.now(tz=UTC).timestamp(),
+            dispatch_id=os.environ.get("CTI_DISPATCH_ID", ""),
+        )
     return _merge(
         root, here, pushed, lines, review_inputs.issue, close or close_issue, audit or record_audit
     )

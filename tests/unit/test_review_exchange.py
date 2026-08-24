@@ -26,6 +26,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 review_exchange = load_tool("review_exchange")
+attribute_registry = load_tool("attribute_registry")
 worktree = load_tool("worktree")
 
 SHA = "a" * 40
@@ -866,6 +867,29 @@ def test_exchange_pushes_and_the_remote_holds_the_sha(
     assert rows[-1]["event"] == "cti.wait.blocked"
     assert rows[-1]["attributes"]["cti.wait.block_reason"] == "waiting_reviewer"
     assert rows[-1]["attributes"]["cti.issue"] == 332
+
+
+def test_a_successful_exchange_records_the_exchange_stage_arrival(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The handover's success is the exchange stage reached, first-pass status and all (#490)."""
+    root = tmp_path / "review"
+    monkeypatch.setenv("CTI_REVIEW_DIR", str(root))
+    repo = init_repo(tmp_path)
+    for stage in ("brief", "implementation", "own_gate"):
+        attribute_registry.record_stage_arrival(stage, 332, root, 1_800_000_000.0)
+    report = review_exchange.exchange(repo, 332)
+    assert report.code == 0
+    rows = [
+        json.loads(line)
+        for line in (root / "332" / attribute_registry.STAGE_JOURNAL)
+        .read_text(encoding="utf-8")
+        .splitlines()
+    ]
+    row = rows[-1]
+    assert row["event"] == "cti.stage.transition"
+    assert row["attributes"]["cti.stage.name"] == "exchange"
+    assert row["attributes"]["cti.stage.first_pass"] == "first_time"  # noqa: S105 — the attribute's own name carries "pass"; a stage status, never a credential
 
 
 def test_exchange_refuses_a_dirty_tree_and_pushes_nothing(tmp_path: Path) -> None:

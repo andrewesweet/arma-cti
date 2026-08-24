@@ -157,6 +157,7 @@ import json
 import re
 import subprocess
 import sys
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, NamedTuple
 
@@ -165,11 +166,13 @@ from typing import TYPE_CHECKING, Final, NamedTuple
 sys.path.insert(0, str(Path(__file__).parent))
 
 # The path insert above is what makes these importable.
+import attribute_registry
 import dispatch
 import escalation
 import handoff_fetch
 import ledger
 import readiness
+import review_loop
 import routing_policy
 
 # The gate derivation lives in `gate`, the owner neither this module nor the dispatcher imports
@@ -1338,6 +1341,24 @@ def parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
     return args
 
 
+def _note_brief_arrival(issue: int, seat_name: str) -> None:
+    """Record the pipeline's first stage as reached, where the seat makes it one (#490).
+
+    Only the seat whose dispatch is an implementation — a review dispatch's
+    briefing is that stage's own logistics, not the item being re-briefed, so a
+    first review round must not read as brief rework. Fail-open in the recorder;
+    a brief composes whatever the record could not take.
+    """
+    if attribute_registry.STAGE_OF_SEAT.get(seat_name) != "implementation":
+        return
+    attribute_registry.record_stage_arrival(
+        "brief",
+        issue,
+        review_loop.review_root(),
+        datetime.now(tz=UTC).timestamp(),
+    )
+
+
 def main(  # noqa: PLR0913 — one keyword seam per external read, each injected independently in tests
     argv: Sequence[str] | None = None,
     *,
@@ -1402,6 +1423,7 @@ def main(  # noqa: PLR0913 — one keyword seam per external read, each injected
             f"[brief] #{args.issue} is CLOSED. Composed anyway; check the assignment.",
             file=sys.stderr,
         )
+    _note_brief_arrival(args.issue, seat.name)
     if gate.kind == GATE_UNDETERMINED:
         print(  # noqa: T201 — a CLI's refusal channel
             f"[brief] gate=undetermined for #{args.issue}: {gate.because[0]}."

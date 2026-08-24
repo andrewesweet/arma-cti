@@ -250,6 +250,12 @@ from typing import Final, NamedTuple
 # dispatch.py use; it is what makes mutation_smoke importable below.
 sys.path.insert(0, str(Path(__file__).parent))
 
+# The path insert above is what makes these importable. `review_loop` for the review
+# root's one home — the stage journal lives under it — and neither it nor the
+# registry imports this module, so the edge stays one-way.
+import attribute_registry
+import review_loop
+
 DEFAULT_GATE_CLOCK_DIR: Final = Path.home() / ".arma-cti" / "gate-clock"
 RECORDS_NAME: Final = "records.jsonl"
 ANCHOR_PATH: Final = Path(__file__).with_name("gate-clock-anchor.json")
@@ -1031,9 +1037,28 @@ def run_recipe(recipe: str, legs: list[tuple[str, list[str]]], gate_clock_dir: P
     directory prints to stderr and never changes the exit status, because a
     gate that cannot record is still a gate. The wall is `/proc/uptime` at both
     ends, per leg and for the recipe, exactly as `record` takes it.
+
+    A `fast` run inside a dispatched session is also the pipeline's own-gate
+    stage reached (#490), recorded before the legs run so a crash mid-gate still
+    shows the gate was reached. The environment names the item — the dispatcher
+    exports `CTI_DISPATCH_ISSUE` and `CTI_DISPATCH_ID` to the child — so a run
+    with no dispatch behind it (a human's, a test's, the landing's re-gate in
+    the same session) records no arrival, and the re-gate records none because
+    the recorder deduplicates one dispatch's arrival at a stage. Fail-open in
+    the recorder; a gate that cannot take its own record is still a gate.
     """
     import subprocess  # noqa: PLC0415 — kept beside its only caller, like head_sha's
 
+    if recipe == "fast":
+        issue = os.environ.get("CTI_DISPATCH_ISSUE", "")
+        if issue.isdigit():
+            attribute_registry.record_stage_arrival(
+                "own_gate",
+                int(issue),
+                review_loop.review_root(),
+                datetime.now(UTC).timestamp(),
+                dispatch_id=os.environ.get("CTI_DISPATCH_ID", ""),
+            )
     start_up = proc_uptime()
     start_load = read_loadavg()
     start_foreign = foreign_gate_processes()

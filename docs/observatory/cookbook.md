@@ -137,6 +137,33 @@ The same issue's rounds appear on every profile-and-seat row that touched it, so
 summing `rounds` across rows double-counts; dispatches per issue is the measure with
 the real spread, and it stays beside the key.
 
+## Which stages are reached first time, and what the pipeline's yield is
+
+The stage view (#490). Rolled throughput yield multiplies each stage's first-pass
+rate, so five stages at ninety per cent each is fifty-nine — every stage can look
+healthy while four items in ten need rework somewhere. The per-stage rates are a
+grouping over each arrival's own recorded status; nothing here is reconstructed
+from timestamps or review rounds.
+
+```sql
+SELECT stage, arrivals, first_time, after_rework, undetermined,
+       first_pass_yield, first_pass_yield_reason, boundary
+FROM stage_first_pass
+ORDER BY stage
+```
+
+Reading it: `first_pass_yield` is `first_time` over `first_time + after_rework`,
+and `undetermined` sits **beside** the yield, never inside its denominator — an
+arrival whose history could not be read is stated as `undetermined`, never
+defaulted to true, because one defaulted true inflates every stage after it and
+the product with them. A stage with no determinable arrivals carries a `null`
+yield with its reason rather than a perfect-looking one. **Rolled throughput
+yield is the product of the `first_pass_yield` column across stages** — multiply
+the six rates, and read the boundary column first: the stage journals begin at
+#490, so arrivals before it are absent from this figure rather than counted as
+rework, and the rebuild's `stages` line carries the journal and arrival counts
+the product rests on.
+
 ## What the sessions no dispatch covers spent, per period — and what that figure cannot see
 
 The session view (#488). Its source is the status-line spool, and the spool is a
