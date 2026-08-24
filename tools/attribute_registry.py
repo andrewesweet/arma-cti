@@ -1267,9 +1267,10 @@ def record_landing(
 QUEUES: Final[dict[str, str]] = {
     "ready_work": "Issues labelled ready-for-agent and not in flight; the label"
     " is the tracker's own record of readiness.",
-    "dispatch_slot": "Eligible candidates beyond the room the ruled WIP limit"
-    " leaves; the limit and the in-flight set are `just queue state`'s own"
-    " derivation.",
+    "dispatch_slot": "Eligible candidates the ruled WIP limit and its package"
+    " reservations leave no slot for, plus eligible work beyond the room the"
+    " limit leaves; the limit, the reservations and the in-flight set are"
+    " `just queue state`'s own derivation.",
     "reviewer": "Review branches exchanged and awaiting their reviewer's"
     " verdict; the exchange's own wait journal line is the entry record.",
     "human_ruling": "Findings a review loop raised and nobody has adjudicated —"

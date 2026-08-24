@@ -185,13 +185,18 @@ def _dispatch_slot_sample(
     in_flight: queue_policy.InFlight,
     candidate_refusal: queue_policy.Refusal | None,
 ) -> Sample:
-    """Return work beyond the room the WIP limit leaves, including WIP-refused candidates.
+    """Return work no slot is open to, measured by the rungs `select` refuses through.
 
     Ordinary eligibility is the same pre-WIP ladder `select` walks — not in flight,
     not held by the freeze, and not blocked on another issue — read through
-    `queue_policy`'s own rung rather than a second copy. A WIP refusal is the
-    membership being measured, so room subtraction handles it instead of filtering
-    it out first.
+    `queue_policy`'s own rung rather than a second copy. The slot term is the
+    WIP rung itself, reservations included: a package holding slots open against
+    a candidate is a reason there is no slot, so the candidates `wip_refusal`
+    refuses belong in the depth exactly as a full list's do — the room
+    subtraction this replaces approximated the rung rather than agreeing with
+    it (#554). Eligible work beyond the room the limit leaves waits too — the
+    batch cap `select` itself applies, which the per-candidate refusal, read
+    against the current in-flight set, cannot state.
     """
     if candidate_refusal is not None:
         return Sample(
@@ -204,8 +209,11 @@ def _dispatch_slot_sample(
         for c in candidates
         if queue_policy._drops(policy, c, in_flight) is None  # noqa: SLF001 — the rung is the definition; restating it here is the drift this module exists to not have
     ]
+    eligible = [
+        c for c in dispatchable if queue_policy.wip_refusal(policy, c.issue, in_flight) is None
+    ]
     room = max(0, policy.wip_limit.value - len(in_flight.issues))
-    held = max(0, len(dispatchable) - room)
+    held = (len(dispatchable) - len(eligible)) + max(0, len(eligible) - room)
     oldest = "unrecorded" if held else "none"
     return Sample("dispatch_slot", "counted", held, oldest, None)
 
@@ -319,10 +327,12 @@ def _human_ruling_read(review_root: Path, at: float) -> ReviewQueueRead:
     The depth is the open above-low set (the loop's own unadjudicated
     vocabulary, low findings never having blocked); the age is the round event
     that raised the oldest such finding, and `unrecorded` where the journal
-    predates the finding's round. One stat per historical issue directory is
-    the whole cost, a loop read only where its stat says it is still open.
-    A `loop.json` that will not read is named and the walk carries on, so one
-    damaged loop suppresses no other loop's prompt.
+    predates the finding's round. A rounds journal that will not read renders
+    the sample unreadable rather than degrading every age to `unrecorded` — a
+    failed source is not an absent record (#554). One stat per historical
+    issue directory is the whole cost, a loop read only where its stat says it
+    is still open. A `loop.json` that will not read is named and the walk
+    carries on, so one damaged loop suppresses no other loop's prompt.
     """
     try:
         entries = sorted(review_root.iterdir())
@@ -330,7 +340,7 @@ def _human_ruling_read(review_root: Path, at: float) -> ReviewQueueRead:
         return ReviewQueueRead(Sample("human_ruling", "unreadable", None, "unrecorded", None), None)
     except OSError:
         return ReviewQueueRead(Sample("human_ruling", "unreadable", None, "unrecorded", None), None)
-    rounds = _round_times(review_root) or {}
+    rounds = _round_times(review_root)
     depth = 0
     oldest_at: float | None = None
     prompts: list[review_loop.TerminusPrompt] = []
@@ -353,8 +363,15 @@ def _human_ruling_read(review_root: Path, at: float) -> ReviewQueueRead:
             issue, loop, pending=(entry / review_loop.PENDING_FILE).exists()
         )
         prompts.append(prompt)
-        depth, oldest_at = _update_human_ruling_age(issue, loop, rounds, depth, oldest_at)
-    if unreadable:
+        if rounds is not None:
+            depth, oldest_at = _update_human_ruling_age(issue, loop, rounds, depth, oldest_at)
+    if unreadable or rounds is None:
+        # `rounds is None` is the journal unreadable, and `or {}` here is what
+        # rendered that failure as `unrecorded` ages — the absence-and-failure
+        # collapse this module's own vocabulary exists to prevent. The depth
+        # over the loops that did read is still not a number beside a failed
+        # age source, so the sample states unreadable while the prompts remain
+        # the loops that read.
         return ReviewQueueRead(
             Sample("human_ruling", "unreadable", None, "unrecorded", None),
             tuple(prompts),

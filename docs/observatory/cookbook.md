@@ -502,7 +502,12 @@ nothing) and `state = 'unreadable'` says a source existed and that sample could
 not read it. Where a candidate read refused, `count_reason` carries that
 refusal's kind, such as `unrecorded: github_unreadable`. Neither non-counting
 state is a zero, and quoting either as one is the exact defect this vocabulary
-exists to prevent. `oldest_age_s` is null beside
+exists to prevent. The `human_ruling` row is narrower than it reads: it counts
+the open above-Low findings of loops still running, so unadjudicated Low
+findings and anything on a loop that reached its terminus sit outside it — a
+smaller number than "every open finding", and never better news. Read it as
+what blocks a running loop, not as the review backlog's size. `oldest_age_s`
+is null beside
 `oldest = 'unrecorded'` — for the ready queues the label instant lives in the
 tracker's timeline, and for the landing queue the demand side is recorded
 nowhere — so an age is only ever quoted where `oldest = 'measured'`. Before

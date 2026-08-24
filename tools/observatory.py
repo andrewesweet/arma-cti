@@ -2785,7 +2785,10 @@ def summary_lines(store: Mapping[str, Any], store_dir: Path) -> tuple[str, ...]:
     # and a summary that pre-computed it would be a second rendering path for the
     # cookbook's query. What a reader must know before trusting a quiet system is
     # here — how many samples, over how many queues, how many carried no count, and
-    # when the newest was taken (#492).
+    # when the newest was taken (#492). One definition rides beside the counts:
+    # `human_ruling` is the open above-Low set of loops still running, and a reader
+    # without the registry at hand once took that count for every open finding
+    # (#554) — under ADR-0077 the line is a claim, and the narrowing is part of it.
     lines.append(
         " ".join(
             (
@@ -2799,6 +2802,7 @@ def summary_lines(store: Mapping[str, Any], store_dir: Path) -> tuple[str, ...]:
                     if coverage["queue_depth_last_at"] is not None
                     else "none"
                 ),
+                "human_ruling_scope=open_above_low_of_running_loops",
             )
         )
     )

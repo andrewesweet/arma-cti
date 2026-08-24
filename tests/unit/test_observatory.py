@@ -2043,9 +2043,13 @@ def test_queue_depth_rows_load_with_their_absences_as_nulls(world: World) -> Non
     assert store["coverage"]["queue_depth_last_at"] == 2_000.0
     # The staged truncated line is counted as malformed, and its siblings load.
     assert {"file": "queue/queue-depths.jsonl", "lines": 1} in store["malformed"]
-    assert "queue_depth samples=5 queues=3 uncounted=1 last=2000.0" in observatory.summary_lines(
-        store, world.store_dir
-    )
+    # The line's last term states the one queue definition a reader has misread
+    # without it: `human_ruling` counts the open above-Low set of running loops,
+    # never every open finding (#554).
+    assert (
+        "queue_depth samples=5 queues=3 uncounted=1 last=2000.0 "
+        "human_ruling_scope=open_above_low_of_running_loops"
+    ) in observatory.summary_lines(store, world.store_dir)
 
 
 def test_an_absent_sampler_journal_is_zero_rows_never_a_refusal(world: World) -> None:

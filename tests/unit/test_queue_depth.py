@@ -18,7 +18,7 @@ from typing import Any
 
 import pytest
 from conftest import load_tool
-from test_queue import in_flight_of, parsed, store_at
+from test_queue import in_flight_of, package_document, parsed, store_at
 
 attribute_registry = load_tool("attribute_registry")
 breaker = load_tool("breaker")
@@ -226,6 +226,80 @@ def test_dispatch_slot_counts_wip_refused_candidates_at_full_capacity(tmp_path: 
     assert (slot.state, slot.count, slot.oldest) == ("counted", 2, "unrecorded")
 
 
+def test_a_package_reservation_holds_eligible_work_the_room_arithmetic_missed(
+    tmp_path: Path,
+) -> None:
+    # One reservation unexhausted against issue 301, which no package carries:
+    # limit 3, in flight 221 (the package's) and 299, so the rung's available is
+    # 3 - 2 - 1 = 0 while the bare room arithmetic said 3 - 2 = 1 slot open.
+    review_root, dispatch_dir, approvals = empty_sources(tmp_path)
+    policy = parsed(state="open", limit=3, packages=[package_document(wip_reserved=2)])
+    in_flight = in_flight_of(221, 299)
+    candidates = candidates_of(301)
+    samples = sample_with(
+        candidates=candidates,
+        policy=policy,
+        in_flight=in_flight,
+        review_root=review_root,
+        dispatch_dir=dispatch_dir,
+        approvals=approvals,
+    )
+    slot = samples_by_queue(samples)["dispatch_slot"]
+    assert (slot.state, slot.count, slot.oldest) == ("counted", 1, "unrecorded")
+    # Parity with `select` itself: the same inputs, and the rung that refuses
+    # there is the rung that counted here.
+    selection = queue_policy.select(policy, candidates, in_flight, 1)
+    assert "considered.301=reserved-for-package" in selection.considered
+
+
+def test_a_frozen_candidate_waits_on_no_slot(tmp_path: Path) -> None:
+    # Frozen policy, one candidate carved out and one not: the full list holds
+    # the carved-out candidate, and the frozen one must not join it — the same
+    # drop `select` states, staged through the sampler.
+    review_root, dispatch_dir, approvals = empty_sources(tmp_path)
+    policy = parsed(limit=2, packages=[package_document(issues=[302])])
+    in_flight = in_flight_of(299, 300)
+    candidates = candidates_of(301, 302)
+    samples = sample_with(
+        candidates=candidates,
+        policy=policy,
+        in_flight=in_flight,
+        review_root=review_root,
+        dispatch_dir=dispatch_dir,
+        approvals=approvals,
+    )
+    slot = samples_by_queue(samples)["dispatch_slot"]
+    assert (slot.state, slot.count, slot.oldest) == ("counted", 1, "unrecorded")
+    selection = queue_policy.select(policy, candidates, in_flight, 1)
+    assert "considered.301=frozen-and-not-carved-out" in selection.considered
+    assert "considered.302=eligible" in selection.considered
+
+
+def test_a_blocked_candidate_waits_on_no_slot(tmp_path: Path) -> None:
+    # The blocked boundary, the same parity: a full list holds the clean
+    # candidate only, and the blocked one never counts even with room at zero.
+    review_root, dispatch_dir, approvals = empty_sources(tmp_path)
+    policy = parsed(state="open", limit=2)
+    in_flight = in_flight_of(299, 300)
+    candidates = (
+        queue_policy.Candidate(301, "issue 301", "Blocked-by: #9"),
+        queue_policy.Candidate(302, "issue 302"),
+    )
+    samples = sample_with(
+        candidates=candidates,
+        policy=policy,
+        in_flight=in_flight,
+        review_root=review_root,
+        dispatch_dir=dispatch_dir,
+        approvals=approvals,
+    )
+    slot = samples_by_queue(samples)["dispatch_slot"]
+    assert (slot.state, slot.count, slot.oldest) == ("counted", 1, "unrecorded")
+    selection = queue_policy.select(policy, candidates, in_flight, 1)
+    assert "considered.301=blocked-by-9" in selection.considered
+    assert "considered.302=eligible" in selection.considered
+
+
 def test_unreadable_candidates_render_unreadable_never_zero(tmp_path: Path) -> None:
     review_root, dispatch_dir, approvals = empty_sources(tmp_path)
     samples = sample_with(
@@ -406,6 +480,49 @@ def test_a_loop_that_will_not_read_renders_the_queue_unreadable(tmp_path: Path) 
     ruling = samples_by_queue(samples)["human_ruling"]
     assert ruling.state == "unreadable"
     assert ruling.count is None
+
+
+def test_an_unreadable_rounds_journal_renders_a_failed_source_not_an_absent_record(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # The journal is present and carries the raising round — only the read
+    # fails — so the age's source failed rather than went missing, and the
+    # sample must say unreadable where `or {}` once rendered every age
+    # `unrecorded` beside a counted depth.
+    review_root, dispatch_dir, approvals = empty_sources(tmp_path)
+    open_loop(review_root, 301, findings=1)
+    journal = review_root / queue_depth.REVIEW_JOURNAL_NAME
+    journal.write_text(round_line(301, 0, OFF_BAND - 1_800) + "\n", encoding="utf-8")
+    real_read_text = Path.read_text
+
+    def unreadable(
+        target: Path,
+        encoding: str | None = None,
+        errors: str | None = None,
+        newline: str | None = None,
+    ) -> str:
+        if target == journal:
+            raise OSError
+        return real_read_text(target, encoding=encoding, errors=errors, newline=newline)
+
+    monkeypatch.setattr(Path, "read_text", unreadable)
+    lines: list[str] = []
+    samples = sample_with(
+        review_root=review_root,
+        dispatch_dir=dispatch_dir,
+        approvals=approvals,
+        terminus_lines=lines,
+    )
+
+    ruling = samples_by_queue(samples)["human_ruling"]
+    assert (ruling.state, ruling.count, ruling.oldest) == ("unreadable", None, "unrecorded")
+    # The prompts the loops did read still render beside the failed source.
+    assert lines == [
+        (
+            "review_terminus=blocked issue=301 findings=1 open_above_low=1 "
+            'action="adjudicate or escalate before terminus"'
+        )
+    ]
 
 
 def test_one_unreadable_loop_neither_suppresses_the_readable_prompts_nor_hides_its_name(
