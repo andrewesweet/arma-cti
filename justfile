@@ -27,7 +27,8 @@ check:
     set -euo pipefail
     exec uv run python tools/gate_clock.py run --recipe check \
         --leg check-commits --leg check-generated --leg check-adr \
-        --leg check-source-link --leg check-gated-paths --leg check-markers \
+        --leg check-source-link --leg check-gated-paths --leg check-command-table \
+        --leg check-markers \
         --leg check-conflicts --leg check-changelog --leg check-gate-clock \
         --leg check-seats --leg check-just-grants --leg check-arbiter \
         --leg check-attributes --leg check-observatory --leg check-sqf --leg check-secrets \
@@ -94,6 +95,11 @@ check-source-link:
 # ADR-0013 record remains the standing-authorisation route (#500).
 check-gated-paths:
     uv run python tools/gated_paths.py check
+
+# The ADR-0013 command-table route has a mechanical floor: its changed rows
+# must stay in the table and name recipes the candidate justfile resolves (#544).
+check-command-table:
+    uv run python tools/check_command_table.py
 
 # Human-facing writer for one change-bound approval. Dispatched sessions are
 # refused, and the approval store is outside every worktree.

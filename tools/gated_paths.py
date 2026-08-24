@@ -59,6 +59,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 # ADR form owns the field-block boundary.  The authorisation gate asks it whether the
 # marker is there rather than growing a second parser for the same document shape.
 import check_adr_form
+import check_command_table
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterator, Mapping, Sequence
@@ -792,6 +793,22 @@ def issue_of(root: Path, environ: Mapping[str, str]) -> tuple[int | None, str]:
     return named or dispatched, ""
 
 
+def _has_current_approval_record(
+    root: Path,
+    approvals: Path,
+    issue: int | None,
+    path: str,
+) -> bool:
+    """Keep a separately recorded direct approval ahead of the standing route."""
+    if issue is None:
+        return False
+    try:
+        binding = binding_of(root, path)
+    except GitError:
+        return False
+    return approval_path(approvals, issue, binding.content_id).exists()
+
+
 def _refused(kind: str, found: Sequence[str], action: str) -> Report:
     return Report(
         (
@@ -806,7 +823,48 @@ def _refused(kind: str, found: Sequence[str], action: str) -> Report:
     )
 
 
-def check(  # noqa: C901, PLR0911, PLR0912 — one report per fail-closed read and carry shape
+class CommandTableRoute(NamedTuple):
+    """The optional command-table authorisation result."""
+
+    lines: tuple[str, ...]
+    authorized: bool
+    refusal: Report | None
+
+
+class CommandTableInputs(NamedTuple):
+    """Inputs for the optional command-table route."""
+
+    root: Path
+    approvals: Path
+    issue: int | None
+    gated: tuple[str, ...]
+    delegated: tuple[str, ...]
+    covered: tuple[str, ...]
+
+
+def _command_table_route(inputs: CommandTableInputs) -> CommandTableRoute:
+    """Evaluate the narrow ADR-0013 route without changing other gate paths."""
+    if (
+        "AGENTS.md" not in inputs.gated
+        or len(inputs.delegated) != 1
+        or _has_current_approval_record(inputs.root, inputs.approvals, inputs.issue, "AGENTS.md")
+    ):
+        return CommandTableRoute(lines=(), authorized=False, refusal=None)
+    result = check_command_table.check(inputs.root)
+    if not result.applicable:
+        return CommandTableRoute(lines=(), authorized=False, refusal=None)
+    if result.failure is not None:
+        failure = result.failure
+        refusal = _refused(
+            failure.kind,
+            (*inputs.covered, *failure.details),
+            failure.action,
+        )
+        return CommandTableRoute(lines=(), authorized=False, refusal=refusal)
+    return CommandTableRoute(lines=result.lines, authorized=True, refusal=None)
+
+
+def check(  # noqa: C901, PLR0911, PLR0912, PLR0915 — one report per fail-closed read and carry shape
     root: Path,
     approvals: Path,
     *,
@@ -836,13 +894,31 @@ def check(  # noqa: C901, PLR0911, PLR0912 — one report per fail-closed read a
     # and hold every remaining path to its own approval or its own marker.
     delegated = delegated_decisions(root, paths)
     covered = tuple(f"delegated_record={path}" for path in delegated)
+    command_table_route = _command_table_route(
+        CommandTableInputs(root, approvals, issue, gated, delegated, covered)
+    )
+    if command_table_route.refusal is not None:
+        return command_table_route.refusal
+    command_table_lines = command_table_route.lines
+    command_table_authorized = command_table_route.authorized
     gated = tuple(path for path in gated if path not in delegated)
+    if command_table_authorized:
+        gated = tuple(path for path in gated if path != "AGENTS.md")
     if not gated:
+        authorization = "command_table" if command_table_authorized else "delegated_decision"
+        verified = "verified=path_scan,delegated_marker"
+        authorized_count = 1 if command_table_authorized else 0
+        changed_count = len(delegated) + authorized_count
+        if command_table_authorized:
+            verified = (
+                "verified=path_scan,command_table_confinement,recipe_resolution,delegated_marker"
+            )
         return Report(
             (
-                f"gated_paths=ok changed={len(delegated)} authorization=delegated_decision",
+                (f"gated_paths=ok changed={changed_count} authorization={authorization}"),
+                *command_table_lines,
                 *covered,
-                "verified=path_scan,delegated_marker",
+                verified,
                 LIMIT_LINE,
                 SAME_USER_LIMIT,
             ),
@@ -947,12 +1023,16 @@ def check(  # noqa: C901, PLR0911, PLR0912 — one report per fail-closed read a
     verified = "verified=path_scan,record_shape,change_binding"
     if delegated:
         verified += ",delegated_marker"
+    authorized_count = 1 if command_table_authorized else 0
+    changed_count = len(gated) + len(delegated) + authorized_count
     return Report(
         (
-            f"gated_paths=ok changed={len(gated) + len(delegated)} authorization=recorded",
+            (f"gated_paths=ok changed={changed_count} authorization=recorded"),
             *approved,
+            *command_table_lines,
             *covered,
-            verified,
+            verified
+            + (",command_table_confinement,recipe_resolution" if command_table_authorized else ""),
             LIMIT_LINE,
             SAME_USER_LIMIT,
         ),
