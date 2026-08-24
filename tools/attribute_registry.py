@@ -771,8 +771,10 @@ def emit_stage(
 
 # Six is right and five wrong here because the six are six facts of one
 # arrival — stage, issue, journal root, time, dispatcher, idempotency — none
-# derivable from another, and folding any two would invent an object only
-# this lint reads. Same call `pool_merge.merge_claims` already made.
+# derivable from another: idempotency is the arrival's own fact, read at the
+# land seam from its push count (#552 round 3) and carried by none of the
+# other five. Folding any two would invent an object only this lint reads.
+# Same call `pool_merge.merge_claims` already made.
 def record_stage_arrival(  # noqa: PLR0913 — six facts, one parameter apiece
     stage: str,
     issue: int,
@@ -797,7 +799,10 @@ def record_stage_arrival(  # noqa: PLR0913 — six facts, one parameter apiece
     journal already holds any arrival at this stage, with or without a
     dispatch to name: a hand landing re-run after exit 2 carries no dispatch
     id to deduplicate on, and the push it would re-announce is already on
-    `origin/main`. Every other arrival with no dispatch to name (a brief, an
+    `origin/main`. The land seam derives that per arrival from its own push
+    count (#552 round 3), so a genuine second landing on the same issue —
+    new commits pushed — passes the flag `False` and counts as the second
+    arrival it is. Every other arrival with no dispatch to name (a brief, an
     exchange by hand) cannot be deduplicated and counts every time, which is
     the journal's honest reading of a re-brief.
     """

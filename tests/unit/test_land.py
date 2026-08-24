@@ -1011,6 +1011,43 @@ def test_a_rerun_hand_landing_records_the_land_stage_once(
     assert names.count("land") == 1, "the hand re-run journalled no second land arrival"
 
 
+def test_a_second_landing_on_the_same_issue_records_two_land_arrivals(
+    repo: tuple[Path, Path, Path],
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """#552 round 3: the idempotence key is the re-announced push, not the issue.
+
+    The collapse exists for the exit-2 re-run, whose arrival re-announces a
+    push already on `origin/main`. A genuine second landing on the same issue
+    pushed new commits, so it is a fresh arrival — a first-pass yield signal
+    the broad key would have silenced.
+    """
+    _origin, main, here = repo
+    monkeypatch.delenv("CTI_DISPATCH_ID", raising=False)
+    monkeypatch.delenv("CTI_DISPATCH_SEAT", raising=False)
+    _commit(here, "feature.txt", "work\n")
+    review = _reviewed(here, tmp_path)
+    review_root = review.review_root
+    for stage in ("brief", "implementation", "own_gate", "exchange", "review"):
+        attribute_registry.record_stage_arrival(stage, 213, review_root, 1_800_000_000.0)
+    first = land.land(main, here, gate=_Gate(), review=review)
+    assert first.code == 0
+
+    # The follow-up commit is new work on the same issue, with its own review
+    # bound to its own SHA — the second `_reviewed` call rewrites the staged
+    # records for the new HEAD, exactly as a second dispatch would have.
+    _commit(here, "follow-up.txt", "more work\n")
+    second = land.land(main, here, gate=_Gate(), review=_reviewed(here, tmp_path))
+    assert second.code == 0
+
+    journal = review_root / "213" / attribute_registry.STAGE_JOURNAL
+    rows = [json.loads(line) for line in journal.read_text(encoding="utf-8").splitlines()]
+    names = [row["attributes"]["cti.stage.name"] for row in rows]
+    assert names.count("land") == 2, "the genuine second landing recorded a second arrival"
+    assert rows[-1]["attributes"]["cti.stage.first_pass"] == "after_rework"  # noqa: S105 — the attribute's own name carries "pass"; a stage status, never a credential
+
+
 def test_the_gate_runs_on_the_rebased_tree_not_the_tree_as_it_was(
     repo: tuple[Path, Path, Path],
     tmp_path: Path,
