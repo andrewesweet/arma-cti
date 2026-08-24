@@ -158,6 +158,7 @@ def test_adjacent_delegated_rows_are_one_confined_table_change(tmp_path: Path) -
 def test_an_approval_stands_down_the_command_table_leg_with_a_delegated_adr(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
+    monkeypatch.delenv("CTI_DISPATCH_ISSUE", raising=False)
     repo = repository(tmp_path)
     (repo / "AGENTS.md").write_text(
         (repo / "AGENTS.md")

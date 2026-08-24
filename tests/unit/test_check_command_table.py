@@ -47,6 +47,35 @@ def test_check_names_an_escape_outside_the_command_table(tmp_path: Path) -> None
     assert any(detail.startswith("escaped=") for detail in result.failure.details)
 
 
+def test_check_rejects_a_pure_deletion_of_non_row_prose(tmp_path: Path) -> None:
+    repo = repository(tmp_path)
+    agents = (repo / "AGENTS.md").read_text(encoding="utf-8")
+    (repo / "AGENTS.md").write_text(agents.replace("Other prose.\n", ""), encoding="utf-8")
+    delegated_record(repo)
+
+    result = check_command_table.check(repo)
+
+    assert result.failure is not None
+    assert result.failure.kind == check_command_table.COMMAND_TABLE_ESCAPE
+    assert any(detail.startswith("escaped=baseline:") for detail in result.failure.details)
+
+
+def test_check_rejects_a_pure_insertion_of_non_row_prose(tmp_path: Path) -> None:
+    repo = repository(tmp_path)
+    agents = (repo / "AGENTS.md").read_text(encoding="utf-8")
+    (repo / "AGENTS.md").write_text(
+        agents.replace("Other prose.\n", "Other prose.\nInserted prose.\n"),
+        encoding="utf-8",
+    )
+    delegated_record(repo)
+
+    result = check_command_table.check(repo)
+
+    assert result.failure is not None
+    assert result.failure.kind == check_command_table.COMMAND_TABLE_ESCAPE
+    assert any(detail.startswith("escaped=candidate:") for detail in result.failure.details)
+
+
 def test_check_names_a_recipe_that_is_absent_from_the_candidate_justfile(
     tmp_path: Path,
 ) -> None:
