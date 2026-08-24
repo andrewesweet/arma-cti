@@ -177,11 +177,17 @@ record, not the landing's own account of the landing.
 
 The never-alone check itself — every landing whose reviewer profile is also an
 author profile, which is the one arrangement ADR-0071 ruling 4 exists to refuse.
-Rows returned are violations; an empty answer over a populated table is the rule
-holding:
+The block returns **findings**, and the two findings are different facts: a
+`reviewer_is_author` row is the violation; an `unresolvable_reviewer` or
+`unresolvable_author` row is a dispatch-typed relation whose object id names no
+row in `dispatches` — the check could not look there, which is the absence of
+evidence and never evidence of compliance. An empty answer over a populated
+table is the rule holding **and** every relation resolved:
 
 ```sql
-SELECT l.landing, d.profile AS reviewer_profile
+SELECT l.landing,
+       'reviewer_is_author' AS finding,
+       d.profile AS detail
 FROM landings AS l
 JOIN landing_relations AS rr ON rr.landing = l.landing AND rr.qualifier = 'reviewer'
 JOIN dispatches AS d ON rr.object_type = 'dispatch' AND d.dispatch_id = rr.object_id
@@ -190,16 +196,30 @@ LEFT JOIN dispatches AS da ON ra.object_type = 'dispatch' AND da.dispatch_id = r
 WHERE COALESCE(da.profile,
                CASE WHEN ra.object_type = 'authorship_declaration' THEN ra.object_id END)
       = d.profile
+UNION ALL
+SELECT r.landing,
+       'unresolvable_' || r.qualifier AS finding,
+       r.object_id AS detail
+FROM landing_relations AS r
+LEFT JOIN dispatches AS d ON r.object_type = 'dispatch' AND d.dispatch_id = r.object_id
+WHERE r.object_type = 'dispatch' AND d.dispatch_id IS NULL
+ORDER BY landing, finding
 ```
 
 Reading it: an author object resolves to its profile two ways — a `dispatch`
 joins `dispatches` on the id, an `authorship_declaration`'s object id **is** the
 profile — and the reviewer resolves the same way, so the declared author and the
-dispatched one are both inside the check a record can run. A landing whose
-relation set carries no author cannot be checked at all; the rebuild names those
-in `landings_without_authors` and the boundary column repeats it, because a
-silently unchecked landing is the thing this query exists to prevent reading as
-clear.
+dispatched one are both inside the check a record can run. The second arm exists
+because the first cannot say what it did not see: its inner join to `dispatches`
+drops an unresolvable reviewer exactly as an author join would drop an
+unresolvable author, and a query that filters to the rows it can join answers
+"no violations" about landings it could not look at — #491's own failure mode,
+one level up (#491 round 2, finding 1). A landing whose relation set carries no
+author cannot be checked at all; the rebuild names those in
+`landings_without_authors`, names the landings carrying unresolvable dispatch
+relations in `landings_with_unresolved_relations`, and counts both lists' union
+as `uncheckable` — the boundary column repeats it, because a silently unchecked
+landing is the thing this query exists to prevent reading as clear.
 
 The gate-landing half, where the printed line's four values live as data — two of
 the four causes rest on bars read live at landing time, which no later read of the
@@ -229,7 +249,8 @@ touching six objects counts once in `landings` and six times in the join, and
 that ratio is the shape working, not a double count to repair. The rebuild's
 `landings` line carries both denominators — raw `events` beside distinct
 landings, so a recorder duplicate shows as the two disagreeing — plus
-`uncheckable`, the count behind `landings_without_authors`.
+`uncheckable`, the union count behind `landings_without_authors` and
+`landings_with_unresolved_relations` together.
 
 ## What the sessions no dispatch covers spent, per period — and what that figure cannot see
 

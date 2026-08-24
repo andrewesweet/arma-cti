@@ -1260,7 +1260,11 @@ def land(  # noqa: PLR0913 — the protocol's inputs, one parameter apiece
         attribute_registry.record_stage_arrival(
             "land",
             review_inputs.issue,
-            review_loop.review_root(),
+            # The same root the review rung read (round 2, finding 2): the parameter
+            # over the constant, never `review_loop.review_root()`'s environment read —
+            # two ways of deciding one location diverge the first time a caller sets
+            # `CTI_REVIEW_DIR` and the rung's parameter disagrees with it.
+            review_inputs.review_root or land_review.REVIEW_ROOT,
             datetime.now(tz=UTC).timestamp(),
             dispatch_id=os.environ.get("CTI_DISPATCH_ID", ""),
         )
@@ -1279,7 +1283,8 @@ def land(  # noqa: PLR0913 — the protocol's inputs, one parameter apiece
     if review_inputs.issue and reviewed is not None and reviewed.relations:
         attribute_registry.record_landing(
             reviewed.relations,
-            review_loop.review_root(),
+            # The rung's root, not the environment's — see the stage arrival above.
+            review_inputs.review_root or land_review.REVIEW_ROOT,
             datetime.now(tz=UTC).timestamp(),
             gate_cause=reviewed.gate_cause,
         )

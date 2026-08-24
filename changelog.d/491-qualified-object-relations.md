@@ -24,7 +24,13 @@
   rule is checked by a query over the record (the cookbook carries it) rather
   than by reading the `gate_review=` line a landing prints about itself, and one
   landing touching several objects counts once as a landing and once per object
-  as relations, never once per object as landings. The rebuild names any journalled
-  landing whose relation set carries no author in `landings_without_authors`,
-  because that landing cannot be checked and a stated gap is never a silent
-  clearance. The store schema moves to `cti.observatory/7`.
+  as relations, never once per object as landings. The query returns findings,
+  not violations alone: a dispatch-typed relation whose object id names no row in
+  `dispatches` is returned as an `unresolvable_author` or `unresolvable_reviewer`
+  finding rather than dropped by the join, so an id the check could not resolve
+  never reads as compliance. The rebuild names any journalled landing whose
+  relation set carries no author in `landings_without_authors`, and any carrying
+  an unresolvable dispatch relation in `landings_with_unresolved_relations`;
+  the summary's `uncheckable` counts the two lists' union, because that landing
+  cannot be checked and a stated gap is never a silent clearance. The store
+  schema moves to `cti.observatory/7`.

@@ -69,6 +69,7 @@ silence. Both render as an absence with a reason, never as zero.
 | `landings` | Of those, distinct landings — one per (issue, produced commit), the journal's newest event for the pair |
 | `landing_relations` | Relation rows those winning events carried |
 | `landings_without_authors` | The landings whose relation set carries no author, named — the landings the never-alone check cannot run over, a stated gap never a silent clearance |
+| `landings_with_unresolved_relations` | The landings carrying a dispatch-typed relation whose object id names no dispatch row, named — the check could not look there, and `uncheckable` counts this list's union with `landings_without_authors` |
 | `session_renders` | Status-line renders the session view read — timestamped, with a session id |
 | `session_renders_untimestamped` | Renders the view could not place in a period — pre-#488 bare lines — counted, never summed |
 | `session_renders_without_session_id` | Timestamped renders carrying no session id, counted and never attributed — an untimestamped line without one counts as untimestamped, never here |
@@ -392,7 +393,13 @@ from `dispatches` by the reviewer relation's dispatch id, author profiles the
 same way for `dispatch` objects and directly for `authorship_declaration` ones,
 whose object id *is* the profile. The cookbook carries the query. A landing with
 no author relation cannot be checked; it is named in the coverage block's
-`landings_without_authors` and in the `boundary` column, never read as clear.
+`landings_without_authors` and in the `boundary` column, never read as clear. A
+dispatch-typed relation whose object id names no row in `dispatches` cannot be
+joined to a profile either — the check could not look there, which is the
+absence of evidence and never compliance (#491 round 2, finding 1) — so the
+cookbook's query returns it as an `unresolvable_*` finding rather than dropping
+it, and the coverage block names its landing in
+`landings_with_unresolved_relations`.
 
 **Malformed is damage, not absence.** A line that will not parse, is not this
 family's event, carries a relation token whose type is outside the closed set, or

@@ -1699,6 +1699,74 @@ def test_the_cookbook_s_first_query_runs_against_the_shipped_store(world: World)
         assert rows, f"a cookbook query returned nothing: {statement!r}"
 
 
+def test_an_unresolvable_relation_surfaces_rather_than_clears_the_check(
+    world: World,
+) -> None:
+    """A relation the check cannot join is a finding, never a silent clearance (#491 r2 F1).
+
+    The reviewer ran the round-1 block with a reviewer id that resolved nowhere and
+    got `no violations` — the inner join dropped the one landing the question was
+    about, which is #491's own failure mode one level up: a line the project
+    believed. The block now returns the unresolvable relation as its own finding,
+    the rebuild names the landing, and `uncheckable` counts it.
+    """
+    ghost_author = "d-20260805-120000-ghost1"
+    ghost_reviewer = "d-20260805-120000-ghost2"
+    for issue, reviewer_id in ((ISSUE, CODEX_DISPATCH), (OTHER_ISSUE, ghost_reviewer)):
+        journal = attribute_registry.landing_journal(issue, world.review_root)
+        journal.parent.mkdir(parents=True, exist_ok=True)
+        # ISSUE's author is the ghost and its reviewer resolves — the arrangement
+        # where the old block read clean while the author it should have compared
+        # against was unresolvable; the second landing inverts it, an unresolvable
+        # reviewer the old block's inner join dropped whole.
+        relations = (
+            attribute_registry.relation("subject", "issue", str(issue)),
+            attribute_registry.relation("produced", "commit", world.landed_sha),
+            attribute_registry.relation("reviewer", "dispatch", reviewer_id),
+            attribute_registry.relation(
+                "author", "dispatch", ghost_author if issue == ISSUE else ZAI_DISPATCH
+            ),
+        )
+        event = attribute_registry.landing_event(relations, 1_800_000_000.0)
+        journal.write_text(
+            json.dumps(
+                {
+                    "event": event.name,
+                    "at": event.at,
+                    "attributes": dict(event.attributes),
+                    "resource": dict(event.resource),
+                    "exported": True,
+                    "export_detail": "http_200",
+                },
+                sort_keys=True,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+    store = rebuild_world(world)
+    landing = f"{ISSUE}/{world.landed_sha}"
+    other_landing = f"{OTHER_ISSUE}/{world.landed_sha}"
+    coverage = store["coverage"]
+    assert coverage["landings_with_unresolved_relations"] == [landing, other_landing]
+    assert coverage["landings_without_authors"] == [], "both landings name an author"
+    line = next(
+        line
+        for line in observatory.summary_lines(store, world.store_dir)
+        if line.startswith("landings ")
+    )
+    assert "uncheckable=2" in line, line
+    block = next(
+        found for found in cookbook_blocks() if "reviewer_is_author" in found and "UNION" in found
+    )
+    rows = observatory.query(world.store_dir, block.strip().rstrip(";"))
+    findings = {(row[1], row[2]) for row in rows}
+    assert ("unresolvable_author", ghost_author) in findings
+    assert ("unresolvable_reviewer", ghost_reviewer) in findings
+    assert not any(row[1] == "reviewer_is_author" for row in rows), (
+        "no landing here pairs a resolvable reviewer with a resolvable author"
+    )
+
+
 def test_the_store_answers_sql_by_issue_and_lane(world: World) -> None:
     rebuild_world(world)
     rows = observatory.query(

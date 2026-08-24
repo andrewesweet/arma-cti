@@ -20,7 +20,10 @@ Each test's arrangement exists to falsify one claim:
 - **The check reads the record, not the printed line.** The cookbook's
   never-alone query, run against a rebuilt store, finds a landing whose reviewer
   profile an author relation also names — hand-staged, because the rung itself
-  refuses that arrangement; the check exists for the record the rung missed.
+  refuses that arrangement; the check exists for the record the rung missed. A
+  relation whose dispatch id resolves to no dispatch row is returned as its own
+  `unresolvable_*` finding and named in coverage, because a join that dropped it
+  would read the absence of evidence as compliance (#491 round 2, finding 1).
 - **One event over several objects multiplies nothing.** `landings` counts
   landings, `landing_relations` counts objects, and a duplicate event shows as
   the two event counts disagreeing rather than as a second landing.
@@ -495,16 +498,59 @@ def _stage_store(tmp_path: Path) -> dict[str, Path]:
 def test_the_never_alone_rule_is_a_query_not_a_printed_line(tmp_path: Path) -> None:
     """The cookbook's check finds the forged reviewer and clears the honest one."""
     world = _stage_store(tmp_path)
-    _rebuild(world)
-    block = next(found for found in cookbook_blocks() if "reviewer_profile" in found)
+    store = _rebuild(world)
+    block = next(found for found in cookbook_blocks() if "reviewer_is_author" in found)
     rows = observatory.query(world["store_dir"], block.strip().rstrip(";"))
-    assert rows == ((f"{ISSUE}/{SHA}", AUTHOR),), "the author-profile reviewer is caught"
+    assert rows == ((f"{ISSUE}/{SHA}", "reviewer_is_author", AUTHOR),), (
+        "the author-profile reviewer is caught, and nothing is unresolvable here"
+    )
+    # Every relation this world carries resolves, so the landing stays off the
+    # unresolved list — the subject and produced relations are not dispatch-typed
+    # and must not qualify it either.
+    assert store["coverage"]["landings_with_unresolved_relations"] == []
     # The clean landing is absent from the violations, and its own profile is the
     # reviewer's, resolved through the join rather than restated.
     per_landing = next(found for found in cookbook_blocks() if "objects_touched" in found)
     touched = observatory.query(world["store_dir"], per_landing.strip().rstrip(";"))
     assert dict(touched)[f"{ISSUE}/{SHA}"] == 4
     assert dict(touched)[f"{OTHER_ISSUE}/{OTHER_SHA}"] == 4
+
+
+def test_an_unresolvable_relation_surfaces_rather_than_clears(tmp_path: Path) -> None:
+    """A relation whose dispatch id resolves nowhere is a finding, never silence (r2 F1).
+
+    The round-1 block read clean over exactly this arrangement — its join dropped
+    the one relation the question was about — which is #491's own failure mode one
+    level up: an unresolvable id is the absence of evidence, never compliance.
+    """
+    world = _world(tmp_path)
+    ghost = "d-20260824-000003-ghost"
+    # The reviewer's record exists and the author's does not: the author the check
+    # should have compared against is the half it could not look at.
+    _dispatch_record(
+        world["dispatch_root"],
+        REVIEW_DISPATCH,
+        seat="review",
+        profile=REVIEWER,
+        lane="codex",
+        base_sha=SHA,
+    )
+    journal = attribute_registry.landing_journal(ISSUE, world["review_root"])
+    journal.parent.mkdir(parents=True, exist_ok=True)
+    journal.write_text(_landing_event_document(authors=(("dispatch", ghost),)), encoding="utf-8")
+    store = _rebuild(world)
+    assert store["coverage"]["landings_with_unresolved_relations"] == [f"{ISSUE}/{SHA}"]
+    line = next(
+        found
+        for found in observatory.summary_lines(store, world["store_dir"])
+        if found.startswith("landings ")
+    )
+    assert "uncheckable=1" in line, line
+    block = next(found for found in cookbook_blocks() if "reviewer_is_author" in found)
+    rows = observatory.query(world["store_dir"], block.strip().rstrip(";"))
+    assert rows == ((f"{ISSUE}/{SHA}", "unresolvable_author", ghost),), (
+        "the ghost author is the finding, and no violation is claimed"
+    )
 
 
 def test_one_event_over_several_objects_multiplies_nothing(tmp_path: Path) -> None:

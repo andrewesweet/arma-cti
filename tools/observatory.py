@@ -531,12 +531,17 @@ NO_GATE_CAUSE_REASON: Final = (
 # a journalled landing whose relations carry no author is named in the rebuild's
 # `landings_without_authors` — the never-alone check cannot run over it, which is a
 # stated gap and never a silent clearance (#490's absent-journal lesson, one family
-# over).
+# over). The same gap one level up (round 2, finding 1): a dispatch-typed relation
+# that resolves to no dispatch row is named in `landings_with_unresolved_relations`,
+# because a join that silently drops it would read the absence of evidence as
+# compliance — the defect this issue exists for, wearing the schema's clothes.
 LANDING_BOUNDARY: Final = (
     "journalled landings only: the landings journals begin at #491, so landings"
-    " before it are absent from this figure rather than counted as authorless — and"
-    " a landing whose relations carry no author is named in the rebuild's"
-    " landings_without_authors, never silently cleared"
+    " before it are absent from this figure rather than counted as authorless — a"
+    " landing whose relations carry no author is named in the rebuild's"
+    " landings_without_authors, and one carrying a dispatch relation that resolves"
+    " to no dispatch row in landings_with_unresolved_relations, never silently"
+    " cleared"
 )
 
 # The session view's spool: the live file plus its rolled generations, the source
@@ -2009,6 +2014,13 @@ def rebuild(  # noqa: PLR0913, PLR0917 — the six paths are the rebuild's own s
         if malformed:
             malformed_files[row["telemetry_path"] or entry.name] = malformed
     rows.sort(key=lambda row: str(row["dispatch_id"]))
+    # The ids a landing relation can resolve against (round 2, finding 1): the
+    # dispatch rows this rebuild actually read. A relation naming anything else is
+    # named in coverage rather than silently dropped by the never-alone query's
+    # join — the ids move when a dispatch record is pruned or moved between the
+    # landing's journaling and this rebuild, which is exactly when the check must
+    # not read clean.
+    known_dispatch_ids = {str(row["dispatch_id"]) for row in rows}
 
     spool_read = read_spool(spool, spool_entries)
     if spool_read.malformed:
@@ -2081,7 +2093,11 @@ def rebuild(  # noqa: PLR0913, PLR0917 — the six paths are the rebuild's own s
             # landings so a recorder duplicate is visible as the two counts
             # disagreeing, and the landings whose relation set carries no author
             # named, because those are the landings the never-alone check cannot run
-            # over — a stated gap, never a silent clearance.
+            # over — a stated gap, never a silent clearance. The same gap, one level
+            # up (round 2, finding 1): a dispatch-typed relation whose object id
+            # names no dispatch row cannot be joined to a profile, so the check
+            # could not look there — named beside the authorless, because an
+            # unresolvable id is the absence of evidence and never compliance.
             "landing_journals": landing_read.journals,
             "landing_events": landing_read.events,
             "landings": len(landing_read.landings),
@@ -2094,6 +2110,14 @@ def rebuild(  # noqa: PLR0913, PLR0917 — the six paths are the rebuild's own s
                     for named in landing_read.relations
                 )
             ],
+            "landings_with_unresolved_relations": sorted(
+                {
+                    named["landing"]
+                    for named in landing_read.relations
+                    if named["object_type"] == "dispatch"
+                    and named["object_id"] not in known_dispatch_ids
+                }
+            ),
             "session_renders": len(spool_read.renders),
             "session_renders_untimestamped": spool_read.untimestamped,
             "session_renders_without_session_id": spool_read.without_session,
@@ -2214,12 +2238,12 @@ def summary_lines(store: Mapping[str, Any], store_dir: Path) -> tuple[str, ...]:
         )
     )
     # The landings line carries the two counts that must not be mistaken for each
-    # other — raw events and distinct landings — and names the landings whose
-    # relation set carries no author, because those are the landings the
-    # never-alone check cannot run over (#491). No verdict is rendered here: the
-    # check itself is a cookbook query over `landing_relations` joined to
-    # `dispatches`, and a summary that pre-computed it would be a second rendering
-    # path for it.
+    # other — raw events and distinct landings — and counts the landings the
+    # never-alone check cannot run over: those whose relation set carries no
+    # author, and those carrying a dispatch relation that resolves to no dispatch
+    # row (#491; round 2, finding 1). No verdict is rendered here: the check
+    # itself is a cookbook query over `landing_relations` joined to `dispatches`,
+    # and a summary that pre-computed it would be a second rendering path for it.
     lines.append(
         " ".join(
             (
@@ -2228,7 +2252,15 @@ def summary_lines(store: Mapping[str, Any], store_dir: Path) -> tuple[str, ...]:
                 f"events={coverage['landing_events']}",
                 f"distinct={coverage['landings']}",
                 f"relations={coverage['landing_relations']}",
-                f"uncheckable={len(coverage['landings_without_authors'])}",
+                "uncheckable="
+                + str(
+                    len(
+                        {
+                            *coverage["landings_without_authors"],
+                            *coverage["landings_with_unresolved_relations"],
+                        }
+                    )
+                ),
             )
         )
     )

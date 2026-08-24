@@ -893,23 +893,31 @@ def test_a_landing_arrives_at_the_land_stage(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """The push is the land stage reached (#490), journalled with its first-pass status."""
-    review_root = tmp_path / "stage-review"
-    monkeypatch.setenv("CTI_REVIEW_DIR", str(review_root))
+    # The journal root is the review parameter's, not the environment's (round 2,
+    # finding 2): the recorder and the review rung decide the one location one way,
+    # so the five earlier stages are staged where `_reviewed` points the landing —
+    # and a divergent `CTI_REVIEW_DIR` is left pointing elsewhere to prove it.
+    _origin, main, here = repo
+    _commit(here, "feature.txt", "work\n")
+    review = _reviewed(here, tmp_path)
+    review_root = review.review_root
+    monkeypatch.setenv("CTI_REVIEW_DIR", str(tmp_path / "env-review"))
     monkeypatch.delenv("CTI_DISPATCH_SEAT", raising=False)
     # The five earlier stages' first pass, so the landing is a first-pass arrival and
     # not the honest `after_rework` an orphan arrival reads as.
     now = 1_800_000_000.0
     for stage in ("brief", "implementation", "own_gate", "exchange", "review"):
         attribute_registry.record_stage_arrival(stage, 213, review_root, now, dispatch_id="d-1")
-    _origin, main, here = repo
-    _commit(here, "feature.txt", "work\n")
 
-    report = land.land(main, here, gate=_Gate(), review=_reviewed(here, tmp_path))
+    report = land.land(main, here, gate=_Gate(), review=review)
 
     assert report.code == 0
     journal = review_root / "213" / attribute_registry.STAGE_JOURNAL
     rows = [json.loads(line) for line in journal.read_text(encoding="utf-8").splitlines()]
     assert [row["attributes"]["cti.stage.name"] for row in rows][-1] == "land"
+    assert not (tmp_path / "env-review" / "213").exists(), (
+        "the recorder journalled at the review parameter's root, not the environment's"
+    )
     assert rows[-1]["attributes"]["cti.stage.first_pass"] == "first_time"  # noqa: S105 — the attribute's own name carries "pass"; a stage status, never a credential
 
 
@@ -924,20 +932,19 @@ def test_a_landing_from_a_dispatched_non_pipeline_seat_records_no_land_stage(
     retro's or recon's `just land` counted as this stage's arrival on the retro
     issue — for as long as the recorder runs.
     """
-    review_root = tmp_path / "stage-review"
-    monkeypatch.setenv("CTI_REVIEW_DIR", str(review_root))
     monkeypatch.setenv("CTI_DISPATCH_SEAT", "retro")
     _origin, main, here = repo
     _commit(here, "feature.txt", "work\n")
+    review = _reviewed(here, tmp_path)
 
-    report = land.land(main, here, gate=_Gate(), review=_reviewed(here, tmp_path))
+    report = land.land(main, here, gate=_Gate(), review=review)
 
     assert report.code == 0
     # The stage journal, not the directory: since #491 the same per-issue directory
     # also holds the landings journal, which a retro's landing does write — the
     # never-alone record binds every landing whatever seat dispatched it — while the
     # stage arrival stays the implementer pipeline's own fact.
-    assert not (review_root / "213" / attribute_registry.STAGE_JOURNAL).exists(), (
+    assert not (review.review_root / "213" / attribute_registry.STAGE_JOURNAL).exists(), (
         "the retro's landing journalled no stage arrival"
     )
 
@@ -948,18 +955,17 @@ def test_a_landing_from_a_dispatched_implementer_arrives_at_the_land_stage(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """The filter's other arm: the seat the pipeline maps is exactly who lands (#490)."""
-    review_root = tmp_path / "stage-review"
-    monkeypatch.setenv("CTI_REVIEW_DIR", str(review_root))
     monkeypatch.setenv("CTI_DISPATCH_SEAT", "implementer")
     _origin, main, here = repo
     _commit(here, "feature.txt", "work\n")
+    review = _reviewed(here, tmp_path)
 
-    report = land.land(main, here, gate=_Gate(), review=_reviewed(here, tmp_path))
+    report = land.land(main, here, gate=_Gate(), review=review)
 
     assert report.code == 0
     rows = [
         json.loads(line)
-        for line in (review_root / "213" / attribute_registry.STAGE_JOURNAL)
+        for line in (review.review_root / "213" / attribute_registry.STAGE_JOURNAL)
         .read_text(encoding="utf-8")
         .splitlines()
     ]
