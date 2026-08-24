@@ -894,6 +894,83 @@ def test_landed_summary_is_generated_from_store_and_excludes_unlanded_work(world
     assert "combined" not in data_rows[0].lower()
 
 
+def test_landed_summary_uses_commit_time_when_sha_order_disagrees(tmp_path: Path) -> None:
+    """A later commit with a smaller SHA must win the issue's summary row."""
+    repo = tmp_path / "ordering-repo"
+    repo.mkdir()
+    run_git("init", "-q", "-b", "main", cwd=repo)
+    run_git("config", "user.email", "t@example.com", cwd=repo)
+    run_git("config", "user.name", "T", cwd=repo)
+    (repo / "base.txt").write_text("base", encoding="utf-8")
+    run_git("add", "base.txt", cwd=repo)
+    run_git("commit", "-qm", "chore: the base", cwd=repo, at="2026-08-05T00:00:00+00:00")
+
+    candidates: list[str] = []
+    older_sha: str | None = None
+    newer_sha: str | None = None
+    for index in range(64):
+        name = f"candidate-{index}.txt"
+        (repo / name).write_text(name, encoding="utf-8")
+        run_git("add", name, cwd=repo)
+        run_git(
+            "commit",
+            "-qm",
+            f"feat: issue ordering {index}\n\nrefs #548",
+            cwd=repo,
+            at=f"2026-08-05T{index // 60:02}:{index % 60:02}:00+00:00",
+        )
+        sha = subprocess.run(
+            ["git", "rev-parse", "HEAD"],  # noqa: S607 — fixed Git executable and tmp_path repo
+            cwd=repo,
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout.strip()
+        prior = next((candidate for candidate in candidates if candidate > sha), None)
+        if prior is not None:
+            older_sha, newer_sha = prior, sha
+            break
+        candidates.append(sha)
+
+    assert older_sha is not None, "staged commit sequence found no older candidate"
+    assert newer_sha is not None, "staged commit sequence found no newer candidate"
+    assert older_sha > newer_sha  # Lexical order picks older commit, by construction.
+    store: dict[str, Any] = {
+        "inputs": {"repo": str(repo)},
+        "dispatches": [
+            {"issue": 548, "lane": "claude-native"},
+            {"issue": 548, "lane": "zai"},
+        ],
+        "issue_cost": [
+            {
+                "issue": 548,
+                "lane": "claude-native",
+                "landed_sha": older_sha,
+                "cost": None,
+                "meter": "test-meter",
+                "cost_reason": "test",
+            },
+            {
+                "issue": 548,
+                "lane": "zai",
+                "landed_sha": newer_sha,
+                "cost": None,
+                "meter": "test-meter",
+                "cost_reason": "test",
+            },
+        ],
+        "issue_rework": [],
+        "work_items": [{"issue": 548, "state": "landed"}],
+    }
+
+    summary = observatory.issue_summary_rows(store, repo)
+    assert summary[0]["landed_sha"] == newer_sha
+    assert any(
+        line.startswith(f"|548|{newer_sha}|")
+        for line in observatory.render_summary({**store, "issue_summary": summary}).splitlines()
+    )
+
+
 def test_summary_preserves_counted_zero_unknown_and_not_involved(world: World) -> None:
     store = rebuild_world(world)
     one = summary_row(store, LANDED_ONE_HOUR)
