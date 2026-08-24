@@ -299,7 +299,10 @@ def exchange(  # noqa: PLR0911 — one return per refusal, so each stays a whole
     # one moment the loop is the writer of the fact. Fail-open like every family.
     attribute_registry.emit_wait(
         attribute_registry.wait_event(
-            "waiting_reviewer", "review", datetime.now(tz=UTC).timestamp(), issue=issue
+            attribute_registry.REASON_WAITING_REVIEWER,
+            "review",
+            datetime.now(tz=UTC).timestamp(),
+            issue=issue,
         ),
         journal=wait_journal(),
     )

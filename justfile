@@ -844,7 +844,10 @@ watch name worktree subject="pool" *args:
 # The lane breakers report here too (#226), ahead of the queue and watchers,
 # because this is the read CLAUDE.md already puts at the top of an orchestrator's
 # turn. The queue adds one underfill verdict when eligible work can fill ruled
-# capacity (#278); it selects and reports, and never dispatches. Every clean read
+# capacity (#278); it selects and reports, and never dispatches. The same rung
+# now samples the seven queues nothing else watches (#492) — journalled beside
+# the policy, one event per queue per turn, silent in the verdict's own output,
+# so the sampler adds no process and no tracker read of its own. Every clean read
 # stays silent — a verdict, never a dashboard of numbers (#209). The positional
 # arguments are the watchers' alone; the other reads take none. Their state-directory
 # seams are environment variables (`CTI_BREAKER_DIR`, `CTI_QUEUE_DIR`, `CTI_QUEUE_ROOT`,

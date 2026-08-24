@@ -26,7 +26,7 @@ silence. Both render as an absence with a reason, never as zero.
 
 | Key | Shape | Meaning |
 |---|---|---|
-| `schema` | string | `cti.observatory/7` |
+| `schema` | string | `cti.observatory/8` |
 | `inputs` | object | The five paths the rebuild read: `dispatch_root`, `export_dir`, `review_root`, `spool`, `repo` |
 | `coverage` | object | The rebuild's own denominators — see below |
 | `malformed` | array | One entry per source file with unparseable lines — export, spool or stage journal: `file`, `lines` |
@@ -495,6 +495,42 @@ period whose lines were lost to an early drop reads short with no signal — rar
 silent, and in the flattering direction; the hazards list carries it. What the store
 can see it says: renders older than the tap's timestamps carry none, cannot be placed
 in a period, and are counted in `session_renders_untimestamped` rather than summed.
+
+## The `queue_depth` table
+
+One row per queue per sample (#492). The source is the queue surface's own
+`queue-depths.jsonl`, journalled by the sampler that folds into `just
+watch-report`'s queue rung — one event per queue of the closed set, every
+sample, so a queue missing from the journal is a queue that was not sampled
+and never a queue that read as empty. An absent journal is zero rows: the
+sampler had not run before that rebuild, and the coverage line's
+`queue_depth samples=0` says so rather than refusing.
+
+**Zero, unread and unknown are three different rows.** `state` carries which
+of the three a sample is: `counted` (the depth is on the row, zero included),
+`unreadable` (a source exists and that sample could not read it), and
+`unrecorded` (no record anywhere carries the queue's membership — the
+slot-lock queue today, whose bash seam journals nothing). `count` is null
+everywhere except `counted`, and a null here is the honest rendering of both
+non-counting states: zero belongs to a counted empty queue and to nothing
+else. `oldest` and `oldest_age_s` carry the same trichotomy one level down —
+`measured` where a record holds the entry instant, `none` where the queue is
+empty, `unrecorded` where items wait and nothing says since when.
+
+| Column | Null? | Meaning |
+|---|---|---|
+| `sampled_at` | never | The sample's own instant, as the event carried it |
+| `queue` | never | Which queue, one of the registry's closed set of seven |
+| `state` | never | `counted`, `unreadable` or `unrecorded` — see above |
+| `count` | + `count_reason` | The depth; zero is a counted sample and null is not |
+| `count_reason` | except `counted` | The state's own name for the absence |
+| `oldest` | never | `measured`, `none` or `unrecorded` |
+| `oldest_age_s` | + `oldest_age_s_reason` | Seconds the oldest item had waited |
+| `oldest_age_s_reason` | except `oldest = 'measured'` | The oldest state's own name for the absence |
+
+A line that will not parse, is not this family's event, or names a queue or a
+state outside the closed sets is counted in `malformed` and its siblings still
+load — the stage reader's line, one family over.
 
 ## Querying
 

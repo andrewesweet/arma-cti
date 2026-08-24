@@ -447,3 +447,37 @@ the review measured); its two idle figures do not agree with each other (7,510 a
 of 22,361 minutes implies 247.5 idle hours; the gap list claims 251.8), and the
 corrected store sides with the gap list, so the awake-minus-total arithmetic is the
 document's error, not the store's.
+
+## What is waiting right now, and for how long
+
+The queue-depth view (#492). The newest sample per queue — the leading
+indicator, taken at the top of every orchestrator turn by the sampler folded
+into `just watch-report`'s queue rung:
+
+```sql
+SELECT q.queue, q.state, q.count, q.oldest, q.oldest_age_s,
+       strftime('%Y-%m-%dT%H:%M:%SZ', q.sampled_at, 'unixepoch') AS sampled
+FROM queue_depth q
+JOIN (
+    SELECT queue, MAX(sampled_at) AS newest FROM queue_depth GROUP BY queue
+) latest ON q.queue = latest.queue AND q.sampled_at = latest.newest
+ORDER BY q.queue
+```
+
+Reading it: `count = 0` with `state = 'counted'` is an empty queue — a sample,
+not an absence — while `state = 'unrecorded'` says no record anywhere carries
+that queue's membership (the `slot_lock` queue today; its bash seam journals
+nothing) and `state = 'unreadable'` says a source existed and that sample could
+not read it. Neither is a zero, and quoting either as one is the exact defect
+this vocabulary exists to prevent. `oldest_age_s` is null beside
+`oldest = 'unrecorded'` — for the ready queues the label instant lives in the
+tracker's timeline, and for the landing queue the demand side is recorded
+nowhere — so an age is only ever quoted where `oldest = 'measured'`. Before
+trusting a quiet system, read the rebuild's `queue_depth` coverage line: a
+journal the sampler stopped writing leaves these rows stale, and
+`samples=0` names a store whose sampler never ran.
+
+A queue's history — depth over time — is the same table grouped the other way;
+the sampler's cadence is the orchestrator's turn, not a clock, so the sample
+count over a window says how busy the seat was, and a depth trend is read
+against that cadence rather than assumed even.

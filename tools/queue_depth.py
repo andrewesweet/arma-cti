@@ -1,0 +1,442 @@
+"""Sample the seven queues nothing else watches (#492).
+
+An issue behind the WIP limit, a branch pushed and awaiting its reviewer, a
+finding filed and unadjudicated — none of these appear anywhere unless
+deliberately counted, and counting them is most of the job: queue depth is the
+leading indicator where cycle time is the lagging one. This module is the
+counter. **Where it runs is half the design**: the sampler folds into
+`tools/queue_policy.py`'s `report` verb — the queue rung of `just watch-report`,
+the read CLAUDE.md already puts at the top of every orchestrator turn — so it
+adds no process, no recipe and no directory, and the reads it shares with that
+rung (the policy, the in-flight derivation, the candidate list) are made once,
+by the caller, and handed in.
+
+**What an idle sample costs.** Every source is one small file, one directory
+listing, or a read the same report invocation already made: the policy file,
+the three waits journals (queue, dispatch root, review root), the review loop's
+journal, one listing of the review root with a stat per historical issue
+directory, and — only per in-flight tree — the git reads the landing queue
+needs. Nothing walks the dispatch records (the in-flight set arrives already
+derived), nothing walks a review directory beyond the stat that says whether a
+loop is still open, and an idle system samples seven empty queues for the price
+of the journal lines that are the sample. The tracker read the ready queues
+need is the read the underfill verdict was already making the same turn.
+
+**Three facts, three renderings.** A counted depth — zero included — a queue
+no record carries (`slot_lock`, whose bash seam journals nothing: the registry
+row's own note), and a source this sample could not read are different facts,
+and each renders differently (`counted`, `unrecorded`, `unreadable`). The same
+discipline one level down: the oldest item's age is `measured` where a record
+carries the entry instant, `none` where the queue is empty, and `unrecorded`
+where items wait and nothing says since when — never an instant invented from
+a file mtime (#485's concealed population and #490's borrowed clean past are
+the two defects this trichotomy exists to not repeat). A queue missing from
+the journal is a queue that was not sampled, which is why the sampler emits
+one event per queue of the closed set, every sample, no exceptions.
+
+**Entry instants, queue by queue.** `reviewer` ages from the exchange's own
+`waiting_reviewer` wait; `human_ruling` from the round event that raised the
+finding; `lane_window` from the peak-band wait the dispatcher journalled.
+`ready_work` and `dispatch_slot` have no local entry record — the instant an
+issue was labelled lives in the tracker's timeline, which no bounded read here
+reaches — so their oldest is `unrecorded`. `landing`'s demand side (a tree
+whose gated paths carry no approval) is recorded nowhere at the moment it
+becomes true, so its oldest is `unrecorded` too. `slot_lock` has no source at
+all. Which instants are recorded is data the samples carry, not a fact a
+reader must take on trust.
+
+Refs #492, #484, #485, #490, #238, ADR-0028.
+"""
+
+from __future__ import annotations
+
+import json
+import sys
+from datetime import UTC, datetime, timedelta
+from pathlib import Path
+from typing import TYPE_CHECKING, Final, NamedTuple
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping, Sequence
+
+# tools/ holds standalone scripts rather than an importable package, so a sibling import
+# needs the script's own directory on the path — the device every module here uses.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+import attribute_registry
+import breaker
+import gated_paths
+import queue_policy
+import review_loop
+
+# The dispatch surface's own waits journal name, mirrored rather than imported
+# because `tools/dispatch.py` stands above the import graph this module sits in
+# (`queue_policy`'s own mirror of `DISPATCH_ROOT` is the precedent).
+DISPATCH_WAIT_JOURNAL: Final = "waits.jsonl"
+
+# How long the one published peak band runs, derived from the breaker's own hour
+# constants — never a second copy of the schedule — because the band this reads
+# waits from must be the band the dispatcher refuses against (#238's one-home
+# rule, `off_peak_refusal`'s own reasoning).
+PEAK_BAND_HOURS: Final = breaker.ZAI_PEAK_END_HOUR - breaker.ZAI_PEAK_START_HOUR
+
+# The review loop's two flat files under the review root: the loop events every
+# family journals, and the waits the exchange journals (#484).
+REVIEW_JOURNAL_NAME: Final = review_loop.JOURNAL.name
+REVIEW_WAITS_NAME: Final = "waits.jsonl"
+
+REVIEW_EVENTS: Final = frozenset(
+    {
+        review_loop.ROUND_EVENT,
+        review_loop.ESCALATION_EVENT,
+        review_loop.DISPUTE_EVENT,
+        review_loop.TERMINUS_EVENT,
+    }
+)
+
+
+class Sample(NamedTuple):
+    """One queue's sample: the depth, the state of knowing it, and the oldest's age."""
+
+    queue: str
+    state: str
+    count: int | None
+    oldest: str
+    oldest_age_s: float | None
+
+
+def _journal_events(
+    path: Path, wanted: frozenset[str]
+) -> list[tuple[float, Mapping[str, object]]] | None:
+    """Read one journal's events, or `None` where a present file cannot be read.
+
+    An absent journal is empty, never unreadable: no waits were journalled is
+    the counted zero the sampler exists to state, and only a file that exists
+    and will not read is damage (#490's absent-journal lesson, applied to this
+    reader before it could repeat it). A line that will not parse is skipped —
+    the sampler is a periodic read, and one damaged line cannot hide the rest
+    of the file behind it.
+    """
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except FileNotFoundError:
+        return []
+    except OSError:
+        return None
+    events: list[tuple[float, Mapping[str, object]]] = []
+    for line in lines:
+        try:
+            document = json.loads(line)
+        except ValueError:
+            continue
+        if not isinstance(document, dict):
+            continue
+        at = document.get("at")
+        attributes = document.get("attributes")
+        if document.get("event") not in wanted or not isinstance(at, (int, float)):
+            continue
+        if not isinstance(attributes, dict):
+            continue
+        events.append((float(at), attributes))
+    return events
+
+
+def _ready_sample(
+    candidates: Sequence[queue_policy.Candidate] | None, in_flight: queue_policy.InFlight
+) -> Sample:
+    """Return the ready queue's sample: labelled work not in flight, by the label itself."""
+    if candidates is None:
+        return Sample("ready_work", "unreadable", None, "unrecorded", None)
+    waiting = [c for c in candidates if c.issue not in in_flight.issues]
+    oldest = "unrecorded" if waiting else "none"
+    return Sample("ready_work", "counted", len(waiting), oldest, None)
+
+
+def _dispatch_slot_sample(
+    policy: queue_policy.Policy,
+    candidates: Sequence[queue_policy.Candidate] | None,
+    in_flight: queue_policy.InFlight,
+) -> Sample:
+    """Return the dispatch-slot queue's sample: eligible work beyond the room the limit leaves.
+
+    Eligible is the same ladder `select` walks — not in flight, not held by the
+    freeze, not blocked on another issue, not reserved against the issue's
+    package — read through `queue_policy`'s own rungs rather than a second copy
+    of any of them.
+    """
+    if candidates is None:
+        return Sample("dispatch_slot", "unreadable", None, "unrecorded", None)
+    dispatchable = [
+        c
+        for c in candidates
+        if queue_policy._drops(policy, c, in_flight) is None  # noqa: SLF001 — the rung is the definition; restating it here is the drift this module exists to not have
+        and queue_policy.wip_refusal(policy, c.issue, in_flight) is None
+    ]
+    room = max(0, policy.wip_limit.value - len(in_flight.issues))
+    held = max(0, len(dispatchable) - room)
+    oldest = "unrecorded" if held else "none"
+    return Sample("dispatch_slot", "counted", held, oldest, None)
+
+
+def _reviewer_sample(review_root: Path, at: float) -> Sample:
+    """Return the reviewer queue's sample: branches exchanged whose wait no review event answered.
+
+    An exchange journals one `waiting_reviewer` wait at the moment the branch
+    leaves the implementer's hands — the entry instant this queue ages from.
+    The wait ends at the loop's next recorded act (a round, an escalation, a
+    dispute, a terminus), so the newest wait per issue is live exactly where no
+    later event names that issue.
+    """
+    waits = _journal_events(
+        review_root / REVIEW_WAITS_NAME, frozenset({attribute_registry.WAIT_EVENT})
+    )
+    journal = _journal_events(review_root / REVIEW_JOURNAL_NAME, REVIEW_EVENTS)
+    if waits is None or journal is None:
+        return Sample("reviewer", "unreadable", None, "unrecorded", None)
+    newest_wait: dict[int, float] = {}
+    for wait_at, attributes in waits:
+        if attributes.get("cti.wait.block_reason") != attribute_registry.REASON_WAITING_REVIEWER:
+            continue
+        issue = attributes.get("cti.issue")
+        if not isinstance(issue, int) or isinstance(issue, bool):
+            continue
+        newest_wait[issue] = max(wait_at, newest_wait.get(issue, wait_at))
+    answered: set[int] = set()
+    for event_at, attributes in journal:
+        issue = attributes.get("cti.issue")
+        if not isinstance(issue, str) or not issue.isdecimal():
+            continue
+        number = int(issue)
+        if number in newest_wait and event_at > newest_wait[number]:
+            answered.add(number)
+    waiting = {issue: wait for issue, wait in newest_wait.items() if issue not in answered}
+    if not waiting:
+        return Sample("reviewer", "counted", 0, "none", None)
+    oldest = min(waiting.values())
+    return Sample("reviewer", "counted", len(waiting), "measured", max(0.0, at - oldest))
+
+
+def _round_times(review_root: Path) -> dict[tuple[int, int], float] | None:
+    """Return the review journal's round events as an (issue, round) to instant map."""
+    journal = _journal_events(
+        review_root / REVIEW_JOURNAL_NAME, frozenset({review_loop.ROUND_EVENT})
+    )
+    if journal is None:
+        return None
+    rounds: dict[tuple[int, int], float] = {}
+    for event_at, attributes in journal:
+        issue = attributes.get("cti.issue")
+        number = attributes.get("cti.review.round")
+        if (
+            isinstance(issue, str)
+            and issue.isdecimal()
+            and isinstance(number, int)
+            and not isinstance(number, bool)
+        ):
+            rounds[(int(issue), number)] = event_at
+    return rounds
+
+
+def _open_loop(entry: Path) -> review_loop.Loop | None:
+    """Read one issue directory's still-running loop, or `None` where there is none.
+
+    `False` would not do for "a loop exists and will not read": that is damage
+    the caller renders as unreadable, not the same thing as a closed loop or
+    no loop at all — the exception is raised and the caller's ladder says
+    which rung it landed on.
+    """
+    if (entry / review_loop.LANDING_FILE).is_file():
+        return None
+    loop_file = entry / review_loop.LOOP_FILE
+    if not loop_file.is_file():
+        return None
+    return review_loop.parse_loop(json.loads(loop_file.read_text(encoding="utf-8")))
+
+
+def _human_ruling_sample(review_root: Path, at: float) -> Sample:
+    """Return the human-ruling queue's sample: findings unadjudicated, loops still running.
+
+    A loop is running while its directory holds `loop.json` and not
+    `landing.json` — the terminus's own terminal state, structural by rename.
+    The depth is the open above-low set (the loop's own unadjudicated
+    vocabulary, low findings never having blocked); the age is the round event
+    that raised the oldest such finding, and `unrecorded` where the journal
+    predates the finding's round. One stat per historical issue directory is
+    the whole cost, a loop read only where its stat says it is still open.
+    """
+    try:
+        entries = sorted(review_root.iterdir())
+    except OSError:
+        return Sample("human_ruling", "unreadable", None, "unrecorded", None)
+    rounds = _round_times(review_root) or {}
+    depth = 0
+    oldest_at: float | None = None
+    for entry in entries:
+        if not entry.is_dir() or not entry.name.isdecimal():
+            continue
+        try:
+            loop = _open_loop(entry)
+        except (OSError, ValueError):
+            return Sample("human_ruling", "unreadable", None, "unrecorded", None)
+        if loop is None:
+            continue
+        issue = int(entry.name)
+        for finding in review_loop.open_above_low(loop):
+            depth += 1
+            raised = rounds.get((issue, finding.round_raised))
+            if raised is not None and (oldest_at is None or raised < oldest_at):
+                oldest_at = raised
+    if not depth:
+        return Sample("human_ruling", "counted", 0, "none", None)
+    if oldest_at is None:
+        return Sample("human_ruling", "counted", depth, "unrecorded", None)
+    return Sample("human_ruling", "counted", depth, "measured", max(0.0, at - oldest_at))
+
+
+def _lane_window_sample(
+    dispatch_dir: Path, candidates: Sequence[queue_policy.Candidate] | None, at: float
+) -> Sample:
+    """Return the lane-window queue's sample: work a published peak band holds (#238).
+
+    The band is the breaker's own schedule, read by its own functions — open,
+    and nothing can be waiting on it (depth zero); closed, and the depth is the
+    issues the dispatcher journalled a peak-band wait for since the band began
+    that are still candidates, because an issue no longer labelled ready moved
+    on rather than waited. A refused issue routed elsewhere mid-band stays
+    counted — the waits name what wanted this lane, which is the honest
+    membership a journal of waits can state, and the waits carry their own
+    instants.
+    """
+    if not breaker.zai_is_peak(at):
+        return Sample("lane_window", "counted", 0, "none", None)
+    waits = _journal_events(
+        dispatch_dir / DISPATCH_WAIT_JOURNAL, frozenset({attribute_registry.WAIT_EVENT})
+    )
+    if waits is None or candidates is None:
+        return Sample("lane_window", "unreadable", None, "unrecorded", None)
+    band_start = (
+        breaker.zai_off_peak_opens_at(at) - timedelta(hours=PEAK_BAND_HOURS).total_seconds()
+    )
+    ready = {c.issue for c in candidates}
+    waiting: dict[int, float] = {}
+    for wait_at, attributes in waits:
+        if attributes.get("cti.wait.block_reason") != attribute_registry.REASON_LANE_PEAK_BAND:
+            continue
+        if wait_at < band_start:
+            continue
+        issue = attributes.get("cti.issue")
+        if not isinstance(issue, int) or isinstance(issue, bool) or issue not in ready:
+            continue
+        waiting[issue] = max(wait_at, waiting.get(issue, wait_at))
+    if not waiting:
+        return Sample("lane_window", "counted", 0, "none", None)
+    oldest = min(waiting.values())
+    return Sample("lane_window", "counted", len(waiting), "measured", max(0.0, at - oldest))
+
+
+def _slot_lock_sample() -> Sample:
+    """Return the slot-lock queue's sample: no source, stated as that rather than as zero.
+
+    The tier's no-slot stop lives in bash, and ADR-0049's migration seam does
+    not journal it — `BLOCK_REASONS`' own `slot_unavailable` note says so. A
+    depth of zero here would be #490's borrowed clean past one queue over: the
+    honest sample says no record carries this queue's membership at all.
+    """
+    return Sample("slot_lock", "unrecorded", None, "unrecorded", None)
+
+
+def _landing_sample(in_flight: queue_policy.InFlight, approvals: Path) -> Sample:
+    """Return the landing queue's sample: in-flight work whose gated paths carry no authorisation.
+
+    The same rungs `just gated-paths check` walks — the changed paths, the
+    sign-off gate, the delegated-decision marker, the content-bound approval —
+    read through `gated_paths`' own functions, never restated. An issue waits
+    here where any gated path it touches holds neither a covering approval
+    record nor ADR-0013's marker; the instant that became true is recorded
+    nowhere, so the oldest is `unrecorded`. The cost is bounded by the
+    in-flight set, not by history: an idle system reads nothing at all for
+    this queue.
+    """
+    waiting = 0
+    unreadable = False
+    for holder in in_flight.holders:
+        if holder.worktree is None:
+            continue
+        try:
+            paths = gated_paths.changed_paths(holder.worktree)
+            delegated = set(gated_paths.delegated_decisions(holder.worktree, paths))
+        except (gated_paths.GitError, OSError):
+            unreadable = True
+            continue
+        for path in paths:
+            if path in delegated or gated_paths.signoff_gate(path) is None:
+                continue
+            try:
+                content_id = gated_paths.content_id_of(holder.worktree, path)
+            except (gated_paths.GitError, OSError):
+                unreadable = True
+                continue
+            if not gated_paths.approval_path(approvals, holder.issue, content_id).is_file():
+                waiting += 1
+                break
+    if unreadable:
+        return Sample("landing", "unreadable", None, "unrecorded", None)
+    if not waiting:
+        return Sample("landing", "counted", 0, "none", None)
+    return Sample("landing", "counted", waiting, "unrecorded", None)
+
+
+def sample(  # noqa: PLR0913 — the parameters are the report verb's own reads handed in once, plus the roots the queues live under
+    store: queue_policy.Store,
+    policy: queue_policy.Policy,
+    in_flight: queue_policy.InFlight,
+    candidates: Sequence[queue_policy.Candidate] | None,
+    *,
+    dispatch_dir: Path,
+    review_root: Path | None = None,
+    approvals: Path | None = None,
+    at: float | None = None,
+) -> tuple[Sample, ...]:
+    """Sample every queue of the closed set once, fail-open, and journal each sample.
+
+    One event per queue, every queue, no exceptions: the sampler's own silence
+    is the difference between "sampled and empty" and "not sampled" that the
+    journal must never blur. A queue whose read raised the unexpected is
+    journalled `unreadable` rather than dropped — a periodic read must survive
+    damage, and the damage must be visible where it landed. Returns the samples
+    in the registry's own queue order, for the caller that wants them without
+    re-reading the journal. `review_root` defaults to `review_loop`'s own
+    `CTI_REVIEW_DIR` seam, read here at call time.
+    """
+    now = datetime.now(tz=UTC).timestamp() if at is None else at
+    reviews = review_loop.review_root() if review_root is None else review_root
+    approval_root = gated_paths.APPROVAL_ROOT if approvals is None else approvals
+    readings = {
+        "ready_work": lambda: _ready_sample(candidates, in_flight),
+        "dispatch_slot": lambda: _dispatch_slot_sample(policy, candidates, in_flight),
+        "reviewer": lambda: _reviewer_sample(reviews, now),
+        "human_ruling": lambda: _human_ruling_sample(reviews, now),
+        "lane_window": lambda: _lane_window_sample(dispatch_dir, candidates, now),
+        "slot_lock": _slot_lock_sample,
+        "landing": lambda: _landing_sample(in_flight, approval_root),
+    }
+    samples: list[Sample] = []
+    for queue in attribute_registry.QUEUES:
+        try:
+            reading = readings[queue]()
+        except Exception:  # noqa: BLE001 — a periodic read must not die on one queue's damage; the catch renders that queue unreadable, visibly, never silently empty
+            reading = Sample(queue, "unreadable", None, "unrecorded", None)
+        samples.append(reading)
+        attribute_registry.emit_queue_depth(
+            attribute_registry.queue_depth_event(
+                reading.queue,
+                reading.state,
+                now,
+                count=reading.count,
+                oldest=reading.oldest,
+                oldest_age_s=reading.oldest_age_s,
+            ),
+            journal=store.directory / attribute_registry.QUEUE_DEPTH_JOURNAL,
+            endpoint=store.endpoint,
+        )
+    return tuple(samples)

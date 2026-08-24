@@ -79,6 +79,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import attribute_registry  # the path insert above is what makes this importable
 import otel_event  # as above
+import queue_depth  # as above — the sampler this module's `report` verb carries (#492)
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable, Mapping, Sequence
@@ -1368,13 +1369,34 @@ def _read_verb(
 def _candidate_read(
     args: argparse.Namespace, store: Store, policy: Policy, in_flight: InFlight
 ) -> tuple[tuple[str, ...], int]:
-    """Answer `next` and `report` from one candidate read and one selection."""
-    before_candidates = (
-        _report_before_candidates(policy, in_flight) if args.verb == "report" else None
-    )
+    """Answer `next` and `report` from one candidate read and one selection.
+
+    The `report` verb samples the seven queues beside its verdict (#492):
+    once here with whatever the read above it established, so the sample costs
+    no tracker read of its own and no second in-flight derivation. The reads
+    beyond this module's sources (the review root, the dispatch waits journal,
+    the approvals) are the sampler's own, through its `CTI_REVIEW_DIR` seam and
+    the dispatch dir already resolved here.
+    """
+    before_candidates = _report_before_candidates(in_flight) if args.verb == "report" else None
     if before_candidates is not None:
+        queue_depth.sample(
+            store,
+            policy,
+            in_flight,
+            None,
+            dispatch_dir=Path(args.dispatch_dir),
+        )
         return before_candidates, 0
     candidates, refusal = ready_candidates()
+    if args.verb == "report":
+        queue_depth.sample(
+            store,
+            policy,
+            in_flight,
+            () if refusal is not None else candidates,
+            dispatch_dir=Path(args.dispatch_dir),
+        )
     if refusal is not None:
         if args.verb == "report":
             return (GITHUB_UNREADABLE_REPORT,), 0
@@ -1399,12 +1421,18 @@ def _candidate_read(
     return next_lines(selection, in_flight), 0
 
 
-def _report_before_candidates(policy: Policy, in_flight: InFlight) -> tuple[str, ...] | None:
-    """Fail closed on uncertain occupancy and skip candidate I/O when capacity is full."""
+def _report_before_candidates(in_flight: InFlight) -> tuple[str, ...] | None:
+    """Fail closed on uncertain occupancy, before any candidate I/O is spent.
+
+    The full-capacity skip this once carried is gone (#492): the report verb
+    now samples the ready queues too, and a queue whose depth needs the
+    candidate list cannot read as `unreadable` every busy turn. Uncertain
+    occupancy still returns first — a tracker read cannot repair an in-flight
+    set this box could not derive, and the sampler states that as `unreadable`
+    for the queues that needed it.
+    """
     if in_flight.github.startswith("unreadable"):
         return (GITHUB_UNREADABLE_REPORT,)
-    if len(in_flight.issues) >= policy.wip_limit.value:
-        return ()
     return None
 
 

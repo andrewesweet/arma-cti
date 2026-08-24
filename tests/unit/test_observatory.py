@@ -471,6 +471,7 @@ class World(NamedTuple):
     repo: Path
     base_sha: str
     landed_sha: str
+    queue_dir: Path
 
 
 @pytest.fixture
@@ -755,6 +756,48 @@ def world(  # noqa: PLR0915 — the staged world is the arrangement, one stateme
         plan["base_sha"] = base
         plan_path.write_text(json.dumps(plan), encoding="utf-8")
 
+    # The queue surface's own state (#492): two samples of the sampler's
+    # journal, staged in the shape `queue_depth.sample` writes — a counted
+    # empty ready queue in both, and a landing queue that went from one
+    # waiting item to none, so the view's newest-sample query has a change to
+    # find. One truncated line sits at the end: the reader counts it as
+    # malformed and loads the rest, the stage reader's line one family over.
+    queue_dir = tmp_path / "queue"
+    queue_dir.mkdir()
+    with (queue_dir / attribute_registry.QUEUE_DEPTH_JOURNAL).open("w", encoding="utf-8") as handle:
+        samples: list[tuple[float, str, str, int | None, str, float | None]] = [
+            (1_000.0, "ready_work", "counted", 0, "none", None),
+            (1_000.0, "landing", "counted", 1, "unrecorded", None),
+            (2_000.0, "ready_work", "counted", 0, "none", None),
+            (2_000.0, "landing", "counted", 0, "none", None),
+            (2_000.0, "reviewer", "unreadable", None, "unrecorded", None),
+        ]
+        for at, queue, state, count, oldest, age in samples:
+            attributes: dict[str, object] = {
+                "cti.queue.depth.queue": queue,
+                "cti.queue.depth.state": state,
+                "cti.queue.depth.oldest": oldest,
+            }
+            if count is not None:
+                attributes["cti.queue.depth.count"] = count
+            if age is not None:
+                attributes["cti.queue.depth.oldest_age_s"] = age
+            handle.write(
+                json.dumps(
+                    {
+                        "event": attribute_registry.QUEUE_DEPTH_EVENT,
+                        "at": at,
+                        "attributes": attributes,
+                        "resource": {"service.name": "test"},
+                        "exported": False,
+                        "export_detail": "test",
+                    },
+                    sort_keys=True,
+                )
+                + "\n"
+            )
+        handle.write('{"event": "cti.queue.depth", "at": 3_0')
+
     return World(
         dispatch_root,
         export_dir,
@@ -764,6 +807,7 @@ def world(  # noqa: PLR0915 — the staged world is the arrangement, one stateme
         repo,
         base,
         landed_sha,
+        queue_dir,
     )
 
 
@@ -776,6 +820,7 @@ def rebuild_world(world: World) -> dict[str, Any]:
         world.spool,
         world.repo,
         world.store_dir,
+        world.queue_dir,
     )
 
 
@@ -1036,19 +1081,22 @@ def test_an_absent_cost_renders_absent_and_an_uncalibrated_one_renders_uncalibra
 
 def test_a_truncated_line_is_counted_named_and_survived(world: World) -> None:
     store = rebuild_world(world)
-    # One truncated export line, one truncated spool line — the same discipline at
-    # both parse boundaries, each named for its own file.
-    assert store["coverage"]["malformed_lines"] == 2
+    # One truncated export line, one truncated spool line, one truncated
+    # queue-depth line — the same discipline at each parse boundary, each named
+    # for its own file.
+    assert store["coverage"]["malformed_lines"] == 3
     assert store["malformed"] == [
         {"file": f"dispatch-{CODEX_DISPATCH}.jsonl", "lines": 1},
+        {"file": "queue/queue-depths.jsonl", "lines": 1},
         {"file": "statusline.jsonl", "lines": 1},
     ]
     # The dispatch's spend still read, from the lines that did parse.
     assert cost_row(store, ISSUE, "codex")["output_tokens"] == CODEX_OUTPUT
     lines = observatory.summary_lines(store, world.store_dir)
-    assert any("malformed_lines=2" in line for line in lines)
+    assert any("malformed_lines=3" in line for line in lines)
     assert any(f"file=dispatch-{CODEX_DISPATCH}.jsonl" in line for line in lines)
     assert any("file=statusline.jsonl" in line for line in lines)
+    assert any("file=queue/queue-depths.jsonl" in line for line in lines)
 
 
 def test_the_rebuild_states_its_own_coverage(world: World) -> None:
@@ -1590,6 +1638,56 @@ def test_a_damaged_journal_line_is_malformed_never_bucketed_undetermined(world: 
     by_stage = {row["stage"]: row for row in store["stage_first_pass"]}
     assert by_stage["brief"]["arrivals"] == 1, "the damaged lines counted as nothing"
     assert {"file": "503/stages.jsonl", "lines": 2} in store["malformed"]
+
+
+# ---------------------------------------------------------------- the queue-depth view
+
+
+def test_queue_depth_rows_load_with_their_absences_as_nulls(world: World) -> None:
+    """Zero, unread and unknown stay three different rows through the rebuild."""
+    store = rebuild_world(world)
+    by_key = {(row["sampled_at"], row["queue"]): row for row in store["queue_depth"]}
+    empty = by_key[(2_000.0, "ready_work")]
+    assert (empty["state"], empty["count"], empty["oldest"], empty["oldest_age_s"]) == (
+        "counted",
+        0,
+        "none",
+        None,
+    )
+    unreadable = by_key[(2_000.0, "reviewer")]
+    assert (unreadable["state"], unreadable["count"]) == ("unreadable", None)
+    assert store["coverage"]["queue_depth_samples"] == 5
+    assert store["coverage"]["queue_depth_queues"] == 3
+    assert store["coverage"]["queue_depth_samples_uncounted"] == 1
+    assert store["coverage"]["queue_depth_last_at"] == 2_000.0
+    # The staged truncated line is counted as malformed, and its siblings load.
+    assert {"file": "queue/queue-depths.jsonl", "lines": 1} in store["malformed"]
+    assert "queue_depth samples=5 queues=3 uncounted=1 last=2000.0" in observatory.summary_lines(
+        store, world.store_dir
+    )
+
+
+def test_an_absent_sampler_journal_is_zero_rows_never_a_refusal(world: World) -> None:
+    """A rebuild before the sampler ever ran renders no samples, not a partial store."""
+    (world.queue_dir / attribute_registry.QUEUE_DEPTH_JOURNAL).unlink()
+    store = rebuild_world(world)
+    assert store["queue_depth"] == []
+    assert store["coverage"]["queue_depth_samples"] == 0
+    assert store["coverage"]["queue_depth_last_at"] is None
+    assert not any(entry["file"] == "queue/queue-depths.jsonl" for entry in store["malformed"])
+
+
+def test_the_cookbook_s_queue_depth_query_runs_against_the_shipped_store(world: World) -> None:
+    """The newest-sample query is the one rendering path for a current depth."""
+    rebuild_world(world)
+    block = next(found for found in cookbook_blocks() if "queue_depth" in found)
+    rows = observatory.query(world.store_dir, block.strip().rstrip(";"))
+    newest = {row[0]: row for row in rows}
+    # The landing queue's newest sample is the empty one — the earlier waiting
+    # sample is history the query's MAX deliberately leaves behind.
+    assert newest["landing"][1:5] == ("counted", 0, "none", None)
+    assert newest["reviewer"][1] == "unreadable"
+    assert newest["reviewer"][2] is None, "an unreadable depth is a null, never a zero"
 
 
 def test_the_cookbook_s_stage_query_runs_against_the_shipped_store(world: World) -> None:
@@ -2343,6 +2441,9 @@ def test_untimestamped_and_unattributable_renders_are_counted_never_summed(
     assert {entry["file"] for entry in store["malformed"]} == {
         f"dispatch-{CODEX_DISPATCH}.jsonl",
         world.spool.name,
+        # The queue-depth journal's staged truncated line (#492) — the same
+        # discipline at a third parse boundary, named for its own file.
+        "queue/queue-depths.jsonl",
     }
     assert "s-pre-488" not in {row["session_id"] for row in store["session_period"]}
 

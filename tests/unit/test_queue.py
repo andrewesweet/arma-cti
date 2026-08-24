@@ -1054,6 +1054,82 @@ def test_report_fails_closed_in_one_line_when_the_tracker_is_unreadable(
     )
 
 
+# ---------------------------------------------------------------- sampling the queues
+
+
+def test_report_samples_every_queue_beside_its_verdict(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The `report` verb journals one depth sample per queue, silently (#492)."""
+    store = seeded(tmp_path, policy_document(state="open", limit=3))
+    dispatches = tmp_path / "dispatches"
+    dispatches.mkdir()
+    monkeypatch.setenv("CTI_REVIEW_DIR", str(tmp_path / "review"))
+    (tmp_path / "review").mkdir()
+    fake_github(tmp_path, monkeypatch, [{"number": 301, "title": "ready", "body": ""}])
+
+    code = queue.main(
+        [
+            "--queue-dir",
+            str(store.directory),
+            "--root",
+            str(tmp_path / "empty-root"),
+            "--dispatch-dir",
+            str(dispatches),
+            "report",
+        ]
+    )
+
+    assert code == 0
+    journal = store.directory / "queue-depths.jsonl"
+    lines = [json.loads(line) for line in journal.read_text(encoding="utf-8").splitlines()]
+    assert [line["attributes"]["cti.queue.depth.queue"] for line in lines] == list(
+        queue.attribute_registry.QUEUES
+    )
+    ready = next(
+        line for line in lines if line["attributes"]["cti.queue.depth.queue"] == "ready_work"
+    )
+    assert ready["attributes"]["cti.queue.depth.count"] == 1
+    # The verdict is the only stdout: the sample is journalled, never printed.
+    assert "queue=underfilled" in capsys.readouterr().out
+
+
+def test_report_samples_once_per_candidate_read_never_twice(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The idle cost claim, pinned: the sampler adds no tracker read of its own."""
+    store = seeded(tmp_path, policy_document(state="open", limit=3))
+    monkeypatch.setenv("CTI_REVIEW_DIR", str(tmp_path / "review"))
+    (tmp_path / "review").mkdir()
+    fake_github(tmp_path, monkeypatch, [])
+    reads = {"count": 0}
+    real = queue.ready_candidates
+
+    def counting() -> tuple[tuple[Any, ...], Any]:
+        reads["count"] += 1
+        return real()
+
+    monkeypatch.setattr(queue, "ready_candidates", counting)
+
+    code = queue.main(
+        [
+            "--queue-dir",
+            str(store.directory),
+            "--root",
+            str(tmp_path / "empty-root"),
+            "--dispatch-dir",
+            str(tmp_path / "dispatches"),
+            "report",
+        ]
+    )
+
+    assert code == 0
+    assert reads["count"] == 1, "one tracker read per report: the sampler reuses it"
+
+
 def test_report_never_claims_spare_capacity_when_in_flight_tracker_reads_fail(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,

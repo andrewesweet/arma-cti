@@ -353,6 +353,49 @@ NAMES: Final[dict[str, Name]] = {
         " and never re-derivable later because two of the four causes rest on"
         " transient bars read live at landing time.",
     ),
+    # ---- events: queue depth (#492) -------------------------------------------
+    "cti.queue.depth": Name(
+        "event",
+        "required",
+        "One sampled queue's depth (#492); emitted once per queue per sample, so"
+        " a queue that did not render is a queue that was not sampled — never a"
+        " queue that read as empty.",
+    ),
+    # ---- attributes: queue depth (#492) ---------------------------------------
+    "cti.queue.depth.queue": Name(
+        "attribute",
+        "required",
+        "Which queue this sample is of, always one of QUEUES; the queue set is"
+        " the registry's own closed vocabulary, stated once.",
+    ),
+    "cti.queue.depth.state": Name(
+        "attribute",
+        "required",
+        "Whether the sample counted the queue, found no source that records its"
+        " membership, or could not read the source it has — always one of"
+        " DEPTH_STATES. `unrecorded` and `unreadable` are different facts from a"
+        " counted zero, and each renders differently.",
+    ),
+    "cti.queue.depth.count": Name(
+        "attribute",
+        "conditionally_required",
+        "The depth, present wherever the state is `counted` — zero included,"
+        " because an empty queue is a sample and not an absence.",
+    ),
+    "cti.queue.depth.oldest": Name(
+        "attribute",
+        "required",
+        "Whether the oldest item's entry instant was measured, the queue holds"
+        " no item to age, or nothing records the instant — always one of"
+        " OLDEST_STATES.",
+    ),
+    "cti.queue.depth.oldest_age_s": Name(
+        "attribute",
+        "conditionally_required",
+        "Seconds the oldest item had waited, present wherever `oldest` is"
+        " `measured`; an instant no record carries is `unrecorded`, never one"
+        " invented from a file mtime.",
+    ),
     # ---- scope ---------------------------------------------------------------
     "cti.breaker": Name(
         "scope",
@@ -1188,3 +1231,145 @@ def record_landing(
         return LANDING_ALREADY_RECORDED
     emit_landing(landing_event(relations, at, gate_cause=gate_cause), journal=journal)
     return LANDING_RECORDED
+
+
+# ---- sampled queue depth (#492) ---------------------------------------------------
+
+
+# The seven queues the sampler samples, stated once with the source each depth
+# reads (#492's first criterion). The spellings carry no spaces because these
+# are query values, as STAGES' are. Consumers — the sampler in
+# `tools/queue_depth.py`, the observatory's reader, the tests — derive the set
+# from here and never restate it.
+QUEUES: Final[dict[str, str]] = {
+    "ready_work": "Issues labelled ready-for-agent and not in flight; the label"
+    " is the tracker's own record of readiness.",
+    "dispatch_slot": "Eligible candidates beyond the room the ruled WIP limit"
+    " leaves; the limit and the in-flight set are `just queue state`'s own"
+    " derivation.",
+    "reviewer": "Review branches exchanged and awaiting their reviewer's"
+    " verdict; the exchange's own wait journal line is the entry record.",
+    "human_ruling": "Findings a review loop raised and nobody has adjudicated —"
+    " the open above-low set of every loop still running.",
+    "lane_window": "Work a lane's published peak band holds; the band is the"
+    " breaker's own schedule and the waits the dispatcher journalled name the"
+    " work that wanted in.",
+    "slot_lock": "Runs wanting a regression-tier slot while every slot is held."
+    " Registered ahead of the source, not with one: the tier's bash seam does"
+    " not journal this wait (the `slot_unavailable` row's own note), so the"
+    " sampler records the absence as `unrecorded` rather than a depth.",
+    "landing": "In-flight work whose gated paths carry no covering approval or"
+    " delegated-decision record; the human's sign-off is the only hand that"
+    " ends it.",
+}
+
+# A sample's own account of its depth. `counted` includes zero — an empty queue
+# is a finding of the sample, never the absence of one — while `unrecorded`
+# says no source records the queue's membership at all (the slot queue today)
+# and `unreadable` says a source exists and this sample could not read it.
+# Three facts, three renderings, exactly as a cost and its reasons are
+# (#482): a zero where `unrecorded` belongs is #485's concealed population and
+# #490's borrowed clean past in one shape.
+DEPTH_STATES: Final[dict[str, str]] = {
+    "counted": "The source was read and the depth is on the sample, zero included.",
+    "unrecorded": "No record anywhere carries this queue's membership, so no"
+    " depth exists to read — stated rather than guessed as zero.",
+    "unreadable": "A source exists and this sample could not read it; the depth"
+    " is unknown, never zero.",
+}
+
+# The oldest item's age, in the same three-part shape: `measured` where a record
+# carries the instant the item entered, `none` where the queue is empty (there
+# is no item to age, which is not the same as an item whose entry nobody
+# recorded), and `unrecorded` where items wait and no record carries when they
+# entered.
+OLDEST_STATES: Final[dict[str, str]] = {
+    "measured": "The oldest item's entry instant is on a record and its age is on the sample.",
+    "none": "The queue is empty; nothing is there to age.",
+    "unrecorded": "Items wait and no record carries when the oldest entered —"
+    " stated rather than invented from a file mtime.",
+}
+
+QUEUE_DEPTH_EVENT: Final = "cti.queue.depth"
+
+# Where the sampler's own events are journalled (#492): beside the queue's
+# policy, transitions and waits, so the family adds a file to the surface's own
+# state and no directory (#484's precedent, the criterion's own bar).
+QUEUE_DEPTH_JOURNAL: Final = "queue-depths.jsonl"
+
+# The two BLOCK_REASONS spellings other modules filter journals by (#492): the
+# reviewer queue reads the waits the exchange journals, and the lane-window
+# queue the waits a peak-band refusal journals. A literal at each consumer is a
+# copy that can drift from the vocabulary it belongs to — the constant is the
+# one spelling, as GATE_CROSS_LANE is for the gate causes.
+REASON_WAITING_REVIEWER: Final = "waiting_reviewer"
+REASON_LANE_PEAK_BAND: Final = "lane_peak_band"
+
+
+def queue_depth_event(  # noqa: PLR0913 — the five fields are the sample's own shape, carried together because a partial sample is the thing the states exist to refuse
+    queue: str,
+    state: str,
+    at: float,
+    *,
+    count: int | None = None,
+    oldest: str,
+    oldest_age_s: float | None = None,
+) -> otel_event.Event:
+    """Build one `cti.queue.depth` event; the only place its attributes are spelled.
+
+    Raises on a queue, state or oldest value outside the closed vocabularies, as
+    every family builder does: a misspelling is a programming error this module
+    exists to make impossible, not a transport failure to swallow. A `count` on
+    an uncounted sample, or an age beside an unmeasured oldest, is the same
+    error — half a sample that reads as a whole one.
+    """
+    if queue not in QUEUES:
+        message = f"queue not in the closed set: {queue!r}"
+        raise ValueError(message)
+    if state not in DEPTH_STATES:
+        message = f"depth state not in the closed vocabulary: {state!r}"
+        raise ValueError(message)
+    if oldest not in OLDEST_STATES:
+        message = f"oldest state not in the closed vocabulary: {oldest!r}"
+        raise ValueError(message)
+    if state == "counted" and not isinstance(count, int):
+        message = f"a counted sample carries its count: {count!r}"
+        raise ValueError(message)
+    if state != "counted" and count is not None:
+        message = f"an uncounted sample carries no count: {count!r}"
+        raise ValueError(message)
+    if oldest == "measured" and not isinstance(oldest_age_s, (int, float)):
+        message = f"a measured oldest carries its age: {oldest_age_s!r}"
+        raise ValueError(message)
+    if oldest != "measured" and oldest_age_s is not None:
+        message = f"an unmeasured oldest carries no age: {oldest_age_s!r}"
+        raise ValueError(message)
+    attributes: dict[str, object] = {
+        "cti.queue.depth.queue": queue,
+        "cti.queue.depth.state": state,
+        "cti.queue.depth.oldest": oldest,
+    }
+    if count is not None:
+        attributes["cti.queue.depth.count"] = count
+    if oldest_age_s is not None:
+        attributes["cti.queue.depth.oldest_age_s"] = float(oldest_age_s)
+    return otel_event.Event(
+        name=QUEUE_DEPTH_EVENT,
+        at=at,
+        attributes=attributes,
+        resource={"service.name": "arma-cti-queue-depth"},
+    )
+
+
+def emit_queue_depth(
+    event: otel_event.Event,
+    journal: Path,
+    endpoint: str = "",
+) -> bool:
+    """Export one depth sample and journal it with its export's outcome.
+
+    Fail-open as every family is: the queue was whatever depth it was whatever a
+    collector or a journal did, so a failure to record degrades to no record and
+    never reaches the periodic read the sample rode on (#492).
+    """
+    return otel_event.emit(event, journal=journal, endpoint=endpoint)

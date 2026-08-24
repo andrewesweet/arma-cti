@@ -5192,14 +5192,19 @@ def emit(lines: Iterable[str], code: int) -> int:
 WAIT_JOURNAL: Final = "waits.jsonl"
 
 
-def note_plan_wait(refusal: Refusal | None, dispatch_dir: Path, at: float) -> None:
+def note_plan_wait(
+    refusal: Refusal | None, dispatch_dir: Path, at: float, *, issue: int | None = None
+) -> None:
     """Journal one wait-shaped planning refusal with its cause (#484), fail-open.
 
     Only the planning choke calls this, so a refusal that a candidate entry collected
     internally is not a wait — the ladder skipped it and went on. The cause is never
     spelled here: `attribute_registry.block_reason_for` maps the refusal, and a kind it
     does not know is not a wait at all, except a `lane_breaker_open` on an unnamed
-    failure class, which is one and reads `undetermined`.
+    failure class, which is one and reads `undetermined`. The issue rides along
+    wherever the caller holds one (#492): the queue-depth sampler reads these lines
+    back to say which work a peak band holds, and a wait that names no issue cannot
+    say.
     """
     if refusal is None:
         return
@@ -5207,7 +5212,7 @@ def note_plan_wait(refusal: Refusal | None, dispatch_dir: Path, at: float) -> No
     if reason is None:
         return
     attribute_registry.emit_wait(
-        attribute_registry.wait_event(reason, "dispatch", at, refusal=refusal.kind),
+        attribute_registry.wait_event(reason, "dispatch", at, refusal=refusal.kind, issue=issue),
         journal=dispatch_dir / WAIT_JOURNAL,
     )
 
@@ -5267,7 +5272,13 @@ def main(argv: list[str] | None = None, now: datetime | None = None) -> int:
     when = datetime.now(tz=UTC) if now is None else now
     plan, brief, refusal = plan_dispatch(args, main_checkout(Path.cwd()), when)
     if refusal is not None or plan is None:
-        note_plan_wait(refusal, Path(args.dispatch_dir).expanduser(), when.timestamp())
+        note_plan_wait(
+            refusal,
+            Path(args.dispatch_dir).expanduser(),
+            when.timestamp(),
+            # `--issue` defaults to 0, which names no issue at all.
+            issue=args.issue or None,
+        )
         return emit(refusal.lines() if refusal else (), EXIT_REFUSED)
     if args.dry_run:
         return emit(dry_run_lines(plan, brief, os.environ), 0)

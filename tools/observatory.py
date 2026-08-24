@@ -151,12 +151,13 @@ sys.path.insert(0, str(Path(__file__).parent))
 import attribute_registry
 import dispatch
 import ledger
+import queue_policy
 import review_loop
 
 if TYPE_CHECKING:
     from collections.abc import Container
 
-SCHEMA: Final = "cti.observatory/7"
+SCHEMA: Final = "cti.observatory/8"
 STORE_NAME: Final = "store.json"
 
 EXIT_REFUSED: Final = 1
@@ -168,6 +169,10 @@ DEFAULT_EXPORT_DIR: Final = Path("/var/log/claude-otel/dispatches")
 # `review_rounds`, through `review_loop.parse_loop` itself so the validation never
 # forks (#445's finding 3 shape).
 DEFAULT_REVIEW_ROOT: Final = Path.home() / ".arma-cti" / "review"
+# The queue surface's own root, `queue_policy`'s default restated for the CLI's
+# `--queue-dir` the way every source root above is — the sampler journals
+# `queue-depths.jsonl` beside the policy (#492), and this rebuild reads it.
+DEFAULT_QUEUE_ROOT: Final = queue_policy.DEFAULT_QUEUE_DIR
 # Outside every worktree, like every other evidence store: a worktree removal must
 # not be able to destroy it (#478, user story 39).
 DEFAULT_STORE_DIR: Final = Path.home() / ".arma-cti" / "observatory"
@@ -329,6 +334,30 @@ WORK_ITEM_COLUMNS: Final = (
     "lead_time_seconds",
     "lead_time_seconds_reason",
 )
+
+# The queue-depth view's own projection (#492): one row per queue per sample,
+# in the journal's own order. The count and the age obey the store's own null
+# law — absent exactly where a reason sibling says why — and the reason is the
+# sample's own state: zero is the rendering of `counted` at depth zero and of
+# nothing else.
+QUEUE_DEPTH_COLUMNS: Final = (
+    "sampled_at",
+    "queue",
+    "state",
+    "count",
+    "count_reason",
+    "oldest",
+    "oldest_age_s",
+    "oldest_age_s_reason",
+)
+
+# The reason strings the two absent numbers carry, stated once so the reader
+# and the schema reference cannot drift: the state's own name is the whole of
+# the why.
+NO_COUNT_UNRECORDABLE: Final = "unrecorded: no source records this queue's membership"
+NO_COUNT_UNREADABLE: Final = "unreadable: a source exists and this sample could not read it"
+NO_AGE_UNRECORDED: Final = "unrecorded: no record carries the oldest item's entry instant"
+NO_AGE_NONE: Final = "none: the queue is empty and no item exists to age"
 
 # One work item's state, in preference order. `abandoned` reuses `gate_outcome`'s
 # `not_a_result` — the classes of `attribute_registry.NOT_A_RESULT_CLASSES`, widened
@@ -1394,6 +1423,89 @@ def read_stage_arrivals(review_root: Path) -> tuple[list[dict[str, Any]], dict[s
     return rows, malformed, journals
 
 
+# ------------------------------------------------------------------- the queue-depth view
+
+
+def read_queue_depths(queue_root: Path) -> tuple[list[dict[str, Any]], dict[str, int]]:
+    """Read the sampler's journal whole (#492), counting what will not parse.
+
+    The event name, the queue set and the two state vocabularies all come from
+    `attribute_registry` — the registry is their one home and this view derives.
+    A line that will not parse, is not this family's event, or names a queue or
+    a state outside the closed sets is malformed and counted as such, exactly
+    as the stage reader draws that line: damage to the record, not an absence
+    on it. An absent journal is an empty view — the sampler had not run before
+    this rebuild, and zero samples is that fact, not a refusal over it.
+    """
+    path = queue_root / attribute_registry.QUEUE_DEPTH_JOURNAL
+    malformed: dict[str, int] = {}
+    rows: list[dict[str, Any]] = []
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return [], {}
+    key = f"{queue_root.name}/{path.name}"
+    for line in lines:
+        try:
+            document = json.loads(line)
+        except ValueError:
+            malformed[key] = malformed.get(key, 0) + 1
+            continue
+        attributes = document.get("attributes") if isinstance(document, dict) else None
+        at = document.get("at") if isinstance(document, dict) else None
+        if (
+            not isinstance(document, dict)
+            or document.get("event") != attribute_registry.QUEUE_DEPTH_EVENT
+            or not isinstance(at, (int, float))
+            or not isinstance(attributes, dict)
+        ):
+            malformed[key] = malformed.get(key, 0) + 1
+            continue
+        queue = attributes.get("cti.queue.depth.queue")
+        state = attributes.get("cti.queue.depth.state")
+        oldest = attributes.get("cti.queue.depth.oldest")
+        count = attributes.get("cti.queue.depth.count")
+        age = attributes.get("cti.queue.depth.oldest_age_s")
+        if (
+            queue not in attribute_registry.QUEUES
+            or state not in attribute_registry.DEPTH_STATES
+            or oldest not in attribute_registry.OLDEST_STATES
+            or (count is not None and not isinstance(count, int))
+            or (age is not None and not isinstance(age, (int, float)))
+        ):
+            malformed[key] = malformed.get(key, 0) + 1
+            continue
+        rows.append(
+            {
+                "sampled_at": float(at),
+                "queue": queue,
+                "state": state,
+                "count": count,
+                # The null law's reason half: the state names the absence, and
+                # the reader that quotes a null-bearing row quotes its reason
+                # with it, because SQL is where an absence is most easily
+                # misread as a zero.
+                "count_reason": (
+                    None
+                    if state == "counted"
+                    else NO_COUNT_UNREADABLE
+                    if state == "unreadable"
+                    else NO_COUNT_UNRECORDABLE
+                ),
+                "oldest": oldest,
+                "oldest_age_s": float(age) if age is not None else None,
+                "oldest_age_s_reason": (
+                    None
+                    if oldest == "measured"
+                    else NO_AGE_UNRECORDED
+                    if oldest == "unrecorded"
+                    else NO_AGE_NONE
+                ),
+            }
+        )
+    return rows, malformed
+
+
 # ------------------------------------------------------------------- the landing view
 
 
@@ -1986,13 +2098,17 @@ def rebuild(  # noqa: PLR0913, PLR0917 — the six paths are the rebuild's own s
     spool: Path,
     repo: Path,
     store_dir: Path,
+    queue_root: Path = DEFAULT_QUEUE_ROOT,
 ) -> dict[str, Any]:
     """Rebuild the whole store from the sources, deterministically, in one pass.
 
     Every ordering in the output is a sorted ordering, nothing in it reads the wall
     clock, and the store file is rewritten whole — so two runs over the same inputs
     produce the same bytes. Refuses by name before writing anything if any source
-    directory cannot be read.
+    directory cannot be read. `queue_root` defaults rather than refusing on an
+    absent directory because the sampler's journal is the one source that may
+    legitimately not exist yet: no samples is zero rows, never a partial rebuild
+    presented as complete.
     """
     entries = _source_entries(dispatch_root, "dispatch_root")
     _source_entries(export_dir, "export_dir")
@@ -2002,10 +2118,12 @@ def rebuild(  # noqa: PLR0913, PLR0917 — the six paths are the rebuild's own s
     unreadable_issues = {int(name) for name in unreadable_loops}
     stage_rows, stage_malformed, stage_journals = read_stage_arrivals(review_root)
     landing_read = read_landings(review_root)
+    queue_rows, queue_malformed = read_queue_depths(queue_root)
 
     rows: list[dict[str, Any]] = []
     malformed_files: dict[str, int] = dict(stage_malformed)
     malformed_files.update(landing_read.malformed)
+    malformed_files.update(queue_malformed)
     for entry in entries:
         if not (entry / DISPATCH_FILE).is_file():
             continue
@@ -2057,6 +2175,7 @@ def rebuild(  # noqa: PLR0913, PLR0917 — the six paths are the rebuild's own s
             "review_root": str(review_root),
             "spool": str(spool),
             "repo": str(repo),
+            "queue_root": str(queue_root),
         },
         "coverage": {
             "dispatches": len(rows),
@@ -2123,6 +2242,20 @@ def rebuild(  # noqa: PLR0913, PLR0917 — the six paths are the rebuild's own s
             "session_renders_without_session_id": spool_read.without_session,
             "session_spend_sessions": len({render.session_id for render in spool_read.renders}),
             "session_spend_periods": len({str(row["period"]) for row in session_period}),
+            # The queue-depth view's own denominators (#492): the samples and the
+            # distinct queues they cover, so a journal the sampler stopped writing
+            # reads as a stale `last` rather than as a quiet system. The queues
+            # that never rendered `counted` are named rather than counted —
+            # `unrecorded` and `unreadable` are the facts a reader acts on, and
+            # which queue each belongs to is the whole of that fact.
+            "queue_depth_samples": len(queue_rows),
+            "queue_depth_queues": len({str(row["queue"]) for row in queue_rows}),
+            "queue_depth_samples_uncounted": sum(
+                1 for row in queue_rows if row["state"] != "counted"
+            ),
+            "queue_depth_last_at": max(
+                (float(row["sampled_at"]) for row in queue_rows), default=None
+            ),
             "malformed_lines": sum(malformed_files.values()),
         },
         "malformed": [
@@ -2136,6 +2269,7 @@ def rebuild(  # noqa: PLR0913, PLR0917 — the six paths are the rebuild's own s
         "stage_first_pass": stage_rows,
         "landings": landing_read.landings,
         "landing_relations": landing_read.relations,
+        "queue_depth": queue_rows,
         "session_period": session_period,
         "period_overhead": period_overhead,
     }
@@ -2264,6 +2398,28 @@ def summary_lines(store: Mapping[str, Any], store_dir: Path) -> tuple[str, ...]:
             )
         )
     )
+    # The queue-depth line states the sample's own coverage rather than a depth: no
+    # queue renders a number here, because the depth that matters is the newest one
+    # and a summary that pre-computed it would be a second rendering path for the
+    # cookbook's query. What a reader must know before trusting a quiet system is
+    # here — how many samples, over how many queues, how many carried no count, and
+    # when the newest was taken (#492).
+    lines.append(
+        " ".join(
+            (
+                "queue_depth",
+                f"samples={coverage['queue_depth_samples']}",
+                f"queues={coverage['queue_depth_queues']}",
+                f"uncounted={coverage['queue_depth_samples_uncounted']}",
+                "last="
+                + (
+                    str(coverage["queue_depth_last_at"])
+                    if coverage["queue_depth_last_at"] is not None
+                    else "none"
+                ),
+            )
+        )
+    )
     # The session line names the source's largest omission in its own words — the seat
     # the figure cannot see is the orchestrator, and `orchestrator=absent` says so
     # where a coverage count alone would read as completeness. `meter=` names the
@@ -2348,6 +2504,7 @@ def connect(store_dir: Path) -> sqlite3.Connection:
         ("stage_first_pass", STAGE_FIRST_PASS_COLUMNS),
         ("landings", LANDING_COLUMNS),
         ("landing_relations", LANDING_RELATION_COLUMNS),
+        ("queue_depth", QUEUE_DEPTH_COLUMNS),
         ("session_period", SESSION_PERIOD_COLUMNS),
         ("period_overhead", PERIOD_OVERHEAD_COLUMNS),
     ):
@@ -2398,6 +2555,11 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
         default=Path(os.environ.get("CTI_REVIEW_DIR", str(DEFAULT_REVIEW_ROOT))),
     )
     parser.add_argument(
+        "--queue-dir",
+        type=Path,
+        default=Path(os.environ.get("CTI_QUEUE_DIR", str(DEFAULT_QUEUE_ROOT))),
+    )
+    parser.add_argument(
         "--spool",
         type=Path,
         default=Path(os.environ.get("CTI_QUOTA_SPOOL", str(DEFAULT_SPOOL))),
@@ -2433,6 +2595,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             args.spool,
             args.repo,
             args.store_dir,
+            args.queue_dir,
         )
     except _RefusedError as refused:
         for line in refused.refusal.lines():
