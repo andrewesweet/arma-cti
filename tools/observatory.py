@@ -1247,6 +1247,28 @@ def _commit_date(repo: Path, sha: str) -> str | None:
     return ledger.git("show", "-s", "--format=%cI", sha, cwd=repo).strip() or None
 
 
+def _newest_landed_sha(repo: Path, shas: Sequence[str]) -> tuple[str | None, str | None]:
+    """Choose the newest candidate by its commit-attested time.
+
+    A commit's committer date is Git's own attestation of when it entered the history;
+    dispatch and result timestamps are surrounding records and may describe a stop
+    sweep instead. Equal instants use the lexicographically greatest full SHA as an
+    explicit deterministic tie-break. SHA order never decides between different times.
+    """
+    if not shas:
+        return None, "the landed SHA was not present in issue_cost"
+    dated: list[tuple[datetime, str]] = []
+    for sha in shas:
+        committed_at = _commit_date(repo, sha)
+        if committed_at is None:
+            return (
+                None,
+                f"the committer date for landed SHA {sha} could not be read from this checkout",
+            )
+        dated.append((datetime.fromisoformat(committed_at), sha))
+    return max(dated, key=lambda candidate: (candidate[0], candidate[1]))[1], None
+
+
 def _work_item_state(rows: Sequence[Mapping[str, Any]]) -> str:
     """Reduce one issue's dispatch rows to its work-item state, in preference order.
 
@@ -2198,14 +2220,23 @@ def _summary_cost_cell(row: Mapping[str, Any] | None, *, lane: str) -> dict[str,
     }
 
 
-def issue_summary_rows(store: Mapping[str, Any]) -> list[dict[str, Any]]:
+def issue_summary_rows(store: Mapping[str, Any], repo: Path | None = None) -> list[dict[str, Any]]:
     """Build one compact, landed-only row per issue from the store's existing views.
 
     Dispatches on issues not yet landed are deliberately absent: the summary is a
     history of landed work, not a live queue. Once an issue has landed, every dispatch
     naming it contributes to its count and lane set, even when that dispatch did not
     land the commit. Cost rows still include every lane that participated in the issue.
+    Among candidate SHAs, the selected value is newest by Git committer date; equal
+    dates use the explicit full-SHA tie-break in `_newest_landed_sha`.
     """
+    if repo is None:
+        inputs = store.get("inputs")
+        repo_value = inputs.get("repo") if isinstance(inputs, Mapping) else None
+        if not isinstance(repo_value, str):
+            reason = "issue summary needs the repository path to read commit dates"
+            raise ValueError(reason)
+        repo = Path(repo_value)
     costs_by_issue: dict[int, dict[str, Mapping[str, Any]]] = {}
     for row in store["issue_cost"]:
         costs_by_issue.setdefault(int(row["issue"]), {})[str(row["lane"])] = row
@@ -2230,11 +2261,12 @@ def issue_summary_rows(store: Mapping[str, Any]) -> list[dict[str, Any]]:
         involved = sorted(set(lanes_by_issue.get(issue, set())) | set(issue_costs))
         all_lanes = sorted(set(dispatch.LANES) | set(involved))
         rework = rework_by_issue.get(issue, {})
-        landed_shas = sorted(
-            {str(row["landed_sha"]) for row in issue_costs.values() if row.get("landed_sha")}
+        landed_shas = tuple(
+            sorted(
+                {str(row["landed_sha"]) for row in issue_costs.values() if row.get("landed_sha")}
+            )
         )
-        landed_sha = landed_shas[-1] if landed_shas else None
-        landed_sha_reason = None if landed_sha else "the landed SHA was not present in issue_cost"
+        landed_sha, landed_sha_reason = _newest_landed_sha(repo, landed_shas)
         rows.append(
             {
                 "issue": issue,
@@ -2620,7 +2652,7 @@ def rebuild(  # noqa: PLR0913, PLR0917 — the source paths, destination and pro
         "session_period": session_period,
         "period_overhead": period_overhead,
     }
-    store["issue_summary"] = issue_summary_rows(store)
+    store["issue_summary"] = issue_summary_rows(store, repo)
     store_dir.mkdir(parents=True, exist_ok=True)
     (store_dir / STORE_NAME).write_text(
         json.dumps(store, indent=2, sort_keys=True) + "\n", encoding="utf-8"
