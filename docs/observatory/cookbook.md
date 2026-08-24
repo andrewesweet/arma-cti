@@ -47,11 +47,10 @@ every Markdown cell. Only issues that have landed get rows, so dispatches on iss
 not yet landed do not churn the committed file. Later dispatches naming a landed issue
 are folded into that row on regeneration.
 
-This file is orchestrator-owned generated output. After each landing, the
-orchestrator runs `just observatory` against the live sources before the next
-landing's gate. An implementer sandbox may therefore see `check-observatory` red
-with `summary_mismatch`: that means live regeneration is due, not that the
-projection code failed. Never hand-edit the file.
+This file is generated output. `check-observatory` rebuilds in memory; a dispatched
+implementer repairs a clean stale projection in its worktree, while a hand edit,
+source refusal or another seat stays red. The external store is a cache and need not
+be writable for the projection repair. Never hand-edit the file.
 
 ```sql
 SELECT issue, landed_sha, dispatches, review_rounds,
