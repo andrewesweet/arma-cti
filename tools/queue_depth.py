@@ -116,10 +116,16 @@ class Sample(NamedTuple):
 
 
 class ReviewQueueRead(NamedTuple):
-    """The one review-root read shared by queue depth and the terminus prompt."""
+    """The one review-root read shared by queue depth and the terminus prompt.
+
+    `unreadable` names each `loop.json` that would not read, review-root-relative,
+    so one damaged loop is opened by name rather than counted; the prompts it
+    stands beside are the loops that did read.
+    """
 
     sample: Sample
     terminus: tuple[review_loop.TerminusPrompt, ...] | None
+    unreadable: tuple[str, ...] = ()
 
 
 def _journal_events(
@@ -315,6 +321,8 @@ def _human_ruling_read(review_root: Path, at: float) -> ReviewQueueRead:
     that raised the oldest such finding, and `unrecorded` where the journal
     predates the finding's round. One stat per historical issue directory is
     the whole cost, a loop read only where its stat says it is still open.
+    A `loop.json` that will not read is named and the walk carries on, so one
+    damaged loop suppresses no other loop's prompt.
     """
     try:
         entries = sorted(review_root.iterdir())
@@ -326,13 +334,18 @@ def _human_ruling_read(review_root: Path, at: float) -> ReviewQueueRead:
     depth = 0
     oldest_at: float | None = None
     prompts: list[review_loop.TerminusPrompt] = []
+    unreadable: list[str] = []
     for entry in entries:
         try:
             identified = _review_loop_entry(entry)
         except (OSError, ValueError):
-            return ReviewQueueRead(
-                Sample("human_ruling", "unreadable", None, "unrecorded", None), None
-            )
+            # One damaged loop names itself and the walk carries on: collapsing
+            # the population to the failure is #556's shape, absence rendered as
+            # the whole read. A depth over a partly-read population is still not
+            # a number, so the sample states unreadable while the prompts it
+            # stands beside remain the loops that did read.
+            unreadable.append(f"{entry.name}/{review_loop.LOOP_FILE}")
+            continue
         if identified is None:
             continue
         issue, loop = identified
@@ -341,6 +354,12 @@ def _human_ruling_read(review_root: Path, at: float) -> ReviewQueueRead:
         )
         prompts.append(prompt)
         depth, oldest_at = _update_human_ruling_age(issue, loop, rounds, depth, oldest_at)
+    if unreadable:
+        return ReviewQueueRead(
+            Sample("human_ruling", "unreadable", None, "unrecorded", None),
+            tuple(prompts),
+            tuple(unreadable),
+        )
     if not depth:
         sample = Sample("human_ruling", "counted", 0, "none", None)
         return ReviewQueueRead(sample, tuple(prompts))
@@ -358,8 +377,14 @@ def _human_ruling_sample(review_root: Path, at: float) -> Sample:
 
 def render_terminus_prompts(
     prompts: tuple[review_loop.TerminusPrompt, ...] | None,
+    unreadable: tuple[str, ...] = (),
 ) -> tuple[str, ...]:
-    """Render the separate terminus closeout's mechanical turn-top prompts."""
+    """Render the separate terminus closeout's mechanical turn-top prompts.
+
+    A damaged `loop.json` is named in its own `unreadable` line beside the
+    prompts for the loops that were read — a count would say something is wrong
+    without saying which file to open (#556).
+    """
     if prompts is None:
         return (
             (
@@ -383,6 +408,11 @@ def render_terminus_prompts(
             f"review_terminus={status} issue={prompt.issue} findings={prompt.findings}"
             f" open_above_low={prompt.open_above_low} action={rendered_action}"
         )
+    lines.extend(
+        f"review_terminus=unreadable path={name} "
+        'action="repair review state before relying on closeout prompt"'
+        for name in unreadable
+    )
     return tuple(lines)
 
 
@@ -515,7 +545,7 @@ def sample(  # noqa: PLR0913 — the parameters are the report verb's own reads 
     approval_root = gated_paths.APPROVAL_ROOT if approvals is None else approvals
     review_read = _human_ruling_read(reviews, now)
     if terminus_lines is not None:
-        terminus_lines.extend(render_terminus_prompts(review_read.terminus))
+        terminus_lines.extend(render_terminus_prompts(review_read.terminus, review_read.unreadable))
     readings = {
         "ready_work": lambda: _ready_sample(candidates, in_flight, candidate_refusal),
         "dispatch_slot": lambda: _dispatch_slot_sample(

@@ -408,6 +408,41 @@ def test_a_loop_that_will_not_read_renders_the_queue_unreadable(tmp_path: Path) 
     assert ruling.count is None
 
 
+def test_one_unreadable_loop_neither_suppresses_the_readable_prompts_nor_hides_its_name(
+    tmp_path: Path,
+) -> None:
+    review_root, dispatch_dir, approvals = empty_sources(tmp_path)
+    open_loop(review_root, 301, findings=1)
+    open_loop(review_root, 303, findings=0)
+    damaged = review_root / "302"
+    damaged.mkdir()
+    (damaged / review_loop.LOOP_FILE).write_text("{ not json", encoding="utf-8")
+    lines: list[str] = []
+
+    samples = sample_with(
+        review_root=review_root,
+        dispatch_dir=dispatch_dir,
+        approvals=approvals,
+        terminus_lines=lines,
+    )
+
+    assert samples_by_queue(samples)["human_ruling"].state == "unreadable"
+    assert tuple(lines) == (
+        (
+            "review_terminus=blocked issue=301 findings=1 open_above_low=1 "
+            'action="adjudicate or escalate before terminus"'
+        ),
+        (
+            "review_terminus=due issue=303 findings=0 open_above_low=0 "
+            'action="just review-loop terminus --issue 303"'
+        ),
+        (
+            "review_terminus=unreadable path=302/loop.json "
+            'action="repair review state before relying on closeout prompt"'
+        ),
+    )
+
+
 def test_a_missing_review_root_surfaces_an_unreadable_terminus_prompt(tmp_path: Path) -> None:
     dispatch_dir = tmp_path / "dispatches"
     dispatch_dir.mkdir()
