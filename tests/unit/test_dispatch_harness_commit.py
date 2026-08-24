@@ -32,14 +32,10 @@ cannot pin.
 from __future__ import annotations
 
 import subprocess
-from typing import TYPE_CHECKING
+from pathlib import Path
 
+import pytest
 from conftest import load_tool
-
-if TYPE_CHECKING:
-    from pathlib import Path
-
-    import pytest
 
 dispatch = load_tool("dispatch")
 
@@ -370,6 +366,84 @@ def test_a_commit_that_carries_the_message_file_refuses_and_never_pushes(
     # The push is what the refusal held back, so the artefact never reached a branch.
     assert _git("branch", "--list", cwd=remote) == ""
     assert (record / "commit-message.txt").read_text(encoding="utf-8") == MESSAGE
+    # #560's third item: the remediation's own `git rm --cached` and amend leave the
+    # working-tree copy behind, and `.gitignore` hides it from `git status`, so the
+    # next refusal it causes is named here rather than discovered as a surprise.
+    assert any("dispatch_message_present" in line for line in lines)
+
+
+def test_a_vet_git_failure_is_a_named_refusal_and_not_a_clean_answer(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # #560's first item: the guard used to map every `GitError` to `False`, so a git
+    # that failed read exactly like a commit that did not carry the file — the
+    # absence-shape this store keeps closing, sitting in the guard whose whole job is
+    # refusing. The failure is placed on the vet alone (the wrapper pattern two tests
+    # up defends), so the commit below is real and every assertion is a fact about the
+    # tree and the remote.
+    tree, remote = _tree_with_a_remote(tmp_path)
+    _edited(tree)
+    record = _record(tmp_path)
+    real_git = dispatch.worktree_tool.git
+
+    def failing_vet(*args: str, cwd: Path) -> str:
+        if args[0] == "ls-tree":
+            raise dispatch.worktree_tool.GitError(args, "fatal: git did not answer")
+        return real_git(*args, cwd=cwd)
+
+    monkeypatch.setattr(dispatch.worktree_tool, "git", failing_vet)
+    lines, code = dispatch.harness_finish(tree, 405, record)
+    assert code == dispatch.EXIT_REFUSED
+    assert "refusal=git_failed" in lines
+    assert any("command=git ls-tree" in line for line in lines)
+    # The one thing this test exists to forbid: the failure must not arrive dressed
+    # as the vet's clean negative.
+    assert not any("dispatch_message_committed" in line for line in lines)
+    assert not any("harness_commit=committed" in line for line in lines)
+    # The commit is real, carries the session's message, and the push is what the
+    # refusal held back.
+    assert _git("log", "-1", "--pretty=%B", cwd=tree).strip() == MESSAGE.strip()
+    assert _git("branch", "--list", cwd=remote) == ""
+
+
+def test_the_vet_itself_distinguishes_absent_from_a_git_that_failed(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # The other half of the first item, against the real git: `ls-tree` exits 0 with
+    # empty output for a path absent from a tree it read, and fails — never emptily —
+    # for a ref that resolves to nothing. The first is the clean negative the guard
+    # returns; the failures must reach the caller, because "I could not answer" is a
+    # different fact from "the path is absent". `cat-file -e` cannot make this cut: it
+    # exits 128 for both shapes, which is why the vet asks `ls-tree` instead.
+    tree, _remote = _tree_with_a_remote(tmp_path)
+    committed = _git("rev-parse", "HEAD", cwd=tree)
+    assert dispatch.commit_carries_dispatch_message(tree, committed) is False
+    with pytest.raises(dispatch.worktree_tool.GitError):
+        dispatch.commit_carries_dispatch_message(tree, "0" * 40)
+
+    def timing_out(*args: str, **_ignored: object) -> str:
+        raise dispatch.worktree_tool.GitError(args, "gave no answer within 1s")
+
+    monkeypatch.setattr(dispatch.worktree_tool, "git", timing_out)
+    with pytest.raises(dispatch.worktree_tool.GitError):
+        dispatch.commit_carries_dispatch_message(tree, committed)
+
+
+def test_the_gitignore_entry_for_the_message_file_is_pinned() -> None:
+    # #560's second item: the `.gitignore` line is the other half of the #483/#550 fix,
+    # and nothing stood under it — a future edit dropping the line would silently bring
+    # back the broad-add staging shape with half the fix gone. `git check-ignore` exits
+    # 0 only while the entry holds, so this reds the day the line is removed.
+    done = subprocess.run(  # noqa: S603
+        ["git", "check-ignore", "-q", dispatch.CODEX_COMMIT_MESSAGE],  # noqa: S607
+        cwd=Path(__file__).resolve().parents[2],
+        capture_output=True,
+        check=False,
+    )
+    assert done.returncode == 0, (
+        f"{dispatch.CODEX_COMMIT_MESSAGE} is no longer ignored — restore its "
+        ".gitignore entry (#550, #560)"
+    )
 
 
 def test_a_commit_without_the_message_file_is_not_refused_by_the_tracked_check(

@@ -3679,15 +3679,21 @@ def commit_carries_dispatch_message(tree: Path, commit: str) -> bool:
     The pre-launch guard asks the working tree, which is the wrong half once a commit
     exists: a file that went *into* the commit leaves `git status` clean, and that is how
     `984a740` reached a review branch with nothing catching it. Whether the path exists in
-    the commit's tree is the one question that answers both shapes, and `cat-file -e`
-    answers it in a single object lookup — cheap enough to sit on the harness's commit
-    path permanently rather than only where a route was once observed.
+    the commit's tree is the one question that answers both shapes, and `ls-tree` answers
+    it in a single object lookup — cheap enough to sit on the harness's commit path
+    permanently rather than only where a route was once observed.
+
+    `ls-tree` rather than `cat-file -e`, because the vet must tell "absent" from "git
+    did not answer" and `cat-file -e` cannot: it exits 128 both for a path missing from
+    a resolvable tree and for a ref that resolves to nothing, so a guard that swallowed
+    its `GitError` answered "no message file committed" on a git that had merely failed
+    — the absence-reads-as-healthy shape this store keeps closing (#560). `ls-tree`
+    exits 0 with empty output only for the path absent from a tree it read, so every
+    `GitError` it raises here — unresolvable ref, broken object store, the timeout that
+    killed git before it answered — is re-raised to the caller rather than answered.
     """
-    try:
-        worktree_tool.git("cat-file", "-e", f"{commit}:{CODEX_COMMIT_MESSAGE}", cwd=tree)
-    except worktree_tool.GitError:
-        return False
-    return True
+    listing = worktree_tool.git("ls-tree", commit, "--", CODEX_COMMIT_MESSAGE, cwd=tree)
+    return bool(listing.strip())
 
 
 def harness_start_refusal(worktree: Path) -> Refusal | None:
@@ -3780,7 +3786,9 @@ def harness_finish(  # noqa: PLR0911 — one return per end state, so no refusal
       the add left behind.
     - **A commit carrying the message file** is `dispatch_message_committed`, asked of the
       commit's tree between the commit and the push (#550): the artefact must be refused
-      where a reviewer would otherwise find it, downstream, reading a diff stat.
+      where a reviewer would otherwise find it, downstream, reading a diff stat. A git
+      that will not answer that vet is `git_failed` with the push held, never a clean
+      negative (#560).
 
     The message file is moved out of the tree before anything is staged — read, written
     beside the dispatch record where the run's other evidence lives, then unlinked — so it
@@ -3898,7 +3906,25 @@ def _harness_publish(tree: Path, issue: int) -> tuple[tuple[str, ...], int]:
             "attempted. Read git's own error above; the message the session asked for is "
             "beside the record as commit-message.txt.",
         )
-    if commit_carries_dispatch_message(tree, committed):
+    try:
+        carried = commit_carries_dispatch_message(tree, committed)
+    except worktree_tool.GitError as failure:
+        return _harness_refusal(
+            "git_failed",
+            (
+                f"worktree={tree}",
+                f"command=git {' '.join(failure.args_run)}",
+                f"stderr={failure.stderr}",
+            ),
+            "The commit was made and the vet that asks whether its tree carries "
+            "`.dispatch-commit-message` could not be answered, so the push was not "
+            "attempted. This refusal is not a clean answer: the guard did not run, and "
+            "it must not be read as 'no message file committed'. Read git's own error "
+            "above and re-ask it by hand before pushing — the commit is real and local, "
+            "and the message the session asked for is beside the record as "
+            "commit-message.txt.",
+        )
+    if carried:
         return _harness_refusal(
             "dispatch_message_committed",
             (f"worktree={tree}", f"commit={committed}", f"file={CODEX_COMMIT_MESSAGE}"),
@@ -3909,7 +3935,10 @@ def _harness_publish(tree: Path, issue: int) -> tuple[tuple[str, ...], int]:
             "reached a review ref. Strip it and amend — `git rm --cached "
             ".dispatch-commit-message` then `git commit --amend --no-edit` — never reset "
             "the tree (#105); the message is preserved beside the record as "
-            "commit-message.txt.",
+            "commit-message.txt. The amend leaves the working-tree copy of the file "
+            "behind as untracked, and `.gitignore` hides it from `git status`, so delete "
+            "it as well: the next dispatch into this tree refuses "
+            "`dispatch_message_present` until it is gone (#560).",
         )
     pushed = review_exchange.exchange(tree, issue)
     return (
