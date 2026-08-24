@@ -40,10 +40,17 @@ log-record spend is gone for good.
 The rebuild also writes `docs/observatory/landed-issues.md`, one generated row per
 landed issue. It is the diff-sized first read; the store remains the detailed source.
 Costs stay in separate lane columns and in their own meters — there is no total to
-add across lanes. `counted` includes a numeric zero, `unrecorded` includes the reason
-for an unknown cost, and `none not_involved` says that the issue did not use that
-lane. A row is added only once its work item is landed, so in-flight dispatches do
-not churn the committed file.
+add across lanes. `counted` includes a numeric zero, `unrecorded` carries the short
+codes `U` (uncalibrated) or `A` (absent), while `C<number>` is a counted cost and `N`
+is `none not_involved`. The full reason remains in the store's `costs` JSON, not in
+every Markdown cell. A row is added only once its work item is landed, so in-flight
+dispatches do not churn the committed file.
+
+This file is orchestrator-owned generated output. After each landing, the
+orchestrator runs `just observatory` against the live sources before the next
+landing's gate. An implementer sandbox may therefore see `check-observatory` red
+with `summary_mismatch`: that means live regeneration is due, not that the
+projection code failed. Never hand-edit the file.
 
 ```sql
 SELECT issue, landed_sha, dispatches, review_rounds,
@@ -54,7 +61,8 @@ ORDER BY issue
 
 The SQL `costs` column is the JSON object behind the Markdown lane cells. Read the
 `state` before interpreting its `cost`: `counted` is a number in the named meter,
-`unrecorded` is an unknown with a reason, and `none` is not involvement.
+`unrecorded` is an unknown carrying `U` or `A`, and `none` is `N`. Code meanings and
+full-reason semantics are in the schema reference.
 
 ## How long work takes, how much finishes, and which open item to act on now
 

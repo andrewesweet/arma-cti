@@ -849,10 +849,13 @@ def test_landed_summary_is_generated_from_store_and_excludes_in_flight_work(worl
     store = rebuild_world(world)
     path = world.repo / observatory.SUMMARY_PATH
     assert path.read_text(encoding="utf-8") == observatory.render_summary(store)
+    assert path.read_text(encoding="utf-8").startswith(observatory.SUMMARY_HEADER + "\n\n")
+    assert "The orchestrator regenerates it" in observatory.SUMMARY_HEADER
+    assert "summary_mismatch" in observatory.SUMMARY_HEADER
     data_rows = [
         line
         for line in path.read_text(encoding="utf-8").splitlines()
-        if line.startswith("| ") and not line.startswith("| ---")
+        if line.startswith("|") and not line.startswith("| ---")
     ]
     assert len(data_rows) == len(store["issue_summary"]) + 1  # header plus one row per landing
     assert {row["issue"] for row in store["issue_summary"]} == {
@@ -875,6 +878,13 @@ def test_summary_preserves_counted_zero_unknown_and_not_involved(world: World) -
     assert one["costs"]["codex"]["state"] == observatory.SUMMARY_COST_NONE
     assert one["costs"]["codex"]["rendering"] == "not_involved"
     assert one["costs"]["codex"]["cost_reason"]
+    rendered = observatory.render_summary(store)
+    assert "|U|U|" in rendered
+    assert "|A|N|N|" in rendered
+    assert "|R|" in rendered
+    assert "C<number>" in rendered
+    assert observatory.UNCALIBRATED_REASON not in rendered
+    assert observatory.NO_TELEMETRY_REASON not in rendered
 
     observatory_cost = next(
         row
@@ -887,7 +897,8 @@ def test_summary_preserves_counted_zero_unknown_and_not_involved(world: World) -
     zero = summary_row(store, LANDED_ONE_HOUR)
     assert zero["costs"]["claude-native"]["state"] == observatory.SUMMARY_COST_COUNTED
     assert zero["costs"]["claude-native"]["cost"] == 0.0
-    assert "counted cost=0" in observatory.render_summary(store)
+    assert f"|{LANDED_ONE_HOUR}|" in observatory.render_summary(store)
+    assert "|C0|N|N|" in observatory.render_summary(store)
 
 
 def test_a_hand_edit_to_the_committed_summary_is_a_red(world: World) -> None:
