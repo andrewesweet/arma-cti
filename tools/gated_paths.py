@@ -828,6 +828,7 @@ class CommandTableRoute(NamedTuple):
 
     lines: tuple[str, ...]
     authorized: bool
+    recipe_resolution: bool
     refusal: Report | None
 
 
@@ -849,10 +850,10 @@ def _command_table_route(inputs: CommandTableInputs) -> CommandTableRoute:
         or len(inputs.delegated) != 1
         or _has_current_approval_record(inputs.root, inputs.approvals, inputs.issue, "AGENTS.md")
     ):
-        return CommandTableRoute(lines=(), authorized=False, refusal=None)
+        return CommandTableRoute(lines=(), authorized=False, recipe_resolution=False, refusal=None)
     result = check_command_table.check(inputs.root)
     if not result.applicable:
-        return CommandTableRoute(lines=(), authorized=False, refusal=None)
+        return CommandTableRoute(lines=(), authorized=False, recipe_resolution=False, refusal=None)
     if result.failure is not None:
         failure = result.failure
         refusal = _refused(
@@ -860,8 +861,15 @@ def _command_table_route(inputs: CommandTableInputs) -> CommandTableRoute:
             (*inputs.covered, *failure.details),
             failure.action,
         )
-        return CommandTableRoute(lines=(), authorized=False, refusal=refusal)
-    return CommandTableRoute(lines=result.lines, authorized=True, refusal=None)
+        return CommandTableRoute(
+            lines=(), authorized=False, recipe_resolution=False, refusal=refusal
+        )
+    return CommandTableRoute(
+        lines=result.lines,
+        authorized=True,
+        recipe_resolution=result.recipe_resolution,
+        refusal=None,
+    )
 
 
 def check(  # noqa: C901, PLR0911, PLR0912, PLR0915 — one report per fail-closed read and carry shape
@@ -901,18 +909,19 @@ def check(  # noqa: C901, PLR0911, PLR0912, PLR0915 — one report per fail-clos
         return command_table_route.refusal
     command_table_lines = command_table_route.lines
     command_table_authorized = command_table_route.authorized
+    command_table_verification = ""
+    if command_table_authorized:
+        command_table_verification = ",command_table_confinement"
+        if command_table_route.recipe_resolution:
+            command_table_verification += ",recipe_resolution"
     gated = tuple(path for path in gated if path not in delegated)
     if command_table_authorized:
         gated = tuple(path for path in gated if path != "AGENTS.md")
     if not gated:
         authorization = "command_table" if command_table_authorized else "delegated_decision"
-        verified = "verified=path_scan,delegated_marker"
+        verified = f"verified=path_scan{command_table_verification},delegated_marker"
         authorized_count = 1 if command_table_authorized else 0
         changed_count = len(delegated) + authorized_count
-        if command_table_authorized:
-            verified = (
-                "verified=path_scan,command_table_confinement,recipe_resolution,delegated_marker"
-            )
         return Report(
             (
                 (f"gated_paths=ok changed={changed_count} authorization={authorization}"),
@@ -1031,8 +1040,7 @@ def check(  # noqa: C901, PLR0911, PLR0912, PLR0915 — one report per fail-clos
             *approved,
             *command_table_lines,
             *covered,
-            verified
-            + (",command_table_confinement,recipe_resolution" if command_table_authorized else ""),
+            verified + command_table_verification,
             LIMIT_LINE,
             SAME_USER_LIMIT,
         ),
