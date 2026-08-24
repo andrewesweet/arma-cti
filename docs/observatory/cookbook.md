@@ -43,8 +43,9 @@ Costs stay in separate lane columns and in their own meters — there is no tota
 add across lanes. `counted` includes a numeric zero, `unrecorded` carries the short
 codes `U` (uncalibrated) or `A` (absent), while `C<number>` is a counted cost and `N`
 is `none not_involved`. The full reason remains in the store's `costs` JSON, not in
-every Markdown cell. A row is added only once its work item is landed, so in-flight
-dispatches do not churn the committed file.
+every Markdown cell. Only issues that have landed get rows, so dispatches on issues
+not yet landed do not churn the committed file. Later dispatches naming a landed issue
+are folded into that row on regeneration.
 
 This file is orchestrator-owned generated output. After each landing, the
 orchestrator runs `just observatory` against the live sources before the next

@@ -30,7 +30,8 @@ coverage line itself changes — a rebuild after a prune must not look like a re
 before one.
 
 **The documentation runs.** The cookbook's first query is executed against the
-shipped store, because a cookbook that does not run is worse than none.
+shipped store, and the test executes every SQL block because a cookbook query that
+does not run is worse than none.
 
 **The occupancy view counts spans the run's own records attest, and the method is
 pinned, not documented.** A dispatch's span is its `started_at` to its `ended_at`;
@@ -144,6 +145,8 @@ LANDED_THREE_HOURS = 492
 ABANDONED_ISSUE = 493
 STOPPED_ISSUE = 494
 REFUSED_ISSUE = 496
+BOUNDARY_IN_FLIGHT_ISSUE = 598
+BOUNDARY_LANDED_ISSUE = 599
 # #524's round-two shape: every implementer dispatch ended clean and unlanded, and a
 # review dispatch's own harness closeout died — which must not brand the item.
 REVIEW_DIED_ISSUE = 497
@@ -845,7 +848,7 @@ def summary_row(store: dict[str, Any], issue: int) -> dict[str, Any]:
     return next(row for row in store["issue_summary"] if row["issue"] == issue)
 
 
-def test_landed_summary_is_generated_from_store_and_excludes_in_flight_work(world: World) -> None:
+def test_landed_summary_is_generated_from_store_and_excludes_unlanded_work(world: World) -> None:
     store = rebuild_world(world)
     path = world.repo / observatory.SUMMARY_PATH
     assert path.read_text(encoding="utf-8") == observatory.render_summary(store)
@@ -900,6 +903,12 @@ def test_summary_preserves_counted_zero_unknown_and_not_involved(world: World) -
     assert f"|{LANDED_ONE_HOUR}|" in observatory.render_summary(store)
     assert "|C0|N|N|" in observatory.render_summary(store)
 
+    observatory_cost["cost"] = 2.15866132609487
+    store["issue_summary"] = observatory.issue_summary_rows(store)
+    rendered = observatory.render_summary(store)
+    assert "|C2.15866|N|N|" in rendered
+    assert "C2.15866132609487" not in rendered
+
 
 def test_a_hand_edit_to_the_committed_summary_is_a_red(world: World) -> None:
     rebuild_world(world)
@@ -918,6 +927,64 @@ def test_a_hand_edit_to_the_committed_summary_is_a_red(world: World) -> None:
             world.queue_dir,
             path,
         )
+
+
+def test_a_dispatch_on_an_unlanded_issue_does_not_churn_the_summary_check(world: World) -> None:
+    rebuild_world(world)
+    stage_record(
+        world.dispatch_root,
+        "d-20260805-120000-boundary1",
+        issue=BOUNDARY_IN_FLIGHT_ISSUE,
+    )
+    observatory.check_summary(
+        world.dispatch_root,
+        world.export_dir,
+        world.review_root,
+        world.spool,
+        world.repo,
+        world.queue_dir,
+    )
+
+
+def test_a_new_landing_makes_the_summary_check_red_until_regeneration(world: World) -> None:
+    rebuild_world(world)
+    stage_record(
+        world.dispatch_root,
+        "d-20260805-120000-boundary2",
+        issue=BOUNDARY_LANDED_ISSUE,
+        base_sha=world.base_sha,
+    )
+    (world.repo / "boundary.txt").write_text("landed", encoding="utf-8")
+    run_git("add", "boundary.txt", cwd=world.repo)
+    run_git(
+        "commit",
+        "-qm",
+        f"feat: boundary landing\n\nrefs #{BOUNDARY_LANDED_ISSUE}",
+        cwd=world.repo,
+        at="2026-08-06T12:00:00+00:00",
+    )
+    run_git("update-ref", "refs/remotes/origin/main", "HEAD", cwd=world.repo)
+    with pytest.raises(observatory.SummaryMismatchError, match="summary_mismatch"):
+        observatory.check_summary(
+            world.dispatch_root,
+            world.export_dir,
+            world.review_root,
+            world.spool,
+            world.repo,
+            world.queue_dir,
+        )
+
+
+def test_the_landed_summary_cookbook_query_runs_against_the_shipped_store(world: World) -> None:
+    rebuild_world(world)
+    block = next(block for block in cookbook_blocks() if "FROM issue_summary" in block)
+    rows = observatory.query(world.store_dir, block.strip().rstrip(";"))
+    assert {row[0] for row in rows} == {
+        ISSUE,
+        LANDED_ONE_HOUR,
+        LANDED_TWO_HOURS,
+        LANDED_THREE_HOURS,
+    }
 
 
 # ---------------------------------------------------------------- both encodings read
