@@ -769,7 +769,11 @@ def emit_stage(
     return otel_event.emit(event, journal=journal, endpoint=endpoint)
 
 
-def record_stage_arrival(
+# Six is right and five wrong here because the six are six facts of one
+# arrival — stage, issue, journal root, time, dispatcher, idempotency — none
+# derivable from another, and folding any two would invent an object only
+# this lint reads. Same call `pool_merge.merge_claims` already made.
+def record_stage_arrival(  # noqa: PLR0913 — six facts, one parameter apiece
     stage: str,
     issue: int,
     review_root: Path,
