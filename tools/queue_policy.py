@@ -78,6 +78,7 @@ from typing import TYPE_CHECKING, Final, NamedTuple
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import attribute_registry  # the path insert above is what makes this importable
+import gated_paths  # the shared generated-path authority lives with the path gates
 import otel_event  # as above
 import queue_depth  # as above — the sampler this module's `report` verb carries (#492)
 
@@ -666,6 +667,10 @@ def surface_refusal(
 ) -> Refusal | None:
     """Refuse where two in-flight trees are writing the same paths, naming holder and paths.
 
+    Generated paths are excluded from this coordination surface by the same ``PATH_GATES``
+    authority that protects them from hand edits. Their bytes are derived from shared sources,
+    so two regenerations are not competing source edits; every other shared path remains loud.
+
     **A stated limit, not papered over:** a candidate's surface *before work starts* is not
     computable — a fresh worktree has touched nothing — so this rung cannot see a conflict at
     the moment of dispatch and does not pretend to. What it does see is two trees that are
@@ -673,13 +678,13 @@ def surface_refusal(
     Declaring a surface up front belongs to #241's readiness criteria, not to a second gate
     here (`docs/orchestration-design.md` §2).
     """
-    mine = set(candidate)
+    mine = {path for path in candidate if not gated_paths.is_generated_path(path)}
     if not mine:
         return None
     for holder, paths in sorted(others.items()):
         if holder == issue:
             continue
-        shared = sorted(mine & set(paths))
+        shared = sorted(mine & {path for path in paths if not gated_paths.is_generated_path(path)})
         if shared:
             return Refusal(
                 "surface_conflict",

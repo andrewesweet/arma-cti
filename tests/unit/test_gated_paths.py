@@ -21,6 +21,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 gated_paths = load_tool("gated_paths")
+observatory = load_tool("observatory")
 
 ISSUE: Final = 500
 STAMP: Final = "2026-08-22T06:00:00+00:00"
@@ -469,6 +470,13 @@ def test_every_stable_path_from_the_signoff_paragraph_uses_one_authority() -> No
     assert all(gated_paths.signoff_gate(path) is not None for path in paths)
     assert gated_paths.hook_denial("tests/specs/campaign.yaml") is not None
     assert gated_paths.hook_denial("addons/main/generated/commands.hpp") is not None
+
+
+def test_the_generated_path_authority_includes_the_committed_observatory_projection() -> None:
+    assert gated_paths.is_generated_path(observatory.SUMMARY_PATH.as_posix())
+    assert gated_paths.is_generated_path("addons/main/generated/commands.hpp")
+    assert not gated_paths.is_generated_path("tests/specs/campaign.yaml")
+    assert not gated_paths.is_generated_path("docs/observatory/cookbook.md")
 
 
 def test_the_catalogue_owns_the_delegated_adr_path_and_marker() -> None:

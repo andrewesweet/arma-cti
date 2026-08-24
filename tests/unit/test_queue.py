@@ -494,6 +494,24 @@ def test_disjoint_surfaces_do_not_conflict() -> None:
     assert queue.surface_refusal(250, ["a.py"], {241: ["b.py"]}) is None
 
 
+def test_generated_projection_does_not_conflict_between_in_flight_trees() -> None:
+    projection = "docs/observatory/landed-issues.md"
+    assert queue.surface_refusal(250, [projection], {241: [projection]}) is None
+
+
+def test_generated_projection_does_not_hide_a_real_shared_source_conflict() -> None:
+    projection = "docs/observatory/landed-issues.md"
+    source = "tools/dispatch.py"
+    refusal = queue.surface_refusal(
+        250,
+        [projection, source],
+        {241: [projection, source]},
+    )
+    assert refusal is not None
+    assert refusal.kind == "surface_conflict"
+    assert "paths=tools/dispatch.py" in refusal.found
+
+
 def test_live_tree_surfaces_keep_fragments_disjoint_and_real_overlaps_loud(
     tmp_path: Path,
 ) -> None:

@@ -108,6 +108,7 @@ class PathGate(NamedTuple):
     reason: str
     requires_approval: bool
     deny_at_write: bool
+    generated: bool = False
 
     def matches(self, path: str) -> bool:
         """Whether a normalised repository-relative path meets this rule."""
@@ -126,6 +127,8 @@ ADR_SIGNOFF_GATE: Final = PathGate(
     requires_approval=True,
     deny_at_write=False,
 )
+
+OBSERVATORY_SUMMARY_PATH: Final = "docs/observatory/landed-issues.md"
 
 
 # One path authority. ``deny_at_write`` preserves the hook contract AGENTS.md states:
@@ -179,6 +182,15 @@ PATH_GATES: Final = (
         "Generated file. Edit the schema source and regenerate; never hand-edit.",
         requires_approval=False,
         deny_at_write=True,
+        generated=True,
+    ),
+    PathGate(
+        OBSERVATORY_SUMMARY_PATH,
+        FILE,
+        "Generated observatory projection. Regenerate from live sources; never hand-edit.",
+        requires_approval=False,
+        deny_at_write=True,
+        generated=True,
     ),
 )
 
@@ -276,6 +288,11 @@ def hook_denial(path: str, *, root: Path | None = None) -> str | None:
         (gate.reason for gate in gates_for_path(path, root=root) if gate.deny_at_write),
         None,
     )
+
+
+def is_generated_path(path: str, *, root: Path | None = None) -> bool:
+    """Return whether the shared path authority classifies ``path`` as generated."""
+    return any(gate.generated for gate in gates_for_path(path, root=root))
 
 
 def is_delegated_decision_record(
