@@ -986,10 +986,17 @@ def landing_reference_pattern(issue: int) -> re.Pattern[str]:
     #563's measurement carried exactly that shape. A bare mention stays admitted,
     because a landing attribution mid-prose
     (`(#N)` at a sentence's end) is lexically the same token: where a landings
-    journal exists it is the discriminator, and this pattern runs only over
-    `referencing_commits`' output, whose own guards have already bound the token.
+    journal exists it is the discriminator.
+
+    The number-boundary guards are `issue_reference_pattern`'s own, carried here
+    again rather than inherited from the caller: `referencing_commits` admits a
+    *commit* on any guarded match anywhere in its message, and this pattern then
+    re-searches the whole message ungated by that admission — so a message
+    reading `as #55's probe showed, this lands #555` is in the referencing set
+    through its possessive credit and must not answer for #55 through the `#55`
+    inside `#555` (#571).
     """
-    return re.compile(rf"#{issue}(?!['’])")  # noqa: RUF001 — the typographic apostrophe is the spelling being excluded
+    return re.compile(rf"(?<![\w#])#{issue}(?![0-9])(?!['’])")  # noqa: RUF001 — the typographic apostrophe is the spelling being excluded
 
 
 def referencing_commits(log: str, issue: int) -> tuple[ReferencingCommit, ...]:

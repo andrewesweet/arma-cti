@@ -197,6 +197,9 @@ SUMMARY_COST_UNRECORDED: Final = "unrecorded"
 SUMMARY_COST_NONE: Final = "none"
 SUMMARY_REVIEW_NO_LOOP_REASON: Final = "no review loop is recorded for this issue"
 SUMMARY_REVIEW_NO_LOOP_CODE: Final = "R"
+# `|issue|…|` split on the delimiter yields the issue in cell index 1; a line with
+# no cell there is a header, a rule, or prose, never a data row.
+SUMMARY_ROW_FIRST_COLUMN_INDEX: Final = 1
 
 EXIT_REFUSED: Final = 1
 
@@ -2438,6 +2441,41 @@ def write_summary(repo: Path, store: Mapping[str, Any]) -> Path:
     return path
 
 
+def _summary_rows_by_issue(rendered: str) -> dict[int, str]:
+    """Key one rendered summary's data rows by issue number, whole line as value."""
+    rows: dict[int, str] = {}
+    for line in rendered.splitlines():
+        cells = line.split("|")
+        if len(cells) <= SUMMARY_ROW_FIRST_COLUMN_INDEX or not (
+            cells[SUMMARY_ROW_FIRST_COLUMN_INDEX].strip().isdecimal()
+        ):
+            continue
+        rows[int(cells[SUMMARY_ROW_FIRST_COLUMN_INDEX])] = line
+    return rows
+
+
+def summary_row_changes(previous: str, rendered: str) -> tuple[int, int, int]:
+    """Count the landed-issue rows a regeneration adds, moves and removes (#571).
+
+    The count comes from the rebuild's own render set against the previously
+    committed projection, so a commit message quoting it quotes the rebuild
+    rather than its author — #563's message accounted for twelve moved rows
+    over a diff that moved twenty-five and removed two. An issue *leaving* the
+    projection is a larger state change than a row moving, and `removed` is the
+    one number a diff-sized message never showed. A row whose issue keeps it but
+    whose bytes changed is `moved`; a lane column arriving or leaving changes
+    every row with it, and all of them reading moved is that fact rendered
+    honestly. `previous` empty — no committed projection yet — counts every row
+    as added.
+    """
+    old = _summary_rows_by_issue(previous)
+    new = _summary_rows_by_issue(rendered)
+    added = len(new.keys() - old.keys())
+    removed = len(old.keys() - new.keys())
+    moved = sum(1 for issue in old.keys() & new.keys() if old[issue] != new[issue])
+    return added, moved, removed
+
+
 def check_summary(  # noqa: PLR0913, PLR0917 — one source path per rebuild plus the committed target
     dispatch_root: Path,
     export_dir: Path,
@@ -3104,6 +3142,13 @@ def main(  # noqa: C901, PLR0911, PLR0912 — three CLI actions each own their r
             return EXIT_REFUSED
         print(f"observatory_summary=ok path={args.summary_path or args.repo / SUMMARY_PATH}")  # noqa: T201
         return 0
+    # Read the committed projection before the rebuild overwrites it: the row
+    # accounting below is the regeneration's own account of what it changed,
+    # quoted from the rebuild rather than from whoever writes the message (#571).
+    try:
+        previous = (args.repo / SUMMARY_PATH).read_text(encoding="utf-8")
+    except OSError:
+        previous = ""
     try:
         store = rebuild(
             args.dispatch_root,
@@ -3120,6 +3165,12 @@ def main(  # noqa: C901, PLR0911, PLR0912 — three CLI actions each own their r
         return EXIT_REFUSED
     for line in summary_lines(store, args.store_dir):
         print(line)  # noqa: T201
+    added, moved, removed = summary_row_changes(previous, render_summary(store))
+    print(  # noqa: T201 — the row accounting is the output; the message quotes it (#571)
+        "summary_rows "
+        f"previous={'present' if previous else 'absent'} "
+        f"added={added} moved={moved} removed={removed}"
+    )
     return 0
 
 

@@ -964,6 +964,30 @@ def test_a_bare_list_mention_still_qualifies_as_the_stated_ceiling(repo: Path) -
     assert ledger.landed(repo, 227, base, ARMED).sha == credit
 
 
+def test_a_possessive_credit_cannot_borrow_the_number_of_a_longer_issue(repo: Path) -> None:
+    # #571's collision: `referencing_commits` admits the commit for #55 on the
+    # guarded possessive match, and the narrowing re-searches the whole message —
+    # so unguarded it reads the `#55` inside `#555` and a follow-up whose only
+    # true #55 mention is possessive becomes #55's landing. The narrowing carries
+    # its own guards, and the commit answers for the issue it names: 555.
+    base = head(repo)
+    lands_555 = land(repo, "fix: the work\n\nas #55's probe showed, this lands #555")
+    assert ledger.landed(repo, 55, base, ARMED).sha is None
+    assert ledger.landed(repo, 555, base, ARMED).sha == lands_555
+
+
+def test_a_bare_mention_cannot_be_borrowed_from_a_word_character_prefix(repo: Path) -> None:
+    # The other half of the same guards: a token glued to a word character —
+    # `prose#555` — is not a bare `#55` either, so a commit in the referencing
+    # set through its possessive credit cannot answer for #55 through the `#55`
+    # inside that token.
+    base = head(repo)
+    land(repo, "docs: follow-up\n\nafter #55's round one, see prose#555 closed")
+    landing = ledger.landed(repo, 55, base, ARMED)
+    assert landing.sha is None
+    assert "only in descriptive prose" in landing.reason
+
+
 # ---------------------------------------------------- what each seat's gate can even say
 
 

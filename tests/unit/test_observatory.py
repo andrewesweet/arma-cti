@@ -848,6 +848,26 @@ def summary_check_args(world: World, *, export_dir: Path | None = None) -> list[
     ]
 
 
+def rebuild_args(world: World) -> list[str]:
+    """Build the CLI paths for a full rebuild against the staged world."""
+    return [
+        "--dispatch-root",
+        str(world.dispatch_root),
+        "--export-dir",
+        str(world.export_dir),
+        "--review-root",
+        str(world.review_root),
+        "--queue-dir",
+        str(world.queue_dir),
+        "--spool",
+        str(world.spool),
+        "--store-dir",
+        str(world.store_dir),
+        "--repo",
+        str(world.repo),
+    ]
+
+
 def cost_row(store: dict[str, Any], issue: int, lane: str) -> dict[str, Any]:
     """Return one (issue, lane) cost row from the store."""
     return next(row for row in store["issue_cost"] if row["issue"] == issue and row["lane"] == lane)
@@ -893,6 +913,64 @@ def test_landed_summary_is_generated_from_store_and_excludes_unlanded_work(world
     assert ABANDONED_ISSUE not in {row["issue"] for row in store["issue_summary"]}
     assert "total" not in data_rows[0].lower()
     assert "combined" not in data_rows[0].lower()
+
+
+def test_summary_row_changes_counts_adds_moves_and_removes() -> None:
+    # #571's numbers, staged at their smallest arrangement: 1 keeps its row but
+    # the row's bytes changed (moved), 2 is untouched, 3 leaves the projection
+    # (removed — the largest state change, the one #563's message never showed),
+    # 4 gains one (added).
+    previous = (
+        observatory.SUMMARY_HEADER
+        + "\n\n| issue | landed_sha |\n| --- | --- |\n|1|aaa|\n|2|bbb|\n|3|ccc|\n"
+    )
+    rendered = (
+        observatory.SUMMARY_HEADER
+        + "\n\n| issue | landed_sha |\n| --- | --- |\n|1|zzz|\n|2|bbb|\n|4|ddd|\n"
+    )
+    assert observatory.summary_row_changes(previous, rendered) == (1, 1, 1)
+
+
+def test_summary_row_changes_with_no_previous_projection_counts_every_row_added() -> None:
+    rendered = (
+        observatory.SUMMARY_HEADER + "\n\n| issue | landed_sha |\n| --- | --- |\n|1|a|\n|2|b|\n"
+    )
+    assert observatory.summary_row_changes("", rendered) == (2, 0, 0)
+
+
+def test_the_regeneration_accounts_for_the_rows_it_adds_moves_and_removes(
+    world: World,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    # The mechanism half of #571, over the discipline: the row accounting comes
+    # from the rebuild's own render set against the previously committed
+    # projection, so a commit message quoting it quotes the regeneration rather
+    # than its author's reading of the diff — #563's message said twelve moved
+    # rows where the diff moved twenty-five and removed two.
+    path = world.repo / observatory.SUMMARY_PATH
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        observatory.SUMMARY_HEADER + "\n\n"
+        "| issue | landed_sha | dispatches | review_rounds | lead_time_seconds | lanes |\n"
+        "| --- | --- | --- | --- | --- | --- |\n"
+        f"|{LANDED_ONE_HOUR}|stale|1|R|3600|claude-native|\n"
+        "|999|phantom|1|R|1|claude-native|\n",
+        encoding="utf-8",
+    )
+    assert observatory.main(rebuild_args(world)) == 0
+    accounted = dict(
+        pair.split("=", 1)
+        for pair in next(
+            line
+            for line in capsys.readouterr().out.splitlines()
+            if line.startswith("summary_rows ")
+        ).split()[1:]
+    )
+    assert accounted["previous"] == "present"
+    assert accounted["removed"] == "1"  # 999 left the landed projection
+    assert accounted["moved"] == "1"  # 490's stale row rewritten
+    new_rows = len(rebuild_world(world)["issue_summary"])
+    assert accounted["added"] == str(new_rows - 1)  # every landed row except 490's
 
 
 def test_landed_summary_uses_commit_time_when_sha_order_disagrees(tmp_path: Path) -> None:
@@ -1708,6 +1786,31 @@ def test_a_journal_naming_a_commit_absent_from_the_checkout_says_so(tmp_path: Pa
     assert row["landed"] is False
     assert row["landed_sha_reason"] == (
         f"the committer date for landed SHA {'f' * 40} could not be read from this checkout"
+    )
+
+
+def test_a_partially_damaged_journal_answers_from_its_readable_rows(tmp_path: Path) -> None:
+    # #571's decided semantic, pinned rather than reasoned: a journal with one
+    # readable produced-commit line beside a damaged line answers from the
+    # readable rows — every admitted line is fully validated, so the answer is a
+    # healthy value and not a repair — while the damage still counts in
+    # `malformed`, where a reader looking for it finds it. No reason is carried
+    # on the success: `landed_sha_reason` renders only for a null SHA, so bytes
+    # no surface reads would be ceremony, not visibility. If the damaged line
+    # recorded the newer landing, the row reports the older commit, and this
+    # test is the record that this is the choice.
+    world, _ = _armed_landing_world(tmp_path)
+    genuine = _stage_landing(world, "fix(land): the work\n\nno issue token anywhere", GENUINE_AT)
+    _stage_landing(world, "chore(observatory): regenerate\n\nrefs #552", REGENERATE_AT)
+    journal = write_landing_journal(world["review_root"], JOURNAL_ISSUE, genuine)
+    with journal.open("a", encoding="utf-8") as damaged:
+        damaged.write('{"event": "cti.landing.reviewed", "at": 2.0, "attri')
+    store = _rebuild_landing_world(world)
+    assert cost_row(store, JOURNAL_ISSUE, "claude-native")["landed_sha"] == genuine
+    assert summary_row(store, JOURNAL_ISSUE)["landed_sha"] == genuine
+    damaged_name = f"{JOURNAL_ISSUE}/{attribute_registry.LANDING_JOURNAL}"
+    assert (
+        next(entry for entry in store["malformed"] if entry["file"] == damaged_name)["lines"] >= 1
     )
 
 
