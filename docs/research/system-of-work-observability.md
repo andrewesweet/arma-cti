@@ -500,9 +500,8 @@ the cause, plus a stated window and escape channel for the dependent variable.
 
 ## 3. Non-binding proposed design
 
-Everything in this section is a research proposal. ADR-0078 records which parts the human
-has ruled and lists the remaining authority question; this section does not fill either
-gap by itself.
+Everything in this section is a research proposal. ADR-0078 records the human's rulings on
+the authority choices; this section does not add to that record.
 
 ### 3.1 Lifecycle events that preserve current closeout states
 
@@ -630,12 +629,9 @@ telemetry, and the current review-round boundary shows why it cannot be applied 
 where none does, register custom names, and deprecate rather than repurpose them. No human
 ruling has adopted the registry or deprecation policy.
 
-**Recorded authority boundary, plus an unresolved question.** ADR-0071 ruling 6 forbids
-profile exclusion, rerouting and breaker trips derived from observatory readings. It does
-not answer whether telemetry may reorder queue work, admit WIP, select lanes or reviewers,
-trigger watching or escalation, retry dispatches, or affect gate or landing acceptance.
-ADR-0078 returns those capabilities to the human as explicit choices. This research makes
-no default choice for them.
+**Recorded authority boundary.** ADR-0071 ruling 6 forbids profile exclusion, rerouting and
+breaker trips derived from observatory readings. ADR-0078 records the human's rulings on
+those capabilities. This research describes those choices without adding to them.
 
 **Candidate data-quality guideline.** Distinguish absence from zero and preserve a reason
 when known. This is supported by existing writers but is not universal: current result
@@ -680,8 +676,8 @@ high-value comparison; this project has not yet recorded the inputs needed to ru
 **5. Aging work-in-progress, as a candidate signal beside fixed-timeout watching.** Cycle
 time is known only after intervention was possible; item age is the same quantity while it
 may still help. The dated pass observed p85 lead time at 54.7 hours. Using that observation
-to trigger or replace watching is one of ADR-0078's unresolved authority choices; this
-research does not authorise it.
+to trigger or replace watching is one of ADR-0078's ruled authority choices; this research
+does not authorise it.
 
 **Deliberately not first: per-dispatch efficiency.** Brief size, prompt compression and
 scaffolding overhead have been measured repeatedly and found small — the 837-token brief
