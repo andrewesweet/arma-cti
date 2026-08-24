@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 import subprocess
 import sys
 from typing import TYPE_CHECKING
@@ -251,6 +252,29 @@ def test_just_check_runs_the_command_table_leg() -> None:
 
     assert "--leg check-command-table" in check_body
     assert "tools/check_command_table.py" in command_table_body
+
+
+def test_check_row_tracks_every_recipe_leg_in_order() -> None:
+    """#545: derive the documented leg list from the parsed `just check` recipe."""
+    completed = subprocess.run(
+        ["just", "--dump", "--dump-format", "json"],  # noqa: S607 — required just binary
+        cwd=REPO,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    recipes = json.loads(completed.stdout)["recipes"]
+    body = "\n".join(line[0] for line in recipes["check"]["body"])
+    legs = tuple(re.findall(r"--leg ([a-z][a-z0-9-]*)", body))
+    row = next(
+        line
+        for line in (REPO / "AGENTS.md").read_text(encoding="utf-8").splitlines()
+        if line.startswith("| `just check` |")
+    )
+    documented = tuple(re.findall(r"`(check-[a-z0-9-]+)`", row))
+
+    assert legs
+    assert documented == legs
 
 
 def test_the_named_leg_checks_the_delegated_candidate_route(tmp_path: Path) -> None:
