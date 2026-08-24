@@ -3673,6 +3673,23 @@ def _run_child_with_gate_clock(
     return done, collection
 
 
+def commit_carries_dispatch_message(tree: Path, commit: str) -> bool:
+    """Say whether a commit's own tree holds `CODEX_COMMIT_MESSAGE` as a tracked path (#550).
+
+    The pre-launch guard asks the working tree, which is the wrong half once a commit
+    exists: a file that went *into* the commit leaves `git status` clean, and that is how
+    `984a740` reached a review branch with nothing catching it. Whether the path exists in
+    the commit's tree is the one question that answers both shapes, and `cat-file -e`
+    answers it in a single object lookup — cheap enough to sit on the harness's commit
+    path permanently rather than only where a route was once observed.
+    """
+    try:
+        worktree_tool.git("cat-file", "-e", f"{commit}:{CODEX_COMMIT_MESSAGE}", cwd=tree)
+    except worktree_tool.GitError:
+        return False
+    return True
+
+
 def harness_start_refusal(worktree: Path) -> Refusal | None:
     """Refuse before the session launches where the tree is not provably empty (#405).
 
@@ -3761,6 +3778,9 @@ def harness_finish(  # noqa: PLR0911 — one return per end state, so no refusal
       (review round three's Medium), so each refusal is true of the command that refused:
       the add's claims no staging state it cannot know, the commit's names the staging
       the add left behind.
+    - **A commit carrying the message file** is `dispatch_message_committed`, asked of the
+      commit's tree between the commit and the push (#550): the artefact must be refused
+      where a reviewer would otherwise find it, downstream, reading a diff stat.
 
     The message file is moved out of the tree before anything is staged — read, written
     beside the dispatch record where the run's other evidence lives, then unlinked — so it
@@ -3862,6 +3882,19 @@ def harness_finish(  # noqa: PLR0911 — one return per end state, so no refusal
             "The commit was made and its SHA could not be read back, so the push was not "
             "attempted. Read git's own error above; the message the session asked for is "
             "beside the record as commit-message.txt.",
+        )
+    if commit_carries_dispatch_message(tree, committed):
+        return _harness_refusal(
+            "dispatch_message_committed",
+            (f"worktree={tree}", f"commit={committed}", f"file={CODEX_COMMIT_MESSAGE}"),
+            "The commit the harness just made carries `.dispatch-commit-message` as a "
+            "tracked path, so the artefact reached a commit rather than only the tree "
+            "(#550) — a clean `git status` cannot see this, because the file went into "
+            "the commit instead of being left in it. The push was held, so it has not "
+            "reached a review ref. Strip it and amend — `git rm --cached "
+            ".dispatch-commit-message` then `git commit --amend --no-edit` — never reset "
+            "the tree (#105); the message is preserved beside the record as "
+            "commit-message.txt.",
         )
     pushed = review_exchange.exchange(tree, issue)
     return (

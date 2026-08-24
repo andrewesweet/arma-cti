@@ -335,6 +335,61 @@ def test_a_clean_tree_with_no_message_launches_without_refusal(tmp_path: Path) -
     assert dispatch.harness_start_refusal(tree) is None
 
 
+def test_a_commit_that_carries_the_message_file_refuses_and_never_pushes(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # #550's own case: `984a740` reached a review branch carrying `.dispatch-commit-message`
+    # as a tracked path, and nothing caught it — the orchestrator's `git status --porcelain`
+    # was empty precisely because the file had gone into the commit rather than being left
+    # in the tree. The harness moves the file out before staging, so its own staging cannot
+    # produce this shape; the real `git` is wrapped for the `add` alone to re-create and
+    # stage the path afterwards, which is the state a hand-finished or predecessor-swept
+    # tree really arrived in (#483 staged it the same way). Everything else — status, commit,
+    # rev-parse — runs for real, so the commit below is a fact, not a mock.
+    tree, remote = _tree_with_a_remote(tmp_path)
+    _edited(tree)
+    record = _record(tmp_path)
+    real_git = dispatch.worktree_tool.git
+
+    def sweeping_add(*args: str, cwd: Path) -> str:
+        if args[:2] == ("add", "--all"):
+            real_git(*args, cwd=cwd)
+            (cwd / dispatch.CODEX_COMMIT_MESSAGE).write_text(MESSAGE, encoding="utf-8")
+            return real_git("add", dispatch.CODEX_COMMIT_MESSAGE, cwd=cwd)
+        return real_git(*args, cwd=cwd)
+
+    monkeypatch.setattr(dispatch.worktree_tool, "git", sweeping_add)
+    lines, code = dispatch.harness_finish(tree, 405, record)
+    assert code == dispatch.EXIT_REFUSED
+    assert "refusal=dispatch_message_committed" in lines
+    head = _git("rev-parse", "HEAD", cwd=tree)
+    assert f"commit={head}" in lines
+    # The refusal is asked of a commit that really carries the tracked path: the test
+    # would be circular if the wrapper could make the guard fire over a clean commit.
+    assert _git("cat-file", "-e", f"{head}:{dispatch.CODEX_COMMIT_MESSAGE}", cwd=tree) == ""
+    # The push is what the refusal held back, so the artefact never reached a branch.
+    assert _git("branch", "--list", cwd=remote) == ""
+    assert (record / "commit-message.txt").read_text(encoding="utf-8") == MESSAGE
+
+
+def test_a_commit_without_the_message_file_is_not_refused_by_the_tracked_check(
+    tmp_path: Path,
+) -> None:
+    # The companion negative: the check must read the commit's tree, not the working
+    # tree's history of having held the file — the harness moved it out before staging,
+    # so the commit is clean and the push happens exactly as before the guard existed.
+    tree, remote = _tree_with_a_remote(tmp_path)
+    _edited(tree)
+    committed = _git("rev-parse", "HEAD", cwd=tree)
+    assert dispatch.commit_carries_dispatch_message(tree, committed) is False
+    lines, code = dispatch.harness_finish(tree, 405, _record(tmp_path))
+    assert code == 0, lines
+    assert "harness_commit=committed" in lines
+    head = _git("rev-parse", "HEAD", cwd=tree)
+    assert dispatch.commit_carries_dispatch_message(tree, head) is False
+    assert _git("rev-parse", "refs/heads/issue-405", cwd=remote) == head
+
+
 def test_a_push_that_does_not_land_is_the_exchanges_refusal_and_not_a_silent_success(
     tmp_path: Path,
 ) -> None:

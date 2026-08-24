@@ -1,6 +1,10 @@
 docs/handoffs/
 .claude/worktrees/
 
+# The dispatch harness's commit-message drop file (#550): a broad `git add` must
+# never stage the handover artefact into the commit it describes.
+.dispatch-commit-message
+
 # HEMTT
 .hemttout/
 .hemtt/local.toml
