@@ -83,6 +83,11 @@ sync journals one `cti.terminal.state` event beside the record on the first reco
 of the state, fail-open; the four classes live in `attribute_registry` and nowhere
 else, `gate_outcome` included.
 
+The stop sweep uses the same block for its distinct terminal residue:
+`{"state": "stopped"}` carries no failure class and is not journalled as an
+abandonment. It closes the dispatch record without asserting that the sweep observed
+the run's own end; its `ended_at` is therefore absent.
+
 **Retention.** The materialised rows are kept indefinitely — they are the evidence quoted
 into an issue months later, and they are a few kilobytes each. The raw per-dispatch export
 grows without bound by construction, so `prune` deletes raw files older than
@@ -112,6 +117,7 @@ import attribute_registry
 import breaker
 import codex_guidance
 import dispatch
+import dispatch_stop
 from telemetry_log import rows
 
 if TYPE_CHECKING:
@@ -849,13 +855,24 @@ def _silent_end_state(source: Source) -> EndState:
     )
 
 
+def _recorded_terminal_state(result: Mapping[str, Any] | None) -> dict[str, str] | None:
+    """Read the explicit terminal residue a closeout writer recorded, if valid."""
+    if result is None:
+        return None
+    block = result.get("terminal_state")
+    if block != {"state": dispatch_stop.STOPPED}:
+        return None
+    return {"state": dispatch_stop.STOPPED}
+
+
 def type_end_state(
     items: Iterable[Item], result: Mapping[str, Any] | None, source: Source
 ) -> EndState:
     """Type how a dispatch ended, from provider records and the dispatcher's own refusal.
 
     Order matters, and the table's own ranking wrote it (#184). A dispatcher refusal
-    is decisive because it means the run never started; then the harness's own
+    is decisive because it means the run never started; an explicit stopped terminal
+    state is then preserved as the record's neutral residue; then the harness's own
     failure statuses, because `untyped_harness_failure` outranks everything,
     `infra_unavailable` included; then the provider's own records; then the
     dispatcher's classification of its own run's log (`outcome`, the breaker's
@@ -872,6 +889,12 @@ def type_end_state(
             str(result.get("failure_class") or "infra_unavailable"),
             f"the dispatcher refused before the lane was reached ({kind})",
             (f"result.json refusal={kind}",),
+        )
+    if _recorded_terminal_state(result) is not None:
+        return EndState(
+            dispatch_stop.STOPPED,
+            "the result records an explicit stopped terminal state",
+            ("result.json terminal_state=stopped",),
         )
     status = result.get("status") if result is not None else None
     if status in HARNESS_FAILURE_STATUSES:
@@ -890,12 +913,14 @@ def type_end_state(
             f"the dispatcher classified its own run's log (outcome={outcome})",
             (f"result.json outcome={outcome}",),
         )
-    if result is None:
-        return EndState("unknown", "the run has not ended: no result.json beside the plan")
     return (
-        _silent_end_state(source)
-        if not collected
-        else EndState("ok", "the run ended and its records carry no refusal or quota failure")
+        EndState("unknown", "the run has not ended: no result.json beside the plan")
+        if result is None
+        else (
+            _silent_end_state(source)
+            if not collected
+            else EndState("ok", "the run ended and its records carry no refusal or quota failure")
+        )
     )
 
 
@@ -1093,14 +1118,18 @@ def started(result: Mapping[str, Any] | None) -> bool:
 
 
 def terminal_state(result: Mapping[str, Any] | None, end_state: EndState) -> dict[str, str] | None:
-    """Record work that started and did not complete, as a state distinct from completion.
+    """Record an explicit stop, or abandoned work, as distinct from completion.
 
-    `None` is the absence, and it is three different facts the caller already
-    holds: the work completed, is still running, or never started. The class is
-    the end state's own — `type_end_state` has already drawn it from the existing
-    vocabulary — and the row that carries this block is distinguishable from a
-    completed one by the block alone, with no inference over records (#489).
+    An explicit stopped block is returned as recorded. Otherwise `None` is the absence,
+    and it is three different facts the caller already holds: the work completed, is
+    still running, or never started. For an abandoned block, the class is the end
+    state's own — `type_end_state` has already drawn it from the existing vocabulary —
+    and the row that carries this block is distinguishable from a completed one by the
+    block alone, with no inference over records (#489).
     """
+    recorded = _recorded_terminal_state(result)
+    if recorded is not None:
+        return recorded
     if not started(result):
         return None
     if end_state.class_ not in attribute_registry.NOT_A_RESULT_CLASSES:
@@ -1300,8 +1329,11 @@ def row_line(row: Mapping[str, Any], *, record_parse_failed: bool = False) -> st
         f"landed={row['gate']['landed']['sha'] or 'none'}",
     ]
     terminal = row.get("terminal_state")
-    if terminal:
-        fields.append(f"terminal={terminal['state']}:{terminal['class']}")
+    if isinstance(terminal, dict) and terminal.get("state"):
+        value = f"terminal={terminal['state']}"
+        if terminal.get("class"):
+            value += f":{terminal['class']}"
+        fields.append(value)
     if record_parse_failed:
         fields.insert(7, "record_parse=failed")
     return " ".join(fields)
@@ -1340,13 +1372,16 @@ TERMINAL_JOURNAL: Final = "terminal.jsonl"
 def _record_terminal_state(record: Path, row: Mapping[str, Any], now: datetime) -> None:
     """Emit one terminal-state event for a newly recorded abandonment, fail-open.
 
-    The row already carries the block — this is the emission half, and a failure
+    The row already carries the abandonment block — this is the emission half, and a failure
     anywhere in it degrades to no event, never to an error reaching the sync. The
     event fires only on the first record of the state: the journal is an append
     log and a re-sync of an unchanged dispatch is not a new abandonment.
     """
     terminal = row.get("terminal_state")
-    if not terminal:
+    if (
+        not isinstance(terminal, dict)
+        or terminal.get("state") != attribute_registry.TERMINAL_ABANDONED
+    ):
         return
     previous = read_json(record / "ledger.json")
     if previous is not None and previous.get("terminal_state") == terminal:

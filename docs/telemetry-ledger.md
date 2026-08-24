@@ -67,7 +67,7 @@ cap_fraction { pool, unit, basis, excludes, attribution, attribution_note,
                binding_window, binding_reason,
                windows { <window> { est, observed, tokens_per_point } } }
 end_state{ class, reason, evidence }
-terminal_state { state, class }   # absent unless the work started and did not complete (#489)
+terminal_state { state, class? }  # `abandoned` carries class; `stopped` carries none
 gate     { outcome, landed { sha, commits, reason }, returncode, started_at, ended_at }
 ```
 

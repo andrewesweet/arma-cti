@@ -374,6 +374,8 @@ def test_a_stop_records_an_ending_so_the_tree_becomes_dispatchable_again(tmp_pat
     assert written["dispatch_id"] == target_record.dispatch_id
     assert written["stopped_by"] == "just dispatch --stop"
     assert written["killed"] == ["101 SIGTERM"]
+    assert written["terminal_state"] == {"state": "stopped"}
+    assert "ended_at" not in written
     # Facts only, and specifically no `refusal`: `tools/ledger.py` reads that key as proof
     # the dispatcher refused before the lane was reached, which is false of a stop.
     assert "refusal" not in written
@@ -429,7 +431,16 @@ def test_stopping_a_dispatch_that_died_without_saying_so_records_the_ending(
     found = lines(printed)
     assert found["stop"] == "already_stopped"
     assert found["killed"] == "0"
-    assert (target_record.directory / "result.json").is_file()
+    written = json.loads((target_record.directory / "result.json").read_text(encoding="utf-8"))
+    assert set(written) == {
+        "dispatch_id",
+        "stopped_by",
+        "stopped_at",
+        "killed",
+        "terminal_state",
+    }
+    assert written["terminal_state"] == {"state": "stopped"}
+    assert "ended_at" not in written
     assert dispatch_stop.holders(target, tmp_path / "dispatches") == ()
 
 

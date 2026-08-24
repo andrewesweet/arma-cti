@@ -142,26 +142,28 @@ Claude Code's client-side figure, **list price, not spend** (#220): it is named
 
 ## 7. Occupancy counts spans the run's own records attest, and its floor is a named list
 
-A span needs both its bounds from the run itself, and two closeout shapes look like
-an end without being one. A `result.json` the stop sweep wrote (`stopped_by`) carries
-the sweep's own clock as its `ended_at` — a fact about when the sweep ran, never
-about when the work stopped, which may be any instant between the plan and the
-sweep. And a result that recorded no `started_at` of its own would pair its end with
-the plan's `planned_at`, opening the span at a launch attempt rather than at work —
-the never-launched refusal and the child-state-unknown failure both carry that shape.
-**Either one renders `ended_at` null with its reason and contributes no occupied
-time, however long the dispatch may have run.** Until #485 round 2 the store took
-the sweep's clock as a genuine end and inflated its `used` by 58% over the research
+A span needs both its bounds from the run itself. The current stop sweep writes an
+explicit `terminal_state: {"state": "stopped"}` and no `ended_at`, because it closes
+the dispatch record without observing the run's end. Eleven legacy `result.json`
+files still carry `stopped_by` and the sweep's own `ended_at` — a fact about when the
+sweep ran, never about when the work stopped, which may be any instant between the
+plan and the sweep. The reader guard remains load-bearing for those records. A result
+that recorded no `started_at` of its own likewise would pair its end with the plan's
+`planned_at`, opening a span at a launch attempt rather than at work — the
+never-launched refusal and the child-state-unknown failure both carry that shape.
+**Either legacy shape renders `ended_at` null with its reason and contributes no
+occupied time, however long the dispatch may have run.** Until #485 round 2 the store
+took the sweep's clock as a genuine end and inflated its `used` by 58% over the research
 window — eleven swept closeouts, the worst a week between plan and sweep with no
-process left to kill — while §1 of the research document stood up: a reader
-comparing the corrected store against §1 should find `used` and mean concurrency
-within single-digit percent, and a disagreement beyond that is a red to report with
-both figures, never a rounding note. The dispatches no window's `used` could bound
-are listed in the coverage block's `dispatches_unbounded` and counted in the query's
-`unbounded_dispatches`, so `used` reads as the floor it is. Work that started and
-did not complete is read from #489's `terminal_state` block — bounded abandoned work
-occupies its own real span; never re-derive the fact from timestamps or from an
-absence of landing, which is #542's whole subject.
+process left to kill — while §1 of the research document stood up: a reader comparing
+the corrected store against §1 should find `used` and mean concurrency within single-
+digit percent, and a disagreement beyond that is a red to report with both figures,
+never a rounding note. The dispatches no window's `used` could bound are listed in the
+coverage block's `dispatches_unbounded` and counted in the query's
+`unbounded_dispatches`, so `used` reads as the floor it is. Work that started and did
+not complete is read from #489's `terminal_state` block — bounded abandoned work
+occupies its own real span; never re-derive the fact from timestamps or from an absence
+of landing, which is #542's whole subject.
 
 Three more in the same view. **Minute boundaries are sampled, not rounded**: a
 dispatch live for forty seconds across no minute boundary contributes zero minutes,

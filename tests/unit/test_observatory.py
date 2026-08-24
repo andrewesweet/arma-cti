@@ -43,9 +43,10 @@ that runs above the ruled limit so `used` is a count of live dispatches and neve
 clipped one. The mini-fixture pins the sampling itself: a dispatch whose forty
 seconds cross no minute boundary contributes zero minutes, which is what separates
 boundary sampling from duration rounding — two methods that disagree on exactly that
-dispatch. A span is attested only by the run's own records: a closeout the stop
-sweep wrote and a result that recorded no start of its own each occupy nothing and
-are named by their reason — the fabrication that held 58% of the live store's
+dispatch. A span is attested only by the run's own records: the current stop closeout
+has an explicit `stopped` terminal state and no end, while a legacy closeout the stop
+sweep wrote and a result that recorded no start of its own each occupy nothing and are
+named by their reason — the fabrication that held 58% of the live store's
 `used` until round 2 rejected it by record shape, never by dispatch id. Work that
 started and did not complete is read from #489's `terminal_state` block (bounded
 abandoned work occupies its own span; unbounded work occupies nothing and is named),
@@ -2284,13 +2285,15 @@ def test_minute_boundaries_sample_the_grid_never_round_a_duration(
 
 
 def test_a_closeout_the_run_did_not_write_fabricates_no_span(world: World, tmp_path: Path) -> None:
-    # #485 round 2's live finding, staged in the shape the record actually carries:
-    # the stop sweep writes a result.json of its own wherever the runner never did,
-    # and stamps the sweep's clock into `ended_at`. Round 1 paired that end with the
-    # plan's `planned_at` fallback and booked a week of occupancy from one record —
-    # eleven of them held 58% of the live store's `used`. The rejection is by record
-    # shape (`stopped_by`, or an end beside no start of the run's own), never by a
-    # list of dispatch ids: a relocated declaration is what #501/#503/#504 closed.
+    # #485 round 2's live finding, staged in the legacy shape the records actually
+    # carry: the stop sweep writes a result.json of its own wherever the runner never
+    # did, and stamps the sweep's clock into `ended_at`. Round 1 paired that end with
+    # the plan's `planned_at` fallback and booked a week of occupancy from one record —
+    # eleven of them held 58% of the live store's `used`. The explicit terminal marker
+    # is also present here, while the legacy end remains to keep #485's reader guard
+    # load-bearing. The rejection is by record shape (`stopped_by`, or an end beside no
+    # start of the run's own), never by a list of dispatch ids: a relocated declaration
+    # is what #501/#503/#504 closed.
     root = tmp_path / "swept-dispatches"
     export = tmp_path / "swept-export"
     review = tmp_path / "swept-review"
@@ -2324,6 +2327,7 @@ def test_a_closeout_the_run_did_not_write_fabricates_no_span(world: World, tmp_p
                 "stopped_by": "just dispatch --stop",
                 "stopped_at": "2026-08-12T09:00:00+00:00",
                 "killed": [],
+                "terminal_state": {"state": "stopped"},
                 "ended_at": "2026-08-12T09:00:00+00:00",
             }
         ),
@@ -2365,6 +2369,7 @@ def test_a_closeout_the_run_did_not_write_fabricates_no_span(world: World, tmp_p
     }
     assert by_id[swept]["ended_at"] is None
     assert by_id[swept]["ended_at_reason"] == observatory.NO_END_STOP_SWEEP_REASON
+    assert by_id[swept]["terminal_state"] == "stopped"
     assert by_id[row_bound]["ended_at"] is None
     assert by_id[row_bound]["ended_at_reason"] == observatory.NO_END_NO_OWN_START_REASON
     # Over an hour that the fabricated span would have covered end to end, the

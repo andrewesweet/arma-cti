@@ -106,15 +106,15 @@ than routes — nothing here excludes a profile, reroutes work or trips a breake
   the reader names, of the dispatches then live, summed — the published method of
   `tools/occupancy.py` (#295), so the store
   rebuilds the dated observation rather than inventing a sibling method — and a span
-  needs both its bounds from the run itself. A result the stop sweep closed
-  (`stopped_by`) carries the sweep's clock as its end, and a result that recorded no
-  start of its own would pair its end with the plan's `planned_at` — an attempt, not
-  occupancy — so both render `ended_at` null with their reason, contribute **no**
-  occupied time however long the dispatch may have run, and are named in the coverage
-  line's `unbounded` count. A dispatch that started and did not complete is read from
-  #489's `terminal_state` block, never re-derived from timestamps or from an absence of
-  landing (#542). Every figure ships beside its window's own bounds and its minute
-  count, so no number is quotable without its denominator.
+  needs both its bounds from the run itself. The current stop closeout carries
+  `terminal_state: {"state": "stopped"}` and no `ended_at`; eleven legacy closeouts
+  carry `stopped_by` with the sweep's clock as their end. Both the legacy stop shape and
+  a result that recorded no start of its own render `ended_at` null with their reason,
+  contribute **no** occupied time however long the dispatch may have run, and are named
+  in the coverage line's `unbounded` count. A dispatch that started and did not complete
+  is read from #489's `terminal_state` block, never re-derived from timestamps or from
+  an absence of landing (#542). Every figure ships beside its window's own bounds and
+  its minute count, so no number is quotable without its denominator.
 
 Sources, all outside every worktree: the dispatch records at `~/.arma-cti/dispatches/`
 (`CTI_DISPATCH_DIR`), the per-dispatch OTel export at `/var/log/claude-otel/dispatches/`
@@ -275,14 +275,15 @@ NO_START_REASON: Final = "neither the result nor the plan carries a start time"
 NO_END_RUNNING_REASON: Final = "the run has not ended: no result.json beside the plan"
 NO_END_UNUSABLE_REASON: Final = "the dispatch record carries no usable ended_at"
 NO_END_ROW_REASON: Final = "the pruned source's ledger row carries no end time"
-# Two closeout shapes that look like an end and are not (#485 round 2). The stop
-# sweep writes a `result.json` of its own wherever the runner never did, and stamps
-# the sweep's clock into `ended_at` — a fact about the sweep, never about the work,
-# which may have stopped at any instant between the plan and the sweep. And a result
-# that recorded no `started_at` of its own would pair its end with the plan's
-# `planned_at` (`ledger.dispatch_start`'s fallback), opening the span at a launch
-# attempt rather than at work — the never-launched refusal and the
-# child-state-unknown failure both carry exactly that shape.
+# Two closeout shapes that look like an end and are not (#485 round 2). The current
+# stop sweep writes an explicit terminal state and no `ended_at`; eleven legacy records
+# stamp the sweep's clock into `ended_at` — a fact about the sweep, never about the work,
+# which may have stopped at any instant between the plan and the sweep. The legacy
+# `stopped_by` marker keeps that shape recognisable. And a result that recorded no
+# `started_at` of its own would pair its end with the plan's `planned_at`
+# (`ledger.dispatch_start`'s fallback), opening the span at a launch attempt rather
+# than at work — the never-launched refusal and the child-state-unknown failure both
+# carry exactly that shape.
 NO_END_STOP_SWEEP_REASON: Final = (
     "the result was written by the stop sweep (`stopped_by`), so its `ended_at` is the "
     "sweep's clock and not the run's end — when the work stopped is not derivable from "

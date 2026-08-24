@@ -53,9 +53,11 @@ Two processes are deliberately never signalled:
 The occupancy rung below reads "no `result.json`" as "live, or dead without writing one",
 which is #105's own wording and is what makes a crashed dispatch block its tree. Without a
 way to record an ending, that block would have no remedy. So a completed stop lays down a
-facts-only result — what was killed, when, and by what — and the tree is dispatchable
-again. It **never overwrites a result that is already there**: that one is the run's own
-account of itself and this tool did not observe what it says.
+facts-only result — what was killed, when, and by what — with
+`terminal_state: {"state": "stopped"}` and no `ended_at`: the record is closed, but the
+sweep did not observe the run's end. The tree is dispatchable again. It **never
+overwrites a result that is already there**: that one is the run's own account of itself
+and this tool did not observe what it says.
 
 The document carries no `refusal` key, and that absence is load-bearing.
 `tools/ledger.py`'s `type_end_state` treats `result.json`'s `refusal` as decisive proof
@@ -434,7 +436,7 @@ def _stop_processes(worktree: Path, first: Scan, machine: Machine) -> Stopped:
 
 
 def _record_ending(record: Record, finished: dict[int, str]) -> str:
-    """Lay down the facts-only result a stop produces, or leave an existing one alone."""
+    """Lay down the facts-only stop closeout, or leave an existing result alone."""
     if record.finished:
         return "preserved"
     path = record.directory / "result.json"
@@ -445,7 +447,7 @@ def _record_ending(record: Record, finished: dict[int, str]) -> str:
                 "stopped_by": "just dispatch --stop",
                 "stopped_at": datetime.now(tz=UTC).isoformat(),
                 "killed": [f"{pid} {how}" for pid, how in sorted(finished.items())],
-                "ended_at": datetime.now(tz=UTC).isoformat(),
+                "terminal_state": {"state": STOPPED},
             },
             indent=2,
         )

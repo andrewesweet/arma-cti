@@ -980,6 +980,50 @@ def test_completed_work_records_no_terminal_state() -> None:
     assert ledger.terminal_state(result, state) is None
 
 
+def test_a_stop_sweep_records_a_stopped_terminal_state_without_a_failure_class() -> None:
+    # A sweep ended the dispatch record, but it did not observe a provider failure. The
+    # explicit marker must therefore stay in the terminal residue rather than being
+    # inferred as #489's abandoned/infra_unavailable shape from an empty export.
+    result = {
+        "dispatch_id": DISPATCH,
+        "stopped_by": "just dispatch --stop",
+        "stopped_at": "2026-08-05T12:10:00+00:00",
+        "killed": [],
+        "terminal_state": {"state": "stopped"},
+    }
+    state = ledger.type_end_state([], result, ledger.Source(ledger.SOURCE_ABSENT, None))
+    assert state.class_ == "stopped"
+    assert ledger.terminal_state(result, state) == {"state": "stopped"}
+    assert (
+        ledger.gate_outcome(ledger.Landing(None, 0, "x"), result, state, "implementer")
+        == "not_landed"
+    )
+
+
+def test_a_sync_carries_a_stopped_closeout_without_journaling_abandonment(
+    tmp_path: Path,
+) -> None:
+    result = {
+        "dispatch_id": DISPATCH,
+        "stopped_by": "just dispatch --stop",
+        "stopped_at": "2026-08-05T12:10:00+00:00",
+        "killed": [],
+        "terminal_state": {"state": "stopped"},
+    }
+    record = stage_record(tmp_path / "dispatches", result=result)
+    write_jsonl(tmp_path / "export" / f"dispatch-{DISPATCH}.jsonl", [])
+
+    lines, code = ledger.sync(options(tmp_path), NOW)
+
+    assert code == 0
+    row = json.loads((record / "ledger.json").read_text(encoding="utf-8"))
+    assert row["terminal_state"] == {"state": "stopped"}
+    assert row["end_state"]["class"] == "stopped"
+    assert row["gate"]["outcome"] == "not_landed"
+    assert any("terminal=stopped" in line for line in lines)
+    assert not (record / "terminal.jsonl").exists()
+
+
 def test_a_sync_records_the_terminal_state_and_journals_exactly_one_event(
     tmp_path: Path,
 ) -> None:
