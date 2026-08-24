@@ -23,7 +23,9 @@ cannot forget a step, and prose demonstrably does**:
   is the exact command the orchestrator must run.
 
 **The gate is inside the protocol, not beside it.** `just fast` runs after the
-rebase, unconditionally, on every landing that pushes anything. There is no flag
+rebase, unconditionally, on every landing that pushes anything. The tree is checked
+again after the gate, before any push, so a gate-side repair cannot leave newer working
+tree bytes behind a stale commit. There is no flag
 that skips it and there is deliberately no heuristic that decides it is
 unnecessary: "our surfaces were disjoint" is a judgement about *other* agents'
 commits which this tool cannot verify, and encoding it would be a gate bypass
@@ -302,7 +304,8 @@ CLAUDE_LANE: Final = "claude-native"
 # neither the rebase nor the gate, and naming rungs that will not run would be the same
 # defect pointing the other way.
 NOT_CHECKED: Final = (
-    "the rebase itself, conflict markers in the rebased tree, `just fast`, the push race, "
+    "the rebase itself, conflict markers in the rebased tree, `just fast` or a "
+    "gate-side working-tree modification, the push race, "
     "whether the push and the ff-only merge can be run at all, whether the main "
     "checkout carries commits of its own, and the reviewed-commit rung where the "
     "rebase has commits to replay — the SHA a verdict names is not the one the replay "
@@ -647,6 +650,18 @@ def classify_gate(path: Path, result: GateResult) -> Refusal | None:
         (f"worktree={path}", f"gate={' '.join(GATE)}", f"exit={result.code}"),
         "The gate's own output is above, unabridged — nothing was captured or summarised. "
         "Fix what it names and run `just land` again. Nothing was pushed.",
+    )
+
+
+def classify_gate_modified_tree(path: Path, status: Preflight) -> Refusal | None:
+    """Refuse a green gate that left bytes outside the commit about to be pushed."""
+    if status.clean:
+        return None
+    return Refusal(
+        "gate_modified_tree",
+        _found(path, status),
+        "The gate changed the working tree after preflight. Inspect and commit the change, "
+        "then run `just land` again. Nothing was pushed.",
     )
 
 
@@ -1519,6 +1534,12 @@ def _rebase_and_gate(  # noqa: PLR0911, PLR0913, PLR0917 — one rung per return
     if red is not None:
         return Report.refused(red), None
     lines.append(f"gate=green ({' '.join(GATE)})")
+
+    modified = classify_gate_modified_tree(
+        here, read_status(git("status", "--porcelain", "--untracked-files=all", cwd=here))
+    )
+    if modified is not None:
+        return Report.refused(modified), None
 
     # After the gate on purpose: the corpus costs a slot of the Arma tier, and a tree
     # that cannot pass `just fast` has no business being sent there (#302).

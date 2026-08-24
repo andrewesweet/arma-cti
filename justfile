@@ -163,8 +163,9 @@ check-attributes:
 # as the external observatory store. Dispatches on issues not yet landed are outside
 # the projection, so they do not churn this check; later dispatches naming a landed
 # issue can change its row. The check rebuilds into memory; a dispatched implementer
-# repairs a clean stale projection in its worktree, while a source refusal, hand edit
-# or any other seat remains red.
+# repairs a clean stale projection in its worktree. An uncommitted hand edit remains red;
+# a committed hand edit is indistinguishable from staleness and may be overwritten by that
+# repair. A source refusal or any other seat remains red.
 check-observatory:
     uv run python tools/observatory.py check
 

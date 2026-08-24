@@ -647,6 +647,15 @@ class _Gate:
         return land.GateResult(self.code, "")
 
 
+class _MutatingGate(_Gate):
+    """A green gate that leaves a tracked change behind."""
+
+    def __call__(self, path: Path) -> object:
+        result = super().__call__(path)
+        (path / "README.md").write_text("changed during gate\n", encoding="utf-8")
+        return result
+
+
 # Saturday 07:00 UTC — outside z.ai's Mon-Fri 14:00-18:00 SGT peak band, so a staged
 # landing's free-lane read is the same answer on every box at every hour (#426).
 OFF_PEAK: Final = datetime(2026, 8, 22, 7, 0, tzinfo=UTC)
@@ -1951,6 +1960,25 @@ def test_a_landing_that_reaches_no_in_world_surface_does_not_owe_the_corpus(
     assert report.code == 0
     assert "corpus=not_owed reason=no_in_world_path" in report.lines
     assert _tip(origin) == _git("rev-parse", "HEAD", cwd=here).strip()
+
+
+def test_a_gate_repair_that_modifies_the_tree_refuses_before_push(
+    repo: tuple[Path, Path, Path],
+    tmp_path: Path,
+) -> None:
+    """A gate-side repair cannot leave HEAD stale while its working tree is newer."""
+    origin, main, here = repo
+    before = _tip(origin)
+    _commit(here, "feature.txt", "work\n")
+    review = _reviewed(here, tmp_path)
+
+    report = land.land(main, here, gate=_MutatingGate(), review=review)
+
+    assert report.code == land.EXIT_REFUSED
+    assert report.lines[0] == "refusal=gate_modified_tree"
+    assert "tracked= M README.md" in report.lines
+    assert _tip(origin) == before
+    assert (here / "README.md").read_text(encoding="utf-8") == "changed during gate\n"
 
 
 def test_a_whole_green_run_over_this_head_clears_the_in_world_landing(

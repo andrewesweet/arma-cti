@@ -48,9 +48,11 @@ not yet landed do not churn the committed file. Later dispatches naming a landed
 are folded into that row on regeneration.
 
 This file is generated output. `check-observatory` rebuilds in memory; a dispatched
-implementer repairs a clean stale projection in its worktree, while a hand edit,
-source refusal or another seat stays red. The external store is a cache and need not
-be writable for the projection repair. Never hand-edit the file.
+implementer repairs a clean stale projection in its worktree. An uncommitted hand edit
+stays red; a committed hand edit is indistinguishable from staleness and may be
+overwritten by that repair. A source refusal or another seat stays red. The external
+store is a cache and need not be writable for the projection repair. Never hand-edit
+the file.
 
 ```sql
 SELECT issue, landed_sha, dispatches, review_rounds,
