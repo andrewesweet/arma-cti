@@ -9,6 +9,7 @@ candidate justfile.  It does not judge a row's prose description.
 from __future__ import annotations
 
 import argparse
+import os
 import re
 import subprocess
 import sys
@@ -82,6 +83,7 @@ class Result(NamedTuple):
     applicable: bool
     lines: tuple[str, ...]
     failure: Failure | None
+    recipe_resolution: bool
 
 
 def _git_bytes(*args: str, cwd: Path) -> bytes:
@@ -195,11 +197,12 @@ def _interval(start: int, count: int) -> tuple[int, int] | None:
 
 
 def _covered(rows: tuple[Row, ...], interval: tuple[int, int] | None) -> bool:
-    """Whether a changed-line interval lies wholly inside one data row."""
+    """Whether every line in a changed-line interval is a data-row line."""
     if interval is None:
         return True
     start, end = interval
-    return any(row.line <= start and end <= row.line for row in rows)
+    row_lines = {row.line for row in rows}
+    return all(line in row_lines for line in range(start, end + 1))
 
 
 def _changed_rows(rows: tuple[Row, ...], hunks: tuple[Hunk, ...]) -> tuple[Row, ...]:
@@ -223,7 +226,12 @@ def _recipes(command: str) -> tuple[str, ...]:
 
 def _failure(kind: str, details: tuple[str, ...], action: str) -> Result:
     """Build an applicable typed refusal."""
-    return Result(applicable=True, lines=(), failure=Failure(kind, details, action))
+    return Result(
+        applicable=True,
+        lines=(),
+        failure=Failure(kind, details, action),
+        recipe_resolution=False,
+    )
 
 
 def _parse_tables(baseline: str, current: str) -> Result | tuple[tuple[Row, ...], tuple[Row, ...]]:
@@ -237,7 +245,7 @@ def _parse_tables(baseline: str, current: str) -> Result | tuple[tuple[Row, ...]
         baseline_has_table = "| Command |" in baseline
         current_has_table = "| Command |" in current
         if not baseline_has_table and not current_has_table:
-            return Result(applicable=False, lines=(), failure=None)
+            return Result(applicable=False, lines=(), failure=None, recipe_resolution=False)
         return _failure(
             COMMAND_TABLE_UNREADABLE,
             (f"path={AGENTS_PATH}", f"detail={error}"),
@@ -357,7 +365,7 @@ def check(root: Path) -> Result:  # noqa: PLR0911 — each typed refusal names i
         )
 
     if baseline == current:
-        return Result(applicable=False, lines=(), failure=None)
+        return Result(applicable=False, lines=(), failure=None, recipe_resolution=False)
 
     parsed = _parse_tables(baseline, current)
     if isinstance(parsed, Result):
@@ -366,10 +374,10 @@ def check(root: Path) -> Result:  # noqa: PLR0911 — each typed refusal names i
 
     hunk_result = _read_hunks(root)
     if isinstance(hunk_result, Failure):
-        return Result(applicable=True, lines=(), failure=hunk_result)
+        return Result(applicable=True, lines=(), failure=hunk_result, recipe_resolution=False)
     confinement = _confinement_failure(baseline_rows, current_rows, hunk_result)
     if confinement is not None:
-        return Result(applicable=True, lines=(), failure=confinement)
+        return Result(applicable=True, lines=(), failure=confinement, recipe_resolution=False)
 
     changed = _changed_rows(current_rows, hunk_result)
     if not changed:
@@ -377,17 +385,19 @@ def check(root: Path) -> Result:  # noqa: PLR0911 — each typed refusal names i
             applicable=True,
             lines=("command_table=ok path=AGENTS.md rows=0",),
             failure=None,
+            recipe_resolution=False,
         )
 
     resolution = _resolution_failure(root, changed)
     if resolution is not None:
-        return Result(applicable=True, lines=(), failure=resolution)
+        return Result(applicable=True, lines=(), failure=resolution, recipe_resolution=False)
 
     names = ",".join(recipe for row in changed for recipe in _recipes(row.command))
     return Result(
         applicable=True,
         lines=(f"command_table=ok path=AGENTS.md rows={len(changed)} recipes={names}",),
         failure=None,
+        recipe_resolution=True,
     )
 
 
@@ -402,7 +412,17 @@ def _route_candidate(root: Path) -> bool:
     except gated_paths.GitError as error:
         raise GitError(error.args_run, error.stderr) from error
     delegated = gated_paths.delegated_decisions(root, paths)
-    return "AGENTS.md" in paths and len(delegated) == 1
+    issue, _issue_error = gated_paths.issue_of(root, os.environ)
+    return (
+        "AGENTS.md" in paths
+        and len(delegated) == 1
+        and not gated_paths._has_current_approval_record(  # noqa: SLF001 — mirror the route precondition
+            root,
+            gated_paths.APPROVAL_ROOT,
+            issue,
+            AGENTS_PATH,
+        )
+    )
 
 
 def main(argv: list[str] | None = None) -> int:

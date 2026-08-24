@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import subprocess
+import sys
 from typing import TYPE_CHECKING
 
 from conftest import REPO, load_tool
@@ -11,9 +12,27 @@ from conftest import REPO, load_tool
 if TYPE_CHECKING:
     from pathlib import Path
 
+    import pytest
+
 
 gated_paths = load_tool("gated_paths")
 check_command_table = load_tool("check_command_table")
+
+
+def approve_agents(repo: Path, store: Path) -> None:
+    """Write a direct approval for the fixture's current AGENTS.md change."""
+    content_id = gated_paths.content_id_of(repo, "AGENTS.md")
+    _approval, _target, added = gated_paths.record_approval(
+        repo,
+        store,
+        issue=544,
+        path="AGENTS.md",
+        expected_content_id=content_id,
+        approved_at="2026-08-24T06:00:00+00:00",
+        approved_by="andre",
+        environ={},
+    )
+    assert added
 
 
 def git(repo: Path, *args: str) -> None:
@@ -49,6 +68,29 @@ def repository(root: Path) -> Path:
     git(repo, "commit", "-q", "-m", "base")
     git(repo, "update-ref", "refs/remotes/origin/main", "HEAD")
 
+    return repo
+
+
+def adjacent_repository(root: Path) -> Path:
+    """Create a fixture whose command table has two adjacent data rows."""
+    repo = repository(root)
+    (repo / "AGENTS.md").write_text(
+        (repo / "AGENTS.md")
+        .read_text(encoding="utf-8")
+        .replace(
+            "| `just old-recipe` | Old purpose | No | Always |\n",
+            "| `just old-recipe` | Old purpose | No | Always |\n"
+            "| `just second-old` | Second purpose | No | Always |\n",
+        ),
+        encoding="utf-8",
+    )
+    (repo / "justfile").write_text(
+        "old-recipe:\n    @true\n\nsecond-old:\n    @true\n",
+        encoding="utf-8",
+    )
+    git(repo, "add", ".")
+    git(repo, "commit", "-q", "-m", "add adjacent row")
+    git(repo, "update-ref", "refs/remotes/origin/main", "HEAD")
     return repo
 
 
@@ -89,6 +131,70 @@ def test_a_delegated_row_change_passes_when_the_candidate_recipe_resolves(
     assert report.exit_code == 0
     assert "authorization=command_table" in report.lines[0]
     assert any(line.startswith("command_table=ok path=AGENTS.md") for line in report.lines)
+
+
+def test_adjacent_delegated_rows_are_one_confined_table_change(tmp_path: Path) -> None:
+    repo = adjacent_repository(tmp_path)
+    (repo / "AGENTS.md").write_text(
+        (repo / "AGENTS.md")
+        .read_text(encoding="utf-8")
+        .replace("old-recipe", "new-recipe")
+        .replace("second-old", "second-new"),
+        encoding="utf-8",
+    )
+    (repo / "justfile").write_text(
+        "old-recipe:\n    @true\n\nsecond-old:\n    @true\n\n"
+        "new-recipe:\n    @true\n\nsecond-new:\n    @true\n",
+        encoding="utf-8",
+    )
+    delegated_record(repo)
+
+    report = gated_paths.check(repo, tmp_path / "approvals", issue=544)
+
+    assert report.exit_code == 0
+    assert "command_table=ok path=AGENTS.md rows=2 recipes=new-recipe,second-new" in report.lines
+
+
+def test_an_approval_stands_down_the_command_table_leg_with_a_delegated_adr(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    repo = repository(tmp_path)
+    (repo / "AGENTS.md").write_text(
+        (repo / "AGENTS.md")
+        .read_text(encoding="utf-8")
+        .replace("`just old-recipe`", "`just new-recipe`"),
+        encoding="utf-8",
+    )
+    (repo / "justfile").write_text(
+        "old-recipe:\n    @true\n\nnew-recipe:\n    @true\n", encoding="utf-8"
+    )
+    delegated_record(repo)
+    store = tmp_path / "approvals"
+    approve_agents(repo, store)
+    monkeypatch.setattr(sys.modules["gated_paths"], "APPROVAL_ROOT", store)
+
+    assert check_command_table.main(["--root", str(repo)]) == 0
+
+    assert capsys.readouterr().out.splitlines() == ["command_table=not_applicable"]
+
+
+def test_deleting_a_command_row_does_not_claim_recipe_resolution(
+    tmp_path: Path,
+) -> None:
+    repo = repository(tmp_path)
+    agents = (repo / "AGENTS.md").read_text(encoding="utf-8")
+    (repo / "AGENTS.md").write_text(
+        agents.replace("| `just old-recipe` | Old purpose | No | Always |\n", ""),
+        encoding="utf-8",
+    )
+    delegated_record(repo)
+
+    report = gated_paths.check(repo, tmp_path / "approvals", issue=544)
+
+    assert report.exit_code == 0
+    verified = next(line for line in report.lines if line.startswith("verified="))
+    assert verified == "verified=path_scan,command_table_confinement,delegated_marker"
+    assert "recipe_resolution" not in verified
 
 
 def test_a_delegated_row_change_with_prose_outside_the_table_is_refused(
