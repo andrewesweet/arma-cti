@@ -330,7 +330,12 @@ nothing in the output saying so.
 **The boundary column is the view's largest omission.** The stage journals begin
 at #490, so every arrival before it — every brief, dispatch, gate run, exchange,
 review and landing in the store's dispatch history — is absent from this figure
-rather than counted as rework. `undetermined` arrivals are the recorder's own
+rather than counted as rework. An issue that predates the recorder does not
+borrow a clean past from that absence: its first journalled arrival records
+`undetermined`, because the recorder checks the issue's review directory and its
+pipeline dispatch records before granting a `first_time` no journal supports —
+and arrivals after that first one read against the journal it founded.
+`undetermined` arrivals are the recorder's own
 statement that an arrival's history had a hole in it, and a journal line that is
 wrong on its face (unparseable, or naming a stage or status outside the closed
 vocabularies) is malformed and counted in `malformed`, never bucketed as

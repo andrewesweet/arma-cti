@@ -529,3 +529,125 @@ def test_a_journal_line_without_the_stage_field_parses_and_undetermines_the_next
     )
     # The read did not crash, and the arrival the hole precedes says undetermined.
     assert attribute_registry.record_stage_arrival("brief", 490, tmp_path, NOW) == "undetermined"
+
+
+# ------------------- the absent journal, and the record outside it (#490 round 2, finding 1)
+
+
+def _dispatch_record(root: Path, dispatch_id: str, issue: int, seat: str) -> None:
+    """Lay down one dispatch record as `tools/dispatch.py`'s `write_record` does."""
+    directory = root / dispatch_id
+    directory.mkdir(parents=True)
+    (directory / "dispatch.json").write_text(
+        json.dumps(
+            {"dispatch_id": dispatch_id, "seat": seat, "issue": issue, "lane": "claude-native"}
+        ),
+        encoding="utf-8",
+    )
+
+
+def test_an_absent_journal_with_no_history_is_first_time(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A genuinely new issue has no journal yet, and that one is first time."""
+    monkeypatch.setenv("CTI_DISPATCH_DIR", str(tmp_path / "no-records"))
+    assert attribute_registry.record_stage_arrival("brief", 511, tmp_path, NOW) == "first_time"
+
+
+def test_an_absent_journal_with_a_prior_loop_is_undetermined_not_clean(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The transition window's shape: the issue predates the recorder and has a past."""
+    monkeypatch.setenv("CTI_DISPATCH_DIR", str(tmp_path / "no-records"))
+    (tmp_path / "512").mkdir()
+    (tmp_path / "512" / "loop.json").write_text("{}", encoding="utf-8")
+    assert attribute_registry.record_stage_arrival("brief", 512, tmp_path, NOW) == "undetermined"
+    # The undetermined arrival founds the journal, so the question does not recur.
+    assert attribute_registry.record_stage_arrival("implementation", 512, tmp_path, NOW) == (
+        "first_time"
+    )
+
+
+def test_an_absent_journal_with_a_pipeline_dispatch_on_the_issue_is_undetermined(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """An implementer dispatch predating the recorder says the item moved."""
+    records = tmp_path / "records"
+    monkeypatch.setenv("CTI_DISPATCH_DIR", str(records))
+    _dispatch_record(records, "d-old", 513, "implementer")
+    assert attribute_registry.record_stage_arrival("brief", 513, tmp_path, NOW) == "undetermined"
+
+
+def test_a_recon_dispatch_is_not_pipeline_history(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Triage names the issue without moving it through the pipeline."""
+    records = tmp_path / "records"
+    monkeypatch.setenv("CTI_DISPATCH_DIR", str(records))
+    _dispatch_record(records, "d-recon", 514, "recon")
+    assert attribute_registry.record_stage_arrival("brief", 514, tmp_path, NOW) == "first_time"
+
+
+def test_this_arrivals_own_dispatch_record_is_not_prior_history(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """`write_record` lays the dispatch down before it records the arrival (#490).
+
+    The record for the dispatch arriving now is passed over, so it is not read
+    as prior history: the answer is the pessimistic `after_rework` an empty
+    prefix earns (no brief line — its emission failed open), never the
+    `undetermined` the scan would grant if its own record counted as evidence.
+    """
+    records = tmp_path / "records"
+    monkeypatch.setenv("CTI_DISPATCH_DIR", str(records))
+    _dispatch_record(records, "d-now", 515, "implementer")
+    assert (
+        attribute_registry.record_stage_arrival(
+            "implementation", 515, tmp_path, NOW, dispatch_id="d-now"
+        )
+        == "after_rework"
+    )
+
+
+def test_a_dispatch_record_that_will_not_read_undetermines_rather_than_cleans(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The seat inside an unreadable record cannot be known, so no clean past."""
+    records = tmp_path / "records" / "d-broken"
+    records.mkdir(parents=True)
+    (records / "dispatch.json").write_text("{not json", encoding="utf-8")
+    monkeypatch.setenv("CTI_DISPATCH_DIR", str(tmp_path / "records"))
+    assert attribute_registry.record_stage_arrival("brief", 516, tmp_path, NOW) == "undetermined"
+
+
+# ------------------------- per-stage equality, not a sum (#490 round 2, finding 3)
+
+
+def test_a_skipped_stage_and_a_doubled_one_do_not_compensate(tmp_path: Path) -> None:
+    """Two briefs beside a missing implementation line is rework, not a first pass."""
+    journal = attribute_registry.stage_journal(490, tmp_path)
+    journal.parent.mkdir(parents=True)
+    # Two brief arrivals, but the implementation line never landed between them —
+    # the fail-open emission a sum over the prefix would read as one brief's
+    # worth of history (2 == the own gate's position, so the sum says first_time).
+    brief = (
+        json.dumps(
+            {
+                "event": "cti.stage.transition",
+                "at": NOW,
+                "attributes": {
+                    "cti.stage.name": "brief",
+                    "cti.stage.first_pass": "after_rework",
+                    "cti.issue": 490,
+                },
+                "resource": {"service.name": "arma-cti-stage"},
+                "exported": False,
+                "export_detail": "unreachable:ConnectionRefusedError",
+            }
+        )
+        + "\n"
+    )
+    journal.write_text(brief + brief, encoding="utf-8")
+    assert attribute_registry.record_stage_arrival("own_gate", 490, tmp_path, NOW) == (
+        "after_rework"
+    ), "brief=2 with no implementation is not brief=1 with one"

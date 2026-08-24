@@ -1242,13 +1242,18 @@ NO_DETERMINED_ARRIVALS_REASON: Final = (
 )
 # The view's boundary, carried as a column on every row: the stage journals begin
 # at #490, so every arrival before it is invisible here and the yield reads over
-# journalled arrivals alone. The `measures` pattern — the reader quoting one
-# number meets the boundary in the table itself, never only in the cookbook.
+# journalled arrivals alone. An issue that predates the recorder states that on
+# its own first journalled arrival — `undetermined`, never a clean `first_time`
+# the absent journal never supported (#490 round 2, finding 1) — and arrivals
+# after it read against the journal that arrival founded. The `measures` pattern
+# — the reader quoting one number meets the boundary in the table itself, never
+# only in the cookbook.
 STAGE_BOUNDARY: Final = (
     "journalled arrivals only: the stage journals begin at #490, so arrivals "
-    "before it are absent from this figure rather than counted as rework, and "
-    "first_pass_yield excludes undetermined arrivals from its denominator while "
-    "carrying their count beside it"
+    "before it are absent from this figure rather than counted as rework — an "
+    "issue that predates them records its first journalled arrival as "
+    "undetermined — and first_pass_yield excludes undetermined arrivals from "
+    "its denominator while carrying their count beside it"
 )
 
 

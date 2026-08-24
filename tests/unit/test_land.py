@@ -895,6 +895,7 @@ def test_a_landing_arrives_at_the_land_stage(
     """The push is the land stage reached (#490), journalled with its first-pass status."""
     review_root = tmp_path / "stage-review"
     monkeypatch.setenv("CTI_REVIEW_DIR", str(review_root))
+    monkeypatch.delenv("CTI_DISPATCH_SEAT", raising=False)
     # The five earlier stages' first pass, so the landing is a first-pass arrival and
     # not the honest `after_rework` an orphan arrival reads as.
     now = 1_800_000_000.0
@@ -910,6 +911,53 @@ def test_a_landing_arrives_at_the_land_stage(
     rows = [json.loads(line) for line in journal.read_text(encoding="utf-8").splitlines()]
     assert [row["attributes"]["cti.stage.name"] for row in rows][-1] == "land"
     assert rows[-1]["attributes"]["cti.stage.first_pass"] == "first_time"  # noqa: S105 — the attribute's own name carries "pass"; a stage status, never a credential
+
+
+def test_a_landing_from_a_dispatched_non_pipeline_seat_records_no_land_stage(
+    repo: tuple[Path, Path, Path],
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A retro dispatch landing its journal entry is not the work landing (#490 round 2).
+
+    The seat is exported to every dispatched child, so without the filter a
+    retro's or recon's `just land` counted as this stage's arrival on the retro
+    issue — for as long as the recorder runs.
+    """
+    review_root = tmp_path / "stage-review"
+    monkeypatch.setenv("CTI_REVIEW_DIR", str(review_root))
+    monkeypatch.setenv("CTI_DISPATCH_SEAT", "retro")
+    _origin, main, here = repo
+    _commit(here, "feature.txt", "work\n")
+
+    report = land.land(main, here, gate=_Gate(), review=_reviewed(here, tmp_path))
+
+    assert report.code == 0
+    assert not (review_root / "213").exists(), "the retro's landing journalled nothing"
+
+
+def test_a_landing_from_a_dispatched_implementer_arrives_at_the_land_stage(
+    repo: tuple[Path, Path, Path],
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The filter's other arm: the seat the pipeline maps is exactly who lands (#490)."""
+    review_root = tmp_path / "stage-review"
+    monkeypatch.setenv("CTI_REVIEW_DIR", str(review_root))
+    monkeypatch.setenv("CTI_DISPATCH_SEAT", "implementer")
+    _origin, main, here = repo
+    _commit(here, "feature.txt", "work\n")
+
+    report = land.land(main, here, gate=_Gate(), review=_reviewed(here, tmp_path))
+
+    assert report.code == 0
+    rows = [
+        json.loads(line)
+        for line in (review_root / "213" / attribute_registry.STAGE_JOURNAL)
+        .read_text(encoding="utf-8")
+        .splitlines()
+    ]
+    assert rows[-1]["attributes"]["cti.stage.name"] == "land"
 
 
 def test_the_gate_runs_on_the_rebased_tree_not_the_tree_as_it_was(

@@ -1245,8 +1245,17 @@ def land(  # noqa: PLR0913 — the protocol's inputs, one parameter apiece
     # the exit-2 run whose merge is still outstanding counts as the landing it is. The
     # re-run that completes such a landing takes `_push`'s nothing-to-push branch and the
     # recorder's own dispatch deduplication keeps it one arrival. A landing that names no
-    # issue records nothing — there is no work item to attach the arrival to.
-    if review_inputs.issue:
+    # issue records nothing — there is no work item to attach the arrival to — and a
+    # landing from a dispatched session whose seat is not the implementer's records
+    # nothing either: `CTI_DISPATCH_SEAT` is exported for every seat, so without the
+    # `STAGE_OF_SEAT` filter a retro or recon dispatch landing its own journal entry
+    # would count as this stage's arrival for good (#490 round 2, finding 2). A hand
+    # landing carries no seat in the environment and counts, which it should — the
+    # orchestrator's landing of an implementer's work is the work landing.
+    seat = os.environ.get("CTI_DISPATCH_SEAT", "")
+    if review_inputs.issue and (
+        not seat or attribute_registry.STAGE_OF_SEAT.get(seat) == "implementation"
+    ):
         attribute_registry.record_stage_arrival(
             "land",
             review_inputs.issue,

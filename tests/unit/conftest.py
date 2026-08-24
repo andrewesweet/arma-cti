@@ -72,6 +72,22 @@ def hermetic_review_root(tmp_path_factory: pytest.TempPathFactory) -> None:
     os.environ["CTI_REVIEW_DIR"] = str(tmp_path_factory.mktemp("review-root"))
 
 
+@pytest.fixture(scope="session", autouse=True)
+def hermetic_dispatch_records(tmp_path_factory: pytest.TempPathFactory) -> None:
+    """Point the dispatch records' root at pytest's own tmp too (#490 round 2).
+
+    `attribute_registry.dispatch_records_root()` reads `CTI_DISPATCH_DIR` at call
+    time — the spelling `tools/dispatch_follow.py` and the observatory already
+    use — to check, where an issue has no stage journal yet, whether a dispatch
+    record names it. Without this fixture that check would read the box's real
+    records, so an absent-journal test on an issue this box really dispatched
+    (490 itself, the moment these lines run) would flip from `first_time` to
+    `undetermined` according to the live store. An empty throwaway root makes
+    absence the default a test arranges away, never one it inherits.
+    """
+    os.environ["CTI_DISPATCH_DIR"] = str(tmp_path_factory.mktemp("dispatch-records"))
+
+
 if TYPE_CHECKING:
     from types import ModuleType
 

@@ -51,6 +51,7 @@ rather than borrows a clean past from.
 from __future__ import annotations
 
 import json
+import os
 import sys
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, NamedTuple
@@ -410,13 +411,15 @@ STAGES: Final[dict[str, str]] = {
 # not sixty-six. Undetermined arrivals are counted beside the yield and never
 # inside its denominator.
 FIRST_PASS: Final[dict[str, str]] = {
-    "first_time": "The item arrived on its first pass: every stage up to and"
-    " including this one had been reached exactly once before this arrival.",
+    "first_time": "The item arrived on its first pass: every stage before this"
+    " one exactly once, and this one not at all.",
     "after_rework": "The item arrived again — some stage up to and including this"
     " one had already been reached, so this pass follows rework.",
     "undetermined": "The arrival's history could not be read — an unreadable"
-    " journal, or a line that predates the stage field — so the status is stated"
-    " as this rather than guessed, and never defaulted to true.",
+    " journal, a line that predates the stage field, or no journal where the"
+    " rest of the record says the issue moved before the recorder existed — so"
+    " the status is stated as this rather than guessed, and never defaulted to"
+    " true.",
 }
 
 # Which dispatch seats are arrivals at a pipeline stage. Only two are: the
@@ -437,10 +440,20 @@ STAGE_EVENT: Final = "cti.stage.transition"
 # loop's own state under the review root — the per-issue home that already
 # exists, so the family adds no directory of its own. Every seam that records a
 # stage arrival knows the issue, and first-pass status is decided against this
-# journal's own history: a brief or dispatch that predates the first journal
-# line is invisible to it, and an arrival whose history cannot be read from the
+# journal's own history: an arrival whose history cannot be read from the
 # journal says `undetermined` rather than borrowing a clean past it cannot see.
+# An absent journal is not itself that clean past (#490 round 2, finding 1):
+# nothing has been journalled yet, but something may have happened before the
+# recorder existed, so the absence is granted a clean past only where the rest
+# of the record holds no prior pipeline act for the issue — the check
+# `_pipeline_history_seen` below states that rule where it runs.
 STAGE_JOURNAL: Final = "stages.jsonl"
+
+# The dispatch records' default root, for the absent-journal evidence check
+# alone — the same home `tools/dispatch.py`, the ledger, the breaker, recovery
+# and the observatory each name as their own default, restated rather than
+# imported because this module stands below `dispatch.py` (which imports it).
+DISPATCH_RECORDS_ROOT: Final = Path.home() / ".arma-cti" / "dispatches"
 
 # What `record_stage_arrival` returns where the caller's own dispatch already
 # reached this stage: not a first-pass value and never journalled — a gate
@@ -480,21 +493,24 @@ def _stage_line(line: str) -> tuple[str, str] | None:
 
 
 def _prior_arrivals(
-    journal: Path, stage: str, dispatch_id: str
+    journal: Path, stage: str, dispatch_id: str, issue: int, review_root: Path
 ) -> tuple[dict[str, int], bool, bool]:
     """Read the journal's arrival history, or say it cannot be read.
 
     Returns the count of prior arrivals per stage, whether that count is
     complete enough to decide a first-pass status, and whether this dispatch
-    already reached this stage. A journal that is absent is a readable zero —
-    the issue's first arrival is first-time against it. A journal that exists
-    and will not parse, or carries a stage line without a placeable stage name
-    (a line that predates the field), is not: the history has a hole in it, and
-    a hole is `undetermined` rather than a guess at what fell in.
+    already reached this stage. A journal that is absent is a readable zero
+    only where the rest of the record holds no prior pipeline act for the
+    issue — `_pipeline_history_seen` decides that, because every issue that
+    predates the recorder has no journal and most of those have a past. A
+    journal that exists and will not parse, or carries a stage line without a
+    placeable stage name (a line that predates the field), is not readable:
+    the history has a hole in it, and a hole is `undetermined` rather than a
+    guess at what fell in.
     """
     counts = dict.fromkeys(STAGES, 0)
     if not journal.is_file():
-        return counts, True, False
+        return counts, not _pipeline_history_seen(issue, review_root, dispatch_id), False
     try:
         lines = journal.read_text(encoding="utf-8").splitlines()
     except OSError:
@@ -510,20 +526,84 @@ def _prior_arrivals(
     return counts, True, False
 
 
+def dispatch_records_root() -> Path:
+    """Return the dispatch records' root, read at call time like the review root.
+
+    `CTI_DISPATCH_DIR` is the redirection seam `tools/dispatch_follow.py` and
+    the observatory already document, so the recorder honours the same spelling
+    rather than minting a second variable for one directory.
+    """
+    return Path(os.environ.get("CTI_DISPATCH_DIR", str(DISPATCH_RECORDS_ROOT)))
+
+
+def _pipeline_history_seen(issue: int, review_root: Path, dispatch_id: str) -> bool:
+    """Say whether the record outside the journal shows a prior pipeline act.
+
+    The rule (#490 round 2, finding 1): an absent journal is the absence of
+    evidence, not evidence of a clean past, so it buys `first_time` only where
+    nothing outside it names a prior act of the pipeline for this issue. Two
+    checks, both over records that already exist — never a guess at dates or
+    an issue number chosen by hand:
+
+    - the issue's own directory under the review root holds any entry at all.
+      Every file there is an act's artefact — a loop opened, an arbiter
+      escalation, an authorship declared, a wait journalled — and none of those
+      precedes the work they judge, so any entry says the item moved.
+    - a dispatch record names the issue from a seat whose dispatch is a
+      pipeline stage (`STAGE_OF_SEAT` — implementer and review). A recon or
+      planner dispatch names triage, not a pass through the pipeline, so it is
+      deliberately not evidence; the arrival being decided is a pipeline
+      status and the evidence is the pipeline's own acts. The current
+      `dispatch_id` is passed over, because the record laying down this very
+      arrival is this arrival, not prior history.
+
+    A dispatch record that exists and will not read is taken as evidence seen:
+    the seat inside it cannot be known, and the criterion's own bar is to
+    never grant a clean past a read could not confirm. That is the pessimistic
+    direction and fires once — the arrival it undetermines founds the journal.
+    """
+    directory = review_root / str(issue)
+    if directory.is_dir():
+        try:
+            if any(directory.iterdir()):
+                return True
+        except OSError:
+            return True
+    for record in sorted(dispatch_records_root().glob("*/dispatch.json")):
+        try:
+            document = json.loads(record.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            return True
+        if not isinstance(document, dict):
+            return True
+        if dispatch_id and document.get("dispatch_id") == dispatch_id:
+            continue
+        if str(document.get("issue", "")) != str(issue):
+            continue
+        if document.get("seat") in STAGE_OF_SEAT:
+            return True
+    return False
+
+
 def _arrival_status(stage: str, counts: Mapping[str, int]) -> str:
     """Decide first-pass status from the journal's own counts.
 
-    An arrival is first-time when the stages up to and including this one have
-    been reached exactly as many times as there are stages before it — each
-    earlier stage exactly once, and this one not at all. Any second arrival at
-    any stage up to here breaks that equality, which is the point: rework
-    upstream makes a downstream first arrival not-first-pass, exactly as rolled
-    throughput yield counts it.
+    An arrival is first-time when every stage before this one was reached
+    exactly once and this one not at all — per-stage equality, not a sum over
+    the prefix, because a skipped stage and a doubled one compensate in a sum
+    (a second brief beside an implementation line that failed open reads 2 at
+    the own gate) while the deviation both represent is rework. Any second
+    arrival at any stage up to here, or any hole where a first should stand,
+    breaks the equality, which is the point: rework upstream makes a
+    downstream first arrival not-first-pass, exactly as rolled throughput
+    yield counts it.
     """
     order = list(STAGES)
     position = order.index(stage)
-    reached = sum(counts[named] for named in order[: position + 1])
-    return "first_time" if reached == position else "after_rework"
+    first_time = all(
+        counts[named] == (index < position) for index, named in enumerate(order[: position + 1])
+    )
+    return "first_time" if first_time else "after_rework"
 
 
 def stage_event(
@@ -589,17 +669,21 @@ def record_stage_arrival(
     The one entry the seams call. Reads the issue's stage journal, decides the
     status against it, and emits — never raising, because an arrival the record
     could not take must not fail the brief, dispatch, gate, exchange or landing
-    that was arriving. A dispatch that already reached this stage records
-    nothing and answers `STAGE_ALREADY_REACHED`, so a re-run inside one
-    dispatched session is the same arrival, not rework of it; arrivals with no
-    dispatch to name (a brief, an exchange by hand) cannot be deduplicated and
-    count every time, which is the journal's honest reading of a re-brief.
+    that was arriving. Where no journal exists yet, the status is decided
+    against the rest of the record first (`_pipeline_history_seen`): a clean
+    `first_time` is granted only to an issue nothing moved before, never to one
+    that merely predates the recorder. A dispatch that already reached this
+    stage records nothing and answers `STAGE_ALREADY_REACHED`, so a re-run
+    inside one dispatched session is the same arrival, not rework of it;
+    arrivals with no dispatch to name (a brief, an exchange by hand) cannot be
+    deduplicated and count every time, which is the journal's honest reading
+    of a re-brief.
     """
     if stage not in STAGES:
         message = f"stage not in the closed set: {stage!r}"
         raise ValueError(message)
     journal = stage_journal(issue, review_root)
-    counts, determinable, repeat = _prior_arrivals(journal, stage, dispatch_id)
+    counts, determinable, repeat = _prior_arrivals(journal, stage, dispatch_id, issue, review_root)
     if repeat:
         return STAGE_ALREADY_REACHED
     status = _arrival_status(stage, counts) if determinable else UNDETERMINED

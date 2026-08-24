@@ -1279,11 +1279,12 @@ def _stage_journal(root: Path) -> Path:
 def test_a_dispatched_fast_run_arrives_at_own_gate(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """`just fast` inside a dispatched session is the own gate reached (#490)."""
+    """`just fast` inside a dispatched implementer is the own gate reached (#490)."""
     root = tmp_path / "review"
     monkeypatch.setenv("CTI_REVIEW_DIR", str(root))
     monkeypatch.setenv("CTI_DISPATCH_ISSUE", "490")
     monkeypatch.setenv("CTI_DISPATCH_ID", "d-1")
+    monkeypatch.setenv("CTI_DISPATCH_SEAT", "implementer")
     attribute_registry.record_stage_arrival("brief", 490, root, 1_800_000_000.0)
     attribute_registry.record_stage_arrival(
         "implementation", 490, root, 1_800_000_000.5, dispatch_id="d-1"
@@ -1329,5 +1330,24 @@ def test_a_check_recipe_is_not_an_own_gate_arrival(
     root = tmp_path / "review"
     monkeypatch.setenv("CTI_REVIEW_DIR", str(root))
     monkeypatch.setenv("CTI_DISPATCH_ISSUE", "490")
+    monkeypatch.setenv("CTI_DISPATCH_SEAT", "implementer")
     gate_clock.run_recipe("check", [("check", ["true"])], tmp_path / "clock")
     assert not (root / "490").exists()
+
+
+def test_a_dispatched_non_pipeline_seat_gates_without_arriving(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A retro's gate run is not an own-gate arrival (#490 round 2, finding 2).
+
+    The dispatcher exports the seat to every child, so the absence of a filter
+    here let any dispatched seat's `just fast` count as the implementer's gate —
+    permanently, one false `after_rework` row per cycle.
+    """
+    root = tmp_path / "review"
+    monkeypatch.setenv("CTI_REVIEW_DIR", str(root))
+    monkeypatch.setenv("CTI_DISPATCH_ISSUE", "491")
+    monkeypatch.setenv("CTI_DISPATCH_ID", "d-retro")
+    monkeypatch.setenv("CTI_DISPATCH_SEAT", "retro")
+    assert gate_clock.run_recipe("fast", [("fast", ["true"])], tmp_path / "clock") == 0
+    assert not (root / "491").exists(), "the retro's gate journalled nothing"

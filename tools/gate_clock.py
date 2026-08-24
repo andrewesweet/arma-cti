@@ -1038,20 +1038,26 @@ def run_recipe(recipe: str, legs: list[tuple[str, list[str]]], gate_clock_dir: P
     gate that cannot record is still a gate. The wall is `/proc/uptime` at both
     ends, per leg and for the recipe, exactly as `record` takes it.
 
-    A `fast` run inside a dispatched session is also the pipeline's own-gate
-    stage reached (#490), recorded before the legs run so a crash mid-gate still
-    shows the gate was reached. The environment names the item — the dispatcher
-    exports `CTI_DISPATCH_ISSUE` and `CTI_DISPATCH_ID` to the child — so a run
-    with no dispatch behind it (a human's, a test's, the landing's re-gate in
-    the same session) records no arrival, and the re-gate records none because
-    the recorder deduplicates one dispatch's arrival at a stage. Fail-open in
-    the recorder; a gate that cannot take its own record is still a gate.
+    A `fast` run inside a dispatched implementer's session is also the
+    pipeline's own-gate stage reached (#490), recorded before the legs run so a
+    crash mid-gate still shows the gate was reached. The environment names the
+    item — the dispatcher exports `CTI_DISPATCH_ISSUE`, `CTI_DISPATCH_ID` and
+    `CTI_DISPATCH_SEAT` to every child — so a run with no dispatch behind it (a
+    human's, a test's, the landing's re-gate in the same session) records no
+    arrival, the re-gate records none because the recorder deduplicates one
+    dispatch's arrival at a stage, and a dispatched seat whose work is not a
+    pipeline pass (retro, recon, planner, fable, orchestrator) records none
+    either: the own gate is the implementer's act — `STAGE_OF_SEAT` maps the
+    seat to `implementation` or it is not this stage's arrival at all, the same
+    filter the brief seam applies (#490 round 2, finding 2). Fail-open in the
+    recorder; a gate that cannot take its own record is still a gate.
     """
     import subprocess  # noqa: PLC0415 — kept beside its only caller, like head_sha's
 
     if recipe == "fast":
         issue = os.environ.get("CTI_DISPATCH_ISSUE", "")
-        if issue.isdigit():
+        seat = os.environ.get("CTI_DISPATCH_SEAT", "")
+        if issue.isdigit() and attribute_registry.STAGE_OF_SEAT.get(seat) == "implementation":
             attribute_registry.record_stage_arrival(
                 "own_gate",
                 int(issue),
