@@ -1660,6 +1660,36 @@ def test_an_unreadable_review_root_refuses_by_name(
 
 
 def test_the_cookbook_s_first_query_runs_against_the_shipped_store(world: World) -> None:
+    # One journalled landing, staged here rather than in the fixture because the
+    # landing coverage counts are per-assertion facts like the stage journals. Every
+    # staged dispatch record shares `a-profile`, so the honest-looking reviewer and
+    # author pair is the violation the never-alone query exists to find, and the
+    # gate cause gives the grouped query its row — a cookbook whose block returns
+    # nothing on the shipped store is a broken block.
+    journal = attribute_registry.landing_journal(ISSUE, world.review_root)
+    journal.parent.mkdir(parents=True, exist_ok=True)
+    relations = (
+        attribute_registry.relation("subject", "issue", str(ISSUE)),
+        attribute_registry.relation("produced", "commit", world.landed_sha),
+        attribute_registry.relation("reviewer", "dispatch", CODEX_DISPATCH),
+        attribute_registry.relation("author", "dispatch", ZAI_DISPATCH),
+    )
+    event = attribute_registry.landing_event(relations, 1_800_000_000.0, gate_cause="cross_lane")
+    journal.write_text(
+        json.dumps(
+            {
+                "event": event.name,
+                "at": event.at,
+                "attributes": dict(event.attributes),
+                "resource": dict(event.resource),
+                "exported": True,
+                "export_detail": "http_200",
+            },
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
     rebuild_world(world)
     cookbook = (REPO / "docs" / "observatory" / "cookbook.md").read_text(encoding="utf-8")
     blocks = re.findall(r"```sql\n(.*?)```", cookbook, flags=re.DOTALL)

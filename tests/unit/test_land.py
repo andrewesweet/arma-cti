@@ -933,7 +933,13 @@ def test_a_landing_from_a_dispatched_non_pipeline_seat_records_no_land_stage(
     report = land.land(main, here, gate=_Gate(), review=_reviewed(here, tmp_path))
 
     assert report.code == 0
-    assert not (review_root / "213").exists(), "the retro's landing journalled nothing"
+    # The stage journal, not the directory: since #491 the same per-issue directory
+    # also holds the landings journal, which a retro's landing does write — the
+    # never-alone record binds every landing whatever seat dispatched it — while the
+    # stage arrival stays the implementer pipeline's own fact.
+    assert not (review_root / "213" / attribute_registry.STAGE_JOURNAL).exists(), (
+        "the retro's landing journalled no stage arrival"
+    )
 
 
 def test_a_landing_from_a_dispatched_implementer_arrives_at_the_land_stage(

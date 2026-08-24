@@ -169,6 +169,7 @@ from typing import Final, NamedTuple
 # `brief.py` and `review_loop.py` all use.
 sys.path.insert(0, str(Path(__file__).parent))
 
+import attribute_registry
 import breaker
 import dispatch
 import review_exchange
@@ -302,10 +303,22 @@ class Outcome(NamedTuple):
     carries the honest account wherever it is not — the dispatch that reviewed, the
     identity it derived, what the authorship scan did and did not read, and the loop
     that holds the adjudications.
+
+    `relations` and `gate_cause` are the same clearance as a record (#491): the
+    qualified object relations the landing event carries — subject, produced
+    commit, every author, the reviewer — and, where the diff touched routing
+    class 6, which of the four gate-review causes the verdict rode. The landing
+    seam records them beside its push; they stay empty on every refusal and on the
+    exempt clearance that consults no record, where there is no author set and no
+    verdict to relate. `gate_cause` is carried rather than re-derived by the reader
+    because two of the four causes rest on bars read live at landing time, which no
+    later read of the records can reproduce.
     """
 
     refusal: Refusal | None
     cleared: tuple[str, ...]
+    relations: tuple[attribute_registry.Relation, ...] = ()
+    gate_cause: str = ""
 
 
 # ------------------------------------------------------------------ deleted, deliberately
@@ -412,6 +425,46 @@ def _authorship_lines(
     return (f"{line} declared={' '.join(declared)}", DECLARED_AUTHOR_LIMIT)
 
 
+def _landing_relations(
+    issue: int,
+    sha: str,
+    authorship: dispatch.Authorship,
+    declared_record: Path,
+    binding: review_exchange.Bound,
+) -> tuple[attribute_registry.Relation, ...]:
+    """Build the landing's qualified object relations from the facts the rung derived (#491).
+
+    One derivation, this function, feeding both halves of the record: the clearance
+    lines a lander quotes and the event the landing journals — a second derivation
+    anywhere is the two-readers drift #445's finding 3 named. The subject is the
+    issue, the produced object the commit the verdict bound, the reviewer the
+    dispatch that bound it, and every potential author an object of its own source:
+    a `dispatch` where a dispatch record placed the profile, an
+    `authorship_declaration` where an interactive session declared it (#398). The
+    two are told apart by the record that placed the profile, never by whether the
+    profile also appears in the declaration: `with_declared_authors` appends the
+    declaration's own path as the record for a name it adds and never re-adds a
+    name a dispatch already placed, so a profile that both dispatches and declares
+    keeps its dispatch relation — the record is the stronger evidence, and its
+    dispatch id is the object a reader of this event wants.
+    """
+    declared_id = str(declared_record)
+    authors = [
+        attribute_registry.relation(
+            "author",
+            "authorship_declaration" if record == declared_id else "dispatch",
+            profile if record == declared_id else record,
+        )
+        for profile, record in zip(authorship.potential, authorship.records, strict=True)
+    ]
+    return (
+        attribute_registry.relation("subject", "issue", str(issue)),
+        attribute_registry.relation("produced", "commit", sha),
+        attribute_registry.relation("reviewer", "dispatch", binding.dispatch_id),
+        *authors,
+    )
+
+
 def _undetermined_gate_refusal() -> Refusal:
     """Refuse a landing that cannot be placed inside or outside routing class 6 (ADR-0073).
 
@@ -465,13 +518,26 @@ def _lane_bars(free: tuple[str, ...], reach: LaneReach) -> tuple[tuple[str, str]
     return tuple(bars)
 
 
+class GateDecision(NamedTuple):
+    """A gate landing's lane record as data (#491): the cause, and the lines it clears with.
+
+    The cause is carried beside the lines because the lines are the landing's own
+    printed bytes and the cause is the record's value — parsing the one back out of
+    the other is exactly the reading of a printed line #491 exists to retire. The
+    four spellings are `attribute_registry`'s, stated once there.
+    """
+
+    cause: str
+    lines: tuple[str, ...]
+
+
 def _gate_review_decision(
     gate_paths: tuple[str, ...],
     binding: review_exchange.Bound,
     authorship: dispatch.Authorship,
     reach: LaneReach,
-) -> Refusal | tuple[str, ...]:
-    """Decide a gate landing's lane record: the refusal that fires, or the lines it clears with.
+) -> Refusal | GateDecision:
+    """Decide a gate landing's lane record: the refusal that fires, or a `GateDecision`.
 
     ADR-0073, on the human's instruction of 2026-08-18. Routing class 6's keep-on-Claude bar
     selected on provenance and exempted the lane that authors nearly every gate change, so
@@ -562,12 +628,27 @@ def _gate_review_decision(
     # reviewer lane is necessarily an author's, and there is no lane left to ask a bar of. The
     # author lanes print beside the reviewer's so a reader sees the set that exhausted (#416).
     if not free:
-        return (
-            f"gate_review=lane_exhausted reviewer_lane={reviewer_lane} {where}",
-            LANE_EXHAUSTED_LIMIT,
+        return GateDecision(
+            attribute_registry.GATE_LANE_EXHAUSTED,
+            (
+                (
+                    f"gate_review={attribute_registry.GATE_LANE_EXHAUSTED}"
+                    f" reviewer_lane={reviewer_lane} {where}"
+                ),
+                LANE_EXHAUSTED_LIMIT,
+            ),
         )
     if reviewer_lane not in author_lanes:
-        return (f"gate_review=cross_lane reviewer_lane={reviewer_lane} {where}", CROSS_LANE_LIMIT)
+        return GateDecision(
+            attribute_registry.GATE_CROSS_LANE,
+            (
+                (
+                    f"gate_review={attribute_registry.GATE_CROSS_LANE}"
+                    f" reviewer_lane={reviewer_lane} {where}"
+                ),
+                CROSS_LANE_LIMIT,
+            ),
+        )
     # A same-lane verdict from here on, which since the ruling of 2026-08-19 clears either way.
     # What separates the two records is whether the preferred check was *available*: the bars
     # are read live from the same rungs a dispatch would have hit, so "the free lane was
@@ -587,20 +668,28 @@ def _gate_review_decision(
     # had asked, and the record is the safety property of this whole downgrade.
     named = " ".join(f"{name}:{bar}" for name, bar in bars) or "none"
     if not available:
-        return (
+        return GateDecision(
+            attribute_registry.GATE_LANE_BARRED,
             (
-                f"gate_review=lane_barred reviewer_lane={reviewer_lane} {where}"
-                f" same_lane_authors={shared} barred_lanes={named}"
+                (
+                    f"gate_review={attribute_registry.GATE_LANE_BARRED}"
+                    f" reviewer_lane={reviewer_lane} {where}"
+                    f" same_lane_authors={shared} barred_lanes={named}"
+                ),
+                LANE_BARRED_LIMIT,
             ),
-            LANE_BARRED_LIMIT,
         )
-    return (
+    return GateDecision(
+        attribute_registry.GATE_SAME_LANE_CHOSEN,
         (
-            f"gate_review=same_lane_chosen reviewer_lane={reviewer_lane} {where}"
-            f" same_lane_authors={shared} free_lanes={' '.join(available)}"
-            f" barred_lanes={named} review_dispatch={binding.dispatch_id}"
+            (
+                f"gate_review={attribute_registry.GATE_SAME_LANE_CHOSEN}"
+                f" reviewer_lane={reviewer_lane} {where}"
+                f" same_lane_authors={shared} free_lanes={' '.join(available)}"
+                f" barred_lanes={named} review_dispatch={binding.dispatch_id}"
+            ),
+            SAME_LANE_CHOSEN_LIMIT,
         ),
-        SAME_LANE_CHOSEN_LIMIT,
     )
 
 
@@ -773,7 +862,19 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
     # which is worse than the same-lane review this issue was filed about. The table ships
     # empty, so today this changes nothing; it is here so that filling it cannot.
     if isinstance(decision, review_loop.Exempt) and not gate_paths:
-        return _exempt(decision)
+        # The exempt clearance consults no record, so it relates no author and no
+        # reviewer — but it still landed something, and the landing's own subject
+        # and produced objects are facts this rung holds (#491). Where the tree
+        # names no issue there is nothing to attach even those to.
+        exempt_relations = (
+            (
+                attribute_registry.relation("subject", "issue", str(issue)),
+                attribute_registry.relation("produced", "commit", sha),
+            )
+            if issue is not None
+            else ()
+        )
+        return _exempt(decision)._replace(relations=exempt_relations)
     if issue is None:
         return Outcome(
             Refusal(
@@ -942,11 +1043,16 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
     # set they guard, so asking it above them would compare a reviewer against a set the
     # rung has not yet established it may trust (ADR-0073).
     gate_review: tuple[str, ...] = ()
+    gate_cause = ""
     if gate_paths:
         decision = _gate_review_decision(gate_paths, binding, authorship, reach)
         if isinstance(decision, Refusal):
             return Outcome(decision, ())
-        gate_review = decision
+        gate_review = decision.lines
+        gate_cause = decision.cause
+    # Composed once, above the loop block, so the two clearance returns below carry
+    # the same relation set without either re-deriving it (#491).
+    relations = _landing_relations(issue, sha, authorship, declared_record, binding)
     above = tuple(
         finding for finding in verdict.findings if review_loop.above_low(finding.severity)
     )
@@ -987,6 +1093,8 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
                 *_alternates_lines(binding),
                 review_exchange.SAME_USER_LIMIT,
             ),
+            relations=relations,
+            gate_cause=gate_cause,
         )
     try:
         loop = review_loop.load_loop(review_root, issue)
@@ -1118,4 +1226,6 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
             *_alternates_lines(binding),
             review_exchange.SAME_USER_LIMIT,
         ),
+        relations=relations,
+        gate_cause=gate_cause,
     )

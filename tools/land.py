@@ -1213,8 +1213,9 @@ def land(  # noqa: PLR0913 — the protocol's inputs, one parameter apiece
         return _dry_run(root, here, ahead, incoming, corpus, lane, review_inputs)
 
     lines = [f"worktree={here}", f"commits={ahead}"]
+    reviewed: land_review.Outcome | None = None
     if ahead:
-        moved = _rebase_and_gate(here, incoming, gate, lines, lane, corpus, review_inputs)
+        moved, reviewed = _rebase_and_gate(here, incoming, gate, lines, lane, corpus, review_inputs)
         if moved is not None:
             return moved
     else:
@@ -1262,6 +1263,25 @@ def land(  # noqa: PLR0913 — the protocol's inputs, one parameter apiece
             review_loop.review_root(),
             datetime.now(tz=UTC).timestamp(),
             dispatch_id=os.environ.get("CTI_DISPATCH_ID", ""),
+        )
+    # The landing's own record (#491): the qualified relations the review rung
+    # derived — subject, produced commit, every author, the reviewer, and the gate
+    # cause where the diff touched routing class 6 — journalled beside the push so
+    # the never-alone rule is checked from the record rather than from the
+    # gate_review line this landing prints about itself. Recorded for every
+    # landing that ran a review rung, whatever seat dispatched it: the rule binds
+    # a retro's journal landing exactly as it binds an implementer's diff, unlike
+    # the stage arrival above, which is a pipeline fact about implementer work.
+    # The re-run that completes an outstanding merge takes the nothing-to-push
+    # branch, runs no review rung and records nothing — the first run's push
+    # already recorded this commit, and the recorder's own deduplication would
+    # pass it over anyway.
+    if review_inputs.issue and reviewed is not None and reviewed.relations:
+        attribute_registry.record_landing(
+            reviewed.relations,
+            review_loop.review_root(),
+            datetime.now(tz=UTC).timestamp(),
+            gate_cause=reviewed.gate_cause,
         )
     return _merge(
         root, here, pushed, lines, review_inputs.issue, close or close_issue, audit or record_audit
@@ -1422,21 +1442,35 @@ def _rebase_and_gate(  # noqa: PLR0911, PLR0913, PLR0917 — one rung per return
     lane: str,
     corpus: Path | None,
     review: ReviewInputs,
-) -> Report | None:
-    """Rebase onto `origin/main`, then gate the result. Any rung may refuse."""
+) -> tuple[Report | None, land_review.Outcome | None]:
+    """Rebase onto `origin/main`, then gate the result. Any rung may refuse.
+
+    The second half of the return is the review rung's own outcome where it ran —
+    `None` on every refusal before it and on the nothing-to-push path that never
+    calls here — so `land` can journal the landing's relations (#491) from the one
+    derivation that made them, beside the push, rather than re-deriving an author
+    set the rung already read.
+    """
     before_head = git("rev-parse", "HEAD", cwd=here).strip()
     code, stderr = _run(["git", "rebase", BASE], cwd=here)
     if code is None:
-        return Report.refused(
-            Refusal(
-                "git_failed",
-                (f"worktree={here}", f"command=git rebase {BASE}", f"detail={stderr}"),
-                "The rebase could not be run at all. Nothing was pushed.",
-            )
+        return (
+            Report.refused(
+                Refusal(
+                    "git_failed",
+                    (
+                        f"worktree={here}",
+                        f"command=git rebase {BASE}",
+                        f"detail={stderr}",
+                    ),
+                    "The rebase could not be run at all. Nothing was pushed.",
+                )
+            ),
+            None,
         )
     stopped = classify_rebase(here, code, conflicted_paths(here), stderr)
     if stopped is not None:
-        return Report.refused(stopped)
+        return Report.refused(stopped), None
     lines.append(
         f"rebase=replayed onto {incoming} new commits" if incoming else "rebase=already_current"
     )
@@ -1450,14 +1484,14 @@ def _rebase_and_gate(  # noqa: PLR0911, PLR0913, PLR0917 — one rung per return
 
     poisoned = classify_conflict_markers(here, find_in_tree(here))
     if poisoned is not None:
-        return Report.refused(poisoned)
+        return Report.refused(poisoned), None
 
     # Dispatch's body match is advisory because planned surfaces can be understated.
     # This independently reads the actual rebased diff and is the enforcing gate.
     policy, paths, detail = _routing_inputs(here)
     misrouted = classify_routing(policy, paths, lane, detail)
     if misrouted is not None:
-        return Report.refused(misrouted)
+        return Report.refused(misrouted), None
     lines.extend(routing_clearance(policy, lane))
 
     # Before the gate on purpose: the review rung reads a handful of records while
@@ -1465,12 +1499,12 @@ def _rebase_and_gate(  # noqa: PLR0911, PLR0913, PLR0917 — one rung per return
     # first (#334, on #302's cost-ordering).
     reviewed = _review_rung(here, review, paths, policy)
     if reviewed.refusal is not None:
-        return Report.refused(reviewed.refusal)
+        return Report.refused(reviewed.refusal), None
     lines.extend(reviewed.cleared)
 
     red = classify_gate(here, gate(here))
     if red is not None:
-        return Report.refused(red)
+        return Report.refused(red), None
     lines.append(f"gate=green ({' '.join(GATE)})")
 
     # After the gate on purpose: the corpus costs a slot of the Arma tier, and a tree
@@ -1478,9 +1512,9 @@ def _rebase_and_gate(  # noqa: PLR0911, PLR0913, PLR0917 — one rung per return
     outcome = corpus_finding(here, policy, paths, detail, corpus)
     owed = classify_corpus(outcome.finding)
     if owed is not None:
-        return Report.refused(owed)
+        return Report.refused(owed), None
     lines.append(outcome.line(corpus))
-    return None
+    return None, reviewed
 
 
 def _push(here: Path, ahead: int, lines: list[str]) -> Report | str:

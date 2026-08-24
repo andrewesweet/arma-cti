@@ -26,7 +26,7 @@ silence. Both render as an absence with a reason, never as zero.
 
 | Key | Shape | Meaning |
 |---|---|---|
-| `schema` | string | `cti.observatory/6` |
+| `schema` | string | `cti.observatory/7` |
 | `inputs` | object | The five paths the rebuild read: `dispatch_root`, `export_dir`, `review_root`, `spool`, `repo` |
 | `coverage` | object | The rebuild's own denominators — see below |
 | `malformed` | array | One entry per source file with unparseable lines — export, spool or stage journal: `file`, `lines` |
@@ -36,6 +36,8 @@ silence. Both render as an absence with a reason, never as zero.
 | `issue_rework` | array | One row per issue — the `issue_rework` table |
 | `profile_rework` | array | One row per (profile, seat) — the `profile_rework` table |
 | `stage_first_pass` | array | One row per stage of the closed set — the `stage_first_pass` table |
+| `landings` | array | One row per distinct landing — the `landings` table |
+| `landing_relations` | array | One row per relation a landing's event carried — the `landing_relations` table |
 | `session_period` | array | One row per (session, month) — the `session_period` table |
 | `period_overhead` | array | One row per period with overhead or a landing — the `period_overhead` table |
 
@@ -62,6 +64,11 @@ silence. Both render as an absence with a reason, never as zero.
 | `stage_journals` | Issue stage journals read, any arrival count |
 | `stage_arrivals` | Stage arrivals those journals hold, across every stage |
 | `stage_arrivals_undetermined` | Of those, how many carry an `undetermined` first-pass status — counted beside the yield, never inside its denominator |
+| `landing_journals` | Issue landings journals read, any event count |
+| `landing_events` | Raw landing events those journals hold — beside `landings`, so a recorder duplicate shows as the two counts disagreeing, visibly |
+| `landings` | Of those, distinct landings — one per (issue, produced commit), the journal's newest event for the pair |
+| `landing_relations` | Relation rows those winning events carried |
+| `landings_without_authors` | The landings whose relation set carries no author, named — the landings the never-alone check cannot run over, a stated gap never a silent clearance |
 | `session_renders` | Status-line renders the session view read — timestamped, with a session id |
 | `session_renders_untimestamped` | Renders the view could not place in a period — pre-#488 bare lines — counted, never summed |
 | `session_renders_without_session_id` | Timestamped renders carrying no session id, counted and never attributed — an untimestamped line without one counts as untimestamped, never here |
@@ -341,6 +348,59 @@ wrong on its face (unparseable, or naming a stage or status outside the closed
 vocabularies) is malformed and counted in `malformed`, never bucketed as
 `undetermined`: damage to the record and an undeterminable status are different
 facts.
+
+## The `landings` and `landing_relations` tables
+
+One landing row per distinct landing, one relation row per object its event
+touched (#491). The source is the per-issue landings journals under the review
+root — `landings.jsonl`, beside each issue's stage journal — and a landing's
+identity is (issue, produced commit): where a journal holds several events for
+one pair the newest wins, the recorder already deduplicates on the commit, and
+the counts `landing_events` beside `landings` state any duplicate the recorder's
+fail-open left behind rather than collapsing it silently.
+
+| Column | Null? | Meaning |
+|---|---|---|
+| `landing` | never | The landing's identity, `issue/commit` |
+| `issue` | never | The issue, from the event's own `cti.issue` |
+| `produced_commit` | + `produced_commit_reason` | The commit the event named as produced — full SHA. The column is `produced_commit` and not `commit` because COMMIT is SQL's own keyword and this store's names are its SQL schema verbatim |
+| `gate_cause` | + `gate_cause_reason` | Which of the four gate-review causes a gate landing rode (ADR-0073 Amendment A2), carried because two causes rest on transient bars no later read reproduces; null where the diff touched no routing-class-6 path |
+| `at` | never | When the event was journalled, epoch seconds |
+| `relations` | never | How many objects the event touched — the count on this grain, never a substitute for counting rows in `landing_relations` |
+| `boundary` | never | The marker: journalled landings only, and authorless ones named, never silently cleared |
+
+`landing_relations` is the second grain, and the two are counted separately on
+purpose — that separation is the criterion the pair exists for:
+
+| Column | Meaning |
+|---|---|
+| `landing` | The landing the relation belongs to — the join key to `landings` |
+| `qualifier` | The role the object played, always one of the closed qualifier set in `tools/attribute_registry.py`'s `RELATION_QUALIFIERS` |
+| `object_type` | The kind of object, always one of `OBJECT_TYPES` — `dispatch` for a dispatched author, `authorship_declaration` for a declared one (#398) |
+| `object_id` | The dispatch id, profile, SHA or issue number the relation names |
+
+**Counting one event over several objects multiplies nothing.** `SELECT COUNT(*)
+FROM landings` is landings; counting over a join with `landing_relations` is
+relation rows; one landing touching six objects is one row there and six here,
+and a reader who wants "how many objects did this landing touch" counts the
+second table grouped by `landing`. An unqualified log models #329's 23 dispatches
+as a loop that never existed; this pair is the shape that does not.
+
+**The qualifier set is what makes never-alone checkable.** Author and reviewer
+are distinguishable by qualifier alone, so the check is a join: reviewer profile
+from `dispatches` by the reviewer relation's dispatch id, author profiles the
+same way for `dispatch` objects and directly for `authorship_declaration` ones,
+whose object id *is* the profile. The cookbook carries the query. A landing with
+no author relation cannot be checked; it is named in the coverage block's
+`landings_without_authors` and in the `boundary` column, never read as clear.
+
+**Malformed is damage, not absence.** A line that will not parse, is not this
+family's event, carries a relation token whose type is outside the closed set, or
+a gate cause outside the closed cause set, is counted in `malformed` and its
+surviving siblings still load — the stage reader's line, one family over. A
+pre-#491 line carrying no relation attributes at all parses with an empty
+relation set; there are none yet, and the day one appears it reads as an absence
+it is.
 
 ## The `session_period` table
 

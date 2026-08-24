@@ -164,6 +164,73 @@ the six rates, and read the boundary column first: the stage journals begin at
 rework, and the rebuild's `stages` line carries the journal and arrival counts
 the product rests on.
 
+## Whether every landing kept the never-alone rule, checked from the record
+
+The landing view (#491). Every landing the review rung cleared now journals one
+`cti.landing.reviewed` event naming the objects it touched and the role each
+played: the issue as `subject`, the landed commit as `produced`, every profile the
+records place on the work as `author` — a `dispatch` object per dispatched author,
+an `authorship_declaration` object per interactive one (#398, the #524 and #548
+shapes) — and the reviewing dispatch as `reviewer`. What this replaces is reading
+the `gate_review=` line a landing prints about itself: the check below reads the
+record, not the landing's own account of the landing.
+
+The never-alone check itself — every landing whose reviewer profile is also an
+author profile, which is the one arrangement ADR-0071 ruling 4 exists to refuse.
+Rows returned are violations; an empty answer over a populated table is the rule
+holding:
+
+```sql
+SELECT l.landing, d.profile AS reviewer_profile
+FROM landings AS l
+JOIN landing_relations AS rr ON rr.landing = l.landing AND rr.qualifier = 'reviewer'
+JOIN dispatches AS d ON rr.object_type = 'dispatch' AND d.dispatch_id = rr.object_id
+JOIN landing_relations AS ra ON ra.landing = l.landing AND ra.qualifier = 'author'
+LEFT JOIN dispatches AS da ON ra.object_type = 'dispatch' AND da.dispatch_id = ra.object_id
+WHERE COALESCE(da.profile,
+               CASE WHEN ra.object_type = 'authorship_declaration' THEN ra.object_id END)
+      = d.profile
+```
+
+Reading it: an author object resolves to its profile two ways — a `dispatch`
+joins `dispatches` on the id, an `authorship_declaration`'s object id **is** the
+profile — and the reviewer resolves the same way, so the declared author and the
+dispatched one are both inside the check a record can run. A landing whose
+relation set carries no author cannot be checked at all; the rebuild names those
+in `landings_without_authors` and the boundary column repeats it, because a
+silently unchecked landing is the thing this query exists to prevent reading as
+clear.
+
+The gate-landing half, where the printed line's four values live as data — two of
+the four causes rest on bars read live at landing time, which no later read of the
+records can reproduce, so the event carries what the landing derived:
+
+```sql
+SELECT gate_cause, COUNT(*) AS landings
+FROM landings
+WHERE gate_cause IS NOT NULL
+GROUP BY gate_cause
+ORDER BY landings DESC
+```
+
+And the counting discipline the two-table shape exists for (#491's fifth
+criterion): "how many landings" and "how many objects did this landing touch"
+are different grains, and each is counted on its own table —
+
+```sql
+SELECT l.landing, COUNT(r.qualifier) AS objects_touched
+FROM landings AS l LEFT JOIN landing_relations AS r ON r.landing = l.landing
+GROUP BY l.landing
+ORDER BY l.landing
+```
+
+`COUNT(*)` over the **joined** rows is relation rows, never landings — one landing
+touching six objects counts once in `landings` and six times in the join, and
+that ratio is the shape working, not a double count to repair. The rebuild's
+`landings` line carries both denominators — raw `events` beside distinct
+landings, so a recorder duplicate shows as the two disagreeing — plus
+`uncheckable`, the count behind `landings_without_authors`.
+
 ## What the sessions no dispatch covers spent, per period — and what that figure cannot see
 
 The session view (#488). Its source is the status-line spool, and the spool is a

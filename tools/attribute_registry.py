@@ -57,7 +57,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Final, NamedTuple
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
+    from collections.abc import Mapping, Sequence
 
 # tools/ holds standalone scripts rather than an importable package, so a sibling import
 # needs the script's own directory on the path — the device `breaker.py` uses to reach here.
@@ -291,6 +291,67 @@ NAMES: Final[dict[str, Name]] = {
         " FIRST_PASS — `undetermined` where the journal could not say, never a"
         " defaulted true, because yield multiplies and one guess inflates every"
         " stage after it.",
+    ),
+    # ---- events: the landing's own record (#491) -----------------------------
+    "cti.landing.reviewed": Name(
+        "event",
+        "required",
+        "One landing's qualified object relations (#491): the objects it touched and"
+        " the role each played, so the never-alone rule is checked from the record"
+        " rather than from the gate_review line the landing prints about itself.",
+    ),
+    # ---- attributes: object relations (#491) ---------------------------------
+    "cti.relation.subject": Name(
+        "attribute",
+        "required",
+        "The object a relation-bearing event is chiefly about — the landing's issue;"
+        " one value of `type:id` tokens under the qualifier's own attribute.",
+    ),
+    "cti.relation.author": Name(
+        "attribute",
+        "required",
+        "Every object the records place on the work as a potential author — a dispatch"
+        " or an authorship declaration; a potential-author set entry, never a finding"
+        " that it wrote a line.",
+    ),
+    "cti.relation.reviewer": Name(
+        "attribute",
+        "required",
+        "The dispatch whose verdict cleared the work, distinguished from the authors"
+        " by qualifier alone — the distinction #491 exists to make checkable.",
+    ),
+    "cti.relation.produced": Name(
+        "attribute",
+        "required",
+        "An object this event brought into being — the commit a landing pushed.",
+    ),
+    "cti.relation.consumed": Name(
+        "attribute",
+        "opt_in",
+        "An object this event read without changing; registered ahead of the surface,"
+        " not emitted by one (#491's vocabulary, as BLOCK_REASONS registers unemitted"
+        " causes).",
+    ),
+    "cti.relation.occupied": Name(
+        "attribute",
+        "opt_in",
+        "An object this event held exclusive — a worktree over a run; registered"
+        " ahead of the surface, not emitted by one.",
+    ),
+    "cti.relation.blocked_by": Name(
+        "attribute",
+        "opt_in",
+        "The object a wait waited on, for the day the wait family relates its blocker"
+        " rather than only naming the cause; registered ahead of the surface, not"
+        " emitted by one.",
+    ),
+    "cti.landing.gate_cause": Name(
+        "attribute",
+        "conditionally_required",
+        "Which of the four gate-review causes a gate landing's verdict rode"
+        " (ADR-0073 Amendment A2); present wherever the diff touched routing class 6,"
+        " and never re-derivable later because two of the four causes rest on"
+        " transient bars read live at landing time.",
     ),
     # ---- scope ---------------------------------------------------------------
     "cti.breaker": Name(
@@ -837,3 +898,293 @@ def emit_terminal(
     dispatch record it names, like `waits.jsonl` before it.
     """
     return otel_event.emit(event, journal=journal, endpoint=endpoint)
+
+
+# ---- qualified object relations (#491) -----------------------------------------
+
+
+class Relation(NamedTuple):
+    """One event-to-object edge: the role the object played, its type, and its id.
+
+    The OCEL 2.0 shape the spec adopted: an event relates to objects, each edge
+    qualified, so convergence and divergence — one event duplicated across cases,
+    unrelated instances of one activity collapsed — do not corrupt every derived
+    model. Issue #329, with 23 dispatches on one issue, is the concrete case an
+    unqualified log models as a loop that never existed.
+    """
+
+    qualifier: str
+    object_type: str
+    object_id: str
+
+
+# The relation vocabulary's two closed halves (#491), each value with its reason.
+# Qualifiers are the roles an object can play in an event; types are the kinds of
+# object a relation can name. The spec's seven types are joined by an eighth,
+# `authorship_declaration`, because #398's second author source is a live shape the
+# seven could not express — a declared author is not a dispatch, and relating it as
+# one would forge a record #294's bar guarantees cannot exist. A relation that only
+# names dispatches silently exempts exactly the changes #398 exists to cover.
+RELATION_QUALIFIERS: Final[dict[str, str]] = {
+    "subject": "The object the event is chiefly about — the landing's issue.",
+    "author": "An object the records place on the work as a potential author: a"
+    " dispatch, or an authorship declaration where an interactive session declared"
+    " itself (#398). A potential-author set entry, never a finding that it wrote a"
+    " line.",
+    "reviewer": "The dispatch whose verdict cleared the work. Distinguishing author"
+    " from reviewer by qualifier alone is what makes the never-alone rule checkable"
+    " from the record (#491's third criterion).",
+    "produced": "An object this event brought into being — the commit a landing pushed.",
+    "consumed": "An object this event read without changing. Registered ahead of the"
+    " surface, not emitted by one: no event carries this qualifier yet, and the row"
+    " exists so the first emitter joins a set rather than founding one.",
+    "occupied": "An object this event held exclusive — a worktree over a run."
+    " Registered ahead of the surface, not emitted by one.",
+    "blocked_by": "The object a wait waited on, for the day the wait family relates"
+    " its blocker rather than only naming the cause's vocabulary. Registered ahead"
+    " of the surface, not emitted by one.",
+}
+
+OBJECT_TYPES: Final[dict[str, str]] = {
+    "issue": "A work item — the GitHub issue every dispatch, verdict and landing names.",
+    "dispatch": "One dispatched run, by the dispatch id its record carries.",
+    "commit": "One git commit, by full SHA where the writer held one.",
+    "worktree": "One registered worktree, by name.",
+    "review_round": "One round of a review loop, by issue and round.",
+    "gate_run": "One run of a gate recipe, for the day a run carries an id of its own;"
+    " registered ahead of the surface, not emitted by one.",
+    "lane": "One provider lane, by the registry's own name.",
+    "authorship_declaration": "An interactive session's declared authorship (#398),"
+    " by the profile it declared — the record is `authorship.json`, and the profile"
+    " is the id a never-alone check needs.",
+}
+
+# The four gate-review causes (ADR-0073 Amendment A2, #426), stated once here so
+# the landing's printed line and the landing event's attribute derive from one
+# spelling — a second copy anywhere is the relocated-value defect #501/#503/#504
+# closed five times. `cross_lane` is the preferred check; the other three are the
+# downgrades, each a different fact a reader must be able to tell apart.
+GATE_CROSS_LANE: Final = "cross_lane"
+GATE_LANE_EXHAUSTED: Final = "lane_exhausted"
+GATE_LANE_BARRED: Final = "lane_barred"
+GATE_SAME_LANE_CHOSEN: Final = "same_lane_chosen"
+GATE_REVIEW_CAUSES: Final[dict[str, str]] = {
+    GATE_CROSS_LANE: "The preferred check ran: the reviewer's lane is no author's.",
+    GATE_LANE_EXHAUSTED: "Every lane the registry carries is an author's lane, so no"
+    " cross-lane reviewer existed to dispatch (Amendment A1, #416).",
+    GATE_LANE_BARRED: "A free lane existed and every one was unreachable at the"
+    " moment of the landing, each named with its bar.",
+    GATE_SAME_LANE_CHOSEN: "A free lane was reachable and a same-lane verdict"
+    " cleared the landing anyway — the operator's choice the ruling left to a"
+    " person's judgement.",
+}
+
+LANDING_EVENT: Final = "cti.landing.reviewed"
+LANDING_JOURNAL: Final = "landings.jsonl"
+LANDING_RECORDED: Final = "recorded"
+LANDING_ALREADY_RECORDED: Final = "already_recorded"
+LANDING_UNRECORDABLE: Final = "unrecordable"
+
+
+def relation(qualifier: str, object_type: str, object_id: str) -> Relation:
+    """Build one relation, refusing a qualifier, type or id outside what it can be.
+
+    The family's spelling contract, as `stage_event`'s and `wait_event`'s: a value
+    outside the closed vocabularies is a programming error this module exists to
+    make impossible, not a transport failure to swallow. The id refuses whitespace
+    and the `type:id` separator because both encodings below would silently split
+    it into a different relation than the one asked for.
+    """
+    if qualifier not in RELATION_QUALIFIERS:
+        message = f"relation qualifier not in the closed set: {qualifier!r}"
+        raise ValueError(message)
+    if object_type not in OBJECT_TYPES:
+        message = f"object type not in the closed set: {object_type!r}"
+        raise ValueError(message)
+    if not object_id or any(character.isspace() for character in object_id) or ":" in object_id:
+        message = f"object id must be non-empty and contain no whitespace or colon: {object_id!r}"
+        raise ValueError(message)
+    return Relation(qualifier, object_type, object_id)
+
+
+def relation_attributes(relations: Sequence[Relation]) -> dict[str, str]:
+    """Render relations as one attribute per qualifier, `type:id` tokens space-joined.
+
+    The flat-attribute encoding #491 rides on the existing event module: several
+    objects under one qualifier share one attribute value, and the token form keeps
+    the type beside the id so a reader never resolves an id against a type it
+    guessed. Key order follows insertion, so the rendered event is deterministic in
+    the caller's relation order.
+    """
+    grouped: dict[str, list[str]] = {}
+    for named in relations:
+        grouped.setdefault(named.qualifier, []).append(f"{named.object_type}:{named.object_id}")
+    return {f"cti.relation.{qualifier}": " ".join(tokens) for qualifier, tokens in grouped.items()}
+
+
+def relations_from_attributes(
+    attributes: Mapping[str, object],
+) -> tuple[Relation, ...] | None:
+    """Read relations back off an event's attributes, or `None` where one will not read.
+
+    `None` is damage — a relation value that is not a string, or a token whose type
+    is outside the closed set — and the caller counts it as malformed rather than
+    reading the surviving relations as the whole set: an author that dropped out of
+    the record is exactly the direction the never-alone check must not fail in.
+    An event carrying no relation attributes at all reads as `()`: absence is an
+    answer (#490's historical shape), and a pre-#491 line parses with no relations
+    rather than refusing.
+    """
+    found: list[Relation] = []
+    for qualifier in RELATION_QUALIFIERS:
+        value = attributes.get(f"cti.relation.{qualifier}")
+        if value is None:
+            continue
+        if not isinstance(value, str):
+            return None
+        for token in value.split():
+            object_type, separator, object_id = token.partition(":")
+            if not separator or object_type not in OBJECT_TYPES or not object_id:
+                return None
+            found.append(Relation(qualifier, object_type, object_id))
+    return tuple(found)
+
+
+def landing_journal(issue: int, review_root: Path) -> Path:
+    """Return the per-issue landings journal's path, beside the stage journal."""
+    return review_root / str(issue) / LANDING_JOURNAL
+
+
+def landing_event(
+    relations: Sequence[Relation],
+    at: float,
+    *,
+    gate_cause: str = "",
+) -> otel_event.Event:
+    """Build one `cti.landing.reviewed` event; the only place its attributes are spelled.
+
+    The issue is read off the subject relation rather than passed beside it, so the
+    event cannot carry an issue its own relations disagree with. Raises on a
+    gate cause outside the closed set, exactly as `stage_event` does over its
+    vocabularies: misspelling is a programming error, never a transport failure.
+    """
+    if gate_cause and gate_cause not in GATE_REVIEW_CAUSES:
+        message = f"gate cause not in the closed vocabulary: {gate_cause!r}"
+        raise ValueError(message)
+    attributes: dict[str, object] = dict(relation_attributes(relations))
+    subject = next(
+        (
+            named
+            for named in relations
+            if named.qualifier == "subject" and named.object_type == "issue"
+        ),
+        None,
+    )
+    if subject is not None:
+        attributes["cti.issue"] = int(subject.object_id)
+    if gate_cause:
+        attributes["cti.landing.gate_cause"] = gate_cause
+    return otel_event.Event(
+        name=LANDING_EVENT,
+        at=at,
+        attributes=attributes,
+        resource={"service.name": "arma-cti-landing"},
+    )
+
+
+def emit_landing(
+    event: otel_event.Event,
+    journal: Path,
+    endpoint: str = "",
+) -> bool:
+    """Export one landing event and journal it with its export's outcome.
+
+    Fail-open as every family is: the landing happened whatever a collector or a
+    journal did, so a failure to record degrades to no record and never reaches the
+    push or the merge it follows (#491).
+    """
+    return otel_event.emit(event, journal=journal, endpoint=endpoint)
+
+
+def _journalled_commits(journal: Path) -> tuple[str, ...]:
+    """Every commit the journal already recorded as produced, in write order.
+
+    An unreadable or absent journal reads as `()`: the deduplication this feeds is
+    fail-open over the record, so a journal that will not open degrades to a
+    possible duplicate line rather than a landing that refuses to record itself.
+    A line that will not parse is skipped here and counted as malformed by the
+    observatory's reader, which is where damage is named.
+    """
+    try:
+        lines = journal.read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return ()
+    commits: list[str] = []
+    for line in lines:
+        try:
+            document = json.loads(line)
+        except ValueError:
+            continue
+        if not isinstance(document, dict) or document.get("event") != LANDING_EVENT:
+            continue
+        attributes = document.get("attributes")
+        if not isinstance(attributes, dict):
+            continue
+        relations = relations_from_attributes(attributes)
+        if relations is None:
+            continue
+        commits.extend(
+            named.object_id
+            for named in relations
+            if named.qualifier == "produced" and named.object_type == "commit"
+        )
+    return tuple(commits)
+
+
+def record_landing(
+    relations: Sequence[Relation],
+    review_root: Path,
+    at: float,
+    *,
+    gate_cause: str = "",
+) -> str:
+    """Record one landing's relations, deduplicated on the commit, fail-open (#491).
+
+    The one entry the landing seam calls. The issue and the commit are read off the
+    relations themselves — the subject and produced edges are the record's own
+    naming, and a second parameter for either is a copy that can disagree. A
+    relation set carrying neither is `unrecordable` and writes nothing: the landing
+    that cannot name what it landed has no record to write, and the observatory's
+    git-derived landing counts still see it.
+
+    **Deduplication is on the produced commit**, because the landing's identity is
+    the commit: the exit-2 re-run whose merge is still outstanding takes the
+    nothing-to-push branch and never reaches a review rung, and a hand re-landing
+    of a pushed commit records nothing new. A landing that cannot read its journal
+    records anyway — the duplicate line that can produce is counted against
+    `landing_events` by the reader, visibly, rather than the landing failing closed
+    on its own telemetry.
+    """
+    subject = next(
+        (
+            named
+            for named in relations
+            if named.qualifier == "subject" and named.object_type == "issue"
+        ),
+        None,
+    )
+    produced = next(
+        (
+            named
+            for named in relations
+            if named.qualifier == "produced" and named.object_type == "commit"
+        ),
+        None,
+    )
+    if subject is None or produced is None:
+        return LANDING_UNRECORDABLE
+    journal = landing_journal(int(subject.object_id), review_root)
+    if produced.object_id in _journalled_commits(journal):
+        return LANDING_ALREADY_RECORDED
+    emit_landing(landing_event(relations, at, gate_cause=gate_cause), journal=journal)
+    return LANDING_RECORDED

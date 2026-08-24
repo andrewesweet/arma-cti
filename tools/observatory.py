@@ -156,7 +156,7 @@ import review_loop
 if TYPE_CHECKING:
     from collections.abc import Container
 
-SCHEMA: Final = "cti.observatory/6"
+SCHEMA: Final = "cti.observatory/7"
 STORE_NAME: Final = "store.json"
 
 EXIT_REFUSED: Final = 1
@@ -481,6 +481,62 @@ STAGE_FIRST_PASS_COLUMNS: Final = (
     "first_pass_yield_reason",
     # Never null, no reason sibling — the boundary, like `measures`.
     "boundary",
+)
+
+# The landings view (#491): one row per distinct landing — (issue, produced commit),
+# the journal's newest event for the pair — and one row per relation that event
+# carried. Two tables because the two counts are different questions: how many
+# landings happened counts `landings`, how many objects a landing touched counts
+# `landing_relations` for that landing, and a join between them multiplies nothing
+# so long as each side is counted on its own grain — the OCEL shape the relations
+# exist for, and the answer to #491's fifth criterion.
+LANDING_COLUMNS: Final = (
+    "landing",
+    "issue",
+    # + `produced_commit_reason` — a degraded or hand-shaped event may name no
+    # commit. The column is `produced_commit` and not `commit` because COMMIT is
+    # SQL's own keyword and the store's rule is that its names are the SQL schema
+    # verbatim, quotable unquoted.
+    "produced_commit",
+    "produced_commit_reason",
+    # + `gate_cause_reason` — present only where the diff touched routing class 6.
+    "gate_cause",
+    "gate_cause_reason",
+    "at",
+    "relations",
+    # Never null, no reason sibling — the boundary, like `measures`.
+    "boundary",
+)
+
+LANDING_RELATION_COLUMNS: Final = (
+    "landing",
+    "qualifier",
+    "object_type",
+    "object_id",
+)
+
+# The landing view's absences, in the store's every-null-carries-a-reason shape.
+NO_COMMIT_RELATION_REASON: Final = (
+    "the event names no produced commit — a degraded or hand-written record; the"
+    " landing row stands and its relation set does not name what it landed"
+)
+NO_GATE_CAUSE_REASON: Final = (
+    "not a gate landing, or the cause went unrecorded — the four-value lane record"
+    " exists only where the diff touched routing class 6"
+)
+
+# The view's boundary, carried as a never-null column on every landing row: the
+# landings journals begin at #491, so a landing the git-derived counts see but no
+# journal records is absent from this figure rather than counted as authorless, and
+# a journalled landing whose relations carry no author is named in the rebuild's
+# `landings_without_authors` — the never-alone check cannot run over it, which is a
+# stated gap and never a silent clearance (#490's absent-journal lesson, one family
+# over).
+LANDING_BOUNDARY: Final = (
+    "journalled landings only: the landings journals begin at #491, so landings"
+    " before it are absent from this figure rather than counted as authorless — and"
+    " a landing whose relations carry no author is named in the rebuild's"
+    " landings_without_authors, never silently cleared"
 )
 
 # The session view's spool: the live file plus its rolled generations, the source
@@ -1333,6 +1389,133 @@ def read_stage_arrivals(review_root: Path) -> tuple[list[dict[str, Any]], dict[s
     return rows, malformed, journals
 
 
+# ------------------------------------------------------------------- the landing view
+
+
+class LandingRead(NamedTuple):
+    """The landings journals' whole readable content (#491)."""
+
+    landings: list[dict[str, Any]]
+    relations: list[dict[str, Any]]
+    malformed: dict[str, int]
+    journals: int
+    events: int
+
+
+def read_landings(review_root: Path) -> LandingRead:  # noqa: C901, PLR0912, PLR0915 — the damage ladder, one branch per way a line can be damaged, never a helper per damage
+    """Read every issue's landings journal into one landing row per distinct landing.
+
+    The journal name, the relation vocabularies and the gate-cause set all come
+    from `attribute_registry` — the registry is their one home and this view
+    derives. A landing's identity is (issue, produced commit), and where a journal
+    holds more than one event for a pair the newest wins: the recorder deduplicates
+    on the commit already, so a pair is a duplicate the recorder's fail-open left
+    behind, and the reader states it by counting it in `events` while `landings`
+    stays distinct — the two counts disagreeing is the visible fact, never a
+    collapse. A line that will not parse, is not this family's event, carries a
+    relation token outside the closed type set, or a gate cause outside the closed
+    cause set, is malformed and counted as such — damage to the record, not an
+    absence on it, exactly as the stage reader draws that line.
+    """
+    malformed: dict[str, int] = {}
+    journals = 0
+    events = 0
+    newest: dict[
+        tuple[int, str], tuple[float, tuple[attribute_registry.Relation, ...], str | None]
+    ] = {}
+    order: list[tuple[int, str]] = []
+
+    def damaged(key: str) -> None:
+        malformed[key] = malformed.get(key, 0) + 1
+
+    for entry in sorted(review_root.iterdir()):
+        if not entry.is_dir() or not entry.name.isdecimal():
+            continue
+        path = entry / attribute_registry.LANDING_JOURNAL
+        if not path.is_file():
+            continue
+        journals += 1
+        key = f"{entry.name}/{path.name}"
+        try:
+            lines = path.read_text(encoding="utf-8").splitlines()
+        except OSError:
+            damaged(key)
+            continue
+        for line in lines:
+            try:
+                document = json.loads(line)
+            except ValueError:
+                damaged(key)
+                continue
+            if not isinstance(document, dict) or document.get("event") != (
+                attribute_registry.LANDING_EVENT
+            ):
+                damaged(key)
+                continue
+            attributes = document.get("attributes")
+            if not isinstance(attributes, dict):
+                damaged(key)
+                continue
+            relations = attribute_registry.relations_from_attributes(attributes)
+            if relations is None:
+                damaged(key)
+                continue
+            issue = attributes.get("cti.issue")
+            if not isinstance(issue, int) or isinstance(issue, bool):
+                damaged(key)
+                continue
+            moment = document.get("at")
+            if not isinstance(moment, (int, float)) or isinstance(moment, bool):
+                damaged(key)
+                continue
+            gate_cause = attributes.get("cti.landing.gate_cause")
+            if gate_cause is not None and gate_cause not in attribute_registry.GATE_REVIEW_CAUSES:
+                damaged(key)
+                continue
+            events += 1
+            produced = next(
+                (
+                    named
+                    for named in relations
+                    if named.qualifier == "produced" and named.object_type == "commit"
+                ),
+                None,
+            )
+            pair = (issue, produced.object_id if produced is not None else "")
+            if pair not in newest:
+                order.append(pair)
+            newest[pair] = (float(moment), relations, gate_cause)
+
+    landing_rows: list[dict[str, Any]] = []
+    relation_rows: list[dict[str, Any]] = []
+    for issue, commit in order:
+        at, relations, gate_cause = newest[(issue, commit)]
+        landing = f"{issue}/{commit}"
+        landing_rows.append(
+            {
+                "landing": landing,
+                "issue": issue,
+                "produced_commit": commit or None,
+                "produced_commit_reason": None if commit else NO_COMMIT_RELATION_REASON,
+                "gate_cause": gate_cause,
+                "gate_cause_reason": None if gate_cause is not None else NO_GATE_CAUSE_REASON,
+                "at": at,
+                "relations": len(relations),
+                "boundary": LANDING_BOUNDARY,
+            }
+        )
+        relation_rows.extend(
+            {
+                "landing": landing,
+                "qualifier": named.qualifier,
+                "object_type": named.object_type,
+                "object_id": named.object_id,
+            }
+            for named in sorted(relations)
+        )
+    return LandingRead(landing_rows, relation_rows, malformed, journals, events)
+
+
 # ------------------------------------------------------------------- the session view
 
 
@@ -1813,9 +1996,11 @@ def rebuild(  # noqa: PLR0913, PLR0917 — the six paths are the rebuild's own s
     rounds, unreadable_loops = read_review_rounds(review_root)
     unreadable_issues = {int(name) for name in unreadable_loops}
     stage_rows, stage_malformed, stage_journals = read_stage_arrivals(review_root)
+    landing_read = read_landings(review_root)
 
     rows: list[dict[str, Any]] = []
     malformed_files: dict[str, int] = dict(stage_malformed)
+    malformed_files.update(landing_read.malformed)
     for entry in entries:
         if not (entry / DISPATCH_FILE).is_file():
             continue
@@ -1892,6 +2077,23 @@ def rebuild(  # noqa: PLR0913, PLR0917 — the six paths are the rebuild's own s
             "stage_journals": stage_journals,
             "stage_arrivals": sum(int(row["arrivals"]) for row in stage_rows),
             "stage_arrivals_undetermined": sum(int(row["undetermined"]) for row in stage_rows),
+            # The landing view's own denominators (#491): raw events beside distinct
+            # landings so a recorder duplicate is visible as the two counts
+            # disagreeing, and the landings whose relation set carries no author
+            # named, because those are the landings the never-alone check cannot run
+            # over — a stated gap, never a silent clearance.
+            "landing_journals": landing_read.journals,
+            "landing_events": landing_read.events,
+            "landings": len(landing_read.landings),
+            "landing_relations": len(landing_read.relations),
+            "landings_without_authors": [
+                row["landing"]
+                for row in landing_read.landings
+                if not any(
+                    named["landing"] == row["landing"] and named["qualifier"] == "author"
+                    for named in landing_read.relations
+                )
+            ],
             "session_renders": len(spool_read.renders),
             "session_renders_untimestamped": spool_read.untimestamped,
             "session_renders_without_session_id": spool_read.without_session,
@@ -1908,6 +2110,8 @@ def rebuild(  # noqa: PLR0913, PLR0917 — the six paths are the rebuild's own s
         "issue_rework": issue_rework,
         "profile_rework": profile_rework,
         "stage_first_pass": stage_rows,
+        "landings": landing_read.landings,
+        "landing_relations": landing_read.relations,
         "session_period": session_period,
         "period_overhead": period_overhead,
     }
@@ -2009,6 +2213,25 @@ def summary_lines(store: Mapping[str, Any], store_dir: Path) -> tuple[str, ...]:
             )
         )
     )
+    # The landings line carries the two counts that must not be mistaken for each
+    # other — raw events and distinct landings — and names the landings whose
+    # relation set carries no author, because those are the landings the
+    # never-alone check cannot run over (#491). No verdict is rendered here: the
+    # check itself is a cookbook query over `landing_relations` joined to
+    # `dispatches`, and a summary that pre-computed it would be a second rendering
+    # path for it.
+    lines.append(
+        " ".join(
+            (
+                "landings",
+                f"journals={coverage['landing_journals']}",
+                f"events={coverage['landing_events']}",
+                f"distinct={coverage['landings']}",
+                f"relations={coverage['landing_relations']}",
+                f"uncheckable={len(coverage['landings_without_authors'])}",
+            )
+        )
+    )
     # The session line names the source's largest omission in its own words — the seat
     # the figure cannot see is the orchestrator, and `orchestrator=absent` says so
     # where a coverage count alone would read as completeness. `meter=` names the
@@ -2073,9 +2296,9 @@ def connect(store_dir: Path) -> sqlite3.Connection:
     document = json.loads((store_dir / STORE_NAME).read_text(encoding="utf-8"))
     found = document.get("schema") if isinstance(document, dict) else None
     if found != SCHEMA:
-        # A `/1` store predates `work_items` and a `/5` one `stage_first_pass`, and the
-        # KeyError their loads would raise on those absent tables is a traceback where
-        # a named refusal belongs.
+        # A `/1` store predates `work_items`, a `/5` one `stage_first_pass` and a `/6`
+        # one the landings tables, and the KeyError their loads would raise on those
+        # absent tables is a traceback where a named refusal belongs.
         raise _RefusedError(
             Refusal(
                 "schema_mismatch",
@@ -2091,6 +2314,8 @@ def connect(store_dir: Path) -> sqlite3.Connection:
         ("issue_rework", ISSUE_REWORK_COLUMNS),
         ("profile_rework", PROFILE_REWORK_COLUMNS),
         ("stage_first_pass", STAGE_FIRST_PASS_COLUMNS),
+        ("landings", LANDING_COLUMNS),
+        ("landing_relations", LANDING_RELATION_COLUMNS),
         ("session_period", SESSION_PERIOD_COLUMNS),
         ("period_overhead", PERIOD_OVERHEAD_COLUMNS),
     ):
