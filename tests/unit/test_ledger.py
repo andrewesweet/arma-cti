@@ -894,6 +894,76 @@ def test_a_record_carrying_no_usable_timestamp_yields_no_start() -> None:
     assert ledger.dispatch_start({"planned_at": "not a timestamp"}, {"started_at": 7}) is None
 
 
+# ------------------------------------------- descriptive prose is not a landing (#563)
+
+
+def test_a_possessive_credit_is_not_a_landing_beside_the_work_it_credits(repo: Path) -> None:
+    # #563's measured shape, twice over in one day: a follow-up's message credits the
+    # issue it follows up, and the credit reads "#N's" — prose about the issue, never
+    # its work. The newer commit must not win the row merely by being newer and
+    # better written.
+    base = head(repo)
+    genuine = land(repo, "feat: the work\n\nrefs #227")
+    land(repo, "docs: four command-table rows\n\nthe row narrowed to #227's behaviour")
+    landing = ledger.landed(repo, 227, base, ARMED)
+    assert (landing.sha, landing.commits) == (genuine, 1)
+
+
+def test_a_curly_apostrophe_possessive_is_prose_too(repo: Path) -> None:
+    base = head(repo)
+    genuine = land(repo, "feat: the work\n\nrefs #227")
+    land(repo, "docs: follow-up\n\nfollows #227’s landing")  # noqa: RUF001 — the typographic apostrophe is the arrangement under test
+    assert ledger.landed(repo, 227, base, ARMED).sha == genuine
+
+
+def test_descriptive_prose_alone_lands_nothing_and_says_so(repo: Path) -> None:
+    base = head(repo)
+    land(repo, "docs: follow-up\n\nthe states added by #227's round two")
+    landing = ledger.landed(repo, 227, base, ARMED)
+    assert landing.sha is None
+    assert landing.reason == (
+        f"1 commit(s) on origin/main descending from {base[:8]} mention #227 "
+        "only in descriptive prose"
+    )
+
+
+def test_a_closing_keyword_still_lands(repo: Path) -> None:
+    base = head(repo)
+    closed = land(repo, "feat: the spine\n\nCloses #227")
+    assert ledger.landed(repo, 227, base, ARMED).sha == closed
+
+
+def test_a_squash_subject_reference_still_lands(repo: Path) -> None:
+    base = head(repo)
+    squashed = land(repo, "fix(queue): slot depth agrees with select (#227)")
+    assert ledger.landed(repo, 227, base, ARMED).sha == squashed
+
+
+def test_a_message_with_both_a_credit_and_a_reference_qualifies_on_the_reference(
+    repo: Path,
+) -> None:
+    # The narrowing is per mention, never per commit: a newer message carrying both
+    # "#227's round one" and a bare "closing #227" still names the issue, so it is
+    # the newest landing and the count sees both qualifying commits.
+    base = head(repo)
+    land(repo, "feat: the work\n\nrefs #227")
+    newest = land(repo, "docs: follow-up\n\nafter #227's round one, closing #227")
+    landing = ledger.landed(repo, 227, base, ARMED)
+    assert (landing.sha, landing.commits) == (newest, 2)
+
+
+def test_a_bare_list_mention_still_qualifies_as_the_stated_ceiling(repo: Path) -> None:
+    # The boundary the message cannot draw (#563's ceiling, stated in `landed`'s
+    # docstring): "added by #227, #228, and #499" is descriptive prose, but its
+    # token is lexically the one a landing attribution carries, so the derivation
+    # admits it — the landings journal is the discriminator, and where no journal
+    # exists nothing in the message is. Pinned so the rule cannot drift tighter and
+    # silently lose real landings to it.
+    base = head(repo)
+    credit = land(repo, "docs: correct the record\n\nthe states added by #227, #228, and #499")
+    assert ledger.landed(repo, 227, base, ARMED).sha == credit
+
+
 # ---------------------------------------------------- what each seat's gate can even say
 
 

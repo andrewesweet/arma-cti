@@ -473,12 +473,15 @@ class ReferencingCommit(NamedTuple):
 class Landing(NamedTuple):
     """What git says about the dispatch's issue landing on `origin/main`.
 
-    `shas` is every commit that cleared all three tests, newest first, where `sha` is
+    `shas` is every commit that cleared the tests, newest first, where `sha` is
     only the newest of them. The row names the tip because that is what a reader wants
     to `git show`; the list exists for a caller asking *membership* rather than "which
     one" — `just trial close-audit` holds a SHA quoted in a close against this window, and
     a caller that had only the tip would have to re-derive the window to answer it
-    (#252). Deliberately absent from `document()`: the row's schema names the tip and
+    (#252). A caller answering from the landings journal instead of git (the
+    observatory's preference, #563) fills the same shape with the journal's produced
+    commits, sorted, because membership is the one question that list exists for.
+    Deliberately absent from `document()`: the row's schema names the tip and
     the count, and widening it here would change the ledger's shape for a question the
     row does not ask.
     """
@@ -974,6 +977,21 @@ def issue_reference_pattern(issue: int) -> re.Pattern[str]:
     return re.compile(rf"(?<![\w#])#{issue}(?![0-9])")
 
 
+def landing_reference_pattern(issue: int) -> re.Pattern[str]:
+    """Match a reference that names the issue, not one that merely talks about it.
+
+    The one boundary a message can draw: a possessive mention — `#N's behaviour`,
+    straight or typographic in its apostrophe — is always descriptive prose, a
+    follow-up crediting work that is not this landing, and every corruptor of
+    #563's measurement carried exactly that shape. A bare mention stays admitted,
+    because a landing attribution mid-prose
+    (`(#N)` at a sentence's end) is lexically the same token: where a landings
+    journal exists it is the discriminator, and this pattern runs only over
+    `referencing_commits`' output, whose own guards have already bound the token.
+    """
+    return re.compile(rf"#{issue}(?!['’])")  # noqa: RUF001 — the typographic apostrophe is the spelling being excluded
+
+
 def referencing_commits(log: str, issue: int) -> tuple[ReferencingCommit, ...]:
     """Select commits referencing `issue` from a log in `COMMIT_REFERENCE_FORMAT`.
 
@@ -1001,13 +1019,17 @@ def _landing_preflight(repo: Path, base_sha: str, ref: str) -> Landing | None:
     return None
 
 
-def landed(
+def landed(  # noqa: PLR0911 — one refusal per test that answered, never a helper per refusal
     repo: Path, issue: int, base_sha: str, since: datetime | None, ref: str = "origin/main"
 ) -> Landing:
     """Find the commits on `ref` that this dispatch could have landed.
 
-    Three tests, and a commit must clear all of them. Its message must reference the
-    issue. It must **descend from the dispatch's base**, since a commit on another line
+    Four tests, and a commit must clear all of them. Its message must reference the
+    issue, and not only possessively: `#N's behaviour` is a follow-up crediting the
+    work it follows up, and a credit is not a landing — every corruptor of #563's
+    measurement was a newer commit whose only mention was that shape, which is why
+    the better the commit message, the more rows the derivation corrupted. It must
+    **descend from the dispatch's base**, since a commit on another line
     of the history is not this dispatch's tree plus a change — `base..ref` alone lists
     everything reachable from the tip, which on a review dispatch reaches back to
     whatever SHA was under review, because `docs/review-dispatch.md` prescribes passing
@@ -1023,7 +1045,14 @@ def landed(
     The newest survivor is reported as the landed SHA, because an issue may land in
     several commits and the tip is what a reader wants to `git show`. The count is
     carried so that "several" is visible rather than lost behind one SHA, and every
-    refusal names which of the three tests answered.
+    refusal names which of the four tests answered.
+
+    The ceiling this derivation carries: a bare mention in descriptive prose —
+    `(#495, #496, and #499)` in a body sentence — is not distinguishable from a
+    landing attribution by anything in the message, so it stays admitted here. The
+    landings journal is the discriminator where one exists; `referencing_commits`
+    itself stays verb-blind because `just brief`'s prior-work report reads prose
+    mentions as prior work, which is what they are there.
     """
     refusal = _landing_preflight(repo, base_sha, ref)
     if refusal is not None:
@@ -1044,15 +1073,24 @@ def landed(
         return Landing(
             None, 0, f"no commit on {ref} descending from {base_sha[:8]} references #{issue}"
         )
+    naming = landing_reference_pattern(issue)
+    named = [commit for commit in referencing if naming.search(commit.message)]
+    if not named:
+        return Landing(
+            None,
+            0,
+            f"{len(referencing)} commit(s) on {ref} descending from {base_sha[:8]} mention "
+            f"#{issue} only in descriptive prose",
+        )
     floor = since.replace(microsecond=0)
     matched = [
-        commit.sha for commit in referencing if datetime.fromisoformat(commit.committed_at) >= floor
+        commit.sha for commit in named if datetime.fromisoformat(commit.committed_at) >= floor
     ]
     if not matched:
         return Landing(
             None,
             0,
-            f"{len(referencing)} commit(s) on {ref} reference #{issue} but predate "
+            f"{len(named)} commit(s) on {ref} reference #{issue} but predate "
             f"this dispatch's start ({floor.isoformat()})",
         )
     return Landing(

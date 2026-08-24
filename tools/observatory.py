@@ -907,14 +907,93 @@ def _row_spend(row: Mapping[str, Any] | None) -> Spend:
     )
 
 
-def _landing_for(
-    plan: Mapping[str, Any], issue: int | None, result: Mapping[str, Any] | None, repo: Path
-) -> ledger.Landing:
-    """Return what git says this one dispatch landed, bounded as #245 bounds it.
+class LandingJournals(NamedTuple):
+    """The journal halves the landing preference reads, computed once per rebuild.
 
-    The seat test comes first, as it does in `ledger.materialise`: asking a `review`
-    dispatch what it landed is a category error, and the row must say the seat lands
-    nothing rather than reading as a weak git answer.
+    `produced` indexes the landing rows by issue, commits only; `damaged` holds every
+    issue whose journal exists and read as damage — the set that keeps a wrecked
+    journal from passing for an absent one.
+    """
+
+    produced: Mapping[int, tuple[str, ...]]
+    damaged: frozenset[int]
+
+
+def _journalled_landing(
+    repo: Path, issue: int, produced: Sequence[str], damaged: frozenset[int]
+) -> ledger.Landing:
+    """Answer an issue's landing from its landings journal, which owns it where it exists.
+
+    The journal is the record of the loop that gated the landing, so where it names
+    the produced commit the projection reports that commit and the git derivation
+    never runs — #563's defect was the derivation admitting a follow-up's
+    credit-bearing prose as the landing, and two of five landings corrupted an older
+    issue's row with it. Where the journal cannot answer — it would not read, or
+    records landings while naming no commit, or names commits this checkout does not
+    hold — the answer is a null with a reason and never a quiet fallback to the
+    derivation, because a damaged record rendering as a healthy git answer is the
+    absent-value shape this store has already closed eleven instances of.
+    """
+    if not produced:
+        reason = (
+            "the landings journal could not be read"
+            if issue in damaged
+            else NO_COMMIT_RELATION_REASON
+        )
+        return ledger.Landing(None, 0, reason)
+    commits = tuple(sorted(set(produced)))
+    sha, reason = _newest_landed_sha(repo, commits)
+    if sha is None:
+        return ledger.Landing(None, 0, str(reason))
+    return ledger.Landing(
+        sha,
+        len(commits),
+        f"journalled as produced by {len(commits)} landing(s) of #{issue}",
+        commits,
+    )
+
+
+def _landing_journals(landing_read: LandingRead) -> LandingJournals:
+    """Read the journal halves the landing preference needs out of one `LandingRead`.
+
+    `produced` indexes the landing rows by issue, commits only, order-free. `damaged`
+    comes from `read_landings`' damage counts, keyed `"<issue>/landings.jsonl"`: an
+    issue whose journal is entirely damage has no landing rows, so without this set
+    it would be indistinguishable from an issue that never journalled — and falling
+    back to the git derivation there is precisely the silent repair this reader
+    refuses.
+    """
+    commits: dict[int, list[str]] = {}
+    for row in landing_read.landings:
+        named = commits.setdefault(int(row["issue"]), [])
+        if row["produced_commit"]:
+            named.append(str(row["produced_commit"]))
+    issues: set[int] = set()
+    for name in landing_read.malformed:
+        issue, separator, file = name.partition("/")
+        if separator and file == attribute_registry.LANDING_JOURNAL and issue.isdecimal():
+            issues.add(int(issue))
+    return LandingJournals(
+        {issue: tuple(named) for issue, named in commits.items()},
+        frozenset(issues),
+    )
+
+
+def _landing_for(
+    plan: Mapping[str, Any],
+    issue: int | None,
+    result: Mapping[str, Any] | None,
+    repo: Path,
+    journals: LandingJournals,
+) -> ledger.Landing:
+    """Return what this one dispatch landed: the journal's word where it has one.
+
+    The landings journal owns the landing where it exists, and the git derivation is
+    the fallback for issues it never covered — #563's ruling, because the derivation
+    admits prose a journal would never name. The seat test still comes first, as it
+    does in `ledger.materialise`: asking a `review` dispatch what it landed is a
+    category error, and the row must say the seat lands nothing rather than reading
+    as a weak git answer.
     """
     seat = plan.get("seat")
     base_sha = str(plan.get("base_sha") or "")
@@ -922,6 +1001,8 @@ def _landing_for(
         return ledger.Landing(None, 0, f"the {seat} seat lands nothing")
     if not issue:
         return ledger.Landing(None, 0, "the dispatch names no issue")
+    if issue in journals.produced or issue in journals.damaged:
+        return _journalled_landing(repo, issue, journals.produced.get(issue, ()), journals.damaged)
     return ledger.landed(repo, issue, base_sha, ledger.dispatch_start(plan, result))
 
 
@@ -1074,7 +1155,9 @@ def _terminal_for(
     return None, TERMINAL_COMPLETED_REASON
 
 
-def _dispatch_row(record_dir: Path, export_dir: Path, repo: Path) -> tuple[dict[str, Any], int]:
+def _dispatch_row(
+    record_dir: Path, export_dir: Path, repo: Path, journals: LandingJournals
+) -> tuple[dict[str, Any], int]:
     """Build one dispatch's row: identity, telemetry source, spend and landing.
 
     Returns the row and the malformed-line count its export file produced, so the
@@ -1110,7 +1193,7 @@ def _dispatch_row(record_dir: Path, export_dir: Path, repo: Path) -> tuple[dict[
         telemetry_path = None
         telemetry_path_reason = NO_TELEMETRY_REASON
     issue = _issue_of(plan)
-    landing = _landing_for(plan, issue, result, repo)
+    landing = _landing_for(plan, issue, result, repo, journals)
     started = ledger.dispatch_start(plan, result)
     ended, ended_reason = _ended_for(result, ledger_row, telemetry_source)
     end_state = _end_state_for(items, result, ledger_row, telemetry_source, export_path)
@@ -2503,10 +2586,14 @@ def rebuild(  # noqa: PLR0913, PLR0917 — the source paths, destination and pro
     malformed_files: dict[str, int] = dict(stage_malformed)
     malformed_files.update(landing_read.malformed)
     malformed_files.update(queue_malformed)
+    # The journal halves the landing preference reads, computed once before the
+    # dispatch rows because every row of an issue consults the same journal — the
+    # preference is a property of the issue, not of the dispatch.
+    journals = _landing_journals(landing_read)
     for entry in entries:
         if not (entry / DISPATCH_FILE).is_file():
             continue
-        row, malformed = _dispatch_row(entry, export_dir, repo)
+        row, malformed = _dispatch_row(entry, export_dir, repo, journals)
         rows.append(row)
         if malformed:
             malformed_files[row["telemetry_path"] or entry.name] = malformed

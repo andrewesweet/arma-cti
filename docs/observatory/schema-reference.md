@@ -163,7 +163,7 @@ regenerates it.
 | Column | Null? | Meaning |
 |---|---|---|
 | `issue` | never | The landed issue |
-| `landed_sha` | + `landed_sha_reason` | The newest landed commit by Git committer date; equal instants use the lexicographically greatest full SHA as a deterministic tie-break |
+| `landed_sha` | + `landed_sha_reason` | The newest candidate commit by Git committer date — the landings journal's `produced` commit where the issue's journal records one, else the referencing-commit derivation; equal instants use the lexicographically greatest full SHA as a deterministic tie-break |
 | `dispatches` | never | All dispatch records naming the issue, across seats and lanes |
 | `review_rounds` | + `review_rounds_reason` | The issue's review-loop fix rounds |
 | `lead_time_seconds` | + `lead_time_seconds_reason` | Earliest dispatch start to the landing commit's committer date |

@@ -97,6 +97,7 @@ import json
 import os
 import re
 import subprocess
+import time
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, NamedTuple
 
@@ -1528,6 +1529,203 @@ def test_the_landed_sha_is_attributed_to_the_issue_that_landed(world: World) -> 
     assert cost_row(store, ISSUE, "claude-native")["landed_sha"] == world.landed_sha
     assert cost_row(store, OTHER_ISSUE, "claude-native")["landed"] is False
     assert cost_row(store, OTHER_ISSUE, "claude-native")["landed_sha_reason"]
+
+
+# ------------------------------------------- the journal owns the landing (#563)
+
+# The landing-preference tests' own issue, dispatches and instants: one issue, one
+# implementer dispatch armed at PLANNED, and a repo whose commits land inside and
+# outside the shapes the preference has to tell apart.
+JOURNAL_ISSUE = 552
+JOURNAL_DISPATCH = "d-20260805-120000-jour01"
+JOURNAL_CO_AUTHOR = "d-20260805-120000-jour02"
+GENUINE_AT = "2026-08-05T23:00:00+00:00"
+REGENERATE_AT = "2026-08-05T23:30:00+00:00"
+
+
+def _landing_world(tmp_path: Path) -> dict[str, Path]:
+    """Every root the rebuild reads, present and empty where unused, over a real repo."""
+    world = {
+        "dispatch_root": tmp_path / "dispatches",
+        "export_dir": tmp_path / "export",
+        "review_root": tmp_path / "review",
+        "spool": tmp_path / "spool" / "statusline.jsonl",
+        "repo": tmp_path / "repo",
+        "store_dir": tmp_path / "store",
+    }
+    for key in ("dispatch_root", "export_dir", "review_root"):
+        world[key].mkdir(parents=True, exist_ok=True)
+    world["spool"].parent.mkdir(parents=True, exist_ok=True)
+    world["spool"].write_text("", encoding="utf-8")
+    repo = world["repo"]
+    repo.mkdir()
+    run_git("init", "-q", "-b", "main", cwd=repo)
+    run_git("config", "user.email", "t@example.com", cwd=repo)
+    run_git("config", "user.name", "T", cwd=repo)
+    (repo / "base.txt").write_text("base", encoding="utf-8")
+    run_git("add", "base.txt", cwd=repo)
+    run_git("commit", "-qm", "chore: the base", cwd=repo, at="2026-08-05T11:00:00+00:00")
+    run_git("update-ref", "refs/remotes/origin/main", "HEAD", cwd=repo)
+    return world
+
+
+def _head_of(repo: Path) -> str:
+    """Return the staged repo's current commit."""
+    return subprocess.run(
+        ["git", "rev-parse", "HEAD"],  # noqa: S607 — fixed Git executable and the staged repo
+        cwd=repo,
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout.strip()
+
+
+def _stage_landing(world: dict[str, Path], message: str, at: str) -> str:
+    """Commit on the staged repo's main and move `origin/main` to it, as a push would."""
+    repo = world["repo"]
+    name = f"{time.time_ns()}.txt"
+    (repo / name).write_text(name, encoding="utf-8")
+    run_git("add", name, cwd=repo)
+    run_git("commit", "-qm", message, cwd=repo, at=at)
+    run_git("update-ref", "refs/remotes/origin/main", "HEAD", cwd=repo)
+    return _head_of(repo)
+
+
+def write_landing_journal(review_root: Path, issue: int, produced: str) -> Path:
+    """Lay down one landings-journal line, in the flat shape the recorder renders."""
+    path = review_root / str(issue) / attribute_registry.LANDING_JOURNAL
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(
+            {
+                "event": attribute_registry.LANDING_EVENT,
+                "at": 1_800_000_000.0,
+                "attributes": {
+                    "cti.issue": issue,
+                    "cti.relation.produced": f"commit:{produced}",
+                    "cti.relation.author": f"dispatch:{JOURNAL_DISPATCH}",
+                    "cti.relation.reviewer": f"dispatch:{JOURNAL_CO_AUTHOR}",
+                },
+                "resource": {"service.name": "arma-cti-landing"},
+            },
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    return path
+
+
+def _rebuild_landing_world(world: dict[str, Path]) -> dict[str, Any]:
+    """Rebuild the landing world's store and return the document."""
+    return observatory.rebuild(
+        world["dispatch_root"],
+        world["export_dir"],
+        world["review_root"],
+        world["spool"],
+        world["repo"],
+        world["store_dir"],
+    )
+
+
+def _armed_landing_world(tmp_path: Path) -> tuple[dict[str, Path], str]:
+    """Return the landing world with its dispatch armed from the base a landing descends from."""
+    world = _landing_world(tmp_path)
+    base = _head_of(world["repo"])
+    stage_record(world["dispatch_root"], JOURNAL_DISPATCH, issue=JOURNAL_ISSUE, base_sha=base)
+    return world, base
+
+
+def test_the_journal_s_produced_commit_owns_the_row_over_a_newer_referencing_commit(
+    tmp_path: Path,
+) -> None:
+    # #552's shape exactly: the true landing carries no issue token at all, the
+    # projection regenerate after it credits the issue with one, and the derivation
+    # picked the regenerate — corrupting the row and growing lead_time_seconds with
+    # every later mention. Where the journal names the produced commit, that commit
+    # is the answer the projection reports, at every layer that renders it.
+    world, _ = _armed_landing_world(tmp_path)
+    genuine = _stage_landing(world, "fix(land): the work\n\nno issue token anywhere", GENUINE_AT)
+    _stage_landing(world, "chore(observatory): regenerate\n\nrefs #552", REGENERATE_AT)
+    write_landing_journal(world["review_root"], JOURNAL_ISSUE, genuine)
+    store = _rebuild_landing_world(world)
+    assert cost_row(store, JOURNAL_ISSUE, "claude-native")["landed_sha"] == genuine
+    assert summary_row(store, JOURNAL_ISSUE)["landed_sha"] == genuine
+    item = work_item(store, JOURNAL_ISSUE)
+    assert item["state"] == "landed"
+    assert item["clock_end"] == GENUINE_AT
+    assert item["lead_time_seconds"] == 39_600  # PLANNED 12:00 to the 23:00 genuine landing
+
+
+def test_a_journal_that_will_not_read_is_reported_not_fallen_back_from(tmp_path: Path) -> None:
+    # The absent-or-undecidable rule this store keeps closing instances of: the git
+    # derivation would land here — the refs commit is in the window — and a damaged
+    # journal must not render as that healthy answer. The row says what happened to
+    # the record instead.
+    world, _ = _armed_landing_world(tmp_path)
+    _stage_landing(world, "feat: the work\n\nrefs #552", GENUINE_AT)
+    journal = world["review_root"] / str(JOURNAL_ISSUE) / attribute_registry.LANDING_JOURNAL
+    journal.parent.mkdir(parents=True, exist_ok=True)
+    journal.write_text('{"event": "cti.landing.reviewed", "at": 1.0, "attri', encoding="utf-8")
+    store = _rebuild_landing_world(world)
+    row = cost_row(store, JOURNAL_ISSUE, "claude-native")
+    assert row["landed"] is False
+    assert row["landed_sha_reason"] == "the landings journal could not be read"
+
+
+def test_a_journal_that_records_landings_but_names_no_commit_says_so(tmp_path: Path) -> None:
+    # The pre-relation historical shape: the event parses, the issue reads, and no
+    # produced relation exists. The journal cannot answer, and the derivation is not
+    # quietly asked in its place.
+    world, _ = _armed_landing_world(tmp_path)
+    _stage_landing(world, "feat: the work\n\nrefs #552", GENUINE_AT)
+    journal = world["review_root"] / str(JOURNAL_ISSUE) / attribute_registry.LANDING_JOURNAL
+    journal.parent.mkdir(parents=True, exist_ok=True)
+    journal.write_text(
+        json.dumps(
+            {
+                "event": attribute_registry.LANDING_EVENT,
+                "at": 1.0,
+                "attributes": {"cti.issue": JOURNAL_ISSUE},
+                "resource": {"service.name": "arma-cti-landing"},
+            },
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    store = _rebuild_landing_world(world)
+    row = cost_row(store, JOURNAL_ISSUE, "claude-native")
+    assert row["landed"] is False
+    assert row["landed_sha_reason"] == observatory.NO_COMMIT_RELATION_REASON
+
+
+def test_a_journal_naming_a_commit_absent_from_the_checkout_says_so(tmp_path: Path) -> None:
+    world, _ = _armed_landing_world(tmp_path)
+    write_landing_journal(world["review_root"], JOURNAL_ISSUE, "f" * 40)
+    store = _rebuild_landing_world(world)
+    row = cost_row(store, JOURNAL_ISSUE, "claude-native")
+    assert row["landed"] is False
+    assert row["landed_sha_reason"] == (
+        f"the committer date for landed SHA {'f' * 40} could not be read from this checkout"
+    )
+
+
+def test_equal_committer_instants_break_the_tie_on_the_lexically_greatest_sha(
+    tmp_path: Path,
+) -> None:
+    # #561's secondary key, staged at the one instant it exists for. The pair is
+    # handed over smallest-first because `max` returns the first maximal element:
+    # a mutant deleting the SHA from the key would answer the smaller commit, and
+    # this test goes red rather than letting it survive.
+    world = _landing_world(tmp_path)
+    one = _stage_landing(world, "feat: one\n\nrefs #552", GENUINE_AT)
+    two = _stage_landing(world, "feat: two\n\nrefs #552", GENUINE_AT)
+    smaller, greater = sorted((one, two))
+    sha, reason = observatory._newest_landed_sha(  # noqa: SLF001 — the picker is the unit; a staged store would test the fixture
+        world["repo"], (smaller, greater)
+    )
+    assert (sha, reason) == (greater, None)
 
 
 # --------------------------------------------------------------------- the flow view
