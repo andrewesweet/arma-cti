@@ -79,7 +79,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Final, NamedTuple
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Sequence
+    from collections.abc import Callable, Mapping, Sequence
 
 EXIT_REFUSED: Final = 1
 # A finding, not a refusal: signals were sent and the tree is still not empty. Separated
@@ -455,6 +455,29 @@ def _record_ending(record: Record, finished: dict[int, str]) -> str:
         encoding="utf-8",
     )
     return str(path)
+
+
+def is_stop_closeout(document: Mapping[str, object]) -> bool:
+    """Recognise a `result.json` the stop sweep laid down, in either of its two shapes.
+
+    This is the one home for the closeout shape, beside the `_record_ending` that
+    writes it, so the writer and its readers cannot drift apart (#558, after
+    #549): `occupancy.py` (a closeout attests no occupancy span),
+    `review_exchange.py` (a swept dispatch completed no review) and
+    `observatory.py` (`_ended_for` reads no end from it) all call this predicate
+    rather than spelling it again. A change to the shape is made here once.
+
+    The current sweep writes `stopped_by` and a `terminal_state` whose state is
+    `stopped`, and no `ended_at`. Eleven legacy records write `stopped_by` and
+    stamp the sweep's clock into `ended_at`, with no `terminal_state` — so
+    `stopped_by` recognises every record that exists, and the `terminal_state`
+    check names the current shape exactly: a block carrying any other state is
+    some other writer's, not this sweep's.
+    """
+    terminal_state = document.get("terminal_state")
+    return "stopped_by" in document or (
+        isinstance(terminal_state, dict) and terminal_state.get("state") == STOPPED
+    )
 
 
 def _context(record: Record, found: Scan) -> tuple[str, ...]:

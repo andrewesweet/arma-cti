@@ -162,6 +162,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 import attribute_registry
 import dispatch
+import dispatch_stop
 import ledger
 import queue_policy
 import review_loop
@@ -283,18 +284,20 @@ NO_END_RUNNING_REASON: Final = "the run has not ended: no result.json beside the
 NO_END_UNUSABLE_REASON: Final = "the dispatch record carries no usable ended_at"
 NO_END_ROW_REASON: Final = "the pruned source's ledger row carries no end time"
 # Two closeout shapes that look like an end and are not (#485 round 2). The current
-# stop sweep writes an explicit terminal state and no `ended_at`; eleven legacy records
-# stamp the sweep's clock into `ended_at` — a fact about the sweep, never about the work,
-# which may have stopped at any instant between the plan and the sweep. The legacy
-# `stopped_by` marker keeps that shape recognisable. And a result that recorded no
-# `started_at` of its own would pair its end with the plan's `planned_at`
-# (`ledger.dispatch_start`'s fallback), opening the span at a launch attempt rather
-# than at work — the never-launched refusal and the child-state-unknown failure both
-# carry exactly that shape.
+# stop sweep writes `stopped_by` and an explicit stopped terminal state and no
+# `ended_at`; eleven legacy records write `stopped_by` and stamp the sweep's clock into
+# `ended_at` — a fact about the sweep, never about the work, which may have stopped at
+# any instant between the plan and the sweep. Both shapes are recognised by one
+# predicate, `dispatch_stop.is_stop_closeout` (#558), and the string below names the
+# discriminators that predicate checks. And a result that recorded no `started_at` of
+# its own would pair its end with the plan's `planned_at` (`ledger.dispatch_start`'s
+# fallback), opening the span at a launch attempt rather than at work — the
+# never-launched refusal and the child-state-unknown failure both carry exactly that
+# shape.
 NO_END_STOP_SWEEP_REASON: Final = (
-    "the result was written by the stop sweep (`terminal_state` or legacy `stopped_by`), "
-    "so it does not attest the run's end — when the work stopped is not derivable from "
-    "what survives"
+    "the result was written by the stop sweep (`stopped_by`, or a `terminal_state` "
+    "whose state is stopped), so it does not attest the run's end — when the work "
+    "stopped is not derivable from what survives"
 )
 NO_END_NO_OWN_START_REASON: Final = (
     "the run recorded no start of its own, so its end would open a span at the plan's "
@@ -1013,9 +1016,11 @@ def _ended_for(
 
     The end is the runner's own `ended_at`, written when the run ended; a pruned
     dispatch's survives under the row's `gate` block. One closeout shape is not an
-    end at all: a `result.json` the stop sweep laid down (`stopped_by`) stamps the
-    sweep's own clock, which says when the sweep ran and never when the work
-    stopped, so it is refused before the both-bounds rule is even reached.
+    end at all: the stop sweep's `result.json` carries no `ended_at`, and the
+    legacy shape's `ended_at` says when the sweep ran, never when the work
+    stopped. `dispatch_stop.is_stop_closeout` recognises both shapes — the one
+    home every reader of the closeout derives from (#558) — and both are refused
+    here before the both-bounds rule is even reached.
     """
     if telemetry_source == SOURCE_LEDGER_ROW:
         gate = ledger_row.get("gate") if ledger_row is not None else None
@@ -1026,7 +1031,9 @@ def _ended_for(
         )
     if result is None:
         return None, NO_END_RUNNING_REASON
-    if result.get("stopped_by") is not None:
+    # The stop closeout has one shape-home, `dispatch_stop.is_stop_closeout`,
+    # shared with `occupancy.py` and `review_exchange.py` (#558).
+    if dispatch_stop.is_stop_closeout(result):
         return None, NO_END_STOP_SWEEP_REASON
     return _bounded_end(
         _parse_moment(result.get("ended_at")),

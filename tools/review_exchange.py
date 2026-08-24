@@ -119,6 +119,7 @@ from typing import Final, NamedTuple
 sys.path.insert(0, str(Path(__file__).parent))
 
 import attribute_registry
+import dispatch_stop
 import review_loop
 import worktree
 from worktree import Refusal, Report
@@ -754,19 +755,13 @@ class _Result(NamedTuple):
     state: str
 
 
-def _is_stop_closeout(document: dict[str, object]) -> bool:
-    """Recognise both the legacy and current stop-sweep result shapes."""
-    terminal_state = document.get("terminal_state")
-    return "stopped_by" in document or (
-        isinstance(terminal_state, dict) and terminal_state.get("state") == "stopped"
-    )
-
-
 def _binding_result_document(  # noqa: PLR0911 — one return per named result state in this ladder
     document: dict[str, object],
 ) -> _Result | str:
     """Classify one parsed result document for binding purposes."""
-    if _is_stop_closeout(document):
+    # The stop closeout has one shape-home, `dispatch_stop.is_stop_closeout`,
+    # shared with `occupancy.py` and `observatory.py` (#558).
+    if dispatch_stop.is_stop_closeout(document):
         return _Result(completed=False, state="result=not_a_result:stopped")
     refused = "refusal" in document
     ended = isinstance(document.get("ended_at"), str) and bool(document["ended_at"])

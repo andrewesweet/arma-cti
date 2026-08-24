@@ -682,6 +682,108 @@ def test_no_option_on_this_surface_stops_by_pid_or_skips_the_verifying_re_scan(f
         dispatch.parse_args([flag, "1"])
 
 
+# The four records the closeout predicate must tell apart (#558): the current sweep's
+# result, the legacy sweep's result, and the two records that are not closeouts at all —
+# a completed run, and the near miss that once divided the readers, a `terminal_state`
+# block some writer other than the sweep left behind.
+STOP_SWEEP_RESULT: dict[str, object] = {
+    "dispatch_id": "d-x",
+    "stopped_by": "just dispatch --stop",
+    "stopped_at": "2026-08-15T09:05:00+00:00",
+    "killed": [],
+    "terminal_state": {"state": "stopped"},
+}
+LEGACY_SWEEP_RESULT: dict[str, object] = {
+    "dispatch_id": "d-x",
+    "stopped_by": "just dispatch --stop",
+    "stopped_at": "2026-08-15T09:05:00+00:00",
+    "killed": [],
+    "ended_at": "2026-08-15T09:05:00+00:00",
+}
+COMPLETED_RESULT: dict[str, object] = {
+    "dispatch_id": "d-x",
+    "started_at": "2026-08-15T09:00:00+00:00",
+    "ended_at": "2026-08-15T09:05:00+00:00",
+    "returncode": 0,
+    "outcome": "ok",
+}
+OTHER_TERMINAL_RESULT: dict[str, object] = {
+    **COMPLETED_RESULT,
+    "terminal_state": {"state": "completed"},
+}
+CLOSEOUT_SHAPES: list[tuple[dict[str, object], bool]] = [
+    (STOP_SWEEP_RESULT, True),
+    (LEGACY_SWEEP_RESULT, True),
+    (COMPLETED_RESULT, False),
+    (OTHER_TERMINAL_RESULT, False),
+]
+
+
+@pytest.mark.parametrize(("result", "closeout"), CLOSEOUT_SHAPES)
+def test_is_stop_closeout_accepts_both_sweep_shapes_and_nothing_else(
+    result: dict[str, object],
+    closeout: bool,  # noqa: FBT001 — parametrised false and true arms are the subject
+) -> None:
+    """The shape's one home: both sweep shapes accepted, every other record refused."""
+    assert dispatch_stop.is_stop_closeout(result) is closeout
+
+
+@pytest.mark.parametrize(("result", "closeout"), CLOSEOUT_SHAPES)
+def test_every_reader_of_the_closeout_reads_the_same_verdict(
+    tmp_path: Path,
+    result: dict[str, object],
+    closeout: bool,  # noqa: FBT001 — parametrised false and true arms are the subject
+) -> None:
+    """The three readers agree on each shape because each derives from one predicate (#558).
+
+    `occupancy.py` drops a closeout from its spans, `review_exchange.py` reads no
+    completed review from one, and `observatory.py` reads no end from one. Over the
+    near miss — a `terminal_state` block the sweep did not write — every reader stays
+    on the not-a-closeout side, where `occupancy.py`'s old key-presence spelling once
+    stood alone and silently dropped a span the other two would have read.
+    """
+    occupancy = load_tool("occupancy")
+    review_exchange = load_tool("review_exchange")
+    observatory = load_tool("observatory")
+
+    (tmp_path / "d-x").mkdir()
+    (tmp_path / "d-x" / "dispatch.json").write_text(
+        json.dumps({"dispatch_id": "d-x", "started_at": "2026-08-15T09:00:00+00:00"}),
+        encoding="utf-8",
+    )
+    (tmp_path / "d-x" / "result.json").write_text(json.dumps(result), encoding="utf-8")
+
+    # occupancy: a closeout attests no span; every other result's own bounds do.
+    assert occupancy.read_spans(tmp_path) == (
+        ()
+        if closeout
+        else (
+            (
+                occupancy.parse_moment("2026-08-15T09:00:00+00:00"),
+                occupancy.parse_moment("2026-08-15T09:05:00+00:00"),
+                "d-x",
+            ),
+        )
+    )
+    # review_exchange: a closeout completed no review; every other result here did.
+    binding = review_exchange._binding_result_document(  # noqa: SLF001 — the per-document classifier is the unit; staging a full binding derivation over a dispatch root would test the fixture instead
+        result
+    )
+    assert isinstance(binding, review_exchange._Result)  # noqa: SLF001 — the same unit's own return type
+    assert binding.completed is not closeout
+    assert binding.state == ("result=not_a_result:stopped" if closeout else "result=completed")
+    # observatory: a closeout carries no end the work attests; every other result's does.
+    ended, reason = observatory._ended_for(  # noqa: SLF001 — the end reader is the unit; a full rebuild would test the fixture instead
+        result, None, observatory.SOURCE_EXPORT
+    )
+    if closeout:
+        assert ended is None
+        assert reason == observatory.NO_END_STOP_SWEEP_REASON
+    else:
+        assert ended == occupancy.parse_moment("2026-08-15T09:05:00+00:00")
+        assert reason is None
+
+
 # ------------------------------------------------------------- against the real /proc
 
 

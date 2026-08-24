@@ -10,9 +10,9 @@ It reads `~/.arma-cti/dispatches/*/dispatch.json` and `result.json` and never
 writes to them, on the same view-not-writer reasoning as the ledger. A dispatch
 with no `result.json` is still running and is counted as occupied to the end of
 the window; that is the honest reading of the record, and it is stated in the
-output as `running=` rather than left to be inferred. A closeout carrying the
-stop sweep's `terminal_state`, or one with no run-owned `started_at`, attests no
-span and contributes no occupancy.
+output as `running=` rather than left to be inferred. A closeout the stop sweep
+laid down (`dispatch_stop.is_stop_closeout`), or a result with no run-owned
+`started_at`, attests no span and contributes no occupancy.
 
 The output is agent-minutes, not a percentage, because the loss is what the
 intervention has to move: `lost=` is capacity the seat was entitled to under the
@@ -28,6 +28,12 @@ import sys
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
+
+# tools/ holds standalone scripts rather than an importable package, so a sibling
+# import needs the script's own directory on the path — the device `ledger.py` uses.
+sys.path.insert(0, str(Path(__file__).parent))
+
+import dispatch_stop
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
@@ -53,7 +59,9 @@ def read_spans(dispatch_dir: Path) -> tuple[tuple[datetime, datetime | None, str
         ended: datetime | None = None
         if result_path.is_file():
             result: dict[str, Any] = json.loads(result_path.read_text(encoding="utf-8"))
-            if "terminal_state" in result or "stopped_by" in result:
+            # The stop closeout has one shape-home, `dispatch_stop.is_stop_closeout`,
+            # shared with `review_exchange.py` and `observatory.py` (#558).
+            if dispatch_stop.is_stop_closeout(result):
                 continue
             started = result.get("started_at")
             if not started:
