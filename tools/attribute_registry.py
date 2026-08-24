@@ -376,6 +376,12 @@ NAMES: Final[dict[str, Name]] = {
         " DEPTH_STATES. `unrecorded` and `unreadable` are different facts from a"
         " counted zero, and each renders differently.",
     ),
+    "cti.queue.depth.reason": Name(
+        "attribute",
+        "conditionally_required",
+        "The refusal kind that left a candidate-dependent queue without a record;"
+        " present beside `unrecorded` where a read refusal is the reason.",
+    ),
     "cti.queue.depth.count": Name(
         "attribute",
         "conditionally_required",
@@ -1306,7 +1312,7 @@ REASON_WAITING_REVIEWER: Final = "waiting_reviewer"
 REASON_LANE_PEAK_BAND: Final = "lane_peak_band"
 
 
-def queue_depth_event(  # noqa: PLR0913 — the five fields are the sample's own shape, carried together because a partial sample is the thing the states exist to refuse
+def queue_depth_event(  # noqa: C901, PLR0913 — the validation ladder and sample fields are this event's own shape; each partial state must refuse loudly
     queue: str,
     state: str,
     at: float,
@@ -1314,6 +1320,7 @@ def queue_depth_event(  # noqa: PLR0913 — the five fields are the sample's own
     count: int | None = None,
     oldest: str,
     oldest_age_s: float | None = None,
+    reason: str | None = None,
 ) -> otel_event.Event:
     """Build one `cti.queue.depth` event; the only place its attributes are spelled.
 
@@ -1332,7 +1339,7 @@ def queue_depth_event(  # noqa: PLR0913 — the five fields are the sample's own
     if oldest not in OLDEST_STATES:
         message = f"oldest state not in the closed vocabulary: {oldest!r}"
         raise ValueError(message)
-    if state == "counted" and not isinstance(count, int):
+    if state == "counted" and (not isinstance(count, int) or isinstance(count, bool)):
         message = f"a counted sample carries its count: {count!r}"
         raise ValueError(message)
     if state != "counted" and count is not None:
@@ -1344,11 +1351,16 @@ def queue_depth_event(  # noqa: PLR0913 — the five fields are the sample's own
     if oldest != "measured" and oldest_age_s is not None:
         message = f"an unmeasured oldest carries no age: {oldest_age_s!r}"
         raise ValueError(message)
+    if reason is not None and (state != "unrecorded" or not isinstance(reason, str) or not reason):
+        message = f"a depth refusal reason belongs only to an unrecorded sample: {reason!r}"
+        raise ValueError(message)
     attributes: dict[str, object] = {
         "cti.queue.depth.queue": queue,
         "cti.queue.depth.state": state,
         "cti.queue.depth.oldest": oldest,
     }
+    if reason is not None:
+        attributes["cti.queue.depth.reason"] = reason
     if count is not None:
         attributes["cti.queue.depth.count"] = count
     if oldest_age_s is not None:

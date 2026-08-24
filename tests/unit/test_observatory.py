@@ -1677,6 +1677,57 @@ def test_an_absent_sampler_journal_is_zero_rows_never_a_refusal(world: World) ->
     assert not any(entry["file"] == "queue/queue-depths.jsonl" for entry in store["malformed"])
 
 
+def test_an_unreadable_sampler_journal_is_named_malformed_not_never_sampled(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    queue_root = tmp_path / "queue"
+    queue_root.mkdir()
+    path = queue_root / attribute_registry.QUEUE_DEPTH_JOURNAL
+    path.write_text("{}\n", encoding="utf-8")
+    real_read_text = Path.read_text
+
+    def unreadable(
+        target: Path,
+        encoding: str | None = None,
+        errors: str | None = None,
+        newline: str | None = None,
+    ) -> str:
+        if target == path:
+            raise OSError
+        return real_read_text(target, encoding=encoding, errors=errors, newline=newline)
+
+    monkeypatch.setattr(Path, "read_text", unreadable)
+    rows, malformed = observatory.read_queue_depths(queue_root)
+    assert rows == []
+    assert malformed == {"queue/queue-depths.jsonl": 1}
+
+
+def test_a_queue_depth_reader_carries_a_candidate_refusal_reason(tmp_path: Path) -> None:
+    queue_root = tmp_path / "queue"
+    queue_root.mkdir()
+    path = queue_root / attribute_registry.QUEUE_DEPTH_JOURNAL
+    path.write_text(
+        json.dumps(
+            {
+                "event": attribute_registry.QUEUE_DEPTH_EVENT,
+                "at": 2_000.0,
+                "attributes": {
+                    "cti.queue.depth.queue": "ready_work",
+                    "cti.queue.depth.state": "unrecorded",
+                    "cti.queue.depth.reason": "github_unreadable",
+                    "cti.queue.depth.oldest": "unrecorded",
+                },
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    rows, malformed = observatory.read_queue_depths(queue_root)
+    assert malformed == {}
+    assert rows[0]["count"] is None
+    assert rows[0]["count_reason"] == "unrecorded: github_unreadable"
+
+
 def test_the_cookbook_s_queue_depth_query_runs_against_the_shipped_store(world: World) -> None:
     """The newest-sample query is the one rendering path for a current depth."""
     rebuild_world(world)

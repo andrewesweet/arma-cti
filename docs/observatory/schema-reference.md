@@ -27,9 +27,9 @@ silence. Both render as an absence with a reason, never as zero.
 | Key | Shape | Meaning |
 |---|---|---|
 | `schema` | string | `cti.observatory/8` |
-| `inputs` | object | The five paths the rebuild read: `dispatch_root`, `export_dir`, `review_root`, `spool`, `repo` |
+| `inputs` | object | The six paths the rebuild read: `dispatch_root`, `export_dir`, `review_root`, `spool`, `repo`, `queue_root` |
 | `coverage` | object | The rebuild's own denominators — see below |
-| `malformed` | array | One entry per source file with unparseable lines — export, spool or stage journal: `file`, `lines` |
+| `malformed` | array | One entry per source file with unparseable lines — export, spool, stage, landing or queue journal: `file`, `lines` |
 | `dispatches` | array | One row per dispatch record — the `dispatches` table |
 | `issue_cost` | array | One row per (issue, lane) — the `issue_cost` table |
 | `work_items` | array | One row per issue — the `work_items` table |
@@ -510,7 +510,8 @@ sampler had not run before that rebuild, and the coverage line's
 of the three a sample is: `counted` (the depth is on the row, zero included),
 `unreadable` (a source exists and that sample could not read it), and
 `unrecorded` (no record anywhere carries the queue's membership — the
-slot-lock queue today, whose bash seam journals nothing). `count` is null
+slot-lock queue today, whose bash seam journals nothing; a candidate-read
+refusal carries its refusal kind in the raw event's `cti.queue.depth.reason`). `count` is null
 everywhere except `counted`, and a null here is the honest rendering of both
 non-counting states: zero belongs to a counted empty queue and to nothing
 else. `oldest` and `oldest_age_s` carry the same trichotomy one level down —
@@ -523,7 +524,7 @@ empty, `unrecorded` where items wait and nothing says since when.
 | `queue` | never | Which queue, one of the registry's closed set of seven |
 | `state` | never | `counted`, `unreadable` or `unrecorded` — see above |
 | `count` | + `count_reason` | The depth; zero is a counted sample and null is not |
-| `count_reason` | except `counted` | The state's own name for the absence |
+| `count_reason` | except `counted` | The state's own name for the absence, or `unrecorded: <refusal-kind>` where the candidate read refused |
 | `oldest` | never | `measured`, `none` or `unrecorded` |
 | `oldest_age_s` | + `oldest_age_s_reason` | Seconds the oldest item had waited |
 | `oldest_age_s_reason` | except `oldest = 'measured'` | The oldest state's own name for the absence |

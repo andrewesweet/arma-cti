@@ -13,14 +13,23 @@ by the caller, and handed in.
 
 **What an idle sample costs.** Every source is one small file, one directory
 listing, or a read the same report invocation already made: the policy file,
-the three waits journals (queue, dispatch root, review root), the review loop's
-journal, one listing of the review root with a stat per historical issue
-directory, and — only per in-flight tree — the git reads the landing queue
-needs. Nothing walks the dispatch records (the in-flight set arrives already
-derived), nothing walks a review directory beyond the stat that says whether a
-loop is still open, and an idle system samples seven empty queues for the price
-of the journal lines that are the sample. The tracker read the ready queues
-need is the read the underfill verdict was already making the same turn.
+the review waits journal, the review loop's journal (read once for each of the
+reviewer and human-ruling queues), one listing of the review root with a stat
+per historical issue directory, and — only per in-flight tree — the git reads
+the landing queue needs. The dispatch waits journal is read only inside the
+published peak band; the queue waits journal is not read by this sampler.
+Nothing walks the dispatch records (the in-flight set arrives already derived),
+nothing walks a review directory beyond the stats that say whether a loop is
+still open, and an idle system samples seven empty queues for the price of
+those bounded local reads. The tracker read is shared with the report's
+underfill derivation when that read succeeds, including at full WIP; a refused
+candidate read is recorded as `unrecorded`, never as a counted zero.
+
+The review-root stat term grows linearly with historical numeric issue
+directories, not dispatch-record count. It is small at the current 72-directory
+shape on this box (~2 ms per sample), crosses ~10 ms at roughly 800 empty
+directories, and is ~130 ms at 8,000; “nothing observable” is therefore a
+current-scale observation, not an unbounded guarantee.
 
 **Three facts, three renderings.** A counted depth — zero included — a queue
 no record carries (`slot_lock`, whose bash seam journals nothing: the registry
@@ -96,13 +105,14 @@ REVIEW_EVENTS: Final = frozenset(
 
 
 class Sample(NamedTuple):
-    """One queue's sample: the depth, the state of knowing it, and the oldest's age."""
+    """One queue's sample: depth state, optional refusal reason, and oldest-item age."""
 
     queue: str
     state: str
     count: int | None
     oldest: str
     oldest_age_s: float | None
+    reason: str | None = None
 
 
 def _journal_events(
@@ -142,9 +152,13 @@ def _journal_events(
 
 
 def _ready_sample(
-    candidates: Sequence[queue_policy.Candidate] | None, in_flight: queue_policy.InFlight
+    candidates: Sequence[queue_policy.Candidate] | None,
+    in_flight: queue_policy.InFlight,
+    candidate_refusal: queue_policy.Refusal | None,
 ) -> Sample:
     """Return the ready queue's sample: labelled work not in flight, by the label itself."""
+    if candidate_refusal is not None:
+        return Sample("ready_work", "unrecorded", None, "unrecorded", None, candidate_refusal.kind)
     if candidates is None:
         return Sample("ready_work", "unreadable", None, "unrecorded", None)
     waiting = [c for c in candidates if c.issue not in in_flight.issues]
@@ -156,21 +170,26 @@ def _dispatch_slot_sample(
     policy: queue_policy.Policy,
     candidates: Sequence[queue_policy.Candidate] | None,
     in_flight: queue_policy.InFlight,
+    candidate_refusal: queue_policy.Refusal | None,
 ) -> Sample:
-    """Return the dispatch-slot queue's sample: eligible work beyond the room the limit leaves.
+    """Return work beyond the room the WIP limit leaves, including WIP-refused candidates.
 
-    Eligible is the same ladder `select` walks — not in flight, not held by the
-    freeze, not blocked on another issue, not reserved against the issue's
-    package — read through `queue_policy`'s own rungs rather than a second copy
-    of any of them.
+    Ordinary eligibility is the same pre-WIP ladder `select` walks — not in flight,
+    not held by the freeze, and not blocked on another issue — read through
+    `queue_policy`'s own rung rather than a second copy. A WIP refusal is the
+    membership being measured, so room subtraction handles it instead of filtering
+    it out first.
     """
+    if candidate_refusal is not None:
+        return Sample(
+            "dispatch_slot", "unrecorded", None, "unrecorded", None, candidate_refusal.kind
+        )
     if candidates is None:
         return Sample("dispatch_slot", "unreadable", None, "unrecorded", None)
     dispatchable = [
         c
         for c in candidates
         if queue_policy._drops(policy, c, in_flight) is None  # noqa: SLF001 — the rung is the definition; restating it here is the drift this module exists to not have
-        and queue_policy.wip_refusal(policy, c.issue, in_flight) is None
     ]
     room = max(0, policy.wip_limit.value - len(in_flight.issues))
     held = max(0, len(dispatchable) - room)
@@ -294,7 +313,10 @@ def _human_ruling_sample(review_root: Path, at: float) -> Sample:
 
 
 def _lane_window_sample(
-    dispatch_dir: Path, candidates: Sequence[queue_policy.Candidate] | None, at: float
+    dispatch_dir: Path,
+    candidates: Sequence[queue_policy.Candidate] | None,
+    at: float,
+    candidate_refusal: queue_policy.Refusal | None,
 ) -> Sample:
     """Return the lane-window queue's sample: work a published peak band holds (#238).
 
@@ -312,7 +334,11 @@ def _lane_window_sample(
     waits = _journal_events(
         dispatch_dir / DISPATCH_WAIT_JOURNAL, frozenset({attribute_registry.WAIT_EVENT})
     )
-    if waits is None or candidates is None:
+    if waits is None:
+        return Sample("lane_window", "unreadable", None, "unrecorded", None)
+    if candidate_refusal is not None:
+        return Sample("lane_window", "unrecorded", None, "unrecorded", None, candidate_refusal.kind)
+    if candidates is None:
         return Sample("lane_window", "unreadable", None, "unrecorded", None)
     band_start = (
         breaker.zai_off_peak_opens_at(at) - timedelta(hours=PEAK_BAND_HOURS).total_seconds()
@@ -392,6 +418,7 @@ def sample(  # noqa: PLR0913 — the parameters are the report verb's own reads 
     in_flight: queue_policy.InFlight,
     candidates: Sequence[queue_policy.Candidate] | None,
     *,
+    candidate_refusal: queue_policy.Refusal | None = None,
     dispatch_dir: Path,
     review_root: Path | None = None,
     approvals: Path | None = None,
@@ -412,11 +439,15 @@ def sample(  # noqa: PLR0913 — the parameters are the report verb's own reads 
     reviews = review_loop.review_root() if review_root is None else review_root
     approval_root = gated_paths.APPROVAL_ROOT if approvals is None else approvals
     readings = {
-        "ready_work": lambda: _ready_sample(candidates, in_flight),
-        "dispatch_slot": lambda: _dispatch_slot_sample(policy, candidates, in_flight),
+        "ready_work": lambda: _ready_sample(candidates, in_flight, candidate_refusal),
+        "dispatch_slot": lambda: _dispatch_slot_sample(
+            policy, candidates, in_flight, candidate_refusal
+        ),
         "reviewer": lambda: _reviewer_sample(reviews, now),
         "human_ruling": lambda: _human_ruling_sample(reviews, now),
-        "lane_window": lambda: _lane_window_sample(dispatch_dir, candidates, now),
+        "lane_window": lambda: _lane_window_sample(
+            dispatch_dir, candidates, now, candidate_refusal
+        ),
         "slot_lock": _slot_lock_sample,
         "landing": lambda: _landing_sample(in_flight, approval_root),
     }
@@ -435,6 +466,7 @@ def sample(  # noqa: PLR0913 — the parameters are the report verb's own reads 
                 count=reading.count,
                 oldest=reading.oldest,
                 oldest_age_s=reading.oldest_age_s,
+                reason=reading.reason,
             ),
             journal=store.directory / attribute_registry.QUEUE_DEPTH_JOURNAL,
             endpoint=store.endpoint,

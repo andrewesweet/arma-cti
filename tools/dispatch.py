@@ -5272,13 +5272,16 @@ def main(argv: list[str] | None = None, now: datetime | None = None) -> int:
     when = datetime.now(tz=UTC) if now is None else now
     plan, brief, refusal = plan_dispatch(args, main_checkout(Path.cwd()), when)
     if refusal is not None or plan is None:
-        note_plan_wait(
-            refusal,
-            Path(args.dispatch_dir).expanduser(),
-            when.timestamp(),
-            # `--issue` defaults to 0, which names no issue at all.
-            issue=args.issue or None,
-        )
+        # A peak-band rehearsal is read-only: unlike a real attempt, it must not make the
+        # lane-window queue look deeper merely because somebody inspected the refusal.
+        if not (args.dry_run and refusal is not None and refusal.kind == "lane_peak_hours"):
+            note_plan_wait(
+                refusal,
+                Path(args.dispatch_dir).expanduser(),
+                when.timestamp(),
+                # `--issue` defaults to 0, which names no issue at all.
+                issue=args.issue or None,
+            )
         return emit(refusal.lines() if refusal else (), EXIT_REFUSED)
     if args.dry_run:
         return emit(dry_run_lines(plan, brief, os.environ), 0)

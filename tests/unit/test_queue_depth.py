@@ -92,6 +92,7 @@ def samples_by_queue(samples: tuple[queue_depth.Sample, ...]) -> dict[str, queue
 def sample_with(  # noqa: PLR0913 — the parameters are the seven queues' sources, staged whole so each test states only what it varies
     *,
     candidates: tuple[queue_policy.Candidate, ...] | None = (),
+    candidate_refusal: Any = None,  # noqa: ANN401 — a tools/ module loads dynamically, so its type is not named here
     policy: Any = None,  # noqa: ANN401 — a tools/ module loads dynamically, so its types are not names here
     in_flight: Any = None,  # noqa: ANN401 — same
     review_root: Path,
@@ -105,6 +106,7 @@ def sample_with(  # noqa: PLR0913 — the parameters are the seven queues' sourc
         parsed() if policy is None else policy,
         in_flight_of() if in_flight is None else in_flight,
         candidates,
+        candidate_refusal=candidate_refusal,
         dispatch_dir=dispatch_dir,
         review_root=review_root,
         approvals=approvals,
@@ -112,7 +114,7 @@ def sample_with(  # noqa: PLR0913 — the parameters are the seven queues' sourc
     )
 
 
-def journalled_samples(store_directory: Path) -> list[dict[str, object]]:
+def journalled_samples(store_directory: Path) -> list[dict[str, Any]]:
     """Read the sampler's own journal back as documents."""
     path = store_directory / attribute_registry.QUEUE_DEPTH_JOURNAL
     return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()]
@@ -208,6 +210,20 @@ def test_the_slot_queue_reads_zero_where_room_exists(tmp_path: Path) -> None:
     assert (slot.state, slot.count, slot.oldest) == ("counted", 0, "none")
 
 
+def test_dispatch_slot_counts_wip_refused_candidates_at_full_capacity(tmp_path: Path) -> None:
+    review_root, dispatch_dir, approvals = empty_sources(tmp_path)
+    samples = sample_with(
+        candidates=candidates_of(301, 302),
+        policy=parsed(state="open", limit=2),
+        in_flight=in_flight_of(299, 300),
+        review_root=review_root,
+        dispatch_dir=dispatch_dir,
+        approvals=approvals,
+    )
+    slot = samples_by_queue(samples)["dispatch_slot"]
+    assert (slot.state, slot.count, slot.oldest) == ("counted", 2, "unrecorded")
+
+
 def test_unreadable_candidates_render_unreadable_never_zero(tmp_path: Path) -> None:
     review_root, dispatch_dir, approvals = empty_sources(tmp_path)
     samples = sample_with(
@@ -221,6 +237,42 @@ def test_unreadable_candidates_render_unreadable_never_zero(tmp_path: Path) -> N
     for name in ("ready_work", "dispatch_slot", "lane_window"):
         assert by_queue[name].state == "unreadable"
         assert by_queue[name].count is None
+
+
+def test_a_candidate_refusal_is_unrecorded_and_carries_its_reason(tmp_path: Path) -> None:
+    review_root, dispatch_dir, approvals = empty_sources(tmp_path)
+    refusal = queue_policy.Refusal(
+        "github_unreadable",
+        ("read=failed",),
+        "restore the tracker read",
+        failure_class="infra_unavailable",
+    )
+    samples = sample_with(
+        candidates=None,
+        candidate_refusal=refusal,
+        review_root=review_root,
+        dispatch_dir=dispatch_dir,
+        approvals=approvals,
+        at=IN_BAND,
+    )
+    by_queue = samples_by_queue(samples)
+    for name in ("ready_work", "dispatch_slot", "lane_window"):
+        assert (
+            by_queue[name].state,
+            by_queue[name].count,
+            by_queue[name].oldest,
+            by_queue[name].reason,
+        ) == ("unrecorded", None, "unrecorded", "github_unreadable")
+
+    lines = journalled_samples(store_at(tmp_path).directory)
+    for line in lines:
+        if line["attributes"]["cti.queue.depth.queue"] in {
+            "ready_work",
+            "dispatch_slot",
+            "lane_window",
+        }:
+            assert line["attributes"]["cti.queue.depth.state"] == "unrecorded"
+            assert line["attributes"]["cti.queue.depth.reason"] == "github_unreadable"
 
 
 # ------------------------------------------------------------------ the reviewer queue

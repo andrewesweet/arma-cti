@@ -1052,6 +1052,17 @@ def test_report_fails_closed_in_one_line_when_the_tracker_is_unreadable(
         "queue=unreadable refill=unknown class=infra_unavailable reason=github_unreadable "
         "action=restore-tracker-read-before-refill\n"
     )
+    lines = [
+        json.loads(line)
+        for line in (store.directory / queue.attribute_registry.QUEUE_DEPTH_JOURNAL)
+        .read_text(encoding="utf-8")
+        .splitlines()
+    ]
+    by_queue = {line["attributes"]["cti.queue.depth.queue"]: line["attributes"] for line in lines}
+    for name in ("ready_work", "dispatch_slot"):
+        assert by_queue[name]["cti.queue.depth.state"] == "unrecorded"
+        assert "cti.queue.depth.count" not in by_queue[name]
+        assert by_queue[name]["cti.queue.depth.reason"] == "github_unreadable"
 
 
 # ---------------------------------------------------------------- sampling the queues

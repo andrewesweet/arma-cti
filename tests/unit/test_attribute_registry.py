@@ -364,6 +364,13 @@ def test_the_rendered_document_carries_the_reason_where_a_reader_looks() -> None
     assert pairs["cti.wait.refusal"] == {"stringValue": "lane_peak_hours"}
 
 
+def test_a_queue_depth_count_rejects_bool_even_though_bool_is_an_int() -> None:
+    with pytest.raises(ValueError, match="counted sample carries its count"):
+        attribute_registry.queue_depth_event(
+            "ready_work", "counted", NOW, count=True, oldest="none"
+        )
+
+
 # --------------------------------------------------- the stage family and its journal (#490)
 
 

@@ -1435,16 +1435,22 @@ def read_queue_depths(queue_root: Path) -> tuple[list[dict[str, Any]], dict[str,
     a state outside the closed sets is malformed and counted as such, exactly
     as the stage reader draws that line: damage to the record, not an absence
     on it. An absent journal is an empty view — the sampler had not run before
-    this rebuild, and zero samples is that fact, not a refusal over it.
+    this rebuild, and zero samples is that fact, not a refusal over it. A
+    present journal that raises while reading is malformed once, so it cannot
+    masquerade as a sampler that never ran. A candidate-read refusal's kind is
+    carried into the null count reason rather than discarded.
     """
     path = queue_root / attribute_registry.QUEUE_DEPTH_JOURNAL
     malformed: dict[str, int] = {}
     rows: list[dict[str, Any]] = []
+    key = f"{queue_root.name}/{path.name}"
     try:
         lines = path.read_text(encoding="utf-8").splitlines()
-    except OSError:
+    except FileNotFoundError:
         return [], {}
-    key = f"{queue_root.name}/{path.name}"
+    except OSError:
+        malformed[key] = 1
+        return [], malformed
     for line in lines:
         try:
             document = json.loads(line)
@@ -1466,12 +1472,17 @@ def read_queue_depths(queue_root: Path) -> tuple[list[dict[str, Any]], dict[str,
         oldest = attributes.get("cti.queue.depth.oldest")
         count = attributes.get("cti.queue.depth.count")
         age = attributes.get("cti.queue.depth.oldest_age_s")
+        reason = attributes.get("cti.queue.depth.reason")
         if (
             queue not in attribute_registry.QUEUES
             or state not in attribute_registry.DEPTH_STATES
             or oldest not in attribute_registry.OLDEST_STATES
-            or (count is not None and not isinstance(count, int))
+            or (count is not None and (not isinstance(count, int) or isinstance(count, bool)))
             or (age is not None and not isinstance(age, (int, float)))
+            or (
+                reason is not None
+                and (state != "unrecorded" or not isinstance(reason, str) or not reason)
+            )
         ):
             malformed[key] = malformed.get(key, 0) + 1
             continue
@@ -1488,6 +1499,8 @@ def read_queue_depths(queue_root: Path) -> tuple[list[dict[str, Any]], dict[str,
                 "count_reason": (
                     None
                     if state == "counted"
+                    else f"unrecorded: {reason}"
+                    if reason is not None
                     else NO_COUNT_UNREADABLE
                     if state == "unreadable"
                     else NO_COUNT_UNRECORDABLE

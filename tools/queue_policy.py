@@ -1394,7 +1394,8 @@ def _candidate_read(
             store,
             policy,
             in_flight,
-            () if refusal is not None else candidates,
+            None if refusal is not None else candidates,
+            candidate_refusal=refusal,
             dispatch_dir=Path(args.dispatch_dir),
         )
     if refusal is not None:

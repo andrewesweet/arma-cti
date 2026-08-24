@@ -455,7 +455,7 @@ indicator, taken at the top of every orchestrator turn by the sampler folded
 into `just watch-report`'s queue rung:
 
 ```sql
-SELECT q.queue, q.state, q.count, q.oldest, q.oldest_age_s,
+SELECT q.queue, q.state, q.count, q.oldest, q.oldest_age_s, q.count_reason,
        strftime('%Y-%m-%dT%H:%M:%SZ', q.sampled_at, 'unixepoch') AS sampled
 FROM queue_depth q
 JOIN (
@@ -468,8 +468,10 @@ Reading it: `count = 0` with `state = 'counted'` is an empty queue — a sample,
 not an absence — while `state = 'unrecorded'` says no record anywhere carries
 that queue's membership (the `slot_lock` queue today; its bash seam journals
 nothing) and `state = 'unreadable'` says a source existed and that sample could
-not read it. Neither is a zero, and quoting either as one is the exact defect
-this vocabulary exists to prevent. `oldest_age_s` is null beside
+not read it. Where a candidate read refused, `count_reason` carries that
+refusal's kind, such as `unrecorded: github_unreadable`. Neither non-counting
+state is a zero, and quoting either as one is the exact defect this vocabulary
+exists to prevent. `oldest_age_s` is null beside
 `oldest = 'unrecorded'` — for the ready queues the label instant lives in the
 tracker's timeline, and for the landing queue the demand side is recorded
 nowhere — so an age is only ever quoted where `oldest = 'measured'`. Before
