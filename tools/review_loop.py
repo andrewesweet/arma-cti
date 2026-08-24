@@ -768,6 +768,37 @@ class Terminus(NamedTuple):
     dismissals: tuple[Dismissal, ...] = ()
 
 
+class TerminusPrompt(NamedTuple):
+    """One review loop whose separate terminus closeout is still visible to a reader.
+
+    `incomplete` means the terminus claimed its once-only run and did not reach the
+    terminal rename. It must be surfaced as a recovery case, not as a fresh invitation
+    to repeat remote side effects. The prompt deliberately carries counts only; the
+    canonical loop state remains the record the terminus command reads.
+    """
+
+    issue: int
+    findings: int
+    open_above_low: int
+    incomplete: bool
+
+
+def terminus_prompt(issue: int, loop: Loop, *, pending: bool) -> TerminusPrompt:
+    """Return the prompt owed by one readable, non-terminal loop.
+
+    The landing marker is checked by the directory reader, not here: this pure seam
+    answers only how much closeout remains to be accounted for. A loop with no findings
+    still needs its terminal record, and a pending claim remains visible as an incomplete
+    once-only act rather than as a fresh invitation to repeat remote side effects.
+    """
+    return TerminusPrompt(
+        issue=issue,
+        findings=len(loop.findings),
+        open_above_low=len(open_above_low(loop)),
+        incomplete=pending,
+    )
+
+
 def terminus(loop: Loop) -> Terminus:
     """Compute what the loop's end owes: the default's gate, the filings, the dismissals.
 

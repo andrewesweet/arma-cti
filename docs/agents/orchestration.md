@@ -121,10 +121,16 @@ worth naming: the loss while *awake* was 73 agent-minutes over 19 minutes of tur
    first (#226) — one line per lane that is not dispatchable, silent otherwise; then
    the **queue's underfill verdict** (#278) — `queue=underfilled …
    action=refill-before-landing` when eligible work can fill ruled capacity, silent
-   when capacity is full or no candidate survives; then the **watcher findings**
-   (#198); then the **orchestration-seat trial** report (#260), which is now silent
-   always, the trial being closed (#328). Silence is the clean read; a verdict, never
-   a dashboard of numbers (#209).
+   when capacity is full or no candidate survives; alongside it, the **review-loop
+   terminus prompts** (#553) — `review_terminus=due` for every readable non-terminal loop,
+   `blocked` where an above-Low finding still needs adjudication or escalation, and
+   `incomplete` where a prior terminus claimed its side effects but did not complete, or
+   `unreadable` where the review state could not be inspected.
+   A `due` line names the separate `just review-loop terminus` act; it is a prompt, not a
+   landing prerequisite, and loops with `landing.json` are absent. Then come the
+   **watcher findings** (#198) and the **orchestration-seat trial** report (#260), which is
+   now silent always, the trial being closed (#328). Silence is the clean read; a verdict,
+   never a dashboard of numbers (#209).
 2. **`just queue state`** then **`just queue next`** — the candidate with its
    derivation (the freeze, the WIP limit, the packages, the in-flight list), or a
    named refusal. The queue selects and prints; **it never dispatches** (ADR-0053).
@@ -243,7 +249,7 @@ do.
 
 | When | Tool | What it gives the seat |
 |---|---|---|
-| Turn-top | `just watch-report` | Breakers, queue underfill, watcher findings, trial — one read |
+| Turn-top | `just watch-report` | Breakers, queue underfill, review-loop terminus prompts, watcher findings, trial — one read |
 | Choosing work | `just queue state` / `next` / `check --issue N` | The next dispatchable issue with its derivation, or a named refusal |
 | Recording a ruling | `just queue freeze/open/wip/package … --ruling "…"` | The freeze, WIP limit and carve-outs written to a file `just dispatch` reads per dispatch — never memory |
 | Before dispatch | `just brief N` | The invariant half composed from data; the seat writes the variable half |

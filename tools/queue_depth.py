@@ -115,6 +115,13 @@ class Sample(NamedTuple):
     reason: str | None = None
 
 
+class ReviewQueueRead(NamedTuple):
+    """The one review-root read shared by queue depth and the terminus prompt."""
+
+    sample: Sample
+    terminus: tuple[review_loop.TerminusPrompt, ...] | None
+
+
 def _journal_events(
     path: Path, wanted: frozenset[str]
 ) -> list[tuple[float, Mapping[str, object]]] | None:
@@ -272,8 +279,34 @@ def _open_loop(entry: Path) -> review_loop.Loop | None:
     return review_loop.parse_loop(json.loads(loop_file.read_text(encoding="utf-8")))
 
 
-def _human_ruling_sample(review_root: Path, at: float) -> Sample:
-    """Return the human-ruling queue's sample: findings unadjudicated, loops still running.
+def _review_loop_entry(entry: Path) -> tuple[int, review_loop.Loop] | None:
+    """Return one numeric, non-terminal loop entry, or skip this directory."""
+    if not entry.is_dir() or not entry.name.isdecimal():
+        return None
+    loop = _open_loop(entry)
+    if loop is None:
+        return None
+    return int(entry.name), loop
+
+
+def _update_human_ruling_age(
+    issue: int,
+    loop: review_loop.Loop,
+    rounds: dict[tuple[int, int], float],
+    depth: int,
+    oldest_at: float | None,
+) -> tuple[int, float | None]:
+    """Add one loop's open findings to the depth and oldest-entry reduction."""
+    for finding in review_loop.open_above_low(loop):
+        depth += 1
+        raised = rounds.get((issue, finding.round_raised))
+        if raised is not None and (oldest_at is None or raised < oldest_at):
+            oldest_at = raised
+    return depth, oldest_at
+
+
+def _human_ruling_read(review_root: Path, at: float) -> ReviewQueueRead:
+    """Read the human-ruling queue and terminus prompts in one review-root walk.
 
     A loop is running while its directory holds `loop.json` and not
     `landing.json` — the terminus's own terminal state, structural by rename.
@@ -285,31 +318,72 @@ def _human_ruling_sample(review_root: Path, at: float) -> Sample:
     """
     try:
         entries = sorted(review_root.iterdir())
+    except FileNotFoundError:
+        return ReviewQueueRead(Sample("human_ruling", "unreadable", None, "unrecorded", None), None)
     except OSError:
-        return Sample("human_ruling", "unreadable", None, "unrecorded", None)
+        return ReviewQueueRead(Sample("human_ruling", "unreadable", None, "unrecorded", None), None)
     rounds = _round_times(review_root) or {}
     depth = 0
     oldest_at: float | None = None
+    prompts: list[review_loop.TerminusPrompt] = []
     for entry in entries:
-        if not entry.is_dir() or not entry.name.isdecimal():
-            continue
         try:
-            loop = _open_loop(entry)
+            identified = _review_loop_entry(entry)
         except (OSError, ValueError):
-            return Sample("human_ruling", "unreadable", None, "unrecorded", None)
-        if loop is None:
+            return ReviewQueueRead(
+                Sample("human_ruling", "unreadable", None, "unrecorded", None), None
+            )
+        if identified is None:
             continue
-        issue = int(entry.name)
-        for finding in review_loop.open_above_low(loop):
-            depth += 1
-            raised = rounds.get((issue, finding.round_raised))
-            if raised is not None and (oldest_at is None or raised < oldest_at):
-                oldest_at = raised
+        issue, loop = identified
+        prompt = review_loop.terminus_prompt(
+            issue, loop, pending=(entry / review_loop.PENDING_FILE).exists()
+        )
+        prompts.append(prompt)
+        depth, oldest_at = _update_human_ruling_age(issue, loop, rounds, depth, oldest_at)
     if not depth:
-        return Sample("human_ruling", "counted", 0, "none", None)
+        sample = Sample("human_ruling", "counted", 0, "none", None)
+        return ReviewQueueRead(sample, tuple(prompts))
     if oldest_at is None:
-        return Sample("human_ruling", "counted", depth, "unrecorded", None)
-    return Sample("human_ruling", "counted", depth, "measured", max(0.0, at - oldest_at))
+        sample = Sample("human_ruling", "counted", depth, "unrecorded", None)
+        return ReviewQueueRead(sample, tuple(prompts))
+    sample = Sample("human_ruling", "counted", depth, "measured", max(0.0, at - oldest_at))
+    return ReviewQueueRead(sample, tuple(prompts))
+
+
+def _human_ruling_sample(review_root: Path, at: float) -> Sample:
+    """Return only the human-ruling sample for callers that do not render prompts."""
+    return _human_ruling_read(review_root, at).sample
+
+
+def render_terminus_prompts(
+    prompts: tuple[review_loop.TerminusPrompt, ...] | None,
+) -> tuple[str, ...]:
+    """Render the separate terminus closeout's mechanical turn-top prompts."""
+    if prompts is None:
+        return (
+            (
+                "review_terminus=unreadable "
+                'action="repair review state before relying on closeout prompt"'
+            ),
+        )
+    lines: list[str] = []
+    for prompt in prompts:
+        if prompt.incomplete:
+            status = "incomplete"
+            action = "account for pending posts before retrying"
+        elif prompt.open_above_low:
+            status = "blocked"
+            action = "adjudicate or escalate before terminus"
+        else:
+            status = "due"
+            action = f"just review-loop terminus --issue {prompt.issue}"
+        rendered_action = f'"{action}"'
+        lines.append(
+            f"review_terminus={status} issue={prompt.issue} findings={prompt.findings}"
+            f" open_above_low={prompt.open_above_low} action={rendered_action}"
+        )
+    return tuple(lines)
 
 
 def _lane_window_sample(
@@ -423,6 +497,7 @@ def sample(  # noqa: PLR0913 — the parameters are the report verb's own reads 
     review_root: Path | None = None,
     approvals: Path | None = None,
     at: float | None = None,
+    terminus_lines: list[str] | None = None,
 ) -> tuple[Sample, ...]:
     """Sample every queue of the closed set once, fail-open, and journal each sample.
 
@@ -438,13 +513,16 @@ def sample(  # noqa: PLR0913 — the parameters are the report verb's own reads 
     now = datetime.now(tz=UTC).timestamp() if at is None else at
     reviews = review_loop.review_root() if review_root is None else review_root
     approval_root = gated_paths.APPROVAL_ROOT if approvals is None else approvals
+    review_read = _human_ruling_read(reviews, now)
+    if terminus_lines is not None:
+        terminus_lines.extend(render_terminus_prompts(review_read.terminus))
     readings = {
         "ready_work": lambda: _ready_sample(candidates, in_flight, candidate_refusal),
         "dispatch_slot": lambda: _dispatch_slot_sample(
             policy, candidates, in_flight, candidate_refusal
         ),
         "reviewer": lambda: _reviewer_sample(reviews, now),
-        "human_ruling": lambda: _human_ruling_sample(reviews, now),
+        "human_ruling": lambda: review_read.sample,
         "lane_window": lambda: _lane_window_sample(
             dispatch_dir, candidates, now, candidate_refusal
         ),

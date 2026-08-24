@@ -1451,6 +1451,23 @@ def test_a_terminus_refuses_verdicts_no_escalation_record_chose(
     assert not (root / "326" / review_loop.LANDING_FILE).exists()
 
 
+def test_terminus_prompt_counts_findings_and_marks_incomplete_claims() -> None:
+    """The prompt carries closeout state, not a remembered convention."""
+    assert review_loop.terminus_prompt(
+        553,
+        review_loop.first_review((finding("F1", review_loop.LOW),)),
+        pending=False,
+    ) == review_loop.TerminusPrompt(issue=553, findings=1, open_above_low=0, incomplete=False)
+    assert review_loop.terminus_prompt(
+        554,
+        review_loop.first_review((finding("F2"),)),
+        pending=True,
+    ) == review_loop.TerminusPrompt(issue=554, findings=1, open_above_low=1, incomplete=True)
+    assert review_loop.terminus_prompt(556, review_loop.first_review(()), pending=False) == (
+        review_loop.TerminusPrompt(issue=556, findings=0, open_above_low=0, incomplete=False)
+    )
+
+
 def test_a_non_firing_escalation_record_does_not_authorise_the_terminus(
     tmp_path: Path, exchanged: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
@@ -1972,6 +1989,53 @@ def test_a_well_formed_escalation_record_still_opens_the_gate(tmp_path: Path) ->
     landing = json.loads((root / "326" / review_loop.LANDING_FILE).read_text(encoding="utf-8"))
     assert landing["arbiter"] == "opus-high"
     assert landing["arbiter_unchecked"] is False
+
+
+def test_a_completed_terminus_refuses_a_second_run_without_side_effects(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The once rule is exercised through the public command, including its guard."""
+    root = tmp_path / "review"
+    base = ["--root", str(root), "--journal", str(tmp_path / "journal.jsonl")]
+    clock = stepped_clock()
+    assert (
+        review_loop.main(["open", "--issue", "326", *base, "--finding", "F1=low"], now=clock)
+        == review_loop.OK
+    )
+    assert (
+        review_loop.main(
+            [
+                "adjudicate",
+                "--issue",
+                "326",
+                *base,
+                "--finding",
+                "F1",
+                "--route",
+                review_loop.FIXED,
+            ],
+            now=clock,
+        )
+        == review_loop.OK
+    )
+    assert review_loop.main(["terminus", "--issue", "326", *base], now=clock) == review_loop.OK
+    landing = root / "326" / review_loop.LANDING_FILE
+    before = landing.read_text(encoding="utf-8")
+    calls: list[str] = []
+    assert (
+        review_loop.main(
+            ["terminus", "--issue", "326", *base],
+            now=clock,
+            create_issue=lambda title, _body: calls.append(title) or 999,
+            post_comment=lambda _issue, _body: calls.append("comment"),
+        )
+        == review_loop.REFUSED
+    )
+    assert (
+        review_loop.ALREADY_TERMINATED_ERROR.format(issue=326, root=root) in capsys.readouterr().err
+    )
+    assert calls == []
+    assert landing.read_text(encoding="utf-8") == before
 
 
 def test_the_landing_record_carries_every_findings_verdict(tmp_path: Path) -> None:

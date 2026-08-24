@@ -99,6 +99,7 @@ def sample_with(  # noqa: PLR0913 — the parameters are the seven queues' sourc
     dispatch_dir: Path,
     approvals: Path,
     at: float = OFF_BAND,
+    terminus_lines: list[str] | None = None,
 ) -> tuple[queue_depth.Sample, ...]:
     """Run one sample over a review root, dispatch dir and approvals dir of the test's own."""
     return queue_depth.sample(
@@ -111,6 +112,7 @@ def sample_with(  # noqa: PLR0913 — the parameters are the seven queues' sourc
         review_root=review_root,
         approvals=approvals,
         at=at,
+        terminus_lines=terminus_lines,
     )
 
 
@@ -358,6 +360,32 @@ def test_a_terminated_loop_waits_on_nothing(tmp_path: Path) -> None:
     assert (ruling.state, ruling.count, ruling.oldest) == ("counted", 0, "none")
 
 
+def test_terminus_prompt_rendering_distinguishes_due_blocked_and_incomplete() -> None:
+    prompts = (
+        review_loop.TerminusPrompt(issue=301, findings=1, open_above_low=0, incomplete=False),
+        review_loop.TerminusPrompt(issue=302, findings=2, open_above_low=1, incomplete=False),
+        review_loop.TerminusPrompt(issue=303, findings=2, open_above_low=0, incomplete=True),
+    )
+
+    assert queue_depth.render_terminus_prompts(prompts) == (
+        (
+            "review_terminus=due issue=301 findings=1 open_above_low=0 "
+            'action="just review-loop terminus --issue 301"'
+        ),
+        (
+            "review_terminus=blocked issue=302 findings=2 open_above_low=1 "
+            'action="adjudicate or escalate before terminus"'
+        ),
+        (
+            "review_terminus=incomplete issue=303 findings=2 open_above_low=0 "
+            'action="account for pending posts before retrying"'
+        ),
+    )
+    assert queue_depth.render_terminus_prompts(None) == (
+        'review_terminus=unreadable action="repair review state before relying on closeout prompt"',
+    )
+
+
 def test_findings_whose_raising_round_no_journal_carries_age_unrecorded(
     tmp_path: Path,
 ) -> None:
@@ -378,6 +406,24 @@ def test_a_loop_that_will_not_read_renders_the_queue_unreadable(tmp_path: Path) 
     ruling = samples_by_queue(samples)["human_ruling"]
     assert ruling.state == "unreadable"
     assert ruling.count is None
+
+
+def test_a_missing_review_root_surfaces_an_unreadable_terminus_prompt(tmp_path: Path) -> None:
+    dispatch_dir = tmp_path / "dispatches"
+    dispatch_dir.mkdir()
+    approvals = tmp_path / "approvals"
+    approvals.mkdir()
+    lines: list[str] = []
+
+    samples = sample_with(
+        review_root=tmp_path / "missing-review",
+        dispatch_dir=dispatch_dir,
+        approvals=approvals,
+        terminus_lines=lines,
+    )
+
+    assert samples_by_queue(samples)["human_ruling"].state == "unreadable"
+    assert tuple(lines) == queue_depth.render_terminus_prompts(None)
 
 
 # ------------------------------------------------------------------ the lane-window queue

@@ -29,6 +29,7 @@ if TYPE_CHECKING:
 
 queue = load_tool("queue_policy")
 dispatch = load_tool("dispatch")
+review_loop = load_tool("review_loop")
 
 # #241's readiness rung sits above this one on the ladder, and it reads the issue from
 # GitHub unless it is handed a body. Every dispatch below is handed this one, so what these
@@ -979,6 +980,50 @@ def test_report_is_silent_when_full_or_when_no_eligible_candidate_exists(
 
     assert code == 0
     assert capsys.readouterr().out == ""
+
+
+def test_report_prompts_for_unterminated_findings_and_excludes_landed_loops(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """`report` mechanically prompts the separate closeout act, without blocking landing."""
+    store = seeded(tmp_path, policy_document(state="open", limit=3))
+    review_root = tmp_path / "review"
+    monkeypatch.setenv("CTI_REVIEW_DIR", str(review_root))
+    review_loop.store_loop(
+        review_root,
+        301,
+        review_loop.first_review((review_loop.Finding("F1", review_loop.LOW, 0),)),
+    )
+    review_loop.store_loop(
+        review_root,
+        302,
+        review_loop.first_review((review_loop.Finding("F2", review_loop.LOW, 0),)),
+    )
+    (review_root / "302" / review_loop.LANDING_FILE).write_text("{}\n", encoding="utf-8")
+    dispatches = tmp_path / "dispatches"
+    fake_github(tmp_path, monkeypatch, [])
+
+    code = queue.main(
+        [
+            "--queue-dir",
+            str(store.directory),
+            "--root",
+            str(tmp_path / "empty-root"),
+            "--dispatch-dir",
+            str(dispatches),
+            "report",
+        ]
+    )
+
+    assert code == 0
+    assert capsys.readouterr().out.splitlines() == [
+        (
+            "review_terminus=due issue=301 findings=1 open_above_low=0 "
+            'action="just review-loop terminus --issue 301"'
+        )
+    ]
 
 
 def test_report_uses_the_same_package_reservation_as_candidate_selection(

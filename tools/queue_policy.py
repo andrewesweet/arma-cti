@@ -1380,15 +1380,18 @@ def _candidate_read(
     """
     before_candidates = _report_before_candidates(in_flight) if args.verb == "report" else None
     if before_candidates is not None:
+        terminus_lines: list[str] = []
         queue_depth.sample(
             store,
             policy,
             in_flight,
             None,
             dispatch_dir=Path(args.dispatch_dir),
+            terminus_lines=terminus_lines,
         )
-        return before_candidates, 0
+        return (*before_candidates, *terminus_lines), 0
     candidates, refusal = ready_candidates()
+    terminus_lines = []
     if args.verb == "report":
         queue_depth.sample(
             store,
@@ -1397,15 +1400,16 @@ def _candidate_read(
             None if refusal is not None else candidates,
             candidate_refusal=refusal,
             dispatch_dir=Path(args.dispatch_dir),
+            terminus_lines=terminus_lines,
         )
     if refusal is not None:
         if args.verb == "report":
-            return (GITHUB_UNREADABLE_REPORT,), 0
+            return (*terminus_lines, GITHUB_UNREADABLE_REPORT), 0
         return refusal.lines(), EXIT_REFUSED
     selection = select(policy, candidates, in_flight, max(1, getattr(args, "count", 1)))
     if args.verb == "report":
         line = underfill_line(policy, selection, in_flight)
-        return ((line,) if line else ()), 0
+        return (*((line,) if line else ()), *terminus_lines), 0
     if selection.refusal is not None:
         # A refusal here blocked a decision, so it is a wait with a cause — except
         # `no_ready_issue`, where the queue stopped with candidates standing: the
