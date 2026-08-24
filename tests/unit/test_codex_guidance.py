@@ -854,7 +854,7 @@ def test_fake_current_checkout_matrix_proves_default_truncation_and_containment(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     raw = (REPO / "AGENTS.md").read_bytes()
-    assert len(raw) == 69_627
+    assert len(raw) == 70_384
     assert len(raw) > guidance.CODEX_PROJECT_CHAIN_RETIREMENT_BYTES
     fake = install_fake(monkeypatch, REPO, (raw,))
 
@@ -862,14 +862,14 @@ def test_fake_current_checkout_matrix_proves_default_truncation_and_containment(
     assert isinstance(default, guidance.GuidanceFailure)
     assert default.reason == "instruction_delivery_mismatch"
     assert default.evidence is not None
-    assert default.evidence.expected_project_bytes == 69_627
+    assert default.evidence.expected_project_bytes == 70_384
     assert default.evidence.delivered_project_bytes == 32_768
 
     contained = guidance.verify_delivery(
         context(REPO, guidance.CODEX_PROJECT_DOC_CONTAINMENT_BYTES)
     )
     assert isinstance(contained, guidance.GuidanceProof)
-    assert contained.delivered_project_bytes == 69_627
+    assert contained.delivered_project_bytes == 70_384
     assert contained.delivered_project_sha256 == contained.expected_project_sha256
     assert len(fake.calls) == 8
 
