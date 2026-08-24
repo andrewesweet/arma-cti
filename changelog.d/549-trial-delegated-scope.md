@@ -1,0 +1,3 @@
+### Fixed
+
+- `just trial`'s close-audit criterion `gated_surface_approved` no longer records `met` for every gated surface in a landing because a delegated ADR travelled with it: a changed ADR carrying an exact `Delegated-decision: yes` line now satisfies the criterion for itself alone, matching what `just check`'s gated-path leg has refused since #548. A landing mixing a delegated ADR with another gated surface is left to the recorder, its detail naming that surface and stating the delegated record authorises only itself; a landing whose gated surfaces are all delegated records still records `met`. (#549)

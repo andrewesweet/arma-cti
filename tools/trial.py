@@ -1322,18 +1322,26 @@ def trial_gated_verdict(repo: Path, shas: Sequence[str]) -> TrialCriterionResult
             MET,
             f"none of {len(paths)} path(s) is a gated sign-off surface",
         )
+    # ADR-0013's marker authorises the record that carries it, not the paths
+    # travelling beside it (#548, in `tools/gated_paths.py`'s `check()`): drop the
+    # delegated records from the gated set and hold every remaining path to its own
+    # approval or its own marker, which this criterion cannot read and the recorder can.
     delegated = delegated_decisions_in(repo, shas)
-    if delegated:
+    gated = tuple(path for path in gated if path not in delegated)
+    if not gated:
         return TrialCriterionResult(
             "gated_surface_approved",
             MET,
-            f"gated={' '.join(gated[:5])}; delegated={' '.join(delegated[:5])}",
+            f"delegated={' '.join(delegated[:5])}; every gated surface its own delegated record",
         )
+    detail = f"gated={' '.join(gated[:5])}"
+    if delegated:
+        detail += f"; delegated={' '.join(delegated[:5])} authorises only itself"
     return TrialCriterionResult(
         "gated_surface_approved",
         "",
-        f"gated={' '.join(gated[:5])}; no changed Delegated-decision ADR; recorder checks the "
-        "approving comment and the semantic gates the path list cannot decide",
+        f"{detail}; recorder checks the approving comment and the semantic gates the path "
+        "list cannot decide",
     )
 
 

@@ -733,7 +733,23 @@ def test_criterion_four_checks_the_source_of_a_rename_out_of_the_gated_set(
     assert "gated=CONTEXT.md" in verdict.detail
 
 
-def test_criterion_four_is_met_where_a_delegated_decision_was_recorded(tmp_path: Path) -> None:
+def test_criterion_four_is_met_where_every_gated_surface_is_its_own_delegated_record(
+    tmp_path: Path,
+) -> None:
+    repo = tmp_path / "repo"
+    sha = commit(
+        repo,
+        {"docs/adr/ADR-9999.md": "# A delegation\n\nDelegated-decision: yes\n"},
+        "record a delegated decision",
+    )
+    verdict = harness.trial_gated_verdict(repo, (sha,))
+    assert verdict.verdict == harness.MET
+    assert "ADR-9999.md" in verdict.detail
+
+
+def test_a_delegated_adr_does_not_authorise_a_gated_surface_travelling_beside_it(
+    tmp_path: Path,
+) -> None:
     repo = tmp_path / "repo"
     sha = commit(
         repo,
@@ -744,8 +760,11 @@ def test_criterion_four_is_met_where_a_delegated_decision_was_recorded(tmp_path:
         "edit a gated surface under that delegation",
     )
     verdict = harness.trial_gated_verdict(repo, (sha,))
-    assert verdict.verdict == harness.MET
+    assert verdict.verdict != harness.MET
+    assert not verdict.decisive
+    assert "gated=CONTEXT.md" in verdict.detail
     assert "ADR-9999.md" in verdict.detail
+    assert "authorises only itself" in verdict.detail
 
 
 def test_an_unrelated_delegated_adr_does_not_approve_a_later_gated_edit(tmp_path: Path) -> None:
