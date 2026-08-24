@@ -3869,6 +3869,21 @@ def harness_finish(  # noqa: PLR0911 — one return per end state, so no refusal
             "beside the record as commit-message.txt; finish by hand from there — never "
             "reset the tree (#105).",
         )
+    return _harness_publish(tree, issue)
+
+
+def _harness_publish(tree: Path, issue: int) -> tuple[tuple[str, ...], int]:
+    """Publish the commit `harness_finish` just made: read it back, vet it, push it.
+
+    Everything that is owed once the commit exists. The SHA is read back rather than
+    assumed; the commit's own tree is asked whether it carries `CODEX_COMMIT_MESSAGE`
+    (#550), because a file that went *into* a commit leaves `git status` clean and that
+    is how `984a740` reached a review branch; and only then does the push run, so both
+    refusals hold it. This tail is a function because `harness_finish` sat at the
+    complexity limit and #550's vet crossed it — the publish half is a nameable unit,
+    and cutting there rather than suppressing the lint keeps every refusal visible as
+    its own return in whichever function renders it.
+    """
     try:
         committed = worktree_tool.git("rev-parse", "HEAD", cwd=tree).strip()
     except worktree_tool.GitError as failure:
