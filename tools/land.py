@@ -761,6 +761,31 @@ def counted(*args: str, cwd: Path) -> int | None:
     return int(out) if out.isdigit() else None
 
 
+def _required_count(*args: str, cwd: Path) -> int:
+    """Refuse `counted`'s unreadable half, because `None` is not zero (#568).
+
+    Every count this protocol takes stands for a decision — "no incoming
+    commits", "no commit of yours to review", "the replay left nothing" — and an
+    unreadable one answers none of them. The `or 0` this replaces had it answer
+    all three falsely: a `nothing_to_land` refusal whose words send an operator
+    looking for uncommitted work when git could not count, and a
+    `rebase=already_current` line that is read to decide whether a review verdict
+    still binds, printed on a base whose movement was never established. The same
+    shape as `nothing_to_land`'s Low 5 — a refusal whose account of itself is
+    wrong — so the unreadable half takes the ladder `main` already catches for
+    `land`'s own ahead-count, and the refusal names the read that could not be
+    made. `main_behind` keeps `counted` and its `None`, which
+    `classify_nothing_to_land` reads as a third answer rather than a zero.
+    """
+    count = counted(*args, cwd=cwd)
+    if count is None:
+        raise GitError(
+            ("rev-list", "--count", *args),
+            f"rev-list --count {' '.join(args)} could not be read",
+        )
+    return count
+
+
 def run_gate(path: Path) -> GateResult:
     """Run `just fast` in the landing worktree, streaming its output to the caller.
 
@@ -1212,11 +1237,8 @@ def land(  # noqa: PLR0913 — the protocol's inputs, one parameter apiece
     # is the #168 stall shape, not patience the protocol owes anyone.
     git("fetch", REMOTE, cwd=here, timeout=REMOTE_READ_TIMEOUT_S)
     base_before = git("merge-base", "HEAD", BASE, cwd=here).strip()
-    incoming = counted(f"{base_before}..{BASE}", cwd=here) or 0
-    ahead = counted(f"{BASE}..HEAD", cwd=here)
-    if ahead is None:
-        message = f"rev-list --count {BASE}..HEAD"
-        raise GitError(("rev-list",), message)
+    incoming = _required_count(f"{base_before}..{BASE}", cwd=here)
+    ahead = _required_count(f"{BASE}..HEAD", cwd=here)
 
     main_behind = counted(f"HEAD..{BASE}", cwd=root) if _merge_needed(here, root) else 0
     idle = classify_nothing_to_land(here, ahead, main_behind)
@@ -1358,13 +1380,13 @@ def stage(root: Path, here: Path, review: ReviewInputs | None = None) -> Report:
     # half-done, and refused as `git_failed` by `main`'s catch like any failed read.
     git("fetch", REMOTE, cwd=here, timeout=REMOTE_READ_TIMEOUT_S)
     base_before = git("merge-base", "HEAD", BASE, cwd=here).strip()
-    incoming = counted(f"{base_before}..{BASE}", cwd=here) or 0
+    incoming = _required_count(f"{base_before}..{BASE}", cwd=here)
     # Decided **before** the rebase, where `land`'s own `nothing_to_land` is decided, and
     # where the refusal's own words are true (round 2 re-review, Low 5): computed after the
     # rebase it fired on an already-moved HEAD while saying "Nothing was staged". Benign in
     # effect — a tree with no commits of its own is fast-forwarded either way — and a
     # refusal whose account of itself is wrong is still wrong.
-    ahead = counted(f"{BASE}..HEAD", cwd=here) or 0
+    ahead = _required_count(f"{BASE}..HEAD", cwd=here)
     if not ahead:
         return Report.refused(
             Refusal(
@@ -1403,7 +1425,7 @@ def stage(root: Path, here: Path, review: ReviewInputs | None = None) -> Report:
     # Recounted after the replay: the refusal above is decided on the tree as it stood, and
     # the report describes the tree as it now is — a commit the rebase dropped as empty is a
     # commit this line must not still claim.
-    staged = counted(f"{BASE}..HEAD", cwd=here) or 0
+    staged = _required_count(f"{BASE}..HEAD", cwd=here)
     replayed = f"replayed onto {incoming} new commits" if incoming else "already_current"
     # Both guards stand, and they catch different trees (#334, arbitration). The one above
     # catches a branch that began with no commit of its own, before HEAD moves. This one
