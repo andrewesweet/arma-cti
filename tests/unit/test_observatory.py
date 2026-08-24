@@ -2970,8 +2970,8 @@ def test_unbounded_work_occupies_nothing_and_is_named_by_fact_not_inference(
     # A dispatch with no result.json has no bound, and the store says why without
     # guessing: still running and dead-without-closeout are indistinguishable here.
     assert by_id[CLAUDE_DISPATCH]["ended_at"] is None
-    assert by_id[CLAUDE_DISPATCH]["ended_at_reason"] == observatory.NO_END_RUNNING_REASON
-    assert by_id[CLAUDE_DISPATCH]["terminal_state_reason"] == observatory.TERMINAL_RUNNING_REASON
+    assert by_id[CLAUDE_DISPATCH]["ended_at_reason"] == ledger.no_result_reason(None)
+    assert by_id[CLAUDE_DISPATCH]["terminal_state_reason"] == ledger.no_result_reason(None)
     # The headline names the eight it could not bound, and its used minutes (70,
     # pinned above) contain none of them: unbounded work inflates nothing.
     rows = observatory.query(

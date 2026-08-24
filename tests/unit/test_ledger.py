@@ -592,6 +592,75 @@ def test_a_run_with_no_result_yet_is_unknown_rather_than_ended() -> None:
     assert "has not ended" in state.reason
 
 
+def test_read_json_names_which_of_three_conditions_a_none_is(tmp_path: Path) -> None:
+    # #569: absence, damage and wrong shape are three facts, and a caller handed
+    # only a `None` is left claiming a file it could not parse was never there.
+    # The boundary names the condition; the bare catch stays, because a record is
+    # untrusted input and narrowing it would turn a damaged file into a crash.
+    assert ledger.read_json(tmp_path / "absent.json") == (None, ledger.READ_ABSENT)
+    damaged = tmp_path / "damaged.json"
+    damaged.write_text('{"returncode": 0', encoding="utf-8")
+    assert ledger.read_json(damaged) == (None, ledger.READ_DAMAGED)
+    shaped = tmp_path / "shaped.json"
+    shaped.write_text("[0, 1]", encoding="utf-8")
+    assert ledger.read_json(shaped) == (None, ledger.READ_NOT_AN_OBJECT)
+    read = tmp_path / "read.json"
+    read.write_text('{"returncode": 0}', encoding="utf-8")
+    assert ledger.read_json(read) == ({"returncode": 0}, None)
+
+
+def test_a_damaged_result_json_is_named_not_read_as_absent(tmp_path: Path) -> None:
+    # #569: a corrupt result.json reached "the run has not ended: no result.json
+    # beside the plan" — an absence claim about a file the reader had just failed
+    # to parse. The class stays `unknown`; only the reason asserts, and it names
+    # the damage.
+    record = stage_record(tmp_path / "dispatches")
+    (record / "result.json").write_text('{"returncode": 0', encoding="utf-8")
+    materialised = ledger.materialise(
+        record,
+        export_dir=tmp_path / "export",
+        capture=tmp_path / "capture" / "claude-telemetry.jsonl",
+        repo=tmp_path,
+        now=NOW,
+    )
+    end_state = materialised.row["end_state"]
+    assert end_state["class"] == "unknown"
+    assert "damaged" in end_state["reason"]
+    assert "could not be parsed" in end_state["reason"]
+    assert "has not ended" not in end_state["reason"]
+
+
+def test_a_wrong_shaped_result_json_is_named_not_read_as_absent(tmp_path: Path) -> None:
+    # #569's third condition: a JSON list beside the plan is neither missing nor
+    # corrupt, so the reason names the shape rather than the file's absence.
+    record = stage_record(tmp_path / "dispatches")
+    (record / "result.json").write_text("[0, 1]", encoding="utf-8")
+    materialised = ledger.materialise(
+        record,
+        export_dir=tmp_path / "export",
+        capture=tmp_path / "capture" / "claude-telemetry.jsonl",
+        repo=tmp_path,
+        now=NOW,
+    )
+    end_state = materialised.row["end_state"]
+    assert end_state["class"] == "unknown"
+    assert "not a JSON object" in end_state["reason"]
+    assert "has not ended" not in end_state["reason"]
+
+
+def test_an_absent_result_json_keeps_the_sentence_absence_earned() -> None:
+    # Only the reason changed (#569): absence is still the one condition that
+    # supports "the run has not ended", byte for byte, so no projection row
+    # written on an absent result churns.
+    source = ledger.Source(ledger.SOURCE_EXPORT, None)
+    assert ledger.no_result_reason(None) == "the run has not ended: no result.json beside the plan"
+    assert ledger.no_result_reason(ledger.READ_ABSENT) == ledger.no_result_reason(None)
+    assert (
+        ledger.type_end_state([], None, source, result_condition=ledger.READ_ABSENT).reason
+        == ledger.type_end_state([], None, source).reason
+    )
+
+
 def test_a_run_that_ended_with_records_and_no_provider_failure_is_ok() -> None:
     items = items_from([metric_batch("claude_code.token.usage", [({"type": "input"}, 1)])])
     state = ledger.type_end_state(

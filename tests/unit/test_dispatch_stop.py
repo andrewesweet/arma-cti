@@ -774,7 +774,7 @@ def test_every_reader_of_the_closeout_reads_the_same_verdict(
     assert binding.state == ("result=not_a_result:stopped" if closeout else "result=completed")
     # observatory: a closeout carries no end the work attests; every other result's does.
     ended, reason = observatory._ended_for(  # noqa: SLF001 — the end reader is the unit; a full rebuild would test the fixture instead
-        result, None, observatory.SOURCE_EXPORT
+        (result, None), None, observatory.SOURCE_EXPORT
     )
     if closeout:
         assert ended is None

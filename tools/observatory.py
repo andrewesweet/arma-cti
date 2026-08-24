@@ -280,10 +280,11 @@ NO_START_REASON: Final = "neither the result nor the plan carries a start time"
 # The occupancy view's two absences (#485). An end time exists only once the run
 # ended, so a dispatch with no result.json is unbounded for either of two facts the
 # record cannot tell apart — still running, or dead without a closeout — and the
-# reason carries the runner's own wording. A terminal state is #489's block, and its
-# null is three different facts the caller already holds (completed, still running,
-# never started), so the reason names which rather than flattening them.
-NO_END_RUNNING_REASON: Final = "the run has not ended: no result.json beside the plan"
+# reason is `ledger.no_result_reason`, the one home that also names a damaged
+# record rather than reading it as absence (#569). A terminal state is #489's
+# block, and its null is three different facts the caller already holds
+# (completed, still running, never started), so the reason names which rather
+# than flattening them.
 NO_END_UNUSABLE_REASON: Final = "the dispatch record carries no usable ended_at"
 NO_END_ROW_REASON: Final = "the pruned source's ledger row carries no end time"
 # Two closeout shapes that look like an end and are not (#485 round 2). The current
@@ -308,7 +309,6 @@ NO_END_NO_OWN_START_REASON: Final = (
     "bounds survives to attest one"
 )
 TERMINAL_COMPLETED_REASON: Final = "the work completed"
-TERMINAL_RUNNING_REASON: Final = NO_END_RUNNING_REASON
 TERMINAL_NEVER_STARTED_REASON: Final = (
     "work that never started is not work that started and did not finish"
 )
@@ -1027,7 +1027,7 @@ def _issue_of(plan: Mapping[str, Any]) -> int | None:
 
 def _end_state_for(
     items: Sequence[ledger.Item],
-    result: Mapping[str, Any] | None,
+    result_read: tuple[Mapping[str, Any] | None, str | None],
     ledger_row: Mapping[str, Any] | None,
     telemetry_source: str,
     export_path: Path,
@@ -1039,17 +1039,26 @@ def _end_state_for(
     own `end_state` block, because the records the typing would have read are gone; a
     row without the block is a null with a reason, never a guessed class. A dispatch with
     no telemetry at all keeps the same reader over no records, which is what that reader
-    already says about silence: nothing, by name.
+    already says about silence: nothing, by name. `result_read` is `ledger.read_json`'s
+    whole return, carried as one value so the `None` names its own condition (#569).
     """
+    result, result_condition = result_read
     if telemetry_source == SOURCE_EXPORT:
-        return ledger.type_end_state(items, result, ledger.Source(SOURCE_EXPORT, export_path))
+        return ledger.type_end_state(
+            items,
+            result,
+            ledger.Source(SOURCE_EXPORT, export_path),
+            result_condition=result_condition,
+        )
     if telemetry_source == SOURCE_LEDGER_ROW:
         block = ledger_row.get("end_state") if ledger_row is not None else None
         state = block.get("class") if isinstance(block, dict) else None
         if isinstance(state, str) and state:
             return ledger.EndState(state, "read from the materialised ledger row", ())
         return None
-    return ledger.type_end_state([], result, ledger.Source(SOURCE_ABSENT, None))
+    return ledger.type_end_state(
+        [], result, ledger.Source(SOURCE_ABSENT, None), result_condition=result_condition
+    )
 
 
 def _parse_moment(value: object) -> datetime | None:
@@ -1092,7 +1101,7 @@ def _bounded_end(
 
 
 def _ended_for(
-    result: Mapping[str, Any] | None,
+    result_read: tuple[Mapping[str, Any] | None, str | None],
     ledger_row: Mapping[str, Any] | None,
     telemetry_source: str,
 ) -> tuple[datetime | None, str | None]:
@@ -1104,8 +1113,12 @@ def _ended_for(
     legacy shape's `ended_at` says when the sweep ran, never when the work
     stopped. `dispatch_stop.is_stop_closeout` recognises both shapes — the one
     home every reader of the closeout derives from (#558) — and both are refused
-    here before the both-bounds rule is even reached.
+    here before the both-bounds rule is even reached. `result_read` is
+    `ledger.read_json`'s whole return, and a `None` result is named by
+    `ledger.no_result_reason`, so a damaged record is not read as a live run
+    (#569).
     """
+    result, result_condition = result_read
     if telemetry_source == SOURCE_LEDGER_ROW:
         gate = ledger_row.get("gate") if ledger_row is not None else None
         return _bounded_end(
@@ -1114,7 +1127,7 @@ def _ended_for(
             NO_END_ROW_REASON,
         )
     if result is None:
-        return None, NO_END_RUNNING_REASON
+        return None, ledger.no_result_reason(result_condition)
     # The stop closeout has one shape-home, `dispatch_stop.is_stop_closeout`,
     # shared with `occupancy.py` and `review_exchange.py` (#558).
     if dispatch_stop.is_stop_closeout(result):
@@ -1127,7 +1140,7 @@ def _ended_for(
 
 
 def _terminal_for(
-    result: Mapping[str, Any] | None,
+    result_read: tuple[Mapping[str, Any] | None, str | None],
     end_state: ledger.EndState | None,
     ledger_row: Mapping[str, Any] | None,
     telemetry_source: str,
@@ -1140,8 +1153,11 @@ def _terminal_for(
     row's own block, and a row without one is an absence with a reason rather than
     a guess. The null's reason names which of the three facts it is, because
     "completed", "still running" and "never started" are different statements a
-    single generic string would flatten.
+    single generic string would flatten — and `result_read` is `ledger.read_json`'s
+    whole return, its `None` named by `ledger.no_result_reason`, so a damaged
+    record is not read as a live run (#569).
     """
+    result, result_condition = result_read
     if telemetry_source == SOURCE_LEDGER_ROW:
         block = ledger_row.get("terminal_state") if ledger_row is not None else None
         state = block.get("state") if isinstance(block, dict) else None
@@ -1152,7 +1168,7 @@ def _terminal_for(
     if block is not None:
         return str(block["state"]), None
     if result is None:
-        return None, TERMINAL_RUNNING_REASON
+        return None, ledger.no_result_reason(result_condition)
     if not ledger.started(result):
         return None, TERMINAL_NEVER_STARTED_REASON
     return None, TERMINAL_COMPLETED_REASON
@@ -1167,7 +1183,7 @@ def _dispatch_row(
     caller can name the file without re-reading it.
     """
     plan = ledger.parse_dispatch_record(record_dir / DISPATCH_FILE).plan
-    result = ledger.read_json(record_dir / RESULT_FILE)
+    result, result_condition = ledger.read_json(record_dir / RESULT_FILE)
     dispatch_id = str(plan.get("dispatch_id") or record_dir.name)
     export_path = export_dir / f"{EXPORT_PREFIX}{dispatch_id}{EXPORT_SUFFIX}"
     malformed = 0
@@ -1184,8 +1200,10 @@ def _dispatch_row(
     elif (record_dir / LEDGER_FILE).is_file():
         # The pruned-source read: `ledger prune` only deletes a file a row was
         # materialised from, so where the file is gone the row is the surviving
-        # record, taken visibly rather than silently.
-        ledger_row = ledger.read_json(record_dir / LEDGER_FILE)
+        # record, taken visibly rather than silently. The condition is discarded
+        # because `_row_spend` already names an unparseable row (`ROW_UNREADABLE`)
+        # and the row-fed readers below have their own row vocabulary.
+        ledger_row, _ = ledger.read_json(record_dir / LEDGER_FILE)
         spend = _row_spend(ledger_row)
         telemetry_source = SOURCE_LEDGER_ROW
         telemetry_path = None
@@ -1198,12 +1216,16 @@ def _dispatch_row(
     issue = _issue_of(plan)
     landing = _landing_for(plan, issue, result, repo, journals)
     started = ledger.dispatch_start(plan, result)
-    ended, ended_reason = _ended_for(result, ledger_row, telemetry_source)
-    end_state = _end_state_for(items, result, ledger_row, telemetry_source, export_path)
+    ended, ended_reason = _ended_for((result, result_condition), ledger_row, telemetry_source)
+    end_state = _end_state_for(
+        items, (result, result_condition), ledger_row, telemetry_source, export_path
+    )
     outcome = (
         ledger.gate_outcome(landing, result, end_state, plan.get("seat")) if end_state else None
     )
-    terminal_state, terminal_reason = _terminal_for(result, end_state, ledger_row, telemetry_source)
+    terminal_state, terminal_reason = _terminal_for(
+        (result, result_condition), end_state, ledger_row, telemetry_source
+    )
     end_state_reason = None if end_state else ROW_NO_END_STATE
     lane = plan.get("lane") if isinstance(plan.get("lane"), str) else None
     profile = plan.get("profile") if isinstance(plan.get("profile"), str) else None

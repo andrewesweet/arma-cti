@@ -868,8 +868,33 @@ def _recorded_terminal_state(result: Mapping[str, Any] | None) -> dict[str, str]
     return {"state": dispatch_stop.STOPPED}
 
 
+def no_result_reason(condition: str | None) -> str:
+    """Say why a `None` result leaves the end unknown, naming the evidence (#569).
+
+    Absence is the one condition that supports "the run has not ended"; a damaged
+    or wrong-shaped `result.json` may hold the record of an end this reader could
+    not parse, so the reason names the damage rather than claiming the run never
+    finished. `None` is the historical reading of a `None` result — absent — and
+    the default every pre-#569 caller still passes.
+    """
+    if condition == READ_DAMAGED:
+        return (
+            "result.json beside the plan is damaged and could not be parsed: "
+            "whether the run has ended is unknown"
+        )
+    if condition == READ_NOT_AN_OBJECT:
+        return (
+            "result.json beside the plan is not a JSON object: whether the run has ended is unknown"
+        )
+    return "the run has not ended: no result.json beside the plan"
+
+
 def type_end_state(
-    items: Iterable[Item], result: Mapping[str, Any] | None, source: Source
+    items: Iterable[Item],
+    result: Mapping[str, Any] | None,
+    source: Source,
+    *,
+    result_condition: str | None = None,
 ) -> EndState:
     """Type how a dispatch ended, from provider records and the dispatcher's own refusal.
 
@@ -884,6 +909,9 @@ def type_end_state(
 
     What a `quota_exhausted` lane must then wait for is #226's, not this function's. The
     `reset_at` here is whatever the record carried, copied verbatim and never computed.
+
+    `result_condition` is `read_json`'s word for why `result` is `None`, so the
+    `unknown` this returns can name a damaged record instead of asserting absence.
     """
     collected = list(items)
     if result is not None and result.get("refusal"):
@@ -917,7 +945,7 @@ def type_end_state(
             (f"result.json outcome={outcome}",),
         )
     return (
-        EndState("unknown", "the run has not ended: no result.json beside the plan")
+        EndState("unknown", no_result_reason(result_condition))
         if result is None
         else (
             _silent_end_state(source)
@@ -1222,15 +1250,32 @@ def gate_outcome(
 # ---------------------------------------------------------------------- materialising
 
 
-def read_json(path: Path) -> dict[str, Any] | None:
-    """Read one JSON document, or `None` when it is absent or not a document."""
+# `read_json`'s three null conditions, named so a caller can say which occurred
+# rather than reading every one as absence (#569).
+READ_ABSENT: Final = "absent"
+READ_DAMAGED: Final = "damaged"
+READ_NOT_AN_OBJECT: Final = "not_an_object"
+
+
+def read_json(path: Path) -> tuple[dict[str, Any] | None, str | None]:
+    """Read one JSON document, and name which of three conditions a `None` is.
+
+    The condition is `None` when the document read, and otherwise one of
+    `READ_ABSENT`, `READ_DAMAGED`, `READ_NOT_AN_OBJECT` — three facts a plain
+    `None` flattened into one, leaving a caller holding only absence vocabulary
+    to claim a file it could not parse was never there (#569). The bare catch
+    stays: a record is untrusted input, and narrowing it would turn a damaged
+    file into a crash.
+    """
     if not path.is_file():
-        return None
+        return None, READ_ABSENT
     try:
         document = json.loads(path.read_text(encoding="utf-8"))
     except Exception:  # noqa: BLE001 — this function does only persisted-input parsing
-        return None
-    return document if isinstance(document, dict) else None
+        return None, READ_DAMAGED
+    if isinstance(document, dict):
+        return document, None
+    return None, READ_NOT_AN_OBJECT
 
 
 class ParsedDispatchRecord(NamedTuple):
@@ -1295,7 +1340,7 @@ def materialise(
     """
     parsed_record = parse_dispatch_record(record / "dispatch.json")
     plan = parsed_record.plan
-    result = read_json(record / "result.json")
+    result, result_condition = read_json(record / "result.json")
     dispatch_id = str(plan.get("dispatch_id") or record.name)
     source = choose_source(dispatch_id, export_dir, capture)
     items = read_items(source, dispatch_id)
@@ -1308,7 +1353,7 @@ def materialise(
         landing = Landing(None, 0, "the dispatch names no issue")
     else:
         landing = landed(repo, issue, base_sha, dispatch_start(plan, result))
-    end_state = type_end_state(items, result, source)
+    end_state = type_end_state(items, result, source, result_condition=result_condition)
     usage = normalise_usage(items)
     lane = plan.get("lane")
     return MaterialisedRecord(
@@ -1428,7 +1473,10 @@ def _record_terminal_state(record: Path, row: Mapping[str, Any], now: datetime) 
         or terminal.get("state") != attribute_registry.TERMINAL_ABANDONED
     ):
         return
-    previous = read_json(record / "ledger.json")
+    # The condition is discarded: a previous row that cannot be read cannot confirm
+    # the event already fired, and emitting it again into the append journal is the
+    # fail-safe half either way.
+    previous, _ = read_json(record / "ledger.json")
     if previous is not None and previous.get("terminal_state") == terminal:
         return
     attribute_registry.emit_terminal(
@@ -1500,7 +1548,9 @@ def sync(options: Options, now: datetime) -> tuple[tuple[str, ...], int]:
 def show(options: Options) -> tuple[tuple[str, ...], int]:
     """Print one materialised row in full, or say plainly that it has not been synced."""
     record = options.dispatch_root / options.dispatch
-    row = read_json(record / "ledger.json")
+    # The condition is discarded: `sync` rewrites the row from the records in every
+    # case, so `not_materialised` names the remedy for a damaged file as well.
+    row, _ = read_json(record / "ledger.json")
     if row is None:
         return (
             Refusal(
@@ -1535,7 +1585,9 @@ def prunable(options: Options, now: float) -> list[Verdict]:
     verdicts: list[Verdict] = []
     for path in sorted(options.export_dir.glob("dispatch-*.jsonl")):
         dispatch_id = path.name[len("dispatch-") : -len(".jsonl")]
-        row = read_json(options.dispatch_root / dispatch_id / "ledger.json")
+        # The condition is discarded: an unreadable row keeps its file, which is the
+        # conservative half — no deletion ever rides on telling the three apart here.
+        row, _ = read_json(options.dispatch_root / dispatch_id / "ledger.json")
         if path.stat().st_mtime > horizon:
             kept = f"newer than the {options.days}-day horizon"
         elif row is None:

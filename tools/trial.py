@@ -409,18 +409,17 @@ def dispatch_records_for(root: Path, issue: int) -> tuple[tuple[str, dict, dict 
         return ()
     found: list[tuple[str, dict, dict | None]] = []
     for directory in sorted(root.iterdir()):
-        plan = ledger.read_json(directory / "dispatch.json")
+        # The conditions are discarded: an unreadable plan drops the dispatch from
+        # the window set rather than holding anything against it, and an unreadable
+        # result only falls the start back to the plan's own timestamp — neither
+        # mints a claim about how the run ended (#569).
+        plan, _ = ledger.read_json(directory / "dispatch.json")
         if plan is None or int(plan.get("issue") or 0) != issue:
             continue
         if not ledger.seat_lands(plan.get("seat")):
             continue
-        found.append(
-            (
-                str(plan.get("dispatch_id") or directory.name),
-                plan,
-                ledger.read_json(directory / "result.json"),
-            )
-        )
+        result, _ = ledger.read_json(directory / "result.json")
+        found.append((str(plan.get("dispatch_id") or directory.name), plan, result))
     found.sort(key=lambda entry: entry[0])
     return tuple(found)
 
@@ -535,7 +534,9 @@ def _pool_verdict(path: Path) -> tuple[str, str]:
         return AUDIT_PATH_MISSING, f"{path} does not exist"
     if not document.is_file():
         return AUDIT_PATH_MISSING, f"{path} exists and carries no pool.json"
-    read = ledger.read_json(document)
+    # The condition is discarded: "not a readable JSON document" is true of a damaged
+    # file and of one that is not an object alike, and absence was named above (#569).
+    read, _ = ledger.read_json(document)
     if read is None:
         return AUDIT_PATH_MISSING, f"{document} is not a readable JSON document"
     worst = read.get("worst_class")
