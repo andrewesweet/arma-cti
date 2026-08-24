@@ -972,6 +972,45 @@ def test_a_landing_from_a_dispatched_implementer_arrives_at_the_land_stage(
     assert rows[-1]["attributes"]["cti.stage.name"] == "land"
 
 
+def test_a_rerun_hand_landing_records_the_land_stage_once(
+    repo: tuple[Path, Path, Path],
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """#552: the exit-2 re-run has no dispatch id to dedupe on, and lands once.
+
+    A hand landing carries neither `CTI_DISPATCH_ID` nor `CTI_DISPATCH_SEAT`, so
+    the recorder's dispatch deduplication cannot key on anything — the live
+    journal already holds hand-run arrivals with no dispatch id. The re-run that
+    the exit-2 refusal itself names as the recovery takes `_push`'s
+    nothing-to-push branch back to `_merge`, and this is the arrival it must not
+    record twice.
+    """
+    _origin, main, here = repo
+    monkeypatch.delenv("CTI_DISPATCH_ID", raising=False)
+    monkeypatch.delenv("CTI_DISPATCH_SEAT", raising=False)
+    _commit(here, "feature.txt", "work\n")
+    review = _reviewed(here, tmp_path)
+    review_root = review.review_root
+    for stage in ("brief", "implementation", "own_gate", "exchange", "review"):
+        attribute_registry.record_stage_arrival(stage, 213, review_root, 1_800_000_000.0)
+    # The main checkout holds a commit of its own, so the merge cannot
+    # fast-forward: run one pushes and exits 2 with the merge outstanding.
+    _commit(main, "local-only.txt", "never pushed\n")
+    blocked = land.land(main, here, gate=_Gate(), review=review)
+    assert blocked.code == land.EXIT_LANDED_INCOMPLETE
+
+    rerun = land.land(main, here, gate=_Gate(), review=review)
+
+    assert "push=not_needed reason=already_on_origin/main" in rerun.lines, (
+        "the re-run took the nothing-to-push branch this test is about"
+    )
+    journal = review_root / "213" / attribute_registry.STAGE_JOURNAL
+    rows = [json.loads(line) for line in journal.read_text(encoding="utf-8").splitlines()]
+    names = [row["attributes"]["cti.stage.name"] for row in rows]
+    assert names.count("land") == 1, "the hand re-run journalled no second land arrival"
+
+
 def test_the_gate_runs_on_the_rebased_tree_not_the_tree_as_it_was(
     repo: tuple[Path, Path, Path],
     tmp_path: Path,

@@ -1244,8 +1244,11 @@ def land(  # noqa: PLR0913 — the protocol's inputs, one parameter apiece
         return pushed
     # The push is the pipeline's land stage reached (#490), recorded before the merge so
     # the exit-2 run whose merge is still outstanding counts as the landing it is. The
-    # re-run that completes such a landing takes `_push`'s nothing-to-push branch and the
-    # recorder's own dispatch deduplication keeps it one arrival. A landing that names no
+    # re-run that completes such a landing takes `_push`'s nothing-to-push branch and
+    # the arrival is idempotent over the stage (#552): a hand landing carries no
+    # dispatch id for the recorder's dispatch deduplication to key on, and the
+    # orchestrator lands by hand as a matter of course, so the land seam collapses on
+    # any arrival already journalled for this issue and stage. A landing that names no
     # issue records nothing — there is no work item to attach the arrival to — and a
     # landing from a dispatched session whose seat is not the implementer's records
     # nothing either: `CTI_DISPATCH_SEAT` is exported for every seat, so without the
@@ -1267,6 +1270,7 @@ def land(  # noqa: PLR0913 — the protocol's inputs, one parameter apiece
             review_inputs.review_root or land_review.REVIEW_ROOT,
             datetime.now(tz=UTC).timestamp(),
             dispatch_id=os.environ.get("CTI_DISPATCH_ID", ""),
+            idempotent=True,
         )
     # The landing's own record (#491): the qualified relations the review rung
     # derived — subject, produced commit, every author, the reviewer, and the gate

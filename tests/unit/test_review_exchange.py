@@ -901,6 +901,7 @@ def test_a_successful_exchange_records_the_exchange_stage_arrival(
     """The handover's success is the exchange stage reached, first-pass status and all (#490)."""
     root = tmp_path / "review"
     monkeypatch.setenv("CTI_REVIEW_DIR", str(root))
+    monkeypatch.delenv("CTI_DISPATCH_SEAT", raising=False)
     repo = init_repo(tmp_path)
     for stage in ("brief", "implementation", "own_gate"):
         attribute_registry.record_stage_arrival(stage, 332, root, 1_800_000_000.0)
@@ -916,6 +917,29 @@ def test_a_successful_exchange_records_the_exchange_stage_arrival(
     assert row["event"] == "cti.stage.transition"
     assert row["attributes"]["cti.stage.name"] == "exchange"
     assert row["attributes"]["cti.stage.first_pass"] == "first_time"  # noqa: S105 — the attribute's own name carries "pass"; a stage status, never a credential
+
+
+def test_an_exchange_from_a_dispatched_non_pipeline_seat_records_no_stage_arrival(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The seat filter the gate and land seams carry, on the third seam (#552).
+
+    `CTI_DISPATCH_SEAT` is exported to every dispatched child, so without the
+    filter a dispatched non-pipeline seat running the exchange counted as the
+    item's exchange arrival permanently — the same asymmetry #490 round 2's F2
+    closed on the other two seams.
+    """
+    root = tmp_path / "review"
+    monkeypatch.setenv("CTI_REVIEW_DIR", str(root))
+    monkeypatch.setenv("CTI_DISPATCH_SEAT", "retro")
+    repo = init_repo(tmp_path)
+
+    report = review_exchange.exchange(repo, 332)
+
+    assert report.code == 0
+    assert not (root / "332" / attribute_registry.STAGE_JOURNAL).exists(), (
+        "the retro's exchange journalled no stage arrival"
+    )
 
 
 def test_exchange_refuses_a_dirty_tree_and_pushes_nothing(tmp_path: Path) -> None:

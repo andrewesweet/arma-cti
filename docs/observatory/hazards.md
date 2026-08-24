@@ -178,3 +178,19 @@ sides with the gap list to within one percent, so the awake-minus-total arithmet
 is the document's error, not a third method. The store's own gaps partition the
 histogram's level-0 row, so gap total and idle minutes are one number by
 construction, never two.
+
+## 8. `undetermined` can spike globally, from one record it never names
+
+The recorder grants an absent journal a clean past only after scanning the
+pipeline dispatch records for the issue — and a record that exists but will not
+read is taken as history seen, because the seat inside it cannot be known
+(`tools/attribute_registry.py`'s `_pipeline_history_seen`). That pessimism is
+**global, not per-issue**: one corrupt `dispatch.json` anywhere under the records
+root makes every absent-journal issue's first arrival record `undetermined`,
+whichever issue the corrupt record names. So a spike in
+`stage_arrivals_undetermined` can be damage to one unrelated record rather than
+a finding about the issues it appears on — check the records directory before
+reading the spike as history the issues actually have. It fires once per issue at
+most: the undetermined arrival founds the journal, and arrivals after it read
+against that (#490 round 2, finding 1; the global scope recorded by #552, whose
+reviewer accepted the direction as the safe one).

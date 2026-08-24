@@ -501,6 +501,38 @@ def test_one_dispatch_reaching_a_stage_twice_is_one_arrival(tmp_path: Path) -> N
     ], "the re-run journalled nothing"
 
 
+def test_an_idempotent_arrival_collapses_with_no_dispatch_id_to_dedupe_on(
+    tmp_path: Path,
+) -> None:
+    """The hand landing's shape (#552): the exit-2 re-run carries no dispatch id.
+
+    The dispatch deduplication keys on the id, and a hand landing has none — so
+    the land seam asks for idempotence over the stage instead, and the re-run
+    that takes `_push`'s nothing-to-push branch is the same arrival.
+    """
+    for stage in ("brief", "implementation", "own_gate", "exchange", "review"):
+        attribute_registry.record_stage_arrival(stage, 552, tmp_path, NOW)
+    assert (
+        attribute_registry.record_stage_arrival("land", 552, tmp_path, NOW, idempotent=True)
+        == "first_time"
+    )
+    again = attribute_registry.record_stage_arrival("land", 552, tmp_path, NOW, idempotent=True)
+    assert again == attribute_registry.STAGE_ALREADY_REACHED
+    journal = stage_rows(attribute_registry.stage_journal(552, tmp_path))
+    assert [row["attributes"]["cti.stage.name"] for row in journal][-1] == "land", (
+        "the re-run journalled nothing"
+    )
+    assert len(journal) == 6
+
+
+def test_a_non_idempotent_arrival_still_counts_every_time_by_default(tmp_path: Path) -> None:
+    """Only the land seam opts in (#552): a re-brief is a second brief, honestly."""
+    attribute_registry.record_stage_arrival("brief", 552, tmp_path, NOW)
+    assert attribute_registry.record_stage_arrival("brief", 552, tmp_path, NOW) == "after_rework"
+    journal = stage_rows(attribute_registry.stage_journal(552, tmp_path))
+    assert [row["attributes"]["cti.stage.name"] for row in journal] == ["brief", "brief"]
+
+
 def test_an_unreadable_journal_records_undetermined_never_true(tmp_path: Path) -> None:
     """#490's central criterion: the hole is stated, never padded with a clean past."""
     journal = attribute_registry.stage_journal(490, tmp_path)

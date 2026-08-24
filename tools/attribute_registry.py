@@ -566,8 +566,10 @@ STAGE_JOURNAL: Final = "stages.jsonl"
 DISPATCH_RECORDS_ROOT: Final = Path.home() / ".arma-cti" / "dispatches"
 
 # What `record_stage_arrival` returns where the caller's own dispatch already
-# reached this stage: not a first-pass value and never journalled — a gate
-# re-run in the same dispatched session is the same arrival, not a new one.
+# reached this stage, or an idempotent arrival finds the stage already
+# journalled: not a first-pass value and never journalled — a gate re-run in
+# the same dispatched session, and a hand landing's exit-2 re-run, are the
+# same arrival, not new ones.
 STAGE_ALREADY_REACHED: Final = "already_reached"
 
 
@@ -657,8 +659,9 @@ def _pipeline_history_seen(issue: int, review_root: Path, dispatch_id: str) -> b
 
     - the issue's own directory under the review root holds any entry at all.
       Every file there is an act's artefact — a loop opened, an arbiter
-      escalation, an authorship declared, a wait journalled — and none of those
-      precedes the work they judge, so any entry says the item moved.
+      escalation, an authorship declared, a landing journalled (#491) — and
+      none of those precedes the work they judge, so any entry says the item
+      moved.
     - a dispatch record names the issue from a seat whose dispatch is a
       pipeline stage (`STAGE_OF_SEAT` — implementer and review). A recon or
       planner dispatch names triage, not a pass through the pipeline, so it is
@@ -773,6 +776,7 @@ def record_stage_arrival(
     at: float,
     *,
     dispatch_id: str = "",
+    idempotent: bool = False,
 ) -> str:
     """Record one stage arrival with its first-pass status, fail-open (#490).
 
@@ -784,17 +788,21 @@ def record_stage_arrival(
     `first_time` is granted only to an issue nothing moved before, never to one
     that merely predates the recorder. A dispatch that already reached this
     stage records nothing and answers `STAGE_ALREADY_REACHED`, so a re-run
-    inside one dispatched session is the same arrival, not rework of it;
-    arrivals with no dispatch to name (a brief, an exchange by hand) cannot be
-    deduplicated and count every time, which is the journal's honest reading
-    of a re-brief.
+    inside one dispatched session is the same arrival, not rework of it. An
+    idempotent arrival — the land seam's (#552) — answers the same where the
+    journal already holds any arrival at this stage, with or without a
+    dispatch to name: a hand landing re-run after exit 2 carries no dispatch
+    id to deduplicate on, and the push it would re-announce is already on
+    `origin/main`. Every other arrival with no dispatch to name (a brief, an
+    exchange by hand) cannot be deduplicated and counts every time, which is
+    the journal's honest reading of a re-brief.
     """
     if stage not in STAGES:
         message = f"stage not in the closed set: {stage!r}"
         raise ValueError(message)
     journal = stage_journal(issue, review_root)
     counts, determinable, repeat = _prior_arrivals(journal, stage, dispatch_id, issue, review_root)
-    if repeat:
+    if repeat or (idempotent and counts[stage] > 0):
         return STAGE_ALREADY_REACHED
     status = _arrival_status(stage, counts) if determinable else UNDETERMINED
     emit_stage(
