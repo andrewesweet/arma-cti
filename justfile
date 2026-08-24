@@ -162,7 +162,9 @@ check-attributes:
 # The committed landed-issue projection is generated from the same fresh rebuild
 # as the external observatory store. Dispatches on issues not yet landed are outside
 # the projection, so they do not churn this check; later dispatches naming a landed
-# issue can change its row. A hand edit or a missing landed row is still a named refusal.
+# issue can change its row. A dispatched implementer whose external sources are
+# unreadable reports `observatory_summary=skipped state=unrecorded`; outside that
+# scope, a source refusal, hand edit or missing landed row is still red.
 check-observatory:
     uv run python tools/observatory.py check
 

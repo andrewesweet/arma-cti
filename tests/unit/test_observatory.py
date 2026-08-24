@@ -828,6 +828,25 @@ def rebuild_world(world: World) -> dict[str, Any]:
     )
 
 
+def summary_check_args(world: World, *, export_dir: Path | None = None) -> list[str]:
+    """Build the CLI paths for the read-only committed-summary check."""
+    return [
+        "check",
+        "--dispatch-root",
+        str(world.dispatch_root),
+        "--export-dir",
+        str(world.export_dir if export_dir is None else export_dir),
+        "--review-root",
+        str(world.review_root),
+        "--queue-dir",
+        str(world.queue_dir),
+        "--spool",
+        str(world.spool),
+        "--repo",
+        str(world.repo),
+    ]
+
+
 def cost_row(store: dict[str, Any], issue: int, lane: str) -> dict[str, Any]:
     """Return one (issue, lane) cost row from the store."""
     return next(row for row in store["issue_cost"] if row["issue"] == issue and row["lane"] == lane)
@@ -928,6 +947,52 @@ def test_a_hand_edit_to_the_committed_summary_is_a_red(world: World) -> None:
             world.queue_dir,
             path,
         )
+
+
+def test_check_reports_pass_for_a_readable_matching_summary(
+    world: World, capsys: pytest.CaptureFixture[str]
+) -> None:
+    rebuild_world(world)
+    code = observatory.main(summary_check_args(world))
+    captured = capsys.readouterr()
+    assert code == 0
+    assert captured.err == ""
+    assert captured.out == f"observatory_summary=ok path={world.repo / observatory.SUMMARY_PATH}\n"
+
+
+def test_a_dispatched_implementer_skips_an_unreadable_source(
+    world: World,
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("CTI_DISPATCH_ID", "d-test-observatory-skip")
+    monkeypatch.setenv("CTI_DISPATCH_SEAT", "implementer")
+    gone = world.export_dir.parent / "nowhere"
+    code = observatory.main(summary_check_args(world, export_dir=gone))
+    captured = capsys.readouterr()
+    assert code == 0
+    assert "observatory_summary=skipped state=unrecorded reason=source_unreadable" in captured.out
+    assert "scope=dispatched_implementer" in captured.out
+    assert "source_refusal=export_dir_unreadable" in captured.out
+    assert f"path={gone}" in captured.out
+    assert "refused=" not in captured.out
+    assert captured.err == ""
+
+
+def test_an_unreadable_source_stays_red_outside_a_dispatched_implementer(
+    world: World,
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.delenv("CTI_DISPATCH_ID", raising=False)
+    monkeypatch.delenv("CTI_DISPATCH_SEAT", raising=False)
+    gone = world.export_dir.parent / "nowhere"
+    code = observatory.main(summary_check_args(world, export_dir=gone))
+    captured = capsys.readouterr()
+    assert code == 1
+    assert "refused=export_dir_unreadable" in captured.err
+    assert "observatory_summary=skipped" not in captured.out
+    assert captured.out == ""
 
 
 def test_a_dispatch_on_an_unlanded_issue_does_not_churn_the_summary_check(world: World) -> None:
