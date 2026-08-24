@@ -35,6 +35,27 @@ issues landed. A lane whose rows rest on three dispatches out of forty is a lane
 whose cost is a floor, and a lane whose dispatches were pruned is a lane whose
 log-record spend is gone for good.
 
+## The compact history of landed issues
+
+The rebuild also writes `docs/observatory/landed-issues.md`, one generated row per
+landed issue. It is the diff-sized first read; the store remains the detailed source.
+Costs stay in separate lane columns and in their own meters — there is no total to
+add across lanes. `counted` includes a numeric zero, `unrecorded` includes the reason
+for an unknown cost, and `none not_involved` says that the issue did not use that
+lane. A row is added only once its work item is landed, so in-flight dispatches do
+not churn the committed file.
+
+```sql
+SELECT issue, landed_sha, dispatches, review_rounds,
+       lead_time_seconds, lanes, costs
+FROM issue_summary
+ORDER BY issue
+```
+
+The SQL `costs` column is the JSON object behind the Markdown lane cells. Read the
+`state` before interpreting its `cost`: `counted` is a number in the named meter,
+`unrecorded` is an unknown with a reason, and `none` is not involvement.
+
 ## How long work takes, how much finishes, and which open item to act on now
 
 The flow view (#486). A work item is one issue; its clock starts at the issue's

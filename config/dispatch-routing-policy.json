@@ -99,6 +99,7 @@
         "tools/land_review.py",
         "tools/gated_paths.py",
         "tools/mutation_smoke.py",
+        "tools/observatory.py",
         ".claude/settings.json",
         ".claude/hooks/"
       ],
@@ -117,6 +118,7 @@
         "tools/land_review.py",
         "tools/gated_paths.py",
         "tools/mutation_smoke.py",
+        "tools/observatory.py",
         ".claude/settings.json",
         ".claude/hooks/"
       ],

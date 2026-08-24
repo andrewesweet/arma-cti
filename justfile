@@ -30,7 +30,7 @@ check:
         --leg check-source-link --leg check-gated-paths --leg check-markers \
         --leg check-conflicts --leg check-changelog --leg check-gate-clock \
         --leg check-seats --leg check-just-grants --leg check-arbiter \
-        --leg check-attributes --leg check-sqf --leg check-secrets \
+        --leg check-attributes --leg check-observatory --leg check-sqf --leg check-secrets \
         --leg check-python --leg check-machine-b --leg check-rust
 
 # Static validation for the repository-managed Machine B playbooks. The live
@@ -158,6 +158,13 @@ check-arbiter *args:
 # every count. The registry is the authority; this leg is what makes it one.
 check-attributes:
     uv run python tools/check_attributes.py
+
+# The committed landed-issue projection is generated from the same fresh rebuild
+# as the external observatory store. In-flight dispatches are outside the projection,
+# so source growth before a landing does not churn this check; a hand edit or a
+# missing landed row is still a named refusal.
+check-observatory:
+    uv run python tools/observatory.py check
 
 # -p adds the pedantic lints; -e makes findings fatal (without it the gate is a no-op).
 # The second step is the scoping HEMTT's banned_commands lint cannot express:
