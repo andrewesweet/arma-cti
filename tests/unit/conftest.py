@@ -88,6 +88,24 @@ def hermetic_dispatch_records(tmp_path_factory: pytest.TempPathFactory) -> None:
     os.environ["CTI_DISPATCH_DIR"] = str(tmp_path_factory.mktemp("dispatch-records"))
 
 
+@pytest.fixture(scope="session", autouse=True)
+def hermetic_dispatch_assignment() -> None:
+    """Strip dispatch identity from the unit suite unless a test arranges it (#573).
+
+    `just dispatch` exports the issue, dispatch id and seat to every child. Production
+    uses those values for issue resolution, run attribution and the implementer's
+    observatory repair path, so inheriting them makes a test depend on who launched
+    pytest. Tests that exercise dispatched behaviour set the variables deliberately
+    with `monkeypatch`, which restores this unset baseline afterwards.
+    """
+    for variable in (
+        "CTI_DISPATCH_ISSUE",
+        "CTI_DISPATCH_ID",
+        "CTI_DISPATCH_SEAT",
+    ):
+        os.environ.pop(variable, None)
+
+
 if TYPE_CHECKING:
     from types import ModuleType
 

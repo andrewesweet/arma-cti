@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import base64
 import json
+import os
 import subprocess
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Final
@@ -25,6 +26,19 @@ observatory = load_tool("observatory")
 
 ISSUE: Final = 500
 STAMP: Final = "2026-08-22T06:00:00+00:00"
+
+
+def test_unit_suite_does_not_inherit_dispatch_assignment() -> None:
+    """Dispatch identity is test arrangement, never ambient suite state (#573)."""
+    assert not {
+        name
+        for name in (
+            "CTI_DISPATCH_ISSUE",
+            "CTI_DISPATCH_ID",
+            "CTI_DISPATCH_SEAT",
+        )
+        if name in os.environ
+    }
 
 
 def git(repo: Path, *args: str) -> str:
@@ -297,6 +311,30 @@ def test_an_approval_for_another_issue_cannot_clear_identical_content(tmp_path: 
     assert report.exit_code == 1
     assert "issue=501" in report.lines
     assert "refusal=approval_missing" in report.lines
+
+
+def test_a_non_numeric_dispatch_issue_is_refused_explicitly(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    repo = repository(tmp_path)
+    monkeypatch.setenv("CTI_DISPATCH_ISSUE", "not-an-issue")
+
+    issue, refusal = gated_paths.issue_of(repo, os.environ)
+
+    assert issue is None
+    assert refusal == "CTI_DISPATCH_ISSUE='not-an-issue' is not a positive issue number"
+
+
+def test_a_dispatch_issue_disagreeing_with_the_worktree_is_refused_explicitly(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    repo = repository(tmp_path)
+    monkeypatch.setenv("CTI_DISPATCH_ISSUE", str(ISSUE + 1))
+
+    issue, refusal = gated_paths.issue_of(repo, os.environ)
+
+    assert issue is None
+    assert refusal == "worktree_issue=500 dispatch_issue=501 disagree"
 
 
 def test_a_record_this_tool_did_not_write_is_not_an_approval(tmp_path: Path) -> None:
