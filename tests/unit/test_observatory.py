@@ -465,6 +465,17 @@ def run_git(*args: str, cwd: Path, at: str = "") -> None:
     )
 
 
+def git_output(*args: str, cwd: Path) -> str:
+    """Run one Git read in the staged repo and return stdout."""
+    return subprocess.run(  # noqa: S603
+        ["git", *args],  # noqa: S607
+        cwd=cwd,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout
+
+
 class World(NamedTuple):
     """The staged world: four dispatches, three lanes, two issues, one landing."""
 
@@ -894,7 +905,9 @@ def test_landed_summary_is_generated_from_store_and_excludes_unlanded_work(world
     path = world.repo / observatory.SUMMARY_PATH
     assert path.read_text(encoding="utf-8") == observatory.render_summary(store)
     assert path.read_text(encoding="utf-8").startswith(observatory.SUMMARY_HEADER + "\n\n")
-    assert "A dispatched implementer repairs a clean stale projection" in observatory.SUMMARY_HEADER
+    assert (
+        "A clean stale projection is reported by `check-observatory`" in observatory.SUMMARY_HEADER
+    )
     assert "An uncommitted hand edit stays red" in observatory.SUMMARY_HEADER
     assert "a committed hand edit is indistinguishable from" in observatory.SUMMARY_HEADER
     assert "summary_mismatch" in observatory.SUMMARY_HEADER
@@ -1120,13 +1133,13 @@ def test_an_uncommitted_hand_edit_to_the_summary_is_a_red_in_every_seat(
     assert "Hand edited" in path.read_text(encoding="utf-8")
 
 
-def test_a_committed_hand_edit_can_be_overwritten_by_implementer_repair(
+def test_a_committed_hand_edit_is_indistinguishable_from_staleness(
     world: World,
     capsys: pytest.CaptureFixture[str],
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """A committed edit has no provenance bit that separates it from stale bytes."""
-    expected = rebuild_world(world)
+    rebuild_world(world)
     path = world.repo / observatory.SUMMARY_PATH
     run_git("add", str(observatory.SUMMARY_PATH), cwd=world.repo)
     run_git("commit", "-qm", "chore: generated summary", cwd=world.repo)
@@ -1145,8 +1158,115 @@ def test_a_committed_hand_edit_can_be_overwritten_by_implementer_repair(
 
     assert code == 0
     assert captured.err == ""
-    assert "observatory_summary=regenerated state=working_tree" in captured.out
-    assert path.read_text(encoding="utf-8") == observatory.render_summary(expected)
+    assert "observatory_summary=stale state=committed reason=summary_mismatch" in captured.out
+    assert "action=orchestrator_regenerate_and_commit_at_landing" in captured.out
+    assert "Hand edited" in path.read_text(encoding="utf-8")
+
+
+def test_a_dispatched_implementer_reports_stale_summary_without_writing(
+    world: World,
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A stale projection stays out of the branch while its cause remains visible."""
+    rebuild_world(world)
+    path = world.repo / observatory.SUMMARY_PATH
+    run_git("add", str(observatory.SUMMARY_PATH), cwd=world.repo)
+    run_git("commit", "-qm", "chore: generated summary", cwd=world.repo)
+    run_git("update-ref", "refs/remotes/origin/main", "HEAD", cwd=world.repo)
+    stage_record(
+        world.dispatch_root,
+        "d-20260805-120000-boundary4",
+        issue=BOUNDARY_LANDED_ISSUE,
+        base_sha=world.base_sha,
+    )
+    (world.repo / "boundary.txt").write_text("landed", encoding="utf-8")
+    run_git("add", "boundary.txt", cwd=world.repo)
+    run_git(
+        "commit",
+        "-qm",
+        f"feat: boundary landing\n\nrefs #{BOUNDARY_LANDED_ISSUE}",
+        cwd=world.repo,
+        at="2026-08-06T12:00:00+00:00",
+    )
+    run_git("update-ref", "refs/remotes/origin/main", "HEAD", cwd=world.repo)
+    before = path.read_bytes()
+    monkeypatch.setenv("CTI_DISPATCH_ID", "d-test-observatory-stale")
+    monkeypatch.setenv("CTI_DISPATCH_SEAT", "implementer")
+
+    code = observatory.main(summary_check_args(world))
+    captured = capsys.readouterr()
+
+    assert code == 0
+    assert captured.err == ""
+    assert (
+        "observatory_summary=stale state=committed reason=summary_mismatch source=in_memory_rebuild"
+    ) in captured.out
+    assert f"path={path}" in captured.out
+    assert "action=orchestrator_regenerate_and_commit_at_landing" in captured.out
+    assert path.read_bytes() == before
+
+
+def test_parallel_branches_keep_projection_out_of_a_clean_rebase(
+    world: World,
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Two substantive branches see the same stale row, but neither carries it to rebase."""
+    rebuild_world(world)
+    repo = world.repo
+    path = repo / observatory.SUMMARY_PATH
+    run_git("add", str(observatory.SUMMARY_PATH), cwd=repo)
+    run_git("commit", "-qm", "chore: generated summary", cwd=repo)
+    run_git("update-ref", "refs/remotes/origin/main", "HEAD", cwd=repo)
+    run_git("branch", "first", cwd=repo)
+    run_git("branch", "second", cwd=repo)
+    stage_record(
+        world.dispatch_root,
+        "d-20260805-120000-boundary5",
+        issue=ISSUE,
+        base_sha=world.base_sha,
+    )
+    monkeypatch.setenv("CTI_DISPATCH_ID", "d-test-observatory-parallel")
+    monkeypatch.setenv("CTI_DISPATCH_SEAT", "implementer")
+    before = path.read_bytes()
+
+    run_git("switch", "first", cwd=repo)
+    (repo / "first.txt").write_text("first", encoding="utf-8")
+    run_git("add", "first.txt", cwd=repo)
+    run_git("commit", "-qm", "feat: first substantive branch", cwd=repo)
+    assert observatory.main(summary_check_args(world)) == 0
+    first_output = capsys.readouterr().out
+    assert "observatory_summary=stale state=committed" in first_output
+    assert path.read_bytes() == before
+
+    # First branch lands. Its generated projection is still an orchestrator-owned follow-up.
+    run_git("update-ref", "refs/remotes/origin/main", "refs/heads/first", cwd=repo)
+    run_git("switch", "second", cwd=repo)
+    (repo / "second.txt").write_text("second", encoding="utf-8")
+    run_git("add", "second.txt", cwd=repo)
+    run_git("commit", "-qm", "feat: second substantive branch", cwd=repo)
+    assert observatory.main(summary_check_args(world)) == 0
+    second_output = capsys.readouterr().out
+    assert "observatory_summary=stale state=committed" in second_output
+    assert path.read_bytes() == before
+
+    run_git("rebase", "refs/remotes/origin/main", cwd=repo)
+    status = git_output("status", "--porcelain", cwd=repo)
+    projection_diff = git_output(
+        "diff",
+        "--name-only",
+        "refs/remotes/origin/main...HEAD",
+        "--",
+        observatory.SUMMARY_PATH.as_posix(),
+        cwd=repo,
+    )
+    substantive_diff = git_output(
+        "diff", "--name-only", "refs/remotes/origin/main...HEAD", "--", "second.txt", cwd=repo
+    )
+    assert status == ""
+    assert projection_diff == ""
+    assert substantive_diff.strip() == "second.txt"
 
 
 def test_check_reports_pass_for_a_readable_matching_summary(
@@ -1238,7 +1358,7 @@ def test_a_new_landing_makes_the_summary_check_red_until_regeneration(world: Wor
 
 
 @pytest.mark.parametrize("seat", [None, "review", "implementer"])
-def test_a_clean_stale_summary_is_repaired_only_by_an_implementer(
+def test_a_clean_stale_summary_is_reported_without_repair(
     world: World,
     seat: str | None,
     capsys: pytest.CaptureFixture[str],
@@ -1274,18 +1394,13 @@ def test_a_clean_stale_summary_is_repaired_only_by_an_implementer(
     code = observatory.main(summary_check_args(world))
     captured = capsys.readouterr()
 
-    if seat == "implementer":
-        assert code == 0
-        assert captured.err == ""
-        assert "observatory_summary=regenerated state=working_tree" in captured.out
-        assert f"path={world.repo / observatory.SUMMARY_PATH}" in captured.out
-        assert f"|{BOUNDARY_LANDED_ISSUE}|" in (world.repo / observatory.SUMMARY_PATH).read_text(
-            encoding="utf-8"
-        )
-    else:
-        assert code == 1
-        assert captured.out == ""
-        assert "refused=summary_mismatch" in captured.err
+    assert code == 0
+    assert captured.err == ""
+    assert "observatory_summary=stale state=committed reason=summary_mismatch" in captured.out
+    assert "action=orchestrator_regenerate_and_commit_at_landing" in captured.out
+    assert f"|{BOUNDARY_LANDED_ISSUE}|" not in (world.repo / observatory.SUMMARY_PATH).read_text(
+        encoding="utf-8"
+    )
 
 
 def test_the_landed_summary_cookbook_query_runs_against_the_shipped_store(world: World) -> None:

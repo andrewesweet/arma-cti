@@ -270,6 +270,13 @@ do.
 Landing is most of the seat's real work, and the lane decides how much of it the seat
 does by hand.
 
+- **The landed-issue projection is orchestrator-owned.** After a successful `just land`,
+  run `just observatory` in the main checkout and commit its generated
+  `docs/observatory/landed-issues.md` update as the orchestrator's own follow-up. A
+  feature branch's `check-observatory` may report a clean stale projection, but never
+  writes that derived file into the branch; this keeps parallel substantive diffs
+  review-bound across a clean rebase.
+
 - **Codex gates its own work; its commit is the harness's act, and the landing is still
   the seat's.** #265's ceiling — commits but cannot gate, hand-finished in twelve closes —
   is lifted by #405, and the correction is worth knowing rather than just the outcome: the

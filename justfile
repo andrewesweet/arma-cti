@@ -168,10 +168,11 @@ check-attributes:
 # The committed landed-issue projection is generated from the same fresh rebuild
 # as the external observatory store. Dispatches on issues not yet landed are outside
 # the projection, so they do not churn this check; later dispatches naming a landed
-# issue can change its row. The check rebuilds into memory; a dispatched implementer
-# repairs a clean stale projection in its worktree. An uncommitted hand edit remains red;
-# a committed hand edit is indistinguishable from staleness and may be overwritten by that
-# repair. A source refusal or any other seat remains red.
+# issue can change its row. The check rebuilds into memory; a clean stale projection is
+# reported as `observatory_summary=stale` and never written into a feature branch. The
+# orchestrator regenerates and commits it at landing. An uncommitted hand edit remains
+# red; a committed hand edit is indistinguishable from staleness. A source refusal remains
+# red.
 check-observatory:
     uv run python tools/observatory.py check
 

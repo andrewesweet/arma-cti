@@ -47,12 +47,11 @@ every Markdown cell. Only issues that have landed get rows, so dispatches on iss
 not yet landed do not churn the committed file. Later dispatches naming a landed issue
 are folded into that row on regeneration.
 
-This file is generated output. `check-observatory` rebuilds in memory; a dispatched
-implementer repairs a clean stale projection in its worktree. An uncommitted hand edit
-stays red; a committed hand edit is indistinguishable from staleness and may be
-overwritten by that repair. A source refusal or another seat stays red. The external
-store is a cache and need not be writable for the projection repair. Never hand-edit
-the file.
+This file is generated output. `check-observatory` rebuilds in memory; a clean stale
+projection is reported as `observatory_summary=stale` and never written into a feature
+branch. The orchestrator regenerates and commits it at landing. An uncommitted hand edit
+stays red; a committed hand edit is indistinguishable from staleness. A source refusal
+stays red. Never hand-edit the file.
 
 ```sql
 SELECT issue, landed_sha, dispatches, review_rounds,
