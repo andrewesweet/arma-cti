@@ -216,6 +216,32 @@ def test_refused_result_is_not_completed(tmp_path: Path) -> None:
 
 
 @pytest.mark.parametrize(
+    "result",
+    [
+        {
+            "dispatch_id": "d-1",
+            "stopped_by": "just dispatch --stop",
+            "ended_at": "2026-08-15T09:05:00+00:00",
+        },
+        {
+            "dispatch_id": "d-1",
+            "stopped_by": "just dispatch --stop",
+            "stopped_at": "2026-08-15T09:05:00+00:00",
+            "killed": [],
+            "terminal_state": {"state": "stopped"},
+        },
+    ],
+)
+def test_a_stop_swept_review_dispatch_is_not_an_unreadable_binding_candidate(
+    tmp_path: Path, result: dict[str, object]
+) -> None:
+    root = tmp_path / "dispatches"
+    dispatch_dir(root, "d-1", result=result)
+
+    assert refused_binding(root) == "no_review_dispatch"
+
+
+@pytest.mark.parametrize(
     "outcome", ["quota_exhausted", "provider_error", "provider_refused", "unclassified"]
 )
 def test_a_run_that_ended_in_a_typed_non_result_is_not_completed(

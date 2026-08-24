@@ -2285,15 +2285,13 @@ def test_minute_boundaries_sample_the_grid_never_round_a_duration(
 
 
 def test_a_closeout_the_run_did_not_write_fabricates_no_span(world: World, tmp_path: Path) -> None:
-    # #485 round 2's live finding, staged in the legacy shape the records actually
-    # carry: the stop sweep writes a result.json of its own wherever the runner never
-    # did, and stamps the sweep's clock into `ended_at`. Round 1 paired that end with
-    # the plan's `planned_at` fallback and booked a week of occupancy from one record —
-    # eleven of them held 58% of the live store's `used`. The explicit terminal marker
-    # is also present here, while the legacy end remains to keep #485's reader guard
-    # load-bearing. The rejection is by record shape (`stopped_by`, or an end beside no
-    # start of the run's own), never by a list of dispatch ids: a relocated declaration
-    # is what #501/#503/#504 closed.
+    # #551 round 2's fixture correction: the current stop writer writes this exact
+    # closeout shape — the explicit terminal marker, no run end. Round 1 of #485 paired
+    # the legacy sweep's clock with the plan's `planned_at` fallback and booked a week
+    # of occupancy from one record — eleven of them held 58% of the live store's `used`.
+    # The separate legacy record below keeps #485's reader guard load-bearing. The
+    # rejection is by record shape, never by a list of dispatch ids: a relocated
+    # declaration is what #501/#503/#504 closed.
     root = tmp_path / "swept-dispatches"
     export = tmp_path / "swept-export"
     review = tmp_path / "swept-review"
@@ -2328,6 +2326,33 @@ def test_a_closeout_the_run_did_not_write_fabricates_no_span(world: World, tmp_p
                 "stopped_at": "2026-08-12T09:00:00+00:00",
                 "killed": [],
                 "terminal_state": {"state": "stopped"},
+            }
+        ),
+        encoding="utf-8",
+    )
+    legacy_swept = "d-20260805-120000-legacy1"
+    (root / legacy_swept).mkdir(parents=True)
+    (root / legacy_swept / "dispatch.json").write_text(
+        json.dumps(
+            {
+                "dispatch_id": legacy_swept,
+                "lane": "claude-native",
+                "profile": "a-profile",
+                "seat": "implementer",
+                "issue": ISSUE,
+                "base_sha": "0" * 40,
+                "planned_at": "2026-08-05T12:00:00+00:00",
+            }
+        ),
+        encoding="utf-8",
+    )
+    (root / legacy_swept / "result.json").write_text(
+        json.dumps(
+            {
+                "dispatch_id": legacy_swept,
+                "stopped_by": "just dispatch --stop",
+                "stopped_at": "2026-08-12T09:00:00+00:00",
+                "killed": [],
                 "ended_at": "2026-08-12T09:00:00+00:00",
             }
         ),
@@ -2369,7 +2394,10 @@ def test_a_closeout_the_run_did_not_write_fabricates_no_span(world: World, tmp_p
     }
     assert by_id[swept]["ended_at"] is None
     assert by_id[swept]["ended_at_reason"] == observatory.NO_END_STOP_SWEEP_REASON
+    assert "sweep's clock" not in by_id[swept]["ended_at_reason"]
     assert by_id[swept]["terminal_state"] == "stopped"
+    assert by_id[legacy_swept]["ended_at"] is None
+    assert by_id[legacy_swept]["ended_at_reason"] == observatory.NO_END_STOP_SWEEP_REASON
     assert by_id[row_bound]["ended_at"] is None
     assert by_id[row_bound]["ended_at_reason"] == observatory.NO_END_NO_OWN_START_REASON
     # Over an hour that the fabricated span would have covered end to end, the
@@ -2381,7 +2409,7 @@ def test_a_closeout_the_run_did_not_write_fabricates_no_span(world: World, tmp_p
         ),
     )
     assert rows == (
-        ("2026-08-05T12:00:00+00:00", "2026-08-05T13:00:00+00:00", 1, 60, 0, 60, 60, 0.0, 60, 2),
+        ("2026-08-05T12:00:00+00:00", "2026-08-05T13:00:00+00:00", 1, 60, 0, 60, 60, 0.0, 60, 3),
     )
 
 

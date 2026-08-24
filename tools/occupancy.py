@@ -10,7 +10,9 @@ It reads `~/.arma-cti/dispatches/*/dispatch.json` and `result.json` and never
 writes to them, on the same view-not-writer reasoning as the ledger. A dispatch
 with no `result.json` is still running and is counted as occupied to the end of
 the window; that is the honest reading of the record, and it is stated in the
-output as `running=` rather than left to be inferred.
+output as `running=` rather than left to be inferred. A closeout carrying the
+stop sweep's `terminal_state`, or one with no run-owned `started_at`, attests no
+span and contributes no occupancy.
 
 The output is agent-minutes, not a percentage, because the loss is what the
 intervention has to move: `lost=` is capacity the seat was entitled to under the
@@ -43,19 +45,25 @@ def parse_moment(text: str) -> datetime:
 
 
 def read_spans(dispatch_dir: Path) -> tuple[tuple[datetime, datetime | None, str], ...]:
-    """Read every dispatch's start, end and id; a missing end means still running."""
+    """Read spans with run-owned bounds; a missing result means still running."""
     spans: list[tuple[datetime, datetime | None, str]] = []
     for record_path in sorted(dispatch_dir.expanduser().glob("*/dispatch.json")):
         record: dict[str, Any] = json.loads(record_path.read_text(encoding="utf-8"))
-        started = record.get("started_at") or record.get("planned_at")
-        if not started:
-            continue
         result_path = record_path.parent / "result.json"
         ended: datetime | None = None
         if result_path.is_file():
             result: dict[str, Any] = json.loads(result_path.read_text(encoding="utf-8"))
+            if "terminal_state" in result or "stopped_by" in result:
+                continue
+            started = result.get("started_at")
+            if not started:
+                continue
             if result.get("ended_at"):
                 ended = parse_moment(str(result["ended_at"]))
+        else:
+            started = record.get("started_at") or record.get("planned_at")
+            if not started:
+                continue
         spans.append((parse_moment(str(started)), ended, str(record.get("dispatch_id", ""))))
     return tuple(spans)
 

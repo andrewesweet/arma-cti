@@ -285,8 +285,8 @@ NO_END_ROW_REASON: Final = "the pruned source's ledger row carries no end time"
 # than at work — the never-launched refusal and the child-state-unknown failure both
 # carry exactly that shape.
 NO_END_STOP_SWEEP_REASON: Final = (
-    "the result was written by the stop sweep (`stopped_by`), so its `ended_at` is the "
-    "sweep's clock and not the run's end — when the work stopped is not derivable from "
+    "the result was written by the stop sweep (`terminal_state` or legacy `stopped_by`), "
+    "so it does not attest the run's end — when the work stopped is not derivable from "
     "what survives"
 )
 NO_END_NO_OWN_START_REASON: Final = (

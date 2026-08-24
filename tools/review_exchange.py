@@ -748,7 +748,40 @@ class _Result(NamedTuple):
     state: str
 
 
-def _binding_result(entry: Path) -> _Result | str:  # noqa: PLR0911 — the end-state ladder, one return per state
+def _is_stop_closeout(document: dict[str, object]) -> bool:
+    """Recognise both the legacy and current stop-sweep result shapes."""
+    terminal_state = document.get("terminal_state")
+    return "stopped_by" in document or (
+        isinstance(terminal_state, dict) and terminal_state.get("state") == "stopped"
+    )
+
+
+def _binding_result_document(  # noqa: PLR0911 — one return per named result state in this ladder
+    document: dict[str, object],
+) -> _Result | str:
+    """Classify one parsed result document for binding purposes."""
+    if _is_stop_closeout(document):
+        return _Result(completed=False, state="result=not_a_result:stopped")
+    refused = "refusal" in document
+    ended = isinstance(document.get("ended_at"), str) and bool(document["ended_at"])
+    ran = "returncode" in document
+    outcome = document.get("outcome")
+    if refused and ran:
+        return "unreadable"
+    if refused:
+        return _Result(completed=False, state="result=refusal")
+    if not ran or not isinstance(outcome, str) or not outcome:
+        # A result beside a returncode carries a typed outcome, always — this is
+        # not a shape `write_result` produces, so it is not a fact this scan reads.
+        return "unreadable"
+    if outcome != OUTCOME_OK:
+        return _Result(completed=False, state=f"result=not_a_result:{outcome}")
+    if not ended:
+        return "unreadable"
+    return _Result(completed=True, state="result=completed")
+
+
+def _binding_result(entry: Path) -> _Result | str:
     """Read one candidate's `result.json`, or the reason it could not be read.
 
     Completed is read from the **outcome**, never from the timestamps a refusal
@@ -761,36 +794,16 @@ def _binding_result(entry: Path) -> _Result | str:  # noqa: PLR0911 — the end-
     never reached a lane; no result at all is a dispatch still live or stopped
     without one; both are named facts, not gaps.
     """
-
-    def result(state: str, *, completed: bool = False) -> _Result:
-        return _Result(completed, state)
-
     document = entry / "result.json"
     if not document.is_file():
-        return result("result=absent")
+        return _Result(completed=False, state="result=absent")
     try:
         read = json.loads(document.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError, ValueError):
         return "unreadable"
     if not isinstance(read, dict):
         return "unreadable"
-    refused = "refusal" in read
-    ended = isinstance(read.get("ended_at"), str) and bool(read["ended_at"])
-    ran = "returncode" in read
-    outcome = read.get("outcome")
-    if refused and ran:
-        return "unreadable"
-    if refused:
-        return result("result=refusal")
-    if not ran or not isinstance(outcome, str) or not outcome:
-        # A result beside a returncode carries a typed outcome, always — this is
-        # not a shape `write_result` produces, so it is not a fact this scan reads.
-        return "unreadable"
-    if outcome != OUTCOME_OK:
-        return result(f"result=not_a_result:{outcome}")
-    if not ended:
-        return "unreadable"
-    return result(completed=True, state="result=completed")
+    return _binding_result_document(read)
 
 
 def _completed_candidates(

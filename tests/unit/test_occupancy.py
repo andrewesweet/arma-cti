@@ -22,16 +22,16 @@ def write_dispatch(
     started: str,
     ended: str | None = None,
 ) -> None:
-    """Write the two record files this program reads, and nothing else."""
+    """Write the two record files this program reads, using their live shape."""
     record = root / dispatch_id
     record.mkdir(parents=True)
     (record / "dispatch.json").write_text(
-        json.dumps({"dispatch_id": dispatch_id, "started_at": started}),
+        json.dumps({"dispatch_id": dispatch_id, "planned_at": started}),
         encoding="utf-8",
     )
     if ended is not None:
         (record / "result.json").write_text(
-            json.dumps({"dispatch_id": dispatch_id, "ended_at": ended}),
+            json.dumps({"dispatch_id": dispatch_id, "started_at": started, "ended_at": ended}),
             encoding="utf-8",
         )
 
@@ -148,19 +148,60 @@ def test_a_window_with_no_dispatch_reports_no_running_id_rather_than_an_empty_fi
     assert lines["lost"] == "9"
 
 
-def test_a_record_without_a_result_end_time_is_read_as_still_running(
+def test_a_result_without_its_own_start_does_not_attest_an_open_span(
     tmp_path: Path,
 ) -> None:
     write_dispatch(tmp_path, "d-1", "2026-08-09T07:00:00+00:00")
     (tmp_path / "d-1" / "result.json").write_text(
-        json.dumps({"dispatch_id": "d-1", "outcome": "ok"}), encoding="utf-8"
+        json.dumps(
+            {
+                "dispatch_id": "d-1",
+                "stopped_by": "just dispatch --stop",
+                "ended_at": "2026-08-09T07:04:00+00:00",
+            }
+        ),
+        encoding="utf-8",
     )
 
-    started, ended, dispatch_id = occupancy.read_spans(tmp_path)[0]
+    assert occupancy.read_spans(tmp_path) == ()
 
-    assert ended is None
-    assert dispatch_id == "d-1"
-    assert started == datetime(2026, 8, 9, 7, 0, tzinfo=UTC)
+
+def test_a_stop_swept_closeout_is_not_counted_as_live(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    write_dispatch(tmp_path, "d-swept", "2026-08-09T07:00:00+00:00")
+    (tmp_path / "d-swept" / "result.json").write_text(
+        json.dumps(
+            {
+                "dispatch_id": "d-swept",
+                "stopped_by": "just dispatch --stop",
+                "stopped_at": "2026-08-09T07:04:00+00:00",
+                "killed": [],
+                "terminal_state": {"state": "stopped"},
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    code = occupancy.main(
+        [
+            "--since",
+            "2026-08-09T07:00:00Z",
+            "--until",
+            "2026-08-09T07:04:00Z",
+            "--limit",
+            "2",
+            "--dispatch-dir",
+            str(tmp_path),
+        ]
+    )
+
+    assert code == 0
+    lines = report(capsys.readouterr().out)
+    assert lines["running"] == "none"
+    assert lines["series"] == "0000"
+    assert lines["used"] == "0"
 
 
 def test_a_planned_but_unstarted_dispatch_falls_back_to_its_planned_time(
