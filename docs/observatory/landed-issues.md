@@ -163,4 +163,6 @@
 |577|efa3d18f07168891c6280443013d3ca74466a247|journal|2|0|777|claude-native,codex|C1.04452|U|N|
 |578|d88d384c04e1da8f08a9b73fbcedc53ef1b56454|journal|4|0|21272|claude-native,codex|C0.704393|U|N|
 |579|c94174eb0c3280cff5ffc8936250c674689448fb|journal|4|0|1431|claude-native,codex|C0.861399|U|N|
+|580|f8fdaca2b51d67976707dcf48d04cc9a227ed9a1|journal|2|0|979|claude-native,codex|C0.851402|U|N|
 |581|f959f579fa1db0baa88e62bb07781a049c5af714|journal|2|0|574|claude-native,codex|C0.505677|U|N|
+|584|cec1c6db7bcd116a031018dbd054865f63cfa29e|journal|2|0|2364|claude-native,codex|C1.12556|U|N|
