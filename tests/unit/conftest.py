@@ -337,3 +337,33 @@ def pytest_collection_finish(session: Any) -> None:  # noqa: ANN401 — pytest's
         return
     with contextlib.suppress(OSError):
         Path(named).write_text(f"{len(session.items)}\n", encoding="utf-8")
+
+
+def pytest_terminal_summary(terminalreporter: Any, config: Any) -> None:  # noqa: ANN401 — pytest's hook objects, not ours to narrow
+    """Name this run's failures for the gate-duration recorder (#576).
+
+    A red unit leg used to leave only a status integer on the gate-clock row:
+    pytest's own `lastfailed` cache is erased by the next green run, which is
+    exactly when someone looks. When the recording runner exported
+    `CTI_GATE_CLOCK_FAILED_FILE`, the failed and errored node ids are written
+    there, one per line — and nowhere when it is unset, so a bare `uv run
+    pytest` leaves nothing behind. Under `-n auto` the controller's terminal
+    reporter aggregates every worker's reports, so the write comes from the
+    controller alone. Written only when there are failures, so a green run
+    adds nothing to any record. A failed write is silent for the collected
+    count's reason: this is provenance for a later investigation, and it must
+    never redden or alter the run it describes.
+    """
+    named = os.environ.get("CTI_GATE_CLOCK_FAILED_FILE", "")
+    if not named or getattr(config, "workerinput", None) is not None:
+        return
+    seen: dict[str, None] = {}
+    for kind in ("failed", "error"):
+        for report in terminalreporter.stats.get(kind, []):
+            nodeid = getattr(report, "nodeid", "")
+            if nodeid:
+                seen.setdefault(nodeid)
+    if not seen:
+        return
+    with contextlib.suppress(OSError):
+        Path(named).write_text("".join(f"{nodeid}\n" for nodeid in seen), encoding="utf-8")
