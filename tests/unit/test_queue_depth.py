@@ -555,9 +555,63 @@ def test_one_unreadable_loop_neither_suppresses_the_readable_prompts_nor_hides_i
         ),
         (
             "review_terminus=unreadable path=302/loop.json "
-            'action="repair review state before relying on closeout prompt"'
+            'action="repair this loop before relying on its closeout prompt"'
         ),
     )
+    # The per-file action distrusts the loop the path names, not the whole
+    # read — the root-level line keeps that wider wording (#567).
+    assert (
+        queue_depth.render_terminus_prompts(None)[0].split("action=")[1]
+        != lines[-1].split("action=")[1]
+    )
+
+
+def test_an_exception_escaping_the_walk_fails_open_not_fatal(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # `sample()` computes this reading above its per-queue catch, so the reader
+    # holds the fail-open contract `sample()`'s docstring advertises: what
+    # escapes the walk's own `(OSError, ValueError)` ladder is one unreadable
+    # queue and an absent terminus, never the loss of all seven samples (#567).
+    review_root, dispatch_dir, approvals = empty_sources(tmp_path)
+    open_loop(review_root, 301, findings=1)
+
+    def exploding(*_args: object, **_kwargs: object) -> object:
+        message = "past the walk's own ladders"
+        raise RuntimeError(message)
+
+    monkeypatch.setattr(queue_depth.review_loop, "terminus_prompt", exploding)
+    lines: list[str] = []
+    samples = sample_with(
+        review_root=review_root,
+        dispatch_dir=dispatch_dir,
+        approvals=approvals,
+        terminus_lines=lines,
+    )
+
+    assert [sample.queue for sample in samples] == list(attribute_registry.QUEUES)
+    assert samples_by_queue(samples)["human_ruling"].state == "unreadable"
+    assert tuple(lines) == queue_depth.render_terminus_prompts(None)
+
+
+def test_prompts_render_in_numeric_issue_order_across_the_width_boundary(
+    tmp_path: Path,
+) -> None:
+    # "1000" sorts before "999" lexicographically, so the first issue past
+    # three digits is where directory order stops being issue order (#567).
+    review_root, dispatch_dir, approvals = empty_sources(tmp_path)
+    open_loop(review_root, 999, findings=0)
+    open_loop(review_root, 1000, findings=0)
+    lines: list[str] = []
+
+    sample_with(
+        review_root=review_root,
+        dispatch_dir=dispatch_dir,
+        approvals=approvals,
+        terminus_lines=lines,
+    )
+
+    assert [line.split(" ")[1] for line in lines] == ["issue=999", "issue=1000"]
 
 
 def test_a_missing_review_root_surfaces_an_unreadable_terminus_prompt(tmp_path: Path) -> None:

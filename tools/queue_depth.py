@@ -333,11 +333,30 @@ def _human_ruling_read(review_root: Path, at: float) -> ReviewQueueRead:
     issue directory is the whole cost, a loop read only where its stat says it
     is still open. A `loop.json` that will not read is named and the walk
     carries on, so one damaged loop suppresses no other loop's prompt.
+
+    The read is fail-open end to end, as `sample()`'s docstring promises:
+    `sample()` computes it above its own per-queue catch, so whatever escapes
+    the walk's ladders is caught here — the sample renders unreadable and the
+    terminus absent, and the other six queues still sample (#567).
     """
     try:
-        entries = sorted(review_root.iterdir())
-    except FileNotFoundError:
+        return _human_ruling_walk(review_root, at)
+    except Exception:  # noqa: BLE001 — sample()'s every-queue promise, held here because the reading is computed outside its per-queue catch
         return ReviewQueueRead(Sample("human_ruling", "unreadable", None, "unrecorded", None), None)
+
+
+def _human_ruling_walk(review_root: Path, at: float) -> ReviewQueueRead:
+    """Walk the review root's numeric issue directories; damage is named, never fatal."""
+    try:
+        # Numeric issue order: directory names are issue numbers, and
+        # lexicographic order puts "1000" before "999" the first time an
+        # issue crosses a width boundary (#567). Non-decimal entries are
+        # skipped by `_review_loop_entry` either way; dropping them here
+        # only keeps the key single-typed.
+        entries = sorted(
+            (entry for entry in review_root.iterdir() if entry.name.isdecimal()),
+            key=lambda entry: int(entry.name),
+        )
     except OSError:
         return ReviewQueueRead(Sample("human_ruling", "unreadable", None, "unrecorded", None), None)
     rounds = _round_times(review_root)
@@ -400,7 +419,10 @@ def render_terminus_prompts(
 
     A damaged `loop.json` is named in its own `unreadable` line beside the
     prompts for the loops that were read — a count would say something is wrong
-    without saying which file to open (#556).
+    without saying which file to open (#556). The two `unreadable` actions
+    distrust different amounts, and the wording is the only thing that says
+    which: the root-level line distrusts the whole read, the per-file line
+    distrusts one loop and leaves the prompts beside it standing (#567).
     """
     if prompts is None:
         return (
@@ -427,7 +449,7 @@ def render_terminus_prompts(
         )
     lines.extend(
         f"review_terminus=unreadable path={name} "
-        'action="repair review state before relying on closeout prompt"'
+        'action="repair this loop before relying on its closeout prompt"'
         for name in unreadable
     )
     return tuple(lines)
