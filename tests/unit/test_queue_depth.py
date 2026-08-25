@@ -253,13 +253,13 @@ def test_a_package_reservation_holds_eligible_work_the_room_arithmetic_missed(
 
 
 def test_a_frozen_candidate_waits_on_no_slot(tmp_path: Path) -> None:
-    # Frozen policy, one candidate carved out and one not: the full list holds
-    # the carved-out candidate, and the frozen one must not join it — the same
+    # Frozen policy, two candidates carved out and one not: the full list holds
+    # the carved-out candidates, and the frozen one must not join them — the same
     # drop `select` states, staged through the sampler.
     review_root, dispatch_dir, approvals = empty_sources(tmp_path)
-    policy = parsed(limit=2, packages=[package_document(issues=[302])])
+    policy = parsed(limit=2, packages=[package_document(issues=[302, 303])])
     in_flight = in_flight_of(299, 300)
-    candidates = candidates_of(301, 302)
+    candidates = candidates_of(301, 302, 303)
     samples = sample_with(
         candidates=candidates,
         policy=policy,
@@ -269,7 +269,7 @@ def test_a_frozen_candidate_waits_on_no_slot(tmp_path: Path) -> None:
         approvals=approvals,
     )
     slot = samples_by_queue(samples)["dispatch_slot"]
-    assert (slot.state, slot.count, slot.oldest) == ("counted", 1, "unrecorded")
+    assert (slot.state, slot.count, slot.oldest) == ("counted", 2, "unrecorded")
     selection = queue_policy.select(policy, candidates, in_flight, 1)
     assert "considered.301=frozen-and-not-carved-out" in selection.considered
     assert "considered.302=eligible" in selection.considered
@@ -284,6 +284,7 @@ def test_a_blocked_candidate_waits_on_no_slot(tmp_path: Path) -> None:
     candidates = (
         queue_policy.Candidate(301, "issue 301", "Blocked-by: #9"),
         queue_policy.Candidate(302, "issue 302"),
+        queue_policy.Candidate(303, "issue 303"),
     )
     samples = sample_with(
         candidates=candidates,
@@ -294,7 +295,7 @@ def test_a_blocked_candidate_waits_on_no_slot(tmp_path: Path) -> None:
         approvals=approvals,
     )
     slot = samples_by_queue(samples)["dispatch_slot"]
-    assert (slot.state, slot.count, slot.oldest) == ("counted", 1, "unrecorded")
+    assert (slot.state, slot.count, slot.oldest) == ("counted", 2, "unrecorded")
     selection = queue_policy.select(policy, candidates, in_flight, 1)
     assert "considered.301=blocked-by-9" in selection.considered
     assert "considered.302=eligible" in selection.considered
