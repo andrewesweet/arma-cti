@@ -2225,6 +2225,19 @@ def test_review_delivery_posts_only_the_bounded_stdout_section_with_an_explicit_
             f"duplicate start\n{REVIEW_REPORT_END}\n"
         ),
         f"{REVIEW_REPORT_END}\nP1 after reversed markers\n{REVIEW_REPORT_BEGIN}\n",
+        # #584's filed shape read off #581's log: an empty pair, then the report twice.
+        # As exact lines of the captured stream this is three pairs and refuses; the live
+        # delivery posted because the captured stream never held this shape — see
+        # `_bounded_review_report`'s docstring.
+        (
+            f"{REVIEW_REPORT_BEGIN}\n{REVIEW_REPORT_END}\n"
+            f"{REVIEW_REPORT_BEGIN}\nClean verdict: no findings.\n{REVIEW_REPORT_END}\n"
+            f"{REVIEW_REPORT_BEGIN}\nClean verdict: no findings.\n{REVIEW_REPORT_END}\n"
+        ),
+        (
+            f"{REVIEW_REPORT_BEGIN}\nfirst copy\n{REVIEW_REPORT_END}\n"
+            f"{REVIEW_REPORT_BEGIN}\nsecond copy\n{REVIEW_REPORT_END}\n"
+        ),
     ],
 )
 def test_unbounded_review_stdout_refuses_without_posting(tmp_path: Path, captured: str) -> None:
@@ -2245,6 +2258,45 @@ def test_unbounded_review_stdout_refuses_without_posting(tmp_path: Path, capture
     assert "refusal=review_delivery_failed" in lines
     assert "reason=report_unbounded" in lines
     assert not gh_call.exists()
+
+
+def test_inexact_marker_renderings_are_ordinary_text_not_duplication(tmp_path: Path) -> None:
+    """Pin #584's mechanism: only exact whole lines are markers.
+
+    A transcript's styled or indented re-rendering of the pair is ordinary text, so a
+    captured stream carrying such copies beside one exact pair still bounds exactly one
+    section and delivers it.
+    """
+    gh_call = tmp_path / "gh-call.txt"
+    gh_body = tmp_path / "gh-body.md"
+    fake_gh(tmp_path)
+    captured = (
+        f"[2026-08-25T08:18:20] codex\n"
+        f"\x1b[1m{REVIEW_REPORT_BEGIN}\x1b[0m\n"
+        f"\x1b[1m{REVIEW_REPORT_END}\x1b[0m\n"
+        f"  {REVIEW_REPORT_BEGIN}\n"
+        f"draft rendering\n"
+        f"  {REVIEW_REPORT_END}\n"
+        f"{REVIEW_REPORT_BEGIN}\n"
+        f"Clean verdict: no findings.\n"
+        f"{REVIEW_REPORT_END}\n"
+    )
+    parent = dict(os.environ)
+    parent.update(
+        {
+            "PATH": f"{tmp_path / 'bin'}:{parent['PATH']}",
+            "CTI_FAKE_GH_CALL": str(gh_call),
+            "CTI_FAKE_GH_BODY": str(gh_body),
+        }
+    )
+
+    lines, code = dispatch.deliver_review(496, captured, tmp_path, parent)
+
+    assert code == 0
+    assert lines == ("review_delivery=posted issue=496",)
+    body = gh_body.read_text(encoding="utf-8")
+    assert body == f"{REVIEW_CAPTURE_NOTICE}\n\nClean verdict: no findings.\n"
+    assert "draft rendering" not in body
 
 
 @pytest.mark.parametrize("failure_site", ["classification", "breaker"])
@@ -2379,7 +2431,10 @@ def test_review_delivery_without_github_credentials_is_a_named_refusal(tmp_path:
     assert "review_delivery=posted" not in "\n".join(lines)
 
 
-@pytest.mark.parametrize("captured", [" \n", bounded_review(" \n")])
+@pytest.mark.parametrize(
+    "captured",
+    [" \n", bounded_review(" \n"), f"{REVIEW_REPORT_BEGIN}\n{REVIEW_REPORT_END}\n"],
+)
 def test_empty_review_report_requires_a_fresh_review_not_an_impossible_relay(
     tmp_path: Path,
     captured: str,

@@ -550,7 +550,10 @@ deliberately thin and is wrong for this seat — it tells the agent to do the is
     identify it there. Do not call `gh` and do not write a body file. After you exit,
     the unsandboxed dispatcher posts only that bounded stdout section, prefaced by an
     explicit capture notice, using exactly one `gh issue comment` call with the host's
-    credentials. Missing, duplicated or reversed markers, an empty bounded section,
+    credentials. A marker counts only as an exact whole line of that captured stdout —
+    a styled, prefixed or indented rendering of one is ordinary text — and the pair
+    must appear exactly once across everything you print, not only in the final
+    response. Missing, duplicated or reversed markers, an empty bounded section,
     or a refused post ends the dispatch with `review_delivery_failed`; there is no
     automatic retry or recovery (#496).
 

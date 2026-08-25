@@ -3198,6 +3198,9 @@ REVIEW_DELIVERY_PROTOCOL: Final = (
     " identify it there. Do not call `gh` and do not write a body file. After you exit, the"
     " unsandboxed dispatcher posts only that bounded stdout section, prefaced by an explicit"
     " capture notice, using exactly one `gh issue comment` call with the host's credentials."
+    " A marker counts only as an exact whole line of that captured stdout — a styled,"
+    " prefixed or indented rendering of one is ordinary text — and the pair must appear"
+    " exactly once across everything you print, not only in the final response."
     " Missing, duplicated or reversed markers, an empty bounded section, or a refused post"
     " ends the dispatch with `review_delivery_failed`; there is no automatic retry or"
     " recovery."
@@ -3958,7 +3961,16 @@ def _review_delivery_detail(detail: str) -> str:
 
 
 def _bounded_review_report(captured_stdout: str) -> tuple[str, str, str]:
-    """Extract one exact report-marker pair, or explain why stdout is not postable."""
+    """Extract one exact report-marker pair, or explain why stdout is not postable.
+
+    Exactness is the whole rule (#584): only a line byte-identical to a marker is one, so
+    a transcript's styled, prefixed or indented re-rendering of the pair is ordinary text.
+    The triple pairs read off #581's dispatch log lived on that other surface — the log
+    interleaves the child's stderr with this dispatcher's echo of captured stdout, so one
+    emitted pair can appear there several times — while the captured stream this function
+    judged held exactly one exact pair, proven by the posted comment existing at all:
+    every other count refuses below and posts nothing.
+    """
     if not captured_stdout.strip():
         return "", "report_empty", "captured stdout is empty"
     lines = captured_stdout.splitlines()
