@@ -1086,15 +1086,15 @@ def read_failed_file(path: Path) -> list[str] | None:
     The file is minted empty by the runner and written only by a pytest run
     that failed (`tests/unit/conftest.py`), so an empty read is an affirmative
     answer: the run completed with the channel intact and named nothing. A
-    missing or unreadable file is `None` — no claim, because the channel
-    itself broke — and never an empty list, which would let a failure that
-    recorded nothing read as one that recorded a definite answer (#576
-    round 2). Either way the read stays quiet: evidence for a later
-    investigation must never redden the gate it rides on.
+    missing, unreadable or undecodable file is `None` — "could not tell",
+    because the channel itself broke — and never an empty list, which would
+    let a failure that recorded nothing read as one that recorded a definite
+    answer (#576 round 2). Either way the read stays quiet: evidence for a
+    later investigation must never redden the gate it rides on.
     """
     try:
         return [line for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
-    except OSError:
+    except (OSError, UnicodeDecodeError):
         return None
 
 
