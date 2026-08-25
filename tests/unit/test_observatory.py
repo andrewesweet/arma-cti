@@ -1823,28 +1823,35 @@ def _stage_landing(world: dict[str, Path], message: str, at: str) -> str:
     return _head_of(repo)
 
 
-def write_landing_journal(review_root: Path, issue: int, produced: str) -> Path:
+def write_landing_journal(
+    review_root: Path, issue: int, produced: str | None, *, append: bool = False
+) -> Path:
     """Lay down one landings-journal line, in the flat shape the recorder renders."""
     path = review_root / str(issue) / attribute_registry.LANDING_JOURNAL
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(
+    attributes: dict[str, Any] = {"cti.issue": issue}
+    if produced is not None:
+        attributes.update(
+            {
+                "cti.relation.produced": f"commit:{produced}",
+                "cti.relation.author": f"dispatch:{JOURNAL_DISPATCH}",
+                "cti.relation.reviewer": f"dispatch:{JOURNAL_CO_AUTHOR}",
+            }
+        )
+    line = (
         json.dumps(
             {
                 "event": attribute_registry.LANDING_EVENT,
                 "at": 1_800_000_000.0,
-                "attributes": {
-                    "cti.issue": issue,
-                    "cti.relation.produced": f"commit:{produced}",
-                    "cti.relation.author": f"dispatch:{JOURNAL_DISPATCH}",
-                    "cti.relation.reviewer": f"dispatch:{JOURNAL_CO_AUTHOR}",
-                },
+                "attributes": attributes,
                 "resource": {"service.name": "arma-cti-landing"},
             },
             sort_keys=True,
         )
-        + "\n",
-        encoding="utf-8",
+        + "\n"
     )
+    with path.open("a" if append else "w", encoding="utf-8") as handle:
+        handle.write(line)
     return path
 
 
@@ -1888,6 +1895,24 @@ def test_the_journal_s_produced_commit_owns_the_row_over_a_newer_referencing_com
     assert item["state"] == "landed"
     assert item["clock_end"] == GENUINE_AT
     assert item["lead_time_seconds"] == 39_600  # PLANNED 12:00 to the 23:00 genuine landing
+
+
+def test_a_recovered_after_unrecoverable_marker_is_not_listed_as_unrecoverable(
+    tmp_path: Path,
+) -> None:
+    world, _ = _armed_landing_world(tmp_path)
+    genuine = _stage_landing(world, "fix(land): the work\n\nno issue token anywhere", GENUINE_AT)
+    write_landing_journal(world["review_root"], JOURNAL_ISSUE, None)
+    write_landing_journal(world["review_root"], JOURNAL_ISSUE, genuine, append=True)
+
+    store = _rebuild_landing_world(world)
+
+    assert cost_row(store, JOURNAL_ISSUE, "claude-native")["landed_sha"] == genuine
+    assert any(
+        row["issue"] == JOURNAL_ISSUE and row["produced_commit"] is None
+        for row in store["landings"]
+    )
+    assert store["coverage"]["unrecoverable_landings"] == []
 
 
 def test_a_journal_that_will_not_read_is_reported_not_fallen_back_from(tmp_path: Path) -> None:

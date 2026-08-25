@@ -2708,8 +2708,15 @@ def rebuild(  # noqa: PLR0913, PLR0917 — the source paths, destination and pro
     )
     landed_issue_set = set(landed_issues)
     journalled_landed = landed_issue_set & set(journals.journalled)
+    produced_landing_issues = {
+        int(row["issue"]) for row in landing_read.landings if row["produced_commit"] is not None
+    }
     unrecoverable_landings = sorted(
-        {f"{row['issue']}/" for row in landing_read.landings if row["produced_commit"] is None}
+        {
+            f"{row['issue']}/"
+            for row in landing_read.landings
+            if row["produced_commit"] is None and int(row["issue"]) not in produced_landing_issues
+        }
     )
     by_issue = _group_by_issue(rows)
     work_items, state_counts = _work_items(by_issue, repo)

@@ -57,7 +57,7 @@ silence. Both render as an absence with a reason, never as zero.
 | `landing_rows` | Rows in the landed-issue projection after the landing journal preference and unresolved markers have been applied |
 | `landing_rows_journalled` | Of those rows, how many have a `cti.relation.produced` relation in a landing journal — the numerator of `journal_coverage` |
 | `landing_rows_journal_less` | Of those rows, how many have no landing journal at all and therefore still use the bounded Git fallback |
-| `unrecoverable_landings` | Landing-journal rows with no produced relation, named with their reason; these are reported, never sent back through the Git fallback |
+| `unrecoverable_landings` | Subject-only landing-journal rows with no produced relation, named with their reason; a row is excluded when the same issue also has a produced relation, and these are reported, never sent back through the Git fallback |
 | `work_items` | Work items — issues — in the store, one per issue |
 | `work_items_landed` | Of those, how many landed |
 | `work_items_open` | Of those, how many have a dispatch still running |
@@ -192,7 +192,9 @@ field uses its `*_reason` sibling under the store's null law.
 is the historical repair seam: it reads exact
 `Landed on \`origin/main\` as \`<sha>\`.` or `pushed=<sha> origin/main` lines from issue
 comments, validates each SHA against `origin/main` and a landing-capable dispatch's
-base and start, then appends a `cti.relation.produced` journal relation. A closed issue
+base ancestry and start-time floor, then appends a `cti.relation.produced` journal relation.
+The dispatch check has no end-time ceiling: it is the same one-sided lower bound used by
+`ledger.landed`, not proof that the SHA was produced before that dispatch stopped. A closed issue
 with no recoverable audit gets a subject-only journal event with a reason; an open issue
 gets no marker. The command never writes this Markdown projection, never reads the
 review-loop `landing.json`, and never treats the Git fallback as evidence. The normal

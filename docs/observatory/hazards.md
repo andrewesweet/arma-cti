@@ -204,5 +204,10 @@ that the earlier fallback was right. `just observatory backfill` never uses the 
 row as evidence: it accepts only an exact `just land` audit SHA, bounds it against
 `origin/main` and a landing-capable dispatch window, and records the result as
 `cti.relation.produced`. A closed issue without that evidence gets a reasoned,
-subject-only marker; an open issue gets no marker. Read `landing_source` and the
-`journal_coverage` line before treating a converged row as recovered.
+subject-only marker; an open issue gets no marker. The dispatch window is deliberately
+one-sided: its base is an ancestry floor and its start is a committer-date floor, with
+no end ceiling, inheriting `ledger.landed`'s #245 limit. Thus a verbatim audit line pasted
+without a blockquote from another issue could still pass if its SHA is on `origin/main` and
+after this issue's earliest dispatch start; this command does not claim two-sided window
+provenance. Read `landing_source` and the `journal_coverage` line before treating a
+converged row as recovered.

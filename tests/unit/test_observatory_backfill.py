@@ -57,6 +57,14 @@ def commit(repo: Path, name: str, message: str, at: str) -> str:
     return git("rev-parse", "HEAD", cwd=repo)
 
 
+def commit_without_origin(repo: Path, name: str, message: str, at: str) -> str:
+    """Add a commit without moving the staged origin/main ref."""
+    (repo / name).write_text(name, encoding="utf-8")
+    git("add", name, cwd=repo)
+    git("commit", "-qm", message, cwd=repo, at=at)
+    return git("rev-parse", "HEAD", cwd=repo)
+
+
 def dispatch_root(tmp_path: Path, base: str, issue: int) -> Path:
     """Write the minimum landing-capable dispatch record."""
     root = tmp_path / "dispatches"
@@ -186,24 +194,64 @@ def test_an_open_issue_is_not_minted_and_can_later_recover_the_true_sha(
     assert read.landings[0]["produced_commit"] == true_sha
 
 
-def test_a_recovered_audit_sha_is_bounded_by_the_dispatch_window_and_origin(
+def test_rejected_audit_candidates_are_typed_and_the_true_sha_has_a_start_floor(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     issue = 563
     repo, base = staged_repo(tmp_path)
+    early_sha = commit(repo, "early.txt", "chore: before the dispatch", "2026-08-25T10:30:00+00:00")
     true_sha = commit(
         repo, "true.txt", "fix: no issue token in the commit", "2026-08-25T12:00:00+00:00"
     )
-    false_sha = commit(
-        repo, "later.txt", "chore: follow-up\n\nRefs #563", "2026-08-25T13:00:00+00:00"
+    git("checkout", "-q", "-b", "off-origin", cwd=repo)
+    not_origin_sha = commit_without_origin(
+        repo, "off-origin.txt", "chore: divergent history", "2026-08-25T12:30:00+00:00"
     )
+    git("checkout", "-q", "main", cwd=repo)
     source_paths = paths(tmp_path, repo, base, issue)
     fake_projection(monkeypatch, issue)
+
+    windows = backfill.dispatch_windows(source_paths.dispatch_root, issue)
+    ambiguous = backfill.AuditCandidate("abcdef1", "ambiguous", None, 0)
+    actual_resolve = backfill._resolve_commit  # noqa: SLF001 — preserve real Git resolution for the other candidates
+
+    def resolve(repo_path: Path, abbreviated_sha: str) -> str | None:
+        if abbreviated_sha == ambiguous.abbreviated_sha:
+            return None
+        return actual_resolve(repo_path, abbreviated_sha)
+
+    monkeypatch.setattr(backfill, "_resolve_commit", resolve)
+    rejected = (
+        (
+            ambiguous,
+            "audit SHA abcdef1 is not an unambiguous commit",
+        ),
+        (
+            backfill.AuditCandidate(not_origin_sha[:7], "not-origin", None, 1),
+            f"audit SHA {not_origin_sha} is not on origin/main",
+        ),
+        (
+            backfill.AuditCandidate(early_sha[:7], "before-window", None, 2),
+            f"audit SHA {early_sha} is outside every dispatch base/start floor",
+        ),
+    )
+    for candidate, expected_reason in rejected:
+        resolved, reason = backfill.resolve_candidate(repo, issue, candidate, windows)
+        assert resolved is None
+        assert reason == expected_reason
+
     comment = {
         "id": 100,
         "created_at": "2026-08-25T13:01:00+00:00",
-        "body": f"pushed={true_sha[:7]} origin/main",
+        "body": "\n".join(
+            (
+                f"pushed={ambiguous.abbreviated_sha} origin/main",
+                f"pushed={not_origin_sha[:7]} origin/main",
+                f"pushed={early_sha[:7]} origin/main",
+                f"pushed={true_sha[:7]} origin/main",
+            )
+        ),
     }
 
     outcomes = backfill.reconcile(
@@ -213,6 +261,5 @@ def test_a_recovered_audit_sha_is_bounded_by_the_dispatch_window_and_origin(
 
     assert outcomes[0].status == "recovered"
     assert outcomes[0].shas == (true_sha,)
-    assert false_sha not in outcomes[0].shas
     read = observatory.read_landings(source_paths.review_root)
     assert read.landings[0]["produced_commit"] == true_sha

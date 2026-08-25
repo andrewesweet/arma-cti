@@ -1,11 +1,14 @@
 """Historical landing reconciliation for ``just observatory backfill`` (#572).
 
-The observatory's Git fallback is deliberately bounded, but a bare issue list in a
-commit message can still be either prose or a landing attribution. This command
+The observatory's Git fallback is deliberately constrained by a one-sided floor, but
+a bare issue list in a commit message can still be either prose or a landing attribution.
+This command
 reconciles the old rows once, using two independent records of a real landing:
 
 * the audit comment posted by ``just land``, which names the pushed SHA; and
-* a landing-capable dispatch record whose base and start bound that SHA.
+* a landing-capable dispatch record whose base supplies an ancestry floor and whose
+  start supplies a committer-date floor for that SHA. There is deliberately no end
+  ceiling; this inherits the one-sided landing bound used by ``ledger.landed``.
 
 Only an exact landing line from the audit is accepted. A current projection row is
 never evidence of its own landing: that is how #575's false row could otherwise
@@ -78,7 +81,7 @@ class AuditCandidate(NamedTuple):
 
 
 class ResolvedCandidate(NamedTuple):
-    """An audit candidate resolved and bounded by a dispatch window."""
+    """An audit candidate accepted under origin and dispatch ancestry/start floors."""
 
     sha: str
     at: float
@@ -86,7 +89,7 @@ class ResolvedCandidate(NamedTuple):
 
 
 class DispatchWindow(NamedTuple):
-    """The two facts the Git fallback uses to bound a dispatch's possible landing."""
+    """The dispatch's ancestry floor and committer-date floor, with no end ceiling."""
 
     dispatch_id: str
     base_sha: str
@@ -309,7 +312,7 @@ def resolve_candidate(  # noqa: PLR0911 — one return per rung of the evidence 
     candidate: AuditCandidate,
     windows: Sequence[DispatchWindow],
 ) -> tuple[ResolvedCandidate | None, str]:
-    """Accept an audit SHA only when origin and one dispatch window attest it."""
+    """Accept an audit SHA only when origin and one dispatch window's floors attest it."""
     resolved = _resolve_commit(repo, candidate.abbreviated_sha)
     if resolved is None:
         return None, f"audit SHA {candidate.abbreviated_sha} is not an unambiguous commit"
@@ -338,7 +341,7 @@ def resolve_candidate(  # noqa: PLR0911 — one return per rung of the evidence 
                 at,
                 f"comment={candidate.comment_id} dispatch={window.dispatch_id}",
             ), ""
-    return None, f"audit SHA {resolved} is outside every dispatch base/start window"
+    return None, f"audit SHA {resolved} is outside every dispatch base/start floor"
 
 
 def _journal_state(path: Path, issue: int) -> tuple[set[str], bool]:
