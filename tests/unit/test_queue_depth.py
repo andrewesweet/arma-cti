@@ -256,6 +256,8 @@ def test_a_frozen_candidate_waits_on_no_slot(tmp_path: Path) -> None:
     # Frozen policy, two candidates carved out and one not: the full list holds
     # the carved-out candidates, and the frozen one must not join them — the same
     # drop `select` states, staged through the sampler.
+    # The two clean candidates are deliberate: under an inverted `_drops` polarity,
+    # the sampled count changes from two to one; one clean candidate would not catch it.
     review_root, dispatch_dir, approvals = empty_sources(tmp_path)
     policy = parsed(limit=2, packages=[package_document(issues=[302, 303])])
     in_flight = in_flight_of(299, 300)
@@ -278,6 +280,8 @@ def test_a_frozen_candidate_waits_on_no_slot(tmp_path: Path) -> None:
 def test_a_blocked_candidate_waits_on_no_slot(tmp_path: Path) -> None:
     # The blocked boundary, same parity: a full list holds the two clean
     # candidates, while the blocked candidate never counts even with room at zero.
+    # The two clean candidates are deliberate: under an inverted `_drops` polarity,
+    # the sampled count changes from two to one; one clean candidate would not catch it.
     review_root, dispatch_dir, approvals = empty_sources(tmp_path)
     policy = parsed(state="open", limit=2)
     in_flight = in_flight_of(299, 300)
