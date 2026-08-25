@@ -2499,6 +2499,30 @@ def test_a_delta_declared_monotonic_codex_histogram_contributes_its_maximum() ->
     assert usage.output_tokens == 300
 
 
+def test_equal_consecutive_codex_scrapes_remain_cumulative() -> None:
+    usage = ledger.normalise_usage(
+        items_from(
+            [
+                codex_token_batch([("input", 100.0)], temporality=1),
+                codex_token_batch([("input", 100.0)], temporality=1),
+            ]
+        )
+    )
+    assert usage.input_tokens == 100
+
+
+def test_out_of_order_codex_exports_are_sorted_before_cumulative_detection() -> None:
+    usage = ledger.normalise_usage(
+        items_from(
+            [
+                codex_token_batch([("input", 300.0)], time_unix_nano="200"),
+                codex_token_batch([("input", 100.0)], time_unix_nano="100"),
+            ]
+        )
+    )
+    assert usage.input_tokens == 300
+
+
 def test_a_monotonic_codex_delta_series_with_chained_windows_is_summed() -> None:
     usage = ledger.normalise_usage(
         items_from(
