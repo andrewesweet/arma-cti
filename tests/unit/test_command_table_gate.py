@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import ast
 import json
 import re
 import subprocess
@@ -11,6 +12,7 @@ from typing import TYPE_CHECKING
 from conftest import REPO, load_tool
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
     from pathlib import Path
 
     import pytest
@@ -295,6 +297,70 @@ def test_the_standalone_command_names_the_direct_approval_on_refusal(
     action = next(line for line in stderr.splitlines() if line.startswith("action="))
     command = f"just gated-paths approve --issue 544 --path AGENTS.md --content-id {content_id}"
     assert command in action
+
+
+def test_an_unreadable_repository_names_the_repair_not_the_approval(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """#583 round 3: the CLI's unreadable-repository refusal printed no exit at all."""
+    root = tmp_path / "not-a-repo"
+    root.mkdir()
+
+    assert check_command_table.main(["--root", str(root)]) == 1
+
+    stderr = capsys.readouterr().err
+    assert "refusal=command_table_unreadable" in stderr
+    action = next(line for line in stderr.splitlines() if line.startswith("action="))
+    assert "Restore a readable" in action
+    # An unreadable repository is a repair problem, not an approval one: the
+    # approval command needs a content_id no unreadable tree can produce.
+    assert "gated-paths approve" not in action
+
+
+def _literal_text(node: ast.AST) -> str:
+    """Concatenate every string literal in a statement, f-string parts included."""
+    return " ".join(
+        child.value
+        for child in ast.walk(node)
+        if isinstance(child, ast.Constant) and isinstance(child.value, str)
+    )
+
+
+def _statement_blocks(tree: ast.AST) -> Iterator[list[ast.stmt]]:
+    """Yield every statement list in the module, nested blocks included."""
+    for node in ast.walk(tree):
+        for field in ("body", "orelse", "finalbody"):
+            block = getattr(node, field, None)
+            if isinstance(block, list) and block and isinstance(block[0], ast.stmt):
+                yield block
+
+
+def test_every_refusal_emission_pairs_a_remedy_in_source() -> None:
+    """Enumerate the command-table family's refusal exits mechanically.
+
+    #575 and both #583 rounds each hand-enumerated them and each missed one, so:
+    a statement emitting a ``refusal=`` line must be joined by one emitting
+    ``action=`` before control leaves its block. A refusal that must not carry a
+    remedy has no representative today; adding one means editing this test with
+    its reason.
+    """
+    for name in ("check_command_table", "gated_paths"):
+        tree = ast.parse((REPO / "tools" / f"{name}.py").read_text(encoding="utf-8"))
+        emissions: list[tuple[int, list[ast.stmt]]] = []
+        for block in _statement_blocks(tree):
+            for index, statement in enumerate(block):
+                if "refusal=" in _literal_text(statement):
+                    emissions.append((statement.lineno, block[index:]))
+        assert emissions, f"tools/{name}.py: scan found no refusal emission"
+        for lineno, group in emissions:
+            window: list[ast.stmt] = []
+            for statement in group:
+                window.append(statement)
+                if isinstance(statement, (ast.Return, ast.Raise)):
+                    break
+            assert any("action=" in _literal_text(statement) for statement in window), (
+                f"tools/{name}.py:{lineno} emits refusal= with no action= remedy"
+            )
 
 
 def test_just_check_runs_the_command_table_leg() -> None:

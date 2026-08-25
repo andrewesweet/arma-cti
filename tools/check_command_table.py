@@ -426,6 +426,15 @@ def _route_candidate(root: Path) -> tuple[bool, int | None]:
     return applicable, issue
 
 
+def _refuse(kind: str, details: tuple[str, ...], action: str) -> int:
+    """Print one typed refusal with its remedy; the CLI's only refusing exit (#583)."""
+    print(f"refusal={kind}", file=sys.stderr)  # noqa: T201 — CLI contract
+    if details:
+        print("\n".join(details), file=sys.stderr)  # noqa: T201 — CLI contract
+    print(f"action={action}", file=sys.stderr)  # noqa: T201 — CLI contract
+    return 1
+
+
 def main(argv: list[str] | None = None) -> int:
     """Run the checker directly for diagnostics."""
     parser = argparse.ArgumentParser(description=__doc__)
@@ -435,9 +444,13 @@ def main(argv: list[str] | None = None) -> int:
     try:
         applicable, issue = _route_candidate(root)
     except (GitError, OSError) as error:
-        print(f"refusal={COMMAND_TABLE_UNREADABLE}", file=sys.stderr)  # noqa: T201
-        print(f"detail={error}", file=sys.stderr)  # noqa: T201
-        return 1
+        # An unreadable repository is a repair problem, not an approval one:
+        # the approval command needs a content_id no unreadable tree can give.
+        return _refuse(
+            COMMAND_TABLE_UNREADABLE,
+            (f"detail={error}",),
+            "Restore a readable origin/main and worktree, then retry the check.",
+        )
     if not applicable:
         print("command_table=not_applicable")  # noqa: T201 — CLI contract
         return 0
@@ -450,11 +463,11 @@ def main(argv: list[str] | None = None) -> int:
 
         # The standalone documented path must name the same exit as the gate
         # route, or a human meeting it alone still dead-ends (#583).
-        action = gated_paths.direct_approval_remedy(root, issue, result.failure.action)
-        print(f"refusal={result.failure.kind}", file=sys.stderr)  # noqa: T201
-        print("\n".join(result.failure.details), file=sys.stderr)  # noqa: T201
-        print(f"action={action}", file=sys.stderr)  # noqa: T201
-        return 1
+        return _refuse(
+            result.failure.kind,
+            result.failure.details,
+            gated_paths.direct_approval_remedy(root, issue, result.failure.action),
+        )
     print("\n".join(result.lines))  # noqa: T201 — CLI contract
     return 0
 
