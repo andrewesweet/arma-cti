@@ -560,7 +560,37 @@ def test_an_untracked_acceptance_spec_is_in_the_gate_diff(tmp_path: Path) -> Non
     report = gated_paths.check(repo, tmp_path / "approvals", issue=ISSUE)
 
     assert report.exit_code == 1
+    assert "refusal=approval_missing" in report.lines
     assert "path=tests/specs/campaign.yaml" in report.lines
+
+
+def test_an_absolute_path_needs_a_root_before_it_can_match_a_gate(tmp_path: Path) -> None:
+    path = tmp_path / "AGENTS.md"
+
+    assert gated_paths.signoff_gate(str(path), root=tmp_path) is not None
+    assert gated_paths.signoff_gate(str(path)) is None
+
+
+def test_change_diff_normalisation_keeps_index_before_hunk_data() -> None:
+    diff = (
+        b"diff --git a/AGENTS.md b/AGENTS.md\n"
+        b"index 0123456..abcdef0 100644\n"
+        b"--- a/AGENTS.md\n"
+        b"+++ b/AGENTS.md\n"
+        b"@@ -1 +1 @@\n"
+        b"-before\n"
+        b"+after\n"
+    )
+
+    assert gated_paths._normalised_diff(diff) == (  # noqa: SLF001 — change identity seam
+        b"diff --git a/AGENTS.md b/AGENTS.md\n"
+        b"index\n"
+        b"--- a/AGENTS.md\n"
+        b"+++ b/AGENTS.md\n"
+        b"@@\n"
+        b"-before\n"
+        b"+after\n"
+    )
 
 
 def test_a_gated_change_with_no_issue_is_refused_instead_of_borrowing_a_record(

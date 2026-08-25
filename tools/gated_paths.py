@@ -856,10 +856,26 @@ def _command_table_route(inputs: CommandTableInputs) -> CommandTableRoute:
         return CommandTableRoute(lines=(), authorized=False, recipe_resolution=False, refusal=None)
     if result.failure is not None:
         failure = result.failure
+        action = failure.action
+        if failure.kind == check_command_table.COMMAND_TABLE_ESCAPE:
+            try:
+                content_id = content_id_of(inputs.root, "AGENTS.md")
+            except GitError:
+                pass
+            else:
+                issue = str(inputs.issue) if inputs.issue is not None else "<issue>"
+                command = (
+                    "just gated-paths approve"
+                    f" --issue {issue} --path AGENTS.md --content-id {content_id}"
+                )
+                action = (
+                    f"{action} Or, after the human reviews this exact path diff, they run"
+                    f" `{command}`. A session must not run it."
+                )
         refusal = _refused(
             failure.kind,
             (*inputs.covered, *failure.details),
-            failure.action,
+            action,
         )
         return CommandTableRoute(
             lines=(), authorized=False, recipe_resolution=False, refusal=refusal

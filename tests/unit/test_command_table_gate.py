@@ -211,12 +211,17 @@ def test_a_delegated_row_change_with_prose_outside_the_table_is_refused(
         encoding="utf-8",
     )
     delegated_record(repo)
+    content_id = gated_paths.content_id_of(repo, "AGENTS.md")
 
     report = gated_paths.check(repo, tmp_path / "approvals", issue=544)
 
     assert report.exit_code == 1
     assert "refusal=command_table_escape" in report.lines
     assert any(line.startswith("escaped=") for line in report.lines)
+    action = next(line for line in report.lines if line.startswith("action="))
+    assert "Keep the delegated AGENTS.md change to command-table data rows only." in action
+    command = f"just gated-paths approve --issue 544 --path AGENTS.md --content-id {content_id}"
+    assert command in action
 
 
 def test_a_delegated_row_change_with_an_unknown_recipe_is_refused(
