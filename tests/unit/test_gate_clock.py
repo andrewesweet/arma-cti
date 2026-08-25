@@ -62,6 +62,13 @@ tuple cannot disagree with the file in either direction without a red. It also
 collects the mutation filter's second member: `mutation`'s whole wall is the
 diff-scoped tier, so its window declines the zero-target rows exactly as
 `fast`'s does, the filter the anchor file's `mutation` note names.
+
+#566's round takes the short-circuit out of the runner: a red leg no longer
+decides what the legs behind it may say, so every independent leg runs and the
+row answers for all of them while the recipe still exits red. The three-state
+vocabulary is untouched — `not_run` survives for exactly one cause, a declared
+prerequisite that did not pass, and carries its reason on the row and on the
+line so a skip never reads as a failure or as a denial the runner never sees.
 """
 
 from __future__ import annotations
@@ -459,7 +466,7 @@ def test_a_written_row_round_trips_every_field(tmp_path: Path) -> None:
             legs=(
                 gate_clock.Leg("unit-python", "passed", 71.2),
                 gate_clock.Leg("unit-rust", "failed", 0.4),
-                gate_clock.Leg("a-third-leg", "not_run", None),
+                gate_clock.Leg("a-third-leg", "not_run", None, "unit-rust failed"),
             )
         ),
     )
@@ -964,14 +971,15 @@ def test_a_green_run_that_landed_nothing_is_recorded_leg_by_leg(
     assert "legs:" not in out  # the tail is a red run's fact
 
 
-def test_a_leg_short_circuited_by_a_red_leg_reads_not_run_not_passed(
+def test_a_red_leg_no_longer_hides_the_legs_behind_it(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    """#83's shape, pinned: a recipe that stopped early is not a recipe whose legs passed.
+    """#566's own shape, pinned: one red leg costs the reader nothing behind it.
 
-    `not_run` is a third fact with no wall of its own — it was never measured —
-    and the run's own line names every leg, so a FAIL that stops a run early
-    cannot be mistaken for a fast one.
+    The legs after a red one are independent and run — each carries its own
+    outcome and wall — so a failing `check-observatory` no longer leaves
+    `ruff`, `clippy` and `gitleaks` unread. The recipe still exits red on the
+    first red leg's own status, so no green can ride over a red.
     """
     monkeypatch.delenv("CTI_GATE_CLOCK_COLLECTED_FILE", raising=False)
     status = gate_clock.run_recipe(
@@ -988,10 +996,87 @@ def test_a_leg_short_circuited_by_a_red_leg_reads_not_run_not_passed(
     assert ok.wall_seconds is not None
     assert (bad.name, bad.outcome) == ("bad", "failed")
     assert bad.wall_seconds is not None
-    assert (never.name, never.outcome) == ("never", "not_run")
-    assert never.wall_seconds is None
+    # The leg behind the red one ran — `not_run` was the pre-#566 reading, and
+    # a row that still carried it here would mean the short-circuit survived.
+    assert (never.name, never.outcome) == ("never", "passed")
+    assert never.wall_seconds is not None
     out = capsys.readouterr().out
-    assert "legs: ok=passed, bad=failed, never=not_run" in out
+    assert "legs: ok=passed, bad=failed, never=passed" in out
+
+
+def test_a_leg_whose_declared_prerequisite_failed_skips_with_its_reason_named(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """#83's shape, still pinned: a leg that did not run is not a leg that passed.
+
+    `not_run` survives #566 for exactly one cause — a declared prerequisite
+    that did not pass — and the reason rides beside it on the row and on the
+    line, so a skip is distinguishable from a failure and from a denial a
+    runner never sees. The skipped leg costs no wall, and the recipe exits the
+    red leg's own status, not the skip's.
+    """
+    monkeypatch.delenv("CTI_GATE_CLOCK_COLLECTED_FILE", raising=False)
+    status = gate_clock.run_recipe(
+        "fast",
+        [("check", ["true"]), ("unit", ["false"]), ("mutation", ["true"])],
+        tmp_path,
+        depends={"mutation": "unit"},
+    )
+    assert status != 0
+    (read_back,) = gate_clock.load_records(tmp_path)
+    assert read_back.status == status
+    assert read_back.legs is not None
+    check, unit, mutation = read_back.legs
+    assert (check.name, check.outcome) == ("check", "passed")
+    assert (unit.name, unit.outcome) == ("unit", "failed")
+    assert (mutation.name, mutation.outcome) == ("mutation", "not_run")
+    assert mutation.wall_seconds is None
+    assert mutation.reason == "unit failed"
+    out = capsys.readouterr().out
+    assert "legs: check=passed, unit=failed, mutation=not_run (unit failed)" in out
+
+
+def test_a_chained_skip_names_the_leg_that_was_skipped_not_a_wall(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A dependent of a skipped leg skips too, its reason naming the skip it rode.
+
+    The chain stays honest end to end: `mutation` names `unit failed`, and what
+    depends on `mutation` names `mutation not_run` — never a wall, never
+    `passed`, and never a bare `not_run` a reader must guess the cause of.
+    """
+    monkeypatch.delenv("CTI_GATE_CLOCK_COLLECTED_FILE", raising=False)
+    status = gate_clock.run_recipe(
+        "unit",
+        [("unit-python", ["false"]), ("unit-rust", ["true"]), ("tail", ["true"])],
+        tmp_path,
+        depends={"unit-rust": "unit-python", "tail": "unit-rust"},
+    )
+    assert status != 0
+    (read_back,) = gate_clock.load_records(tmp_path)
+    assert read_back.legs is not None
+    assert [(leg.name, leg.outcome, leg.reason) for leg in read_back.legs] == [
+        ("unit-python", "failed", None),
+        ("unit-rust", "not_run", "unit-python failed"),
+        ("tail", "not_run", "unit-rust not_run"),
+    ]
+
+
+def test_a_declared_prerequisite_that_passes_runs_its_dependent(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The declaration gates, it never blocks: green prerequisite, dependent runs."""
+    monkeypatch.delenv("CTI_GATE_CLOCK_COLLECTED_FILE", raising=False)
+    status = gate_clock.run_recipe(
+        "fast", [("unit", ["true"]), ("mutation", ["true"])], tmp_path, {"mutation": "unit"}
+    )
+    assert status == 0
+    (read_back,) = gate_clock.load_records(tmp_path)
+    assert read_back.legs is not None
+    assert [(leg.name, leg.outcome) for leg in read_back.legs] == [
+        ("unit", "passed"),
+        ("mutation", "passed"),
+    ]
 
 
 def test_a_historical_row_without_legs_parses_and_claims_no_breakdown(
@@ -1191,11 +1276,12 @@ def test_the_forwarded_arguments_reach_only_the_last_leg() -> None:
 def test_run_through_the_cli_records_a_row_and_exits_the_legs_own_status(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    """The verb the justfile drives, once: a red leg and a not-run leg, on the row.
+    """The verb the justfile drives, once: two red legs, each on the row.
 
-    The leg is a recipe `just` cannot name, which fails fast and cheaply — the
+    The legs are recipes `just` cannot name, which fail fast and cheaply — the
     real wiring, `run --leg <name>` spawning `just <name>`, asserted as the
-    recipes invoke it rather than re-implemented here.
+    recipes invoke it rather than re-implemented here. Since #566 both run:
+    the second is no longer `not_run` behind the first's red.
     """
     monkeypatch.delenv("CTI_GATE_CLOCK_COLLECTED_FILE", raising=False)
     status = gate_clock.main(
@@ -1218,9 +1304,82 @@ def test_run_through_the_cli_records_a_row_and_exits_the_legs_own_status(
     assert read_back.legs is not None
     assert [(leg.name, leg.outcome) for leg in read_back.legs] == [
         ("no-such-recipe-here", "failed"),
-        ("also-absent", "not_run"),
+        ("also-absent", "failed"),
     ]
-    assert "no-such-recipe-here=failed" in capsys.readouterr().out
+    assert "no-such-recipe-here=failed, also-absent=failed" in capsys.readouterr().out
+
+
+def test_the_cli_skips_a_declared_dependent_and_refuses_the_typo_shapes(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Refuse the `--depends` shapes nobody could satisfy, before any leg runs.
+
+    A side that is not a leg of the run, or a prerequisite sitting behind its
+    dependent, would either never fire or fire on a leg not yet reached — both
+    are loud usage errors rather than silent behaviour, and neither records a
+    row.
+    """
+    monkeypatch.delenv("CTI_GATE_CLOCK_COLLECTED_FILE", raising=False)
+    import pytest  # noqa: PLC0415 — runtime use; the module-level import is TYPE_CHECKING-only
+
+    status = gate_clock.main(
+        [
+            "--gate-clock-dir",
+            str(tmp_path),
+            "run",
+            "--recipe",
+            "unit",
+            "--leg",
+            "no-such-recipe-here",
+            "--leg",
+            "also-absent",
+            "--depends",
+            "also-absent=no-such-recipe-here",
+        ]
+    )
+    assert status != 0
+    (read_back,) = gate_clock.load_records(tmp_path)
+    assert read_back.legs is not None
+    assert [(leg.name, leg.outcome, leg.reason) for leg in read_back.legs] == [
+        ("no-such-recipe-here", "failed", None),
+        ("also-absent", "not_run", "no-such-recipe-here failed"),
+    ]
+    with pytest.raises(SystemExit) as refused:
+        gate_clock.main(
+            [
+                "--gate-clock-dir",
+                str(tmp_path),
+                "run",
+                "--recipe",
+                "fast",
+                "--leg",
+                "mutation",
+                "--depends",
+                "mutation=check",
+            ]
+        )
+    assert "names a leg this run does not have" in str(refused.value)
+    with pytest.raises(SystemExit) as behind:
+        gate_clock.main(
+            [
+                "--gate-clock-dir",
+                str(tmp_path),
+                "run",
+                "--recipe",
+                "fast",
+                "--leg",
+                "unit",
+                "--leg",
+                "mutation",
+                "--depends",
+                "unit=mutation",
+            ]
+        )
+    assert "prerequisite sits behind its leg" in str(behind.value)
+    with pytest.raises(SystemExit) as malformed:
+        gate_clock.parse_depends(["mutation"], ["mutation"])
+    assert "expects LEG=PREREQ" in str(malformed.value)
+    assert len(gate_clock.load_records(tmp_path)) == 1  # the refused shapes recorded nothing
 
 
 def test_the_justfile_records_exactly_the_recipes_the_recorder_names() -> None:

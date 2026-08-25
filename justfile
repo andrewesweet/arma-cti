@@ -16,12 +16,13 @@ _default:
     @just --list
 
 # No-Arma static tier: commit hygiene, lints, types, formatting, secrets.
-# Recorded per leg since #483: the runner takes the legs the dependency line
-# used to name, in order, and stops at the first red one exactly as `just`
-# stopped on a failed dependency — the legs after it are recorded as not_run,
-# never as passed, and the row carries each leg's name, outcome and wall. The
-# runner exits the legs' own status; a recording failure prints to stderr and
-# never reddens the gate it measured.
+# Recorded per leg since #483: the runner takes the legs in order and runs
+# every one of them whatever the legs before it did (#566) — no leg here
+# depends on another's side effects, each being a read-only verification of
+# the tree, so one red no longer costs the reader the legs behind it. The row
+# carries each leg's name, outcome and wall; the recipe exits red on the first
+# red leg's own status; a recording failure prints to stderr and never reddens
+# the gate it measured.
 check:
     #!/usr/bin/env bash
     set -euo pipefail
@@ -432,28 +433,34 @@ _mutation-body *args:
 
 alias mutation-compare := mutation
 
-# Everything that does not need Arma. `mutation` runs last: a red suite says
-# nothing about mutants, and the smoke refuses rather than guesses when the
-# module it is asked about is not green on its own.
+# Everything that does not need Arma. `mutation` runs last and depends on
+# `unit` by declaration, not by order (#566): a red suite says nothing about
+# mutants, so the runner records it not_run naming the unit leg rather than
+# spending minutes on a verdict the red already settled — and the smoke's own
+# green proof (`not green on its own — mutation says nothing about a red
+# suite`) still enforces the same fact when mutation runs alone. `check` and
+# `unit` declare nothing: neither depends on the other, and since #566 a red
+# one no longer hides the legs behind it.
 #
 # Timed end to end and recorded (#446), per leg since #483: this whole recipe's
 # wall is the figure the subagent-wait threshold applies to, and it would be
 # lost if only its legs were recorded. The three legs are the three recipes, so
-# each records its own nested row as well and a red `check` marks `unit` and
-# `mutation` not_run in this recipe's row — a short-circuited run never reads
-# as a fast green one. It always mints the collected count's temp file itself;
-# the nested `just unit` sees one already exported and leaves removal to this,
-# the recipe that created it — after the runner has read it. The count it reads
-# is the suite's: `tools/mutation_smoke.py` strips the export from its judges'
-# environment, so a judge's one-module collection cannot overwrite the unit
-# leg's suite count between the two records.
+# each records its own nested row as well — a red run never reads as a fast
+# green one, its row carrying every leg's own outcome. It always mints the
+# collected count's temp file itself; the nested `just unit` sees one already
+# exported and leaves removal to this, the recipe that created it — after the
+# runner has read it. The count it reads is the suite's:
+# `tools/mutation_smoke.py` strips the export from its judges' environment, so
+# a judge's one-module collection cannot overwrite the unit leg's suite count
+# between the two records.
 fast:
     #!/usr/bin/env bash
     set -euo pipefail
     export CTI_GATE_CLOCK_COLLECTED_FILE="$(mktemp)"
     status=0
     uv run python tools/gate_clock.py run --recipe fast \
-        --leg check --leg unit --leg mutation || status=$?
+        --leg check --leg unit --leg mutation \
+        --depends mutation=unit || status=$?
     rm -f "$CTI_GATE_CLOCK_COLLECTED_FILE"
     exit "$status"
 

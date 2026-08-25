@@ -219,14 +219,18 @@ each nested recipe's own wall plus the whole recipe's — and all four are real
 measurements of real invocations.
 
 **Three leg outcomes, and absence as the fourth.** `passed` ran and exited
-zero; `failed` ran and did not; `not_run` was short-circuited by an earlier red
-leg and cost nothing; and a row whose `legs` is `None` predates #483 and claims
-no breakdown at all. None of these renders as another — a `not_run` leg with no
-wall is not a fast pass, and an absent breakdown is not an empty one — which is
-the standing rule `docs/observatory/hazards.md` states over the observatory's
-other three-state fields, applied here from the first row rather than after a
-conflation. A red run's shell line names every leg's outcome for the same
-reason: a FAIL that stops a run early must not be mistaken for a fast run.
+zero; `failed` ran and did not; `not_run` was skipped and cost nothing — since
+#566, only a leg whose declared prerequisite did not pass, the reason carried
+beside it; before #566, any leg behind the first red one; and a row whose
+`legs` is `None` predates #483 and claims no breakdown at all. None of these
+renders as another — a `not_run` leg with no wall is not a fast pass, and an
+absent breakdown is not an empty one — which is the standing rule
+`docs/observatory/hazards.md` states over the observatory's other three-state
+fields, applied here from the first row rather than after a conflation. A red
+run's shell line names every leg's outcome for the same reason: a red recipe
+must not be mistaken for a fast one, and since #566 the line answers every leg
+rather than the legs up to the first red — one unrelated red no longer costs
+the reader every leg behind it.
 
 The state directory is `CTI_GATE_CLOCK_DIR`, the seam `CTI_WATCH_DIR`,
 `CTI_BREAKER_DIR` and `CTI_RC_HEALTH_DIR` exist for (#249): without it a unit
@@ -316,9 +320,11 @@ ARMA_TIER_PREFIX: Final = "arma3server"
 
 # The three facts a leg's outcome carries (#483). They are different facts and
 # render differently, never as each other: `passed` ran and exited zero,
-# `failed` ran and did not, `not_run` was short-circuited by an earlier red leg
-# and cost nothing. The set this vocabulary comes from — absence, a value and a
-# third state conflated five separate times in one week — is the standing rule
+# `failed` ran and did not, `not_run` was skipped and cost nothing — since
+# #566 the only skip is a declared prerequisite that did not pass, and the
+# reason rides beside the outcome. The set this vocabulary comes from —
+# absence, a value and a third state conflated five separate times in one
+# week — is the standing rule
 # in `docs/observatory/hazards.md`.
 LEG_OUTCOMES: Final = ("passed", "failed", "not_run")
 
@@ -334,12 +340,15 @@ class Leg(NamedTuple):
     """One leg inside a recipe's run, as the row carries it.
 
     `wall_seconds` is `None` for a `not_run` leg — it was never measured — and
-    a number for every leg that ran, passed or failed alike.
+    a number for every leg that ran, passed or failed alike. `reason` names the
+    prerequisite that did not pass, for a leg skipped by one (#566); `None` for
+    every leg that ran and for a row that predates the field.
     """
 
     name: str
     outcome: str
     wall_seconds: float | None
+    reason: str | None = None
 
 
 class Record(NamedTuple):
@@ -388,8 +397,20 @@ def median(values: list[float]) -> float:
 
 
 def leg_document(leg: Leg) -> dict[str, object]:
-    """Render one leg as its object inside the row."""
-    return {"name": leg.name, "outcome": leg.outcome, "wall_seconds": leg.wall_seconds}
+    """Render one leg as its object inside the row.
+
+    `reason` is written only when there is one, so a row's passed and failed
+    legs keep the shape they had before #566 and the archive stays readable
+    beside the new rows.
+    """
+    document: dict[str, object] = {
+        "name": leg.name,
+        "outcome": leg.outcome,
+        "wall_seconds": leg.wall_seconds,
+    }
+    if leg.reason is not None:
+        document["reason"] = leg.reason
+    return document
 
 
 def parse_leg(entry: object) -> Leg | None:
@@ -402,10 +423,12 @@ def parse_leg(entry: object) -> Leg | None:
         if outcome not in LEG_OUTCOMES:
             return None
         wall = entry["wall_seconds"]
+        reason = entry.get("reason")
         return Leg(
             name,
             outcome,
             None if wall is None else float(wall),
+            None if reason is None else str(reason),
         )
     except (KeyError, TypeError, ValueError):
         return None
@@ -1023,15 +1046,56 @@ def runner_legs(names: list[str], forwarded: list[str]) -> list[tuple[str, list[
     return legs
 
 
-def run_recipe(recipe: str, legs: list[tuple[str, list[str]]], gate_clock_dir: Path) -> int:
+def parse_depends(entries: list[str], names: list[str]) -> dict[str, str]:
+    """Read `--depends` entries into a map, refusing the typo shapes.
+
+    A declaration nobody could satisfy — a side that is not a leg of this run,
+    or a prerequisite sitting behind its dependent in the order — would either
+    never fire or fire on a leg not yet reached, so both are loud usage errors
+    rather than silent behaviour (#566).
+    """
+    depends: dict[str, str] = {}
+    for entry in entries:
+        leg, separator, prerequisite = entry.partition("=")
+        if not separator or not leg or not prerequisite:
+            problem = "expects LEG=PREREQ"
+        elif leg in depends:
+            problem = f"names {leg} twice"
+        elif leg not in names or prerequisite not in names:
+            problem = "names a leg this run does not have"
+        elif names.index(prerequisite) >= names.index(leg):
+            problem = "prerequisite sits behind its leg"
+        else:
+            depends[leg] = prerequisite
+            continue
+        message = f"gate-clock: --depends {problem}: {entry!r}"
+        # A usage refusal's whole output is this message; a bare exit code
+        # would leave the caller guessing which of the four shapes fired.
+        raise SystemExit(message)
+    return depends
+
+
+def run_recipe(
+    recipe: str,
+    legs: list[tuple[str, list[str]]],
+    gate_clock_dir: Path,
+    depends: dict[str, str] | None = None,
+) -> int:
     """Run one recipe's legs in order, record the row, and answer the legs' status.
 
     The recipe bodies' own scaffold (#483): this is what a `just` recipe hands
     its legs to, so the per-leg outcomes and the whole-recipe wall are taken by
-    the same code for every recipe. A red leg stops the run and every leg after
-    it is recorded `not_run` — a leg that did not run is a different fact from
-    one that ran and passed, and a row that could not tell them apart would let
-    a short-circuited recipe read as a fast green one (#83's shape).
+    the same code for every recipe. Every leg runs whatever the legs before it
+    did (#566): one red leg no longer hides the legs behind it, and the recipe
+    still exits red — the first red leg's own status. The one skip the runner
+    knows is declared, never positional: `depends` names, per leg, a
+    prerequisite leg that must pass first, and a leg whose prerequisite did not
+    pass is recorded `not_run` with the reason beside it — the fact a leg did
+    not run stays distinct from one that ran and passed, and a row that could
+    not tell them apart would let an unfinished recipe read as a fast green one
+    (#83's shape). The cost is stated rather than discovered: a red run now
+    pays the legs a green one always did, where it used to stop at the first
+    red.
 
     Recording stays advisory: an unreadable clock or an unwritable records
     directory prints to stderr and never changes the exit status, because a
@@ -1070,9 +1134,16 @@ def run_recipe(recipe: str, legs: list[tuple[str, list[str]]], gate_clock_dir: P
     start_foreign = foreign_gate_processes()
     status = 0
     leg_rows: list[Leg] = []
+    outcomes: dict[str, str] = {}
     for name, argv in legs:
-        if status != 0:
-            leg_rows.append(Leg(name, "not_run", None))
+        prerequisite = (depends or {}).get(name)
+        # The runner's one skip: declared, not positional. A prerequisite that
+        # has not passed — failed, itself skipped, or not yet reached — leaves
+        # the leg `not_run` with the reason beside it, and never a wall.
+        if prerequisite is not None and outcomes.get(prerequisite) != "passed":
+            blocker = outcomes.get(prerequisite, "not reached")
+            leg_rows.append(Leg(name, "not_run", None, f"{prerequisite} {blocker}"))
+            outcomes[name] = "not_run"
             continue
         leg_start = proc_uptime()
         done = subprocess.run(  # noqa: S603 — argv is the recipe's own leg list, never user text
@@ -1081,8 +1152,10 @@ def run_recipe(recipe: str, legs: list[tuple[str, list[str]]], gate_clock_dir: P
         )
         leg_end = proc_uptime()
         wall = None if leg_start is None or leg_end is None else max(leg_end - leg_start, 0.0)
-        leg_rows.append(Leg(name, "passed" if done.returncode == 0 else "failed", wall))
-        if done.returncode != 0:
+        outcome = "passed" if done.returncode == 0 else "failed"
+        leg_rows.append(Leg(name, outcome, wall))
+        outcomes[name] = outcome
+        if done.returncode != 0 and status == 0:
             status = done.returncode
     now_up = proc_uptime()
     if start_up is None or now_up is None or start_up > now_up:
@@ -1115,12 +1188,21 @@ def run_recipe(recipe: str, legs: list[tuple[str, list[str]]], gate_clock_dir: P
     targets = (
         f", {row.mutation_targets} mutation target(s)" if row.mutation_targets is not None else ""
     )
-    # A red run's line names its legs, so the short-circuit is visible in the
-    # run's own output rather than only in a row nobody opens — a FAIL that
-    # stops a run early must not be mistaken for a fast run (#483, story 16).
+    # A red run's line names its legs — outcome, and the reason with it for a
+    # skipped one — so the whole answer is visible in the run's own output
+    # rather than only in a row nobody opens: a red recipe must not be mistaken
+    # for a fast one, and since #566 a red names what the legs behind it found
+    # rather than stopping at the first red (#483, story 16).
     leg_text = ""
     if row.status != 0 and row.legs:
-        leg_text = " (legs: " + ", ".join(f"{leg.name}={leg.outcome}" for leg in row.legs) + ")"
+        leg_text = (
+            " (legs: "
+            + ", ".join(
+                f"{leg.name}={leg.outcome}" + (f" ({leg.reason})" if leg.reason else "")
+                for leg in row.legs
+            )
+            + ")"
+        )
     print(  # noqa: T201 — the shell reads this
         f"gate-clock: recorded {row.recipe} {row.wall_seconds:.1f}s "
         f"{health}{count}{targets}{leg_text}"
@@ -1154,6 +1236,14 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
         nargs="*",
         metavar="ARG",
         help="arguments for the last leg's invocation only",
+    )
+    entry.add_argument(
+        "--depends",
+        action="append",
+        default=[],
+        metavar="LEG=PREREQ",
+        help="declare one leg's prerequisite: the leg runs only if PREREQ passed, "
+        "else is recorded not_run naming it (#566)",
     )
 
     entry = verbs.add_parser("record", help="append one finished gate run")
@@ -1192,7 +1282,12 @@ def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
 
     if args.verb == "run":
-        return run_recipe(args.recipe, runner_legs(args.leg, args.forwarded), args.gate_clock_dir)
+        return run_recipe(
+            args.recipe,
+            runner_legs(args.leg, args.forwarded),
+            args.gate_clock_dir,
+            parse_depends(args.depends, args.leg),
+        )
 
     if args.verb == "record":
         now_up = proc_uptime()
