@@ -671,6 +671,12 @@ def surface_refusal(
     authority that protects them from hand edits. Their bytes are derived from shared sources,
     so two regenerations are not competing source edits; every other shared path remains loud.
 
+    The holder is the **lowest issue number** among the conflicting trees, from either side
+    (#581): naming "the other tree" let two trees each name the other, so neither could be
+    dispatched and "land the holder first" was unfollowable. The lowest issue clears this rung
+    itself — it precedes everything it conflicts with — so the named holder is dispatchable,
+    and a chain of holders strictly decreases and cannot cycle.
+
     **A stated limit, not papered over:** a candidate's surface *before work starts* is not
     computable — a fresh worktree has touched nothing — so this rung cannot see a conflict at
     the moment of dispatch and does not pretend to. What it does see is two trees that are
@@ -682,8 +688,8 @@ def surface_refusal(
     if not mine:
         return None
     for holder, paths in sorted(others.items()):
-        if holder == issue:
-            continue
+        if holder >= issue:
+            break
         shared = sorted(mine & {path for path in paths if not gated_paths.is_generated_path(path)})
         if shared:
             return Refusal(

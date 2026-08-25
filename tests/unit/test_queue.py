@@ -544,6 +544,19 @@ def test_live_tree_surfaces_keep_fragments_disjoint_and_real_overlaps_loud(
     assert "paths=justfile" in refusal.found
 
 
+def test_two_conflicting_trees_name_the_same_holder_from_either_side() -> None:
+    """#581: the holder must be stable, or two trees each name the other and neither moves.
+
+    The order is lowest issue number: both calls name it, and a dispatch on the holder
+    itself clears this rung — "land the holder first" is only followable if it can be.
+    """
+    surfaces = {575: ["AGENTS.md"], 562: ["AGENTS.md"]}
+    refused = queue.surface_refusal(575, surfaces[575], surfaces)
+    assert refused is not None
+    assert "holder=562" in refused.found
+    assert queue.surface_refusal(562, surfaces[562], surfaces) is None
+
+
 def test_a_candidate_that_has_written_nothing_yet_cannot_be_seen_to_conflict() -> None:
     """The stated limit: a fresh worktree has touched nothing, so this rung sees nothing."""
     assert queue.surface_refusal(250, [], {241: ["justfile"]}) is None

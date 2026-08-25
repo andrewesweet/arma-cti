@@ -427,7 +427,9 @@ def test_a_review_is_not_refused_for_the_surface_it_was_sent_to_read(
     )
     monkeypatch.setattr(dispatch.queue_policy, "surfaces_of", lambda _ignored: surfaces)
     tree = git_worktree(tmp_path)
-    plan, _, refusal = plan_for(tmp_path, worktree=tree)
+    # 324, not 322: the rung refuses only against a lower-numbered holder (#581), so the
+    # control below needs the dispatched issue to be the one that is not the holder.
+    plan, _, refusal = plan_for(tmp_path, worktree=tree, issue=324)
     assert refusal is None, refusal
     assert plan is not None
     # The control: strip the column that derives emptiness and the rung sees the conflict
@@ -437,7 +439,7 @@ def test_a_review_is_not_refused_for_the_surface_it_was_sent_to_read(
         "review",
         dispatch.SEATS["review"]._replace(permission_mode=""),
     )
-    plan, _, refusal = plan_for(tmp_path, worktree=tree)
+    plan, _, refusal = plan_for(tmp_path, worktree=tree, issue=324)
     assert plan is None
     assert refusal is not None
     assert refusal.kind == "surface_conflict"
