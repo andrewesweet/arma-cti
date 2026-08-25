@@ -986,6 +986,40 @@ def test_the_regeneration_accounts_for_the_rows_it_adds_moves_and_removes(
     assert accounted["added"] == str(new_rows - 1)  # every landed row except 490's
 
 
+def test_an_unreadable_previous_projection_is_not_reported_as_absent(
+    world: World,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    # #574: `except OSError` read a projection that exists but cannot be read
+    # as absence, so removals went uncounted behind a false `previous=absent`.
+    # The marker exists to qualify the numbers; it must not lie about why. The
+    # write-only mode leaves the regeneration's own write working, so the run
+    # completes and the record itself carries the distinction.
+    path = world.repo / observatory.SUMMARY_PATH
+    path.parent.mkdir(parents=True, exist_ok=True)
+    assert observatory.main(rebuild_args(world)) == 0  # nothing committed yet
+    first = dict(
+        pair.split("=", 1)
+        for pair in next(
+            line
+            for line in capsys.readouterr().out.splitlines()
+            if line.startswith("summary_rows ")
+        ).split()[1:]
+    )
+    assert first["previous"] == "absent"
+    path.chmod(0o200)
+    assert observatory.main(rebuild_args(world)) == 0
+    second = dict(
+        pair.split("=", 1)
+        for pair in next(
+            line
+            for line in capsys.readouterr().out.splitlines()
+            if line.startswith("summary_rows ")
+        ).split()[1:]
+    )
+    assert second["previous"] == "unreadable"
+
+
 def test_landed_summary_uses_commit_time_when_sha_order_disagrees(tmp_path: Path) -> None:
     """A later commit with a smaller SHA must win the issue's summary row."""
     repo = tmp_path / "ordering-repo"

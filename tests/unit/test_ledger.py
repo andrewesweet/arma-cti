@@ -1057,6 +1057,20 @@ def test_a_bare_mention_cannot_be_borrowed_from_a_word_character_prefix(repo: Pa
     assert "only in descriptive prose" in landing.reason
 
 
+def test_a_mention_glued_to_a_word_cannot_land_the_longer_issue(repo: Path) -> None:
+    # The lookbehind's unique observable effect, with the sibling test's roles
+    # swapped onto the longer issue: `prose#555` satisfies `(?![0-9])` and the
+    # apostrophe lookahead both, so only `(?<![\w#])` keeps a message admitted
+    # for #555 through its possessive from becoming #555's landing through the
+    # glued token. Both sibling tests stay green with the lookbehind removed;
+    # this one is what holds it (#574).
+    base = head(repo)
+    land(repo, "docs: follow-up\n\nabout #555's fix, see prose#555")
+    landing = ledger.landed(repo, 555, base, ARMED)
+    assert landing.sha is None
+    assert "only in descriptive prose" in landing.reason
+
+
 # ---------------------------------------------------- what each seat's gate can even say
 
 

@@ -3147,10 +3147,19 @@ def main(  # noqa: C901, PLR0911, PLR0912 — three CLI actions each own their r
     # Read the committed projection before the rebuild overwrites it: the row
     # accounting below is the regeneration's own account of what it changed,
     # quoted from the rebuild rather than from whoever writes the message (#571).
+    # Unreadable is not absent (#574): a projection that exists but cannot be
+    # read qualifies the counts under its own marker rather than passing as no
+    # projection, so removals are never uncounted behind a false absence. A
+    # `UnicodeDecodeError` is not an `OSError` and escapes to fail loudly.
+    previous = ""
+    previous_state = "absent"
     try:
         previous = (args.repo / SUMMARY_PATH).read_text(encoding="utf-8")
+        previous_state = "present"
+    except FileNotFoundError:
+        pass
     except OSError:
-        previous = ""
+        previous_state = "unreadable"
     try:
         store = rebuild(
             args.dispatch_root,
@@ -3169,9 +3178,7 @@ def main(  # noqa: C901, PLR0911, PLR0912 — three CLI actions each own their r
         print(line)  # noqa: T201
     added, moved, removed = summary_row_changes(previous, render_summary(store))
     print(  # noqa: T201 — the row accounting is the output; the message quotes it (#571)
-        "summary_rows "
-        f"previous={'present' if previous else 'absent'} "
-        f"added={added} moved={moved} removed={removed}"
+        f"summary_rows previous={previous_state} added={added} moved={moved} removed={removed}"
     )
     return 0
 
