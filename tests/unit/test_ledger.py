@@ -566,6 +566,160 @@ def test_a_sync_preserves_an_existing_row_when_its_durable_export_is_gone(
     )
 
 
+# ------------------------------------------------------------- staleness selection
+
+
+LATER = datetime(2026, 8, 6, 12, 0, tzinfo=UTC)
+
+
+def staged_with_export(tmp_path: Path, dispatch_id: str = DISPATCH) -> Path:
+    """One dispatch record with a durable export holding a single metric."""
+    record = stage_record(
+        tmp_path / "dispatches", dispatch_id=dispatch_id, result={"returncode": 0}
+    )
+    write_jsonl(
+        tmp_path / "export" / f"dispatch-{dispatch_id}.jsonl",
+        [metric_batch("claude_code.token.usage", [({"type": "input"}, 5)])],
+    )
+    return record
+
+
+def test_a_behind_sync_materialises_a_record_with_no_row(tmp_path: Path) -> None:
+    record = staged_with_export(tmp_path)
+    lines, code = ledger.sync(options(tmp_path, behind=True), NOW)
+    row = json.loads((record / "ledger.json").read_text(encoding="utf-8"))
+    assert code == 0
+    assert row["schema"] == ledger.SCHEMA
+    assert row["previous_schema"] is None
+    assert any(" was=missing" in line for line in lines)
+    assert any(
+        line == "ok=synced rows=1 degraded=0 preserved=0 "
+        "missing=1 stale=0 current=0 behind=0/1 mode=behind"
+        for line in lines
+    )
+
+
+def test_a_behind_sync_refreshes_a_row_behind_the_current_schema(tmp_path: Path) -> None:
+    record = staged_with_export(tmp_path)
+    (record / "ledger.json").write_text(
+        json.dumps({"schema": "cti.ledger/4", "usage": {"output_tokens": 999}}),
+        encoding="utf-8",
+    )
+    lines, code = ledger.sync(options(tmp_path, behind=True), NOW)
+    row = json.loads((record / "ledger.json").read_text(encoding="utf-8"))
+    assert code == 0
+    assert row["schema"] == ledger.SCHEMA
+    assert row["previous_schema"] == "cti.ledger/4"
+    assert any(" was=stale" in line for line in lines)
+    assert any("missing=0 stale=1 current=0" in line for line in lines)
+
+
+def test_a_behind_sync_skips_a_current_row_and_leaves_the_file_untouched(
+    tmp_path: Path,
+) -> None:
+    record = staged_with_export(tmp_path)
+    ledger.sync(options(tmp_path), NOW)
+    before = (record / "ledger.json").read_text(encoding="utf-8")
+
+    lines, code = ledger.sync(options(tmp_path, behind=True), LATER)
+
+    after = (record / "ledger.json").read_text(encoding="utf-8")
+    assert (code, after) == (0, before)
+    assert json.loads(after)["materialised_at"] == NOW.isoformat()
+    assert any(
+        line == "ok=synced rows=0 degraded=0 preserved=0 "
+        "missing=0 stale=0 current=1 behind=0/1 mode=behind"
+        for line in lines
+    )
+
+
+def test_a_row_with_no_schema_marker_is_stale_rather_than_current(tmp_path: Path) -> None:
+    record = staged_with_export(tmp_path)
+    (record / "ledger.json").write_text(json.dumps({"usage": {}}), encoding="utf-8")
+    lines, code = ledger.sync(options(tmp_path, behind=True), NOW)
+    row = json.loads((record / "ledger.json").read_text(encoding="utf-8"))
+    assert (code, row["schema"]) == (0, ledger.SCHEMA)
+    assert row["previous_schema"] is None
+    assert any(" was=stale" in line for line in lines)
+
+
+def test_an_unreadable_row_is_stale_rather_than_current(tmp_path: Path) -> None:
+    record = staged_with_export(tmp_path)
+    (record / "ledger.json").write_text("{not json", encoding="utf-8")
+    lines, code = ledger.sync(options(tmp_path, behind=True), NOW)
+    row = json.loads((record / "ledger.json").read_text(encoding="utf-8"))
+    assert (code, row["schema"]) == (0, ledger.SCHEMA)
+    assert any(" was=stale" in line for line in lines)
+
+
+def test_a_behind_sync_run_twice_writes_nothing_the_second_time(tmp_path: Path) -> None:
+    record = staged_with_export(tmp_path)
+    ledger.sync(options(tmp_path, behind=True), NOW)
+    first = (record / "ledger.json").read_text(encoding="utf-8")
+
+    lines, code = ledger.sync(options(tmp_path, behind=True), LATER)
+
+    assert (code, (record / "ledger.json").read_text(encoding="utf-8")) == (0, first)
+    assert any("rows=0 " in line and "current=1" in line for line in lines)
+
+
+def test_the_summary_reports_the_split_and_the_remainder(tmp_path: Path) -> None:
+    # Three records — one missing, one stale, one current — so the summary's split is
+    # the "6 of 691" number: how far behind the walk found the ledger, in one line.
+    staged_with_export(tmp_path, dispatch_id="d-missing")
+    stale = staged_with_export(tmp_path, dispatch_id="d-stale")
+    staged_with_export(tmp_path, dispatch_id="d-current")
+    ledger.sync(options(tmp_path, dispatch="d-current"), NOW)
+    (stale / "ledger.json").write_text(json.dumps({"schema": "cti.ledger/1"}), encoding="utf-8")
+
+    lines, code = ledger.sync(options(tmp_path, behind=True), NOW)
+
+    assert code == 0
+    assert any(
+        line == "ok=synced rows=2 degraded=0 preserved=0 "
+        "missing=1 stale=1 current=1 behind=0/3 mode=behind"
+        for line in lines
+    )
+
+
+def test_a_full_sync_still_recomputes_a_current_row(tmp_path: Path) -> None:
+    # The landed-SHA join is git's answer at materialisation time, so the default walk
+    # must keep refreshing current rows — only `--behind` skips them.
+    record = staged_with_export(tmp_path)
+    ledger.sync(options(tmp_path), NOW)
+
+    lines, code = ledger.sync(options(tmp_path), LATER)
+
+    row = json.loads((record / "ledger.json").read_text(encoding="utf-8"))
+    assert (code, row["materialised_at"]) == (0, LATER.isoformat())
+    # A same-schema recompute records no previous_schema, so repeated full syncs
+    # over unchanged records stay byte-stable.
+    assert row["previous_schema"] is None
+    assert any(" was=current" in line for line in lines)
+
+
+def test_a_preserved_stale_row_is_still_counted_behind(tmp_path: Path) -> None:
+    # A stale row whose durable export is gone cannot be refreshed without replacing a
+    # full read with a partial one, so it is preserved — and the summary still counts
+    # it behind rather than calling the ledger level.
+    record = stage_record(tmp_path / "dispatches", result={"returncode": 0})
+    (record / "ledger.json").write_text(json.dumps({"schema": "cti.ledger/4"}), encoding="utf-8")
+    write_jsonl(tmp_path / "capture" / "claude-telemetry.jsonl", [])
+
+    lines, code = ledger.sync(options(tmp_path, behind=True), NOW)
+
+    row = json.loads((record / "ledger.json").read_text(encoding="utf-8"))
+    assert (code, row["schema"]) == (0, "cti.ledger/4")
+    assert any(line.startswith("preserved=") for line in lines)
+    assert any("behind=1/1" in line for line in lines)
+
+
+def test_the_command_line_takes_behind_for_the_staleness_selection() -> None:
+    action, parsed = ledger.parse_args(["sync", "--behind"])
+    assert (action, parsed.behind) == ("sync", True)
+    assert ledger.parse_args([])[1].behind is False
+
+
 # ------------------------------------------------------------------ end-state typing
 
 
@@ -2200,7 +2354,12 @@ def age(path: Path, days: float) -> None:
 
 
 def stage_for_prune(
-    tmp_path: Path, *, days: float, records: int = 1, source: str | None = None
+    tmp_path: Path,
+    *,
+    days: float,
+    records: int = 1,
+    source: str | None = None,
+    schema: str = "",
 ) -> Path:
     """Stage a raw export file plus, unless `source` says otherwise, the row from it."""
     export = write_jsonl(
@@ -2210,7 +2369,13 @@ def stage_for_prune(
     if source is not None:
         record = stage_record(tmp_path / "dispatches")
         (record / "ledger.json").write_text(
-            json.dumps({"source": {"kind": source}, "records": {"total": records}}),
+            json.dumps(
+                {
+                    "schema": schema or ledger.SCHEMA,
+                    "source": {"kind": source},
+                    "records": {"total": records},
+                }
+            ),
             encoding="utf-8",
         )
     age(export, days)
@@ -2250,6 +2415,28 @@ def test_a_row_that_read_no_records_out_of_the_file_does_not_licence_pruning_it(
 ) -> None:
     stage_for_prune(tmp_path, days=99, records=0, source=ledger.SOURCE_EXPORT)
     assert ledger.prunable(options(tmp_path), time.time())[0].prunable is False
+
+
+def test_an_export_behind_a_stale_row_is_retained_and_the_reason_names_the_remedy(
+    tmp_path: Path,
+) -> None:
+    # The export is the only material a corrected row could be rebuilt from once the
+    # rotating capture has turned over; deleting it behind a stale row is the #529
+    # hazard, so this is a refusal rather than a warning.
+    stage_for_prune(tmp_path, days=99, source=ledger.SOURCE_EXPORT, schema="cti.ledger/4")
+    verdict = ledger.prunable(options(tmp_path), time.time())[0]
+    assert verdict.prunable is False
+    assert "behind the current schema" in verdict.reason
+    assert "cti.ledger/4" in verdict.reason
+    assert ledger.SCHEMA in verdict.reason
+    assert "--behind" in verdict.reason
+
+
+def test_apply_does_not_delete_an_export_behind_a_stale_row(tmp_path: Path) -> None:
+    export = stage_for_prune(tmp_path, days=99, source=ledger.SOURCE_EXPORT, schema="cti.ledger/4")
+    lines, code = ledger.prune(options(tmp_path, apply=True), time.time())
+    assert (code, export.is_file()) == (0, True)
+    assert any(line.startswith("ok=pruned files=1 prunable=0") for line in lines)
 
 
 def test_prune_deletes_nothing_without_apply(tmp_path: Path) -> None:
