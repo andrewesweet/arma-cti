@@ -263,3 +263,42 @@ def test_rejected_audit_candidates_are_typed_and_the_true_sha_has_a_start_floor(
     assert outcomes[0].shas == (true_sha,)
     read = observatory.read_landings(source_paths.review_root)
     assert read.landings[0]["produced_commit"] == true_sha
+
+
+def test_an_on_origin_post_dispatch_sha_must_descend_from_the_window_base(
+    tmp_path: Path,
+) -> None:
+    issue = 585
+    repo, _main_base = staged_repo(tmp_path)
+    git("checkout", "-q", "-b", "review-work", cwd=repo)
+    review_base = commit_without_origin(
+        repo,
+        "review.txt",
+        "fix: reviewed work",
+        "2026-08-25T10:30:00+00:00",
+    )
+    git("checkout", "-q", "main", cwd=repo)
+    candidate_sha = commit(
+        repo,
+        "cross-issue.txt",
+        "fix: another issue landing",
+        "2026-08-25T12:00:00+00:00",
+    )
+    source_paths = paths(tmp_path, repo, review_base, issue)
+    windows = backfill.dispatch_windows(source_paths.dispatch_root, issue)
+    candidate = backfill.AuditCandidate(candidate_sha[:7], "cross-issue", None, 0)
+
+    assert candidate_sha == git("rev-parse", "origin/main", cwd=repo)
+    assert not backfill._is_ancestor(  # noqa: SLF001 — prove staged candidate misses ancestry floor
+        repo, review_base, candidate_sha
+    )
+    committed_at = backfill._commit_time(  # noqa: SLF001 — prove candidate clears date floor
+        repo, candidate_sha
+    )
+    assert committed_at is not None
+    assert committed_at >= windows[0].started_at.replace(microsecond=0)
+
+    resolved, reason = backfill.resolve_candidate(repo, issue, candidate, windows)
+
+    assert resolved is None
+    assert reason == f"audit SHA {candidate_sha} is outside every dispatch base/start floor"
