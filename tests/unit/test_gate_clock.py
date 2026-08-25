@@ -1132,6 +1132,29 @@ def test_a_failed_leg_records_the_ids_its_run_named_and_they_survive_a_green_run
     assert green_row.legs[0].failed_tests is None
 
 
+def test_an_undecodable_id_file_is_could_not_tell_and_the_leg_still_records(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Invalid UTF-8 in the id file is "could not tell", never an escape (#576 round 3).
+
+    `UnicodeDecodeError` is a `ValueError`, not an `OSError`, so before this
+    it escaped `read_failed_file` after the leg's work and before its record —
+    destroying the row #576 exists to keep. The channel broke, so the answer
+    is `None`, same as a missing file; the leg itself must still land.
+    """
+    monkeypatch.delenv("CTI_GATE_CLOCK_COLLECTED_FILE", raising=False)
+    garbled = tmp_path / "failed"
+    garbled.write_bytes(b"\xff\xfe not utf-8")
+    assert gate_clock.read_failed_file(garbled) is None
+
+    naming = 'printf "\\377\\376" > "$CTI_GATE_CLOCK_FAILED_FILE"; exit 1'
+    status = gate_clock.run_recipe("unit", [("unit-python", ["sh", "-c", naming])], tmp_path)
+    assert status != 0
+    (red_row,) = gate_clock.load_records(tmp_path)
+    assert red_row.legs is not None
+    assert (red_row.legs[0].outcome, red_row.legs[0].failed_tests) == ("failed", None)
+
+
 def test_hundreds_of_failures_are_bounded_with_the_cut_stated() -> None:
     """The cap holds the row's size, and the truncation names itself.
 
