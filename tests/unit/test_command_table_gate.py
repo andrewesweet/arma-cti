@@ -50,9 +50,9 @@ def git(repo: Path, *args: str) -> None:
     assert completed.returncode == 0, completed.stderr
 
 
-def repository(root: Path) -> Path:
+def repository(root: Path, name: str = "issue-544") -> Path:
     """Create a candidate tree with one command row and one just recipe."""
-    repo = root / "issue-544"
+    repo = root / name
     repo.mkdir()
     git(repo, "init", "-q", "-b", "work")
     git(repo, "config", "user.email", "test@example.invalid")
@@ -317,13 +317,76 @@ def test_an_unreadable_repository_names_the_repair_not_the_approval(
     assert "gated-paths approve" not in action
 
 
+def test_an_issueless_checkout_says_the_human_supplies_the_issue(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """#583 round 4: `--issue <issue>` was a usage error, not a remedy."""
+    monkeypatch.delenv("CTI_DISPATCH_ISSUE", raising=False)
+    repo = repository(tmp_path, name="main-checkout")
+    (repo / "AGENTS.md").write_text(
+        (repo / "AGENTS.md")
+        .read_text(encoding="utf-8")
+        .replace("`just old-recipe`", "`just missing-recipe`"),
+        encoding="utf-8",
+    )
+    delegated_record(repo)
+    content_id = gated_paths.content_id_of(repo, "AGENTS.md")
+
+    assert check_command_table.main(["--root", str(repo)]) == 1
+
+    stderr = capsys.readouterr().err
+    assert "refusal=command_table_recipe_unresolved" in stderr
+    action = next(line for line in stderr.splitlines() if line.startswith("action="))
+    assert "<issue>" not in action
+    assert f"--issue N --path AGENTS.md --content-id {content_id}" in action
+    assert "the issue this change lands under" in action
+
+
+def test_a_conflicting_issue_environment_refuses_before_the_route(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """#583 round 4: a worktree/dispatch disagreement was silently discarded."""
+    monkeypatch.setenv("CTI_DISPATCH_ISSUE", "999")
+    repo = repository(tmp_path)
+    (repo / "AGENTS.md").write_text(
+        (repo / "AGENTS.md")
+        .read_text(encoding="utf-8")
+        .replace("`just old-recipe`", "`just missing-recipe`"),
+        encoding="utf-8",
+    )
+    delegated_record(repo)
+
+    assert check_command_table.main(["--root", str(repo)]) == 1
+
+    stderr = capsys.readouterr().err
+    assert "refusal=approval_issue_unknown" in stderr
+    assert "worktree_issue=544 dispatch_issue=999 disagree" in stderr
+    action = next(line for line in stderr.splitlines() if line.startswith("action="))
+    assert "unmodified dispatch environment" in action
+
+
 def _literal_text(node: ast.AST) -> str:
-    """Concatenate every string literal in a statement, f-string parts included."""
-    return " ".join(
+    """Concatenate a statement's string literals with no joiner.
+
+    The empty joiner is deliberate (#583 round 4): ``"refusal" + "="`` must
+    read as ``refusal=``. A marker with no literal text in the statement —
+    one threaded through a variable — contributes nothing here.
+    """
+    return "".join(
         child.value
         for child in ast.walk(node)
         if isinstance(child, ast.Constant) and isinstance(child.value, str)
     )
+
+
+def _is_exit_call(statement: ast.stmt) -> bool:
+    """Whether a statement is a bare ``sys.exit(...)`` or ``exit(...)`` call."""
+    if not isinstance(statement, ast.Expr) or not isinstance(statement.value, ast.Call):
+        return False
+    func = statement.value.func
+    if isinstance(func, ast.Attribute):
+        return func.attr == "exit" and isinstance(func.value, ast.Name) and func.value.id == "sys"
+    return isinstance(func, ast.Name) and func.id == "exit"
 
 
 def _statement_blocks(tree: ast.AST) -> Iterator[list[ast.stmt]]:
@@ -335,32 +398,79 @@ def _statement_blocks(tree: ast.AST) -> Iterator[list[ast.stmt]]:
                 yield block
 
 
-def test_every_refusal_emission_pairs_a_remedy_in_source() -> None:
-    """Enumerate the command-table family's refusal exits mechanically.
+def _refusal_audit(tree: ast.AST) -> tuple[list[int], list[int]]:
+    """Return literal refusal-emission lines, and those with no paired remedy.
 
-    #575 and both #583 rounds each hand-enumerated them and each missed one, so:
-    a statement emitting a ``refusal=`` line must be joined by one emitting
-    ``action=`` before control leaves its block. A refusal that must not carry a
-    remedy has no representative today; adding one means editing this test with
-    its reason.
+    A statement whose string literals spell ``refusal=`` must be joined by one
+    spelling ``action=`` before its statement list meets a ``return``, ``raise``
+    or ``sys.exit``/``exit`` call.
+    """
+    hits: list[int] = []
+    missing: list[int] = []
+    for block in _statement_blocks(tree):
+        for index, statement in enumerate(block):
+            if "refusal=" not in _literal_text(statement):
+                continue
+            hits.append(statement.lineno)
+            window: list[ast.stmt] = []
+            for later in block[index:]:
+                window.append(later)
+                if isinstance(later, (ast.Return, ast.Raise)) or _is_exit_call(later):
+                    break
+            if not any("action=" in _literal_text(later) for later in window):
+                missing.append(statement.lineno)
+    return hits, missing
+
+
+def test_every_refusal_emission_pairs_a_remedy_in_source() -> None:
+    """Pair every literal refusal emission with a remedy before an exit.
+
+    #575 and both #583 rounds each hand-enumerated the refusal exits and each
+    missed one, so `_refusal_audit` walks the source instead. Its scope, stated
+    plainly (#583 round 4): it reads each statement's own string literals,
+    concatenated — so it sees ``"refusal" + "="`` but not a marker that reaches
+    the emission only through a variable — and its window is the linear
+    statement list, not control flow, so a remedy skipped by a ``continue`` or
+    an early branch still counts. Every current emission is a literal marker
+    inside a self-pairing helper (`_refuse`/`_refused`), which is what keeps
+    those blind spots empty; a runtime-composed marker would escape this test.
     """
     for name in ("check_command_table", "gated_paths"):
         tree = ast.parse((REPO / "tools" / f"{name}.py").read_text(encoding="utf-8"))
-        emissions: list[tuple[int, list[ast.stmt]]] = []
-        for block in _statement_blocks(tree):
-            for index, statement in enumerate(block):
-                if "refusal=" in _literal_text(statement):
-                    emissions.append((statement.lineno, block[index:]))
-        assert emissions, f"tools/{name}.py: scan found no refusal emission"
-        for lineno, group in emissions:
-            window: list[ast.stmt] = []
-            for statement in group:
-                window.append(statement)
-                if isinstance(statement, (ast.Return, ast.Raise)):
-                    break
-            assert any("action=" in _literal_text(statement) for statement in window), (
-                f"tools/{name}.py:{lineno} emits refusal= with no action= remedy"
-            )
+        hits, missing = _refusal_audit(tree)
+        assert hits, f"tools/{name}.py: scan found no refusal emission"
+        assert not missing, f"tools/{name}.py:{missing} emit refusal= with no action= remedy"
+
+
+def test_the_scan_sees_a_concatenation_composed_marker() -> None:
+    """#583 round 4: ``"refusal" + "="`` dodged the space-joined literal scan."""
+    tree = ast.parse('def emit():\n    print("refusal" + "=x")\n    return 1\n')
+    hits, missing = _refusal_audit(tree)
+    # The enclosing def registers too — ast.walk reads its whole body — so the
+    # claims are membership, not equality.
+    assert 2 in hits
+    assert 2 in missing
+
+
+def test_the_scan_treats_sys_exit_as_an_exit_boundary() -> None:
+    """#583 round 4: a remedy printed after ``sys.exit()`` is unreachable."""
+    source = (
+        'import sys\ndef emit():\n    print("refusal=x")\n    sys.exit(1)\n    print("action=y")\n'
+    )
+    hits, missing = _refusal_audit(ast.parse(source))
+    assert 3 in hits
+    assert 3 in missing
+
+
+def test_a_variable_threaded_marker_stays_outside_the_scan() -> None:
+    """The narrowed claim, pinned: a marker with no literal text is invisible.
+
+    Seeing this emission needs dataflow analysis — a second parser with its own
+    blind spots. Delete this pin only alongside such a detector.
+    """
+    source = 'def emit(kind):\n    print(kind + "=x")\n    return 1\n'
+    hits, _missing = _refusal_audit(ast.parse(source))
+    assert not hits
 
 
 def test_just_check_runs_the_command_table_leg() -> None:

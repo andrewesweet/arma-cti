@@ -401,8 +401,8 @@ def check(root: Path) -> Result:  # noqa: PLR0911 — each typed refusal names i
     )
 
 
-def _route_candidate(root: Path) -> tuple[bool, int | None]:
-    """Return whether the diff carries exactly one delegated record, and the issue."""
+def _route_candidate(root: Path) -> tuple[bool, int | None, str]:
+    """Return route eligibility, the resolved issue, and any resolution conflict."""
     # The gated-path checker remains the authority for path and ADR-0013 marker
     # discovery; this CLI only needs the same eligibility to expose a named leg.
     import gated_paths  # noqa: PLC0415 — delayed to avoid the checker import cycle
@@ -412,7 +412,7 @@ def _route_candidate(root: Path) -> tuple[bool, int | None]:
     except gated_paths.GitError as error:
         raise GitError(error.args_run, error.stderr) from error
     delegated = gated_paths.delegated_decisions(root, paths)
-    issue, _issue_error = gated_paths.issue_of(root, os.environ)
+    issue, issue_error = gated_paths.issue_of(root, os.environ)
     applicable = (
         "AGENTS.md" in paths
         and len(delegated) == 1
@@ -423,7 +423,7 @@ def _route_candidate(root: Path) -> tuple[bool, int | None]:
             AGENTS_PATH,
         )
     )
-    return applicable, issue
+    return applicable, issue, issue_error
 
 
 def _refuse(kind: str, details: tuple[str, ...], action: str) -> int:
@@ -442,7 +442,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     root = args.root.resolve()
     try:
-        applicable, issue = _route_candidate(root)
+        applicable, issue, issue_error = _route_candidate(root)
     except (GitError, OSError) as error:
         # An unreadable repository is a repair problem, not an approval one:
         # the approval command needs a content_id no unreadable tree can give.
@@ -454,6 +454,15 @@ def main(argv: list[str] | None = None) -> int:
     if not applicable:
         print("command_table=not_applicable")  # noqa: T201 — CLI contract
         return 0
+    if issue_error:
+        # Worktree and dispatch environment disagree, so any remedy this route
+        # printed would be built on a guessed issue (#583 round 4). Mirrors
+        # gated_paths.main's refusal of the same conflict.
+        return _refuse(
+            "approval_issue_unknown",
+            (issue_error,),
+            "Run from the issue worktree with its unmodified dispatch environment.",
+        )
     result = check(root)
     if not result.applicable:
         print("command_table=not_applicable")  # noqa: T201 — CLI contract

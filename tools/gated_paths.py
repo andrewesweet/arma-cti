@@ -833,10 +833,18 @@ def direct_approval_remedy(root: Path, issue: int | None, action: str) -> str:
         content_id = content_id_of(root, "AGENTS.md")
     except GitError:
         return action
-    issue_text = str(issue) if issue is not None else "<issue>"
-    command = (
-        f"just gated-paths approve --issue {issue_text} --path AGENTS.md --content-id {content_id}"
-    )
+    if issue is None:
+        # `approve` requires --issue and this checkout names none, so a printed
+        # placeholder would be a usage error, not a remedy (#583 round 4). The
+        # human supplies the number the tool refuses to guess.
+        return (
+            f"{action} The direct-approval exit is `just gated-paths approve"
+            f" --issue N --path AGENTS.md --content-id {content_id}`, run by the"
+            " human after reviewing this exact path diff, with N the issue this"
+            " change lands under — this checkout names none, so N was not"
+            " guessed. A session must not run it."
+        )
+    command = f"just gated-paths approve --issue {issue} --path AGENTS.md --content-id {content_id}"
     return (
         f"{action} Or, after the human reviews this exact path diff, they run"
         f" `{command}`. A session must not run it."
