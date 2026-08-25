@@ -2573,7 +2573,9 @@ def _summary_rows_by_issue(rendered: str) -> dict[int, str]:
     return rows
 
 
-def summary_row_changes(previous: str, rendered: str) -> tuple[int, int, int]:
+def summary_row_changes(
+    previous: str | None, rendered: str
+) -> tuple[int | str, int | str, int | str]:
     """Count the landed-issue rows a regeneration adds, moves and removes (#571).
 
     The count comes from the rebuild's own render set against the previously
@@ -2585,8 +2587,11 @@ def summary_row_changes(previous: str, rendered: str) -> tuple[int, int, int]:
     whose bytes changed is `moved`; a lane column arriving or leaving changes
     every row with it, and all of them reading moved is that fact rendered
     honestly. `previous` empty — no committed projection yet — counts every row
-    as added.
+    as added. `previous` None means the committed projection existed but could not
+    be read; all three counts are `unknown` because no comparison is possible.
     """
+    if previous is None:
+        return "unknown", "unknown", "unknown"
     old = _summary_rows_by_issue(previous)
     new = _summary_rows_by_issue(rendered)
     added = len(new.keys() - old.keys())
@@ -3279,10 +3284,10 @@ def main(  # noqa: C901, PLR0911, PLR0912 — three CLI actions each own their r
     # accounting below is the regeneration's own account of what it changed,
     # quoted from the rebuild rather than from whoever writes the message (#571).
     # Unreadable is not absent (#574): a projection that exists but cannot be
-    # read qualifies the counts under its own marker rather than passing as no
-    # projection, so removals are never uncounted behind a false absence. A
-    # `UnicodeDecodeError` is not an `OSError` and escapes to fail loudly.
-    previous = ""
+    # read withholds the counts under its own marker rather than passing as no
+    # projection and comparing against empty text. A `UnicodeDecodeError` is not
+    # an `OSError` and escapes to fail loudly.
+    previous: str | None = ""
     previous_state = "absent"
     try:
         previous = (args.repo / SUMMARY_PATH).read_text(encoding="utf-8")
@@ -3290,6 +3295,7 @@ def main(  # noqa: C901, PLR0911, PLR0912 — three CLI actions each own their r
     except FileNotFoundError:
         pass
     except OSError:
+        previous = None
         previous_state = "unreadable"
     try:
         store = rebuild(

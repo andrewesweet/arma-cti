@@ -1074,6 +1074,9 @@ def test_an_unreadable_previous_projection_is_not_reported_as_absent(
         ).split()[1:]
     )
     assert second["previous"] == "unreadable"
+    assert second["added"] == "unknown"
+    assert second["moved"] == "unknown"
+    assert second["removed"] == "unknown"
 
 
 def test_landed_summary_uses_commit_time_when_sha_order_disagrees(tmp_path: Path) -> None:

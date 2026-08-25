@@ -154,6 +154,18 @@ def test_issue_number_boundaries_do_not_borrow_adjacent_references(
     assert "docs: adjacent issues" not in subjects
 
 
+def test_prior_work_ignores_an_issue_token_glued_to_a_word_character(
+    prior_work_repo: Path,
+) -> None:
+    commit(
+        prior_work_repo,
+        "docs: glued form\n\nprose#305",
+        at="2026-08-09T12:00:00+00:00",
+    )
+    subjects = [item.subject for item in brief.prior_work(305, prior_work_repo)]
+    assert "docs: glued form" not in subjects
+
+
 def test_a_repository_without_a_reference_produces_no_report(tmp_path: Path) -> None:
     repo = tmp_path / "repo"
     repo.mkdir()
