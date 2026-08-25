@@ -359,8 +359,12 @@ class Leg(NamedTuple):
     prerequisite that did not pass, for a leg skipped by one (#566); `None` for
     every leg that ran and for a row that predates the field. `failed_tests`
     carries the node ids a failed pytest leg named, bounded by
-    `FAILED_TESTS_RECORDED` (#576); `None` for a green leg, for a failed leg
-    whose run named nothing, and for a row that predates the field.
+    `FAILED_TESTS_RECORDED` (#576), and keeps three answers apart (#576
+    round 2): ids for a run that named some, an empty tuple for one that
+    completed and named none, and `None` where there is no claim at all — a
+    green or `not_run` leg, a failed leg whose id file could not be read, or a
+    row that predates the field. The field belongs to failed legs alone; the
+    codec drops it on write and ignores it on read anywhere else.
     """
 
     name: str
@@ -420,9 +424,11 @@ def leg_document(leg: Leg) -> dict[str, object]:
 
     `reason` is written only when there is one, so a row's passed and failed
     legs keep the shape they had before #566 and the archive stays readable
-    beside the new rows. `failed_tests` follows the same rule (#576): only a
-    failed leg whose run named its failures carries the key, so green rows do
-    not grow.
+    beside the new rows. `failed_tests` is written only on a failed leg —
+    the codec's half of the failed-only invariant (#576 round 2), so a future
+    writer cannot attach ids to a leg that passed — and an empty list is
+    written rather than elided, because "named none" is an answer and not an
+    absence. Green rows still do not grow: a green leg never carries the field.
     """
     document: dict[str, object] = {
         "name": leg.name,
@@ -431,7 +437,7 @@ def leg_document(leg: Leg) -> dict[str, object]:
     }
     if leg.reason is not None:
         document["reason"] = leg.reason
-    if leg.failed_tests is not None:
+    if leg.failed_tests is not None and leg.outcome == "failed":
         document["failed_tests"] = list(leg.failed_tests)
     return document
 
@@ -447,9 +453,11 @@ def parse_leg(entry: object) -> Leg | None:
             return None
         wall = entry["wall_seconds"]
         reason = entry.get("reason")
-        raw_failed = entry.get("failed_tests")
-        # Anything but a list claims no failure identities, the same reading an
-        # absent key gets — a half-written value must not redden the archive.
+        # The field belongs to failed legs alone (#576 round 2): on any other
+        # outcome the key is a malformed claim and reads as none, the same as
+        # anything but a list — a half-written value must not redden the
+        # archive, and ids on a passing leg must not survive the read either.
+        raw_failed = entry.get("failed_tests") if outcome == "failed" else None
         failed = tuple(str(item) for item in raw_failed) if isinstance(raw_failed, list) else None
         return Leg(
             name,
@@ -1072,18 +1080,22 @@ def bounded_failed_tests(ids: list[str]) -> tuple[str, ...]:
     return tuple(ids)
 
 
-def read_failed_file(path: Path) -> list[str]:
-    """Read the node ids a leg's run named, empty for a leg that named none.
+def read_failed_file(path: Path) -> list[str] | None:
+    """Read the node ids a leg's run named, keeping "named none" apart from "could not tell".
 
     The file is minted empty by the runner and written only by a pytest run
-    that failed (`tests/unit/conftest.py`), so a non-pytest leg and a green
-    pytest leg both read as nothing to claim. Unreadable is the same answer:
-    evidence for a later investigation must never redden the gate it rides on.
+    that failed (`tests/unit/conftest.py`), so an empty read is an affirmative
+    answer: the run completed with the channel intact and named nothing. A
+    missing or unreadable file is `None` — no claim, because the channel
+    itself broke — and never an empty list, which would let a failure that
+    recorded nothing read as one that recorded a definite answer (#576
+    round 2). Either way the read stays quiet: evidence for a later
+    investigation must never redden the gate it rides on.
     """
     try:
         return [line for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
     except OSError:
-        return []
+        return None
 
 
 def runner_legs(names: list[str], forwarded: list[str]) -> list[tuple[str, list[str]]]:
@@ -1154,7 +1166,9 @@ def run_recipe(
     red. A failed leg also carries the node ids its own run named through
     `CTI_GATE_CLOCK_FAILED_FILE` (#576), bounded and never silently truncated,
     because the row is the one place the identity of a failure survives the
-    next green run.
+    next green run — an empty list where the run completed and named none, and
+    no claim at all where the id file could not be read, two answers that must
+    not collapse (#576 round 2).
 
     Recording stays advisory: an unreadable clock or an unwritable records
     directory prints to stderr and never changes the exit status, because a
@@ -1221,7 +1235,7 @@ def run_recipe(
         leg_end = proc_uptime()
         wall = None if leg_start is None or leg_end is None else max(leg_end - leg_start, 0.0)
         outcome = "passed" if done.returncode == 0 else "failed"
-        named_failures = read_failed_file(failed_file) if outcome == "failed" else []
+        named_failures = read_failed_file(failed_file) if outcome == "failed" else None
         with contextlib.suppress(OSError):
             failed_file.unlink()
         leg_rows.append(
@@ -1229,7 +1243,9 @@ def run_recipe(
                 name,
                 outcome,
                 wall,
-                failed_tests=bounded_failed_tests(named_failures) if named_failures else None,
+                failed_tests=None
+                if named_failures is None
+                else bounded_failed_tests(named_failures),
             )
         )
         outcomes[name] = outcome
