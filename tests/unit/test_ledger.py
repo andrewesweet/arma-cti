@@ -99,12 +99,15 @@ def resource(dispatch_id: str | None = DISPATCH, **extra: str) -> dict[str, Any]
     return {"attributes": attrs(block)}
 
 
-def metric_batch(
+def metric_batch(  # noqa: PLR0913 — fixture exposes each OTLP point-shape control explicitly
     name: str,
     points: list[tuple[dict[str, Any], float]],
     *,
     dispatch_id: str | None = DISPATCH,
     temporality: int = 1,
+    start_time_unix_nano: str | None = None,
+    time_unix_nano: str = "1785931331493000000",
+    session_source: str | None = None,
 ) -> dict[str, Any]:
     """One OTLP metric batch: a sum with the datapoints given, at the temporality given."""
     return {
@@ -121,9 +124,23 @@ def metric_batch(
                                     "isMonotonic": True,
                                     "dataPoints": [
                                         {
-                                            "attributes": attrs(point_attrs),
+                                            "attributes": attrs(
+                                                {
+                                                    **point_attrs,
+                                                    **(
+                                                        {"session_source": session_source}
+                                                        if session_source is not None
+                                                        else {}
+                                                    ),
+                                                }
+                                            ),
                                             "asDouble": value,
-                                            "timeUnixNano": "1785931331493000000",
+                                            "timeUnixNano": time_unix_nano,
+                                            **(
+                                                {"startTimeUnixNano": start_time_unix_nano}
+                                                if start_time_unix_nano is not None
+                                                else {}
+                                            ),
                                         }
                                         for point_attrs, value in points
                                     ],
@@ -525,6 +542,28 @@ def test_a_row_read_from_the_capture_says_so_and_the_sync_warns(tmp_path: Path) 
     assert row["source"]["kind"] == ledger.SOURCE_CAPTURE
     assert any(line.startswith("warning=degraded_source") for line in lines)
     assert any("source=rotating_capture degraded=true" in line for line in lines)
+
+
+def test_a_sync_preserves_an_existing_row_when_its_durable_export_is_gone(
+    tmp_path: Path,
+) -> None:
+    record = stage_record(tmp_path / "dispatches", result={"returncode": 0})
+    export = write_jsonl(
+        tmp_path / "export" / f"dispatch-{DISPATCH}.jsonl",
+        [metric_batch("claude_code.token.usage", [({"type": "input"}, 5)])],
+    )
+    ledger.sync(options(tmp_path), NOW)
+    before = (record / "ledger.json").read_text(encoding="utf-8")
+    export.unlink()
+
+    lines, code = ledger.sync(options(tmp_path), NOW)
+
+    assert code == 0
+    assert (record / "ledger.json").read_text(encoding="utf-8") == before
+    assert any(
+        line == "preserved=d-20260805-120000-abc123 reason=no_durable_export source=absent"
+        for line in lines
+    )
 
 
 # ------------------------------------------------------------------ end-state typing
@@ -2279,12 +2318,15 @@ def test_show_without_a_dispatch_refuses_rather_than_printing_everything(
 # Codex dispatch (`d-20260806-033344-18a832`), whose figures are quoted where they are used.
 
 
-def codex_token_batch(
+def codex_token_batch(  # noqa: PLR0913 — Codex fixture exposes each metric-shape control explicitly
     points: list[tuple[str, float]],
     *,
     dispatch_id: str | None = DISPATCH,
     temporality: int = 1,
     model: str = "gpt-5.6-terra",
+    start_time_unix_nano: str | None = None,
+    time_unix_nano: str = "1785931331493000000",
+    session_source: str | None = None,
 ) -> dict[str, Any]:
     """One `codex.turn.token_usage` batch, in the histogram shape Codex actually sends."""
     return {
@@ -2301,12 +2343,26 @@ def codex_token_batch(
                                     "dataPoints": [
                                         {
                                             "attributes": attrs(
-                                                {"token_type": kind, "model": model}
+                                                {
+                                                    "token_type": kind,
+                                                    "model": model,
+                                                    **(
+                                                        {"session_source": session_source}
+                                                        if session_source is not None
+                                                        else {}
+                                                    ),
+                                                }
                                             ),
                                             "count": "1",
                                             "sum": value,
                                             "min": value,
                                             "max": value,
+                                            "timeUnixNano": time_unix_nano,
+                                            **(
+                                                {"startTimeUnixNano": start_time_unix_nano}
+                                                if start_time_unix_nano is not None
+                                                else {}
+                                            ),
                                         }
                                         for kind, value in points
                                     ],
@@ -2443,6 +2499,79 @@ def test_a_delta_declared_monotonic_codex_histogram_contributes_its_maximum() ->
     assert usage.output_tokens == 300
 
 
+def test_a_monotonic_codex_delta_series_with_chained_windows_is_summed() -> None:
+    usage = ledger.normalise_usage(
+        items_from(
+            [
+                codex_token_batch(
+                    [("input", 3.0)],
+                    model="codex-auto-review",
+                    session_source="subagent_guardian",
+                    start_time_unix_nano="100",
+                    time_unix_nano="200",
+                ),
+                codex_token_batch(
+                    [("input", 5.0)],
+                    model="codex-auto-review",
+                    session_source="subagent_guardian",
+                    start_time_unix_nano="200",
+                    time_unix_nano="300",
+                ),
+            ]
+        )
+    )
+    reading = next(item for item in usage.document()["series"] if item["bucket"] == "input_tokens")
+    assert usage.input_tokens == 8
+    assert reading["read_as"] == "delta"
+
+
+def test_a_monotonic_codex_series_with_a_fixed_window_start_is_cumulative() -> None:
+    usage = ledger.normalise_usage(
+        items_from(
+            [
+                codex_token_batch(
+                    [("input", 100.0)],
+                    session_source="subagent_thread_spawn_opaque",
+                    start_time_unix_nano="100",
+                    time_unix_nano="200",
+                ),
+                codex_token_batch(
+                    [("input", 300.0)],
+                    session_source="subagent_thread_spawn_opaque",
+                    start_time_unix_nano="100",
+                    time_unix_nano="300",
+                ),
+            ]
+        )
+    )
+    reading = next(item for item in usage.document()["series"] if item["bucket"] == "input_tokens")
+    assert usage.input_tokens == 300
+    assert reading["read_as"] == "cumulative"
+
+
+def test_series_evidence_distinguishes_same_model_conversations_without_leaking_source() -> None:
+    sources = ("subagent_thread_spawn_alpha", "subagent_thread_spawn_beta")
+    usage = ledger.normalise_usage(
+        items_from(
+            [
+                codex_token_batch(
+                    [("input", 3.0)],
+                    model="gpt-5.6-sol",
+                    session_source=source,
+                )
+                for source in sources
+            ]
+        )
+    )
+
+    readings = usage.document()["series"]
+    rendered = json.dumps(readings, sort_keys=True)
+    assert len(readings) == 2
+    assert len({item["series_id"] for item in readings}) == 2
+    assert all(len(item["series_id"]) == 64 for item in readings)
+    assert all(source not in rendered for source in sources)
+
+
 def test_a_single_codex_observation_is_explicitly_read_as_a_delta() -> None:
     usage = ledger.normalise_usage(
         items_from([codex_token_batch([("input", 16089.0)], temporality=1)])
@@ -2451,6 +2580,9 @@ def test_a_single_codex_observation_is_explicitly_read_as_a_delta() -> None:
         {
             "metric": "codex.turn.token_usage",
             "model": "gpt-5.6-terra",
+            "series_id": hashlib.sha256(
+                b'codex.turn.token_usage|{"model": "gpt-5.6-terra", "token_type": "input"}'
+            ).hexdigest(),
             "bucket": "input_tokens",
             "read_as": "delta",
             "observations": 1,

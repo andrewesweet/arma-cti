@@ -25,9 +25,11 @@ second writer. Everything here follows from those two sentences:
   bus it cannot reach is not a view that found nothing.
 - **Content logging stays off, and this file is written so that turning it on would not
   leak through the view.** The row carries counts, token and cost numbers, and evidence
-  built from an allowlist of non-free-text attribute keys. No record body, no attribute
-  value outside that allowlist, ever reaches `ledger.json` — so a capture that one day
-  carried prompt text would still not put it in the ledger.
+  built from an allowlist of non-free-text attribute keys. Series evidence also carries a
+  one-way hash of each metric's canonical attributes so same-model conversations remain
+  distinguishable, but no raw attribute value outside that allowlist reaches
+  `ledger.json` — so a capture that one day carried prompt text would still not put it in
+  the ledger.
 - **The row's spend column is fraction-of-cap, and the currency figure is not spend.**
   ADR-0061 Decision 1 optimises Claude spend, and on a subscription with no bill the
   quantity that means "how close is this to the wall we hit" is percentage points of a
@@ -46,10 +48,12 @@ the same span, which is why the reader takes the first key per bucket and not th
 both), Codex as a `codex.turn.token_usage` metric. The reader is rename-tolerant across
 the `gen_ai` vintages because the lanes disagree about which one they emit. A declared
 CUMULATIVE metric contributes its series maximum; Codex also gets a value-based guard,
-because its observed monotonic series can be cumulative even while it declares DELTA.
-Delta series sum, and each metric series records which reading was used in the row. A
-metric or attribute whose shape it does not recognise is reported in `unclassified`,
-never silently dropped.
+because its observed monotonic series can be cumulative even while it declares DELTA. A
+Codex series whose `startTimeUnixNano` windows chain from one observation's
+`timeUnixNano` to the next is instead treated as DELTA, even when those deltas happen to
+ascend. Delta series sum, and each metric series records which reading was used in the
+row. A metric or attribute whose shape it does not recognise is reported in
+`unclassified`, never silently dropped.
 
 **End-state typing**, in ADR-0061's vocabulary, from provider records only:
 `provider_refused` from a refusal event, `quota_exhausted` from a rate-limited provider
@@ -95,12 +99,16 @@ grows without bound by construction, so `prune` deletes raw files older than
 `RETENTION_DAYS` **and only once a row materialised from that same durable file exists**.
 A raw file with no row, or a row read from the degraded source, is never deleted: pruning
 the bus ahead of the view would destroy the only copy. `prune` reports and deletes nothing
-without `--apply`.
+without `--apply`. Once an existing row has no durable export, `sync` preserves it and
+prints `preserved=... reason=no_durable_export`; it does not replace the row with a
+partial rotating-capture read or an absent-source zero. Re-materialise while the durable
+export still exists if a corrected schema or calculation is needed.
 """
 
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import subprocess
@@ -389,6 +397,8 @@ class Item(NamedTuple):
     value: float | None = None
     temporality: int = 0
     series: str = ""
+    start_time_unix_nano: str | None = None
+    time_unix_nano: str | None = None
 
 
 class SeriesReading(NamedTuple):
@@ -396,6 +406,7 @@ class SeriesReading(NamedTuple):
 
     metric: str
     model: str | None
+    series_id: str
     bucket: str
     read_as: str
     observations: int
@@ -407,6 +418,7 @@ class SeriesReading(NamedTuple):
         return {
             "metric": self.metric,
             "model": self.model,
+            "series_id": self.series_id,
             "bucket": self.bucket,
             "read_as": self.read_as,
             "observations": self.observations,
@@ -625,7 +637,18 @@ def _metric_items(resource_block: Mapping[str, Any]) -> list[Item]:
                     continue
                 attrs = attributes(point)
                 series = name + "|" + json.dumps(dict(sorted(attrs.items())), sort_keys=True)
-                found.append(Item("metric", name, attrs, value, temporality, series))
+                found.append(
+                    Item(
+                        "metric",
+                        name,
+                        attrs,
+                        value,
+                        temporality,
+                        series,
+                        _point_timestamp(point, "startTimeUnixNano"),
+                        _point_timestamp(point, "timeUnixNano"),
+                    )
+                )
     return found
 
 
@@ -714,9 +737,10 @@ def _metric_totals(
 
     A declared CUMULATIVE series contributes its maximum, as before. Codex has emitted
     the same running totals while declaring DELTA, so its observed non-decreasing series
-    also contributes its maximum. Anything else is a delta series and is summed. The
-    decision is made independently for each metric-plus-attributes series, so the agent
-    and Codex's internal auto-review series remain separate and both are counted.
+    also contributes its maximum when its windows do not chain as DELTA observations.
+    Anything else is a delta series and is summed. The decision is made independently
+    for each metric-plus-attributes series, so the agent and Codex's internal auto-review
+    series remain separate and both are counted.
     """
     totals: dict[str, float] = {}
     series_points: dict[tuple[str, str], list[Item]] = {}
@@ -738,21 +762,24 @@ def _metric_totals(
     readings: list[SeriesReading] = []
     model_totals: dict[str, dict[str, int]] = {}
     for (bucket, _series), points in series_points.items():
-        values = [point.value if point.value is not None else 0.0 for point in points]
+        ordered_points = _ordered_metric_points(points)
+        values = [point.value if point.value is not None else 0.0 for point in ordered_points]
         declared_cumulative = any(point.temporality == TEMPORALITY_CUMULATIVE for point in points)
         observed_cumulative = (
-            points[0].name in OBSERVED_CUMULATIVE_METRICS
+            ordered_points[0].name in OBSERVED_CUMULATIVE_METRICS
             and len(values) > 1
             and all(current >= previous for previous, current in pairwise(values))
+            and not _is_chained_delta(ordered_points)
         )
         read_as = SERIES_CUMULATIVE if declared_cumulative or observed_cumulative else SERIES_DELTA
         contribution = max(values) if read_as == SERIES_CUMULATIVE else sum(values)
-        model_value = points[0].attrs.get("model")
+        model_value = ordered_points[0].attrs.get("model")
         model = model_value if isinstance(model_value, str) else None
         readings.append(
             SeriesReading(
-                metric=points[0].name,
+                metric=ordered_points[0].name,
                 model=model,
+                series_id=_series_id(ordered_points[0].series),
                 bucket=bucket,
                 read_as=read_as,
                 observations=len(values),
@@ -785,6 +812,57 @@ def _metric_totals(
         for model, buckets in sorted(model_totals.items())
     )
     return totals, unclassified, rendered_readings, rendered_models
+
+
+def _point_timestamp(point: Mapping[str, Any], key: str) -> str | None:
+    """Read one OTLP timestamp without inventing one for older exports."""
+    value = point.get(key)
+    return None if value in (None, "") else str(value)
+
+
+def _timestamp_number(value: str | None) -> int | None:
+    """Parse an OTLP nanosecond timestamp, or leave malformed evidence unranked."""
+    if value is None:
+        return None
+    try:
+        return int(value)
+    except ValueError:
+        return None
+
+
+def _ordered_metric_points(points: list[Item]) -> list[Item]:
+    """Order metric points by end time where the export carries usable timestamps."""
+    timestamps = [
+        timestamp
+        for point in points
+        if (timestamp := _timestamp_number(point.time_unix_nano)) is not None
+    ]
+    if len(timestamps) != len(points):
+        return points
+    return [
+        point
+        for _, point in sorted(
+            zip(timestamps, points, strict=True),
+            key=lambda pair: pair[0],
+        )
+    ]
+
+
+def _is_chained_delta(points: list[Item]) -> bool:
+    """Recognise DELTA windows whose next start equals the previous end."""
+    if len(points) <= 1:
+        return False
+    return all(
+        previous.time_unix_nano is not None
+        and current.start_time_unix_nano is not None
+        and current.start_time_unix_nano == previous.time_unix_nano
+        for previous, current in pairwise(points)
+    )
+
+
+def _series_id(series: str) -> str:
+    """Hash canonical metric attributes; row evidence carries no thread identifiers."""
+    return hashlib.sha256(series.encode("utf-8")).hexdigest()
 
 
 def _metric_bucket(item: Item) -> str | None:
@@ -1617,11 +1695,23 @@ def sync(options: Options, now: datetime) -> tuple[tuple[str, ...], int]:
         return (f"ok=no_dispatches where={where}",), 0
 
     lines: list[str] = []
+    synced = 0
+    preserved = 0
     degraded = 0
     for record in records:
         if not (record / "dispatch.json").is_file():
             lines.append(f"skipped={record.name} reason=no_dispatch_json")
             continue
+
+        plan, _ = read_json(record / "dispatch.json")
+        dispatch_id = str((plan or {}).get("dispatch_id") or record.name)
+        source = choose_source(dispatch_id, options.export_dir, options.capture)
+        existing, _ = read_json(record / "ledger.json")
+        if existing is not None and source.kind != SOURCE_EXPORT:
+            lines.append(f"preserved={record.name} reason=no_durable_export source={source.kind}")
+            preserved += 1
+            continue
+
         materialised = materialise(
             record,
             export_dir=options.export_dir,
@@ -1632,6 +1722,7 @@ def sync(options: Options, now: datetime) -> tuple[tuple[str, ...], int]:
         row = materialised.row
         _record_terminal_state(record, row, now)
         (record / "ledger.json").write_text(json.dumps(row, indent=2) + "\n", encoding="utf-8")
+        synced += 1
         degraded += int(bool(row["source"]["degraded"]))
         lines.append(row_line(row, record_parse_failed=materialised.record_parse_failed))
     if degraded:
@@ -1640,15 +1731,16 @@ def sync(options: Options, now: datetime) -> tuple[tuple[str, ...], int]:
             f"detail=read from {options.capture}, which rotates at 50MB x 5 and loses records; "
             "run the #230 root script for the durable per-dispatch export"
         )
-    lines.append(f"ok=synced rows={len(records)} degraded={degraded}")
+    lines.append(f"ok=synced rows={synced} degraded={degraded} preserved={preserved}")
     return tuple(lines), 0
 
 
 def show(options: Options) -> tuple[tuple[str, ...], int]:
     """Print one materialised row in full, or say plainly that it has not been synced."""
     record = options.dispatch_root / options.dispatch
-    # The condition is discarded: `sync` rewrites the row from the records in every
-    # case, so `not_materialised` names the remedy for a damaged file as well.
+    # The condition is discarded: `sync` preserves an existing row when no durable
+    # export remains, and `not_materialised` names the remedy for a missing or damaged
+    # file that has no usable row yet.
     row, _ = read_json(record / "ledger.json")
     if row is None:
         return (

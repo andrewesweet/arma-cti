@@ -62,7 +62,8 @@ guidance_manifest { schema, state, harness, source_provenance, loader_outcome,
                      sources, reason, launch_context }
 usage    { input_tokens, output_tokens, cache_read_tokens, cache_creation_tokens,
            list_price_usd, list_priced, list_price_note, unclassified,
-           series, by_model }
+           series { metric, model, series_id, bucket, read_as, observations, value },
+           by_model }
 cap_fraction { pool, unit, basis, excludes, attribution, attribution_note,
                calibration_id, est_reason, observed_reason,
                binding_window, binding_reason,
@@ -130,10 +131,11 @@ wrapper from the existing `instruction_delivery` proof; for older records with n
 field it emits `unknown`. It never edits the dispatch record or telemetry source. Ledger
 schema `cti.ledger/5` adds the token-series reading evidence and the per-model token split
 described below. Existing rows are not migrated: they retain their schema marker and
-historical number until an operator explicitly re-runs `just ledger-sync` over the retained
-export. Once the raw export has aged out, the old row is the available record and is not
-silently recomputed. Free text may remain in primary dispatch evidence for compatibility,
-but no guidance free-text field reaches `ledger.json`.
+historical number until an operator explicitly re-runs `just ledger-sync` while the
+durable export remains. If that export has aged out, an existing row is preserved and a
+bare sync reports `preserved=... reason=no_durable_export`; it is not recomputed from the
+rotating capture or from an absent source. Free text may remain in primary dispatch
+evidence for compatibility, but no guidance free-text field reaches `ledger.json`.
 
 ### Cross-lane normalisation
 
@@ -153,13 +155,20 @@ without erroring:
 - **Codex** — `codex.turn.token_usage`. A declared CUMULATIVE series contributes its
   maximum, as it does for the other metric path. Codex's observed series also gets a
   value-based guard: a monotonic series with more than one observation is cumulative even
-  when the metric declares DELTA; otherwise it is read as deltas. A single observation's
-  maximum and sum are equal, and its explicit reading is still recorded. The row's
-  `usage.series` records the metric, model, bucket, observation count, contribution and
-  `read_as` decision for every recognized metric series; its `usage.by_model` split keeps
-  the dispatched model and `codex-auto-review` separate while retaining both in the totals.
-  Summing a cumulative counter would multiply a dispatch's spend by how often the
-  collector scraped it.
+  when the metric declares DELTA, unless its `startTimeUnixNano` windows chain from one
+  observation's `timeUnixNano` to the next. That chaining identifies per-window DELTA
+  observations, including `codex-auto-review` when its values happen to ascend. Points are
+  ordered by `timeUnixNano` before this check, so export order cannot change the reading.
+  A single observation's maximum and sum are equal, and its explicit reading is still
+  recorded. The row's `usage.series` records the metric, model, a SHA-256 `series_id` of
+  the canonical metric-plus-attribute key, bucket, observation count, contribution and
+  `read_as` decision for every recognized metric series. This hash includes the
+  conversation discriminator (`session_source`) without copying a thread identifier into
+  the row. Different canonical keys have different preimages; SHA-256 collision resistance
+  makes those IDs safe row-level discriminators, so same-model conversations remain
+  joinable to retained raw export without leaking the attribute. Its `usage.by_model` split keeps the dispatched model and
+  `codex-auto-review` separate while retaining both in the totals. Summing a cumulative
+  counter would multiply a dispatch's spend by how often the collector scraped it.
 
 A metric or token type the reader does not recognise lands in `unclassified` with its
 name. Nothing is silently dropped.
@@ -319,7 +328,9 @@ finish (#489).
 
 It is off, and the ledger is where it could come back on. The row copies attribute
 *values* only from an allowlist — `status_code`, `refusal_category`, `reset_at`, `model`,
-`error_type` — every one a code, a category or a timestamp. No record body and no other
+`error_type` — every one a code, a category or a timestamp. Series evidence adds only a
+SHA-256 hash of the canonical metric-plus-attribute key; it does not copy raw values such
+as `session_source`, which can carry thread identifiers. No record body and no other
 attribute value ever reaches a row, so a capture that one day carried prompt text still
 would not put it in the ledger. `OTEL_LOG_USER_PROMPTS` stays unset regardless.
 
