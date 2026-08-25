@@ -1171,6 +1171,10 @@ ledger-sync action="sync" *args:
 #
 # `backfill` reads exact `just land` audit lines, dispatch windows and tracker state;
 # it writes only per-issue landing journals. It never writes the generated projection.
+# The normal rebuild is an unconditional writer: ownership is documentation-only, with
+# the orchestrator running it in main after landing. Running it elsewhere writes the
+# generated projection into that tree; no feature-branch guard is intended here because
+# agent worktrees are detached and branch identity is not a stable owner boundary.
 # The store is a cache and never a source of truth: every run rebuilds
 # `~/.arma-cti/observatory/store.json` whole, deterministically — two runs over
 # the same inputs produce identical bytes. It reads **both** spend encodings,

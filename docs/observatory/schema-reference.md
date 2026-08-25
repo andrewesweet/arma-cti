@@ -209,7 +209,11 @@ the committed file. A clean `summary_mismatch` is reported as stale and never wr
 the in-memory bytes into a feature worktree; the orchestrator runs `just observatory`
 and commits the projection at landing. An uncommitted hand edit remains a refusal; a
 committed hand edit is indistinguishable from staleness. An unreadable source remains
-a refusal. The check intentionally ignores dispatches
+a refusal. `_summary_is_unmodified` is fail-closed: Git missing from `PATH`, a target
+that cannot resolve inside `repo`, or `git status` raising or returning non-zero all
+return false. Therefore a red `summary_mismatch` does not by itself prove a local edit;
+in those cases it means the check could not verify that the projection was unmodified.
+The check intentionally ignores dispatches
 on issues not yet landed, but does compare later dispatches naming landed issues because
 those mutate an existing row.
 

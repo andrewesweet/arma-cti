@@ -7,7 +7,10 @@
      staleness.
      An unreadable source stays red. A green `observatory_summary=stale` report
      means projection regeneration is due; a red `check-observatory`
-     (`summary_mismatch`) means the projection was modified locally.
+     (`summary_mismatch`) means the projection differs from the fresh rebuild. It means
+     a local modification only when Git verifies the path; if Git is unavailable, the
+     path cannot be resolved inside the repo, or `git status` fails, it means only that
+     unmodified state could not be verified.
      Cost cells: `C<number>` counted in the lane meter; `U` unrecorded/uncalibrated;
      `A` unrecorded/absent; `N` none/not_involved. `R` in `review_rounds` means
      no review loop was recorded. Full meanings live in the schema reference. -->

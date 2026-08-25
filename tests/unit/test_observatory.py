@@ -100,6 +100,7 @@ import subprocess
 import time
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, NamedTuple
+from unittest.mock import Mock
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
@@ -111,6 +112,7 @@ observatory = load_tool("observatory")
 ledger = observatory.ledger
 attribute_registry = load_tool("attribute_registry")
 dispatch = load_tool("dispatch")
+summary_is_unmodified = observatory._summary_is_unmodified  # noqa: SLF001 — pin its fail-closed contract
 
 PLANNED = "2026-08-05T12:00:00+00:00"
 AFTER_PLANNED = "2026-08-05T23:30:00+00:00"
@@ -941,6 +943,7 @@ def test_landed_summary_is_generated_from_store_and_excludes_unlanded_work(world
     assert "An uncommitted hand edit stays red" in observatory.SUMMARY_HEADER
     assert "a committed hand edit is indistinguishable from" in observatory.SUMMARY_HEADER
     assert "summary_mismatch" in observatory.SUMMARY_HEADER
+    assert "unmodified state could not be verified" in observatory.SUMMARY_HEADER
     data_rows = [
         line
         for line in path.read_text(encoding="utf-8").splitlines()
@@ -956,6 +959,29 @@ def test_landed_summary_is_generated_from_store_and_excludes_unlanded_work(world
     assert ABANDONED_ISSUE not in {row["issue"] for row in store["issue_summary"]}
     assert "total" not in data_rows[0].lower()
     assert "combined" not in data_rows[0].lower()
+
+
+def test_summary_unmodified_fails_closed_when_projection_is_outside_repo(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    target = tmp_path / "landed-issues.md"
+    assert summary_is_unmodified(repo, target) is False
+
+
+def test_summary_unmodified_fails_closed_when_git_is_unavailable(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(observatory.shutil, "which", lambda _name: None)
+    target = tmp_path / "docs/observatory/landed-issues.md"
+    assert summary_is_unmodified(tmp_path, target) is False
+
+
+def test_summary_unmodified_fails_closed_when_git_status_errors(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(observatory.shutil, "which", lambda _name: "/usr/bin/git")
+    monkeypatch.setattr(observatory.subprocess, "run", Mock(side_effect=OSError))
+    target = tmp_path / "docs/observatory/landed-issues.md"
+    assert summary_is_unmodified(tmp_path, target) is False
 
 
 def test_summary_row_changes_counts_adds_moves_and_removes() -> None:
@@ -1392,7 +1418,7 @@ def test_a_dispatch_on_an_unlanded_issue_does_not_churn_the_summary_check(world:
     )
 
 
-def test_a_new_landing_makes_the_summary_check_red_until_regeneration(world: World) -> None:
+def test_a_new_landing_raises_summary_mismatch_until_regeneration(world: World) -> None:
     rebuild_world(world)
     stage_record(
         world.dispatch_root,

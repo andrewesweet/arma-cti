@@ -275,7 +275,11 @@ does by hand.
   `docs/observatory/landed-issues.md` update as the orchestrator's own follow-up. A
   feature branch's `check-observatory` may report a clean stale projection, but never
   writes that derived file into the branch; this keeps parallel substantive diffs
-  review-bound across a clean rebase.
+  review-bound across a clean rebase. This ownership is a documentation-only control:
+  `just observatory` deliberately has no feature-branch guard. Agent worktrees are
+  detached in normal flow, so branch identity is not a stable boundary for identifying
+  the orchestrator's main checkout; the orchestrator must run the writer in main, and
+  another seat running it elsewhere will dirty that tree.
 
 - **Codex gates its own work; its commit is the harness's act, and the landing is still
   the seat's.** #265's ceiling — commits but cannot gate, hand-finished in twelve closes —
