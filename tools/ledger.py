@@ -44,11 +44,12 @@ Three readings the view performs, none of which the bus can do for itself:
 SDK spans carrying `gen_ai.usage.*` (and its own `ai.usage.*` copy of the same numbers on
 the same span, which is why the reader takes the first key per bucket and not the sum of
 both), Codex as a `codex.turn.token_usage` metric. The reader is rename-tolerant across
-the `gen_ai` vintages because the lanes disagree about which one they emit, and it
-respects each metric's own `aggregationTemporality` — delta sums, cumulative takes the
-series maximum — because summing a cumulative counter would over-count by its own
-history. A metric or attribute whose shape it does not recognise is reported in
-`unclassified`, never silently dropped.
+the `gen_ai` vintages because the lanes disagree about which one they emit. A declared
+CUMULATIVE metric contributes its series maximum; Codex also gets a value-based guard,
+because its observed monotonic series can be cumulative even while it declares DELTA.
+Delta series sum, and each metric series records which reading was used in the row. A
+metric or attribute whose shape it does not recognise is reported in `unclassified`,
+never silently dropped.
 
 **End-state typing**, in ADR-0061's vocabulary, from provider records only:
 `provider_refused` from a refusal event, `quota_exhausted` from a rate-limited provider
@@ -106,6 +107,7 @@ import subprocess
 import sys
 import time
 from datetime import UTC, datetime
+from itertools import pairwise
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Final, NamedTuple
 
@@ -125,7 +127,7 @@ if TYPE_CHECKING:
 
 EXIT_REFUSED: Final = 1
 
-SCHEMA: Final = "cti.ledger/4"
+SCHEMA: Final = "cti.ledger/5"
 
 DISPATCH_ROOT: Final = Path.home() / ".arma-cti" / "dispatches"
 LEDGER_EXPORT: Final = Path("/var/log/claude-otel/dispatches")
@@ -143,6 +145,14 @@ SOURCE_ABSENT: Final = "absent"
 
 # OTLP's own temporality enum: 1 is DELTA, 2 is CUMULATIVE.
 TEMPORALITY_CUMULATIVE: Final = 2
+SERIES_DELTA: Final = "delta"
+SERIES_CUMULATIVE: Final = "cumulative"
+
+# Codex has emitted a running total while declaring DELTA. Keep this value-based guard
+# scoped to that metric: Claude Code's DELTA datapoints are independent observations, and
+# a non-decreasing sequence of them must not be reinterpreted as a counter (#525).
+OBSERVED_CUMULATIVE_METRICS: Final = frozenset({"codex.turn.token_usage"})
+MODEL_UNKNOWN: Final = "unknown"
 
 STOP_NOT_A_RESULT: Final = (
     "Stop. A view that cannot reach its bus found nothing about nothing "
@@ -170,6 +180,13 @@ TOKEN_BUCKETS: Final = {
     "cache_creation": "cache_creation_tokens",
     "cache_write_input": "cache_creation_tokens",
 }
+
+TOKEN_COLUMNS: Final = (
+    "input_tokens",
+    "output_tokens",
+    "cache_read_tokens",
+    "cache_creation_tokens",
+)
 
 # Token types that are real, reported, and must not be added to any column, because they
 # are not disjoint from the ones that are. Codex emits six `token_type` values per turn and
@@ -374,6 +391,29 @@ class Item(NamedTuple):
     series: str = ""
 
 
+class SeriesReading(NamedTuple):
+    """One metric series and the way its observations contributed to the row."""
+
+    metric: str
+    model: str | None
+    bucket: str
+    read_as: str
+    observations: int
+    value: float
+
+    def document(self) -> dict[str, Any]:
+        """Render safe, interrogable facts about the series' contribution."""
+        value: int | float = int(self.value) if self.value.is_integer() else self.value
+        return {
+            "metric": self.metric,
+            "model": self.model,
+            "bucket": self.bucket,
+            "read_as": self.read_as,
+            "observations": self.observations,
+            "value": value,
+        }
+
+
 class Usage(NamedTuple):
     """What a dispatch consumed, normalised across whichever lane reported it."""
 
@@ -384,6 +424,8 @@ class Usage(NamedTuple):
     list_price_usd: float = 0.0
     list_priced: bool = False
     unclassified: tuple[str, ...] = ()
+    series: tuple[SeriesReading, ...] = ()
+    model_tokens: tuple[tuple[str, tuple[tuple[str, int], ...]], ...] = ()
 
     def document(self) -> dict[str, Any]:
         """Render the row's usage block: raw counters, and list price under its own name.
@@ -404,6 +446,8 @@ class Usage(NamedTuple):
             "list_priced": self.list_priced,
             "list_price_note": "API list price, not plan spend. Never a decision input.",
             "unclassified": list(self.unclassified),
+            "series": [reading.document() for reading in self.series],
+            "by_model": {model: dict(bucket_totals) for model, bucket_totals in self.model_tokens},
         }
 
 
@@ -658,15 +702,24 @@ def read_items(source: Source, dispatch_id: str) -> list[Item]:
 # -------------------------------------------------------------- cross-lane normalising
 
 
-def _metric_totals(items: Iterable[Item]) -> tuple[dict[str, float], list[str]]:
-    """Total each metric series, respecting the temporality it was aggregated at.
+def _metric_totals(
+    items: Iterable[Item],
+) -> tuple[
+    dict[str, float],
+    list[str],
+    tuple[SeriesReading, ...],
+    tuple[tuple[str, tuple[tuple[str, int], ...]], ...],
+]:
+    """Total metric series and retain the evidence for every reading.
 
-    Delta datapoints are summed; a cumulative counter reports its running total on every
-    export, so its series contributes its maximum and nothing more. Summing a cumulative
-    series would multiply a dispatch's spend by how often the collector scraped it.
+    A declared CUMULATIVE series contributes its maximum, as before. Codex has emitted
+    the same running totals while declaring DELTA, so its observed non-decreasing series
+    also contributes its maximum. Anything else is a delta series and is summed. The
+    decision is made independently for each metric-plus-attributes series, so the agent
+    and Codex's internal auto-review series remain separate and both are counted.
     """
-    delta: dict[str, float] = {}
-    cumulative: dict[str, dict[str, float]] = {}
+    totals: dict[str, float] = {}
+    series_points: dict[tuple[str, str], list[Item]] = {}
     unclassified: list[str] = []
     for item in items:
         if item.kind != "metric":
@@ -680,14 +733,58 @@ def _metric_totals(items: Iterable[Item]) -> tuple[dict[str, float], list[str]]:
                 if kind not in NON_DISJOINT_TOKEN_TYPES:
                     unclassified.append(f"{item.name}:type={kind!r}")
             continue
-        if item.temporality == TEMPORALITY_CUMULATIVE:
-            series = cumulative.setdefault(bucket, {})
-            series[item.series] = max(series.get(item.series, 0.0), item.value or 0.0)
-        else:
-            delta[bucket] = delta.get(bucket, 0.0) + (item.value or 0.0)
-    for bucket, series in cumulative.items():
-        delta[bucket] = delta.get(bucket, 0.0) + sum(series.values())
-    return delta, unclassified
+        series_points.setdefault((bucket, item.series), []).append(item)
+
+    readings: list[SeriesReading] = []
+    model_totals: dict[str, dict[str, int]] = {}
+    for (bucket, _series), points in series_points.items():
+        values = [point.value if point.value is not None else 0.0 for point in points]
+        declared_cumulative = any(point.temporality == TEMPORALITY_CUMULATIVE for point in points)
+        observed_cumulative = (
+            points[0].name in OBSERVED_CUMULATIVE_METRICS
+            and len(values) > 1
+            and all(current >= previous for previous, current in pairwise(values))
+        )
+        read_as = SERIES_CUMULATIVE if declared_cumulative or observed_cumulative else SERIES_DELTA
+        contribution = max(values) if read_as == SERIES_CUMULATIVE else sum(values)
+        model_value = points[0].attrs.get("model")
+        model = model_value if isinstance(model_value, str) else None
+        readings.append(
+            SeriesReading(
+                metric=points[0].name,
+                model=model,
+                bucket=bucket,
+                read_as=read_as,
+                observations=len(values),
+                value=contribution,
+            )
+        )
+        totals[bucket] = totals.get(bucket, 0.0) + contribution
+        if bucket in TOKEN_COLUMNS:
+            model_key = model or MODEL_UNKNOWN
+            buckets = model_totals.setdefault(model_key, dict.fromkeys(TOKEN_COLUMNS, 0))
+            buckets[bucket] += int(contribution)
+
+    rendered_readings = tuple(
+        sorted(
+            readings,
+            key=lambda reading: (
+                reading.metric,
+                reading.model or MODEL_UNKNOWN,
+                reading.bucket,
+                reading.read_as,
+                reading.value,
+            ),
+        )
+    )
+    rendered_models = tuple(
+        (
+            model,
+            tuple((bucket, buckets[bucket]) for bucket in TOKEN_COLUMNS),
+        )
+        for model, buckets in sorted(model_totals.items())
+    )
+    return totals, unclassified, rendered_readings, rendered_models
 
 
 def _metric_bucket(item: Item) -> str | None:
@@ -726,7 +823,7 @@ def _span_totals(items: Iterable[Item]) -> dict[str, float]:
 def normalise_usage(items: Iterable[Item]) -> Usage:
     """Read one dispatch's consumption, whichever lane and whichever signal carried it."""
     collected = list(items)
-    totals, unclassified = _metric_totals(collected)
+    totals, unclassified, series, model_tokens = _metric_totals(collected)
     for bucket, value in _span_totals(collected).items():
         totals[bucket] = totals.get(bucket, 0.0) + value
     list_price = totals.get("list_price_usd")
@@ -738,6 +835,8 @@ def normalise_usage(items: Iterable[Item]) -> Usage:
         list_price_usd=list_price or 0.0,
         list_priced=list_price is not None,
         unclassified=tuple(sorted(set(unclassified))),
+        series=series,
+        model_tokens=model_tokens,
     )
 
 

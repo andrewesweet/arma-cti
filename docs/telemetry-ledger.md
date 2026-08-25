@@ -61,7 +61,8 @@ guidance_manifest { schema, state, harness, source_provenance, loader_outcome,
                      delivery { hashes, byte counts, categories } |
                      sources, reason, launch_context }
 usage    { input_tokens, output_tokens, cache_read_tokens, cache_creation_tokens,
-           list_price_usd, list_priced, list_price_note, unclassified }
+           list_price_usd, list_priced, list_price_note, unclassified,
+           series, by_model }
 cap_fraction { pool, unit, basis, excludes, attribution, attribution_note,
                calibration_id, est_reason, observed_reason,
                binding_window, binding_reason,
@@ -127,9 +128,12 @@ assigned tree.
 For records written by #502 before the manifest existed, the ledger derives the verified
 wrapper from the existing `instruction_delivery` proof; for older records with neither
 field it emits `unknown`. It never edits the dispatch record or telemetry source. Ledger
-schema `cti.ledger/4` writes only hashes, byte counts, enumerated categories and outcomes
-from the constructed guidance variant. Free text may remain in primary dispatch evidence
-for compatibility, but no guidance free-text field reaches `ledger.json`.
+schema `cti.ledger/5` adds the token-series reading evidence and the per-model token split
+described below. Existing rows are not migrated: they retain their schema marker and
+historical number until an operator explicitly re-runs `just ledger-sync` over the retained
+export. Once the raw export has aged out, the old row is the available record and is not
+silently recomputed. Free text may remain in primary dispatch evidence for compatibility,
+but no guidance free-text field reaches `ledger.json`.
 
 ### Cross-lane normalisation
 
@@ -146,10 +150,16 @@ without erroring:
   `completion_tokens`) because the lanes disagree about which one they emit. opencode
   reports no list price, so those rows are `list_priced: false` and `list_price_usd:
   null` — never a zero, which would read as a free dispatch.
-- **Codex** — `codex.turn.token_usage`. Its aggregation temporality is unverified, which
-  is why the reader believes each metric's own `aggregationTemporality`: delta datapoints
-  sum, a cumulative series contributes its maximum. Summing a cumulative counter would
-  multiply a dispatch's spend by how often the collector scraped it.
+- **Codex** — `codex.turn.token_usage`. A declared CUMULATIVE series contributes its
+  maximum, as it does for the other metric path. Codex's observed series also gets a
+  value-based guard: a monotonic series with more than one observation is cumulative even
+  when the metric declares DELTA; otherwise it is read as deltas. A single observation's
+  maximum and sum are equal, and its explicit reading is still recorded. The row's
+  `usage.series` records the metric, model, bucket, observation count, contribution and
+  `read_as` decision for every recognized metric series; its `usage.by_model` split keeps
+  the dispatched model and `codex-auto-review` separate while retaining both in the totals.
+  Summing a cumulative counter would multiply a dispatch's spend by how often the
+  collector scraped it.
 
 A metric or token type the reader does not recognise lands in `unclassified` with its
 name. Nothing is silently dropped.

@@ -283,6 +283,24 @@ def test_claude_code_token_datapoints_total_by_their_type_attribute() -> None:
     assert (usage.list_price_usd, usage.list_priced) == (0.25, True)
 
 
+def test_a_claude_delta_series_stays_delta_when_its_values_are_monotonic() -> None:
+    items = items_from(
+        [
+            metric_batch(
+                "claude_code.token.usage",
+                [
+                    ({"type": "input", "model": "claude"}, 100),
+                    ({"type": "input", "model": "claude"}, 300),
+                ],
+                temporality=1,
+            )
+        ]
+    )
+    usage = ledger.normalise_usage(items)
+    assert usage.input_tokens == 400
+    assert usage.document()["series"][0]["read_as"] == "delta"
+
+
 def test_a_cumulative_counter_contributes_its_maximum_and_not_its_sum() -> None:
     # A monotonic cumulative series reports its running total on every export, so summing
     # its datapoints multiplies the dispatch's spend by how often the collector scraped.
@@ -1541,6 +1559,61 @@ def test_a_dispatched_run_produces_one_durable_record_keyed_by_its_dispatch_id(
     assert any(line.startswith("ok=synced rows=1 degraded=0") for line in lines)
 
 
+def test_a_codex_export_materialises_corrected_usage_and_series_evidence(
+    tmp_path: Path,
+) -> None:
+    record = stage_record(
+        tmp_path / "dispatches",
+        issue=469,
+        lane="codex",
+        profile="codex-sol-high",
+        seat="review",
+        result={"returncode": 0},
+    )
+    write_jsonl(
+        tmp_path / "export" / f"dispatch-{DISPATCH}.jsonl",
+        [
+            codex_token_batch([("input", 100.0), ("output", 10.0)], model="gpt-5.6-sol"),
+            codex_token_batch([("input", 300.0), ("output", 30.0)], model="gpt-5.6-sol"),
+            codex_token_batch([("input", 3.0), ("output", 2.0)], model="codex-auto-review"),
+            codex_token_batch([("input", 5.0), ("output", 4.0)], model="codex-auto-review"),
+        ],
+    )
+
+    ledger.sync(options(tmp_path), NOW)
+
+    row = json.loads((record / "ledger.json").read_text(encoding="utf-8"))
+    assert row["schema"] == ledger.SCHEMA
+    assert (row["usage"]["input_tokens"], row["usage"]["output_tokens"]) == (305, 34)
+    assert row["usage"]["by_model"] == {
+        "codex-auto-review": {
+            "input_tokens": 5,
+            "output_tokens": 4,
+            "cache_read_tokens": 0,
+            "cache_creation_tokens": 0,
+        },
+        "gpt-5.6-sol": {
+            "input_tokens": 300,
+            "output_tokens": 30,
+            "cache_read_tokens": 0,
+            "cache_creation_tokens": 0,
+        },
+    }
+    assert {
+        (reading["model"], reading["bucket"]): (
+            reading["read_as"],
+            reading["observations"],
+            reading["value"],
+        )
+        for reading in row["usage"]["series"]
+    } == {
+        ("codex-auto-review", "input_tokens"): ("cumulative", 2, 5),
+        ("codex-auto-review", "output_tokens"): ("cumulative", 2, 4),
+        ("gpt-5.6-sol", "input_tokens"): ("cumulative", 2, 300),
+        ("gpt-5.6-sol", "output_tokens"): ("cumulative", 2, 30),
+    }
+
+
 def test_a_historical_record_without_a_manifest_is_unknown_not_an_empty_success(
     tmp_path: Path,
 ) -> None:
@@ -1660,7 +1733,7 @@ def test_verified_guidance_reaches_the_ledger_as_hashes_counts_and_categories_on
     rendered = (record / "ledger.json").read_text(encoding="utf-8")
     row = json.loads(rendered)
     manifest = row["guidance_manifest"]
-    assert row["schema"] == "cti.ledger/4"
+    assert row["schema"] == "cti.ledger/5"
     assert manifest == {
         "schema": guidance.GUIDANCE_LEDGER_SCHEMA,
         "state": guidance.GUIDANCE_STATE_VERIFIED,
@@ -2211,6 +2284,7 @@ def codex_token_batch(
     *,
     dispatch_id: str | None = DISPATCH,
     temporality: int = 1,
+    model: str = "gpt-5.6-terra",
 ) -> dict[str, Any]:
     """One `codex.turn.token_usage` batch, in the histogram shape Codex actually sends."""
     return {
@@ -2227,7 +2301,7 @@ def codex_token_batch(
                                     "dataPoints": [
                                         {
                                             "attributes": attrs(
-                                                {"token_type": kind, "model": "gpt-5.6-terra"}
+                                                {"token_type": kind, "model": model}
                                             ),
                                             "count": "1",
                                             "sum": value,
@@ -2341,6 +2415,76 @@ def test_a_cumulative_codex_histogram_contributes_its_maximum() -> None:
         )
     )
     assert usage.output_tokens == 300
+
+
+def test_a_non_monotonic_delta_codex_series_is_summed() -> None:
+    usage = ledger.normalise_usage(
+        items_from(
+            [
+                codex_token_batch([("output", 300.0)], temporality=1),
+                codex_token_batch([("output", 100.0)], temporality=1),
+            ]
+        )
+    )
+    assert usage.output_tokens == 400
+    assert usage.document()["series"][0]["read_as"] == "delta"
+
+
+def test_a_delta_declared_monotonic_codex_histogram_contributes_its_maximum() -> None:
+    """A provider-declared DELTA cannot override the observed cumulative series."""
+    usage = ledger.normalise_usage(
+        items_from(
+            [
+                codex_token_batch([("output", 100.0)], temporality=1),
+                codex_token_batch([("output", 300.0)], temporality=1),
+            ]
+        )
+    )
+    assert usage.output_tokens == 300
+
+
+def test_a_single_codex_observation_is_explicitly_read_as_a_delta() -> None:
+    usage = ledger.normalise_usage(
+        items_from([codex_token_batch([("input", 16089.0)], temporality=1)])
+    )
+    assert usage.document()["series"] == [
+        {
+            "metric": "codex.turn.token_usage",
+            "model": "gpt-5.6-terra",
+            "bucket": "input_tokens",
+            "read_as": "delta",
+            "observations": 1,
+            "value": 16089,
+        }
+    ]
+
+
+def test_codex_series_are_counted_and_split_by_model() -> None:
+    usage = ledger.normalise_usage(
+        items_from(
+            [
+                codex_token_batch([("input", 100.0), ("output", 10.0)], model="gpt-5.6-sol"),
+                codex_token_batch([("input", 300.0), ("output", 30.0)], model="gpt-5.6-sol"),
+                codex_token_batch([("input", 3.0), ("output", 2.0)], model="codex-auto-review"),
+                codex_token_batch([("input", 5.0), ("output", 4.0)], model="codex-auto-review"),
+            ]
+        )
+    )
+    assert (usage.input_tokens, usage.output_tokens) == (305, 34)
+    assert usage.document()["by_model"] == {
+        "codex-auto-review": {
+            "input_tokens": 5,
+            "output_tokens": 4,
+            "cache_read_tokens": 0,
+            "cache_creation_tokens": 0,
+        },
+        "gpt-5.6-sol": {
+            "input_tokens": 300,
+            "output_tokens": 30,
+            "cache_read_tokens": 0,
+            "cache_creation_tokens": 0,
+        },
+    }
 
 
 def test_the_codex_lane_charges_the_codex_pool_with_no_estimator() -> None:
