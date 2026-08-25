@@ -350,9 +350,11 @@ def _human_ruling_walk(review_root: Path, at: float) -> ReviewQueueRead:
     try:
         # Numeric issue order: directory names are issue numbers, and
         # lexicographic order puts "1000" before "999" the first time an
-        # issue crosses a width boundary (#567). Non-decimal entries are
-        # skipped by `_review_loop_entry` either way; dropping them here
-        # only keeps the key single-typed.
+        # issue crosses a width boundary (#567). Filtering non-decimal
+        # entries before `_review_loop_entry` keeps the sort key single-typed
+        # and short-circuits its `is_dir()` stat. A non-decimal entry whose
+        # stat raises `OSError` is therefore dropped instead of named
+        # unreadable as `<name>/loop.json`.
         entries = sorted(
             (entry for entry in review_root.iterdir() if entry.name.isdecimal()),
             key=lambda entry: int(entry.name),
@@ -404,11 +406,6 @@ def _human_ruling_walk(review_root: Path, at: float) -> ReviewQueueRead:
         return ReviewQueueRead(sample, tuple(prompts))
     sample = Sample("human_ruling", "counted", depth, "measured", max(0.0, at - oldest_at))
     return ReviewQueueRead(sample, tuple(prompts))
-
-
-def _human_ruling_sample(review_root: Path, at: float) -> Sample:
-    """Return only the human-ruling sample for callers that do not render prompts."""
-    return _human_ruling_read(review_root, at).sample
 
 
 def render_terminus_prompts(

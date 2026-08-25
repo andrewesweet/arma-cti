@@ -276,8 +276,8 @@ def test_a_frozen_candidate_waits_on_no_slot(tmp_path: Path) -> None:
 
 
 def test_a_blocked_candidate_waits_on_no_slot(tmp_path: Path) -> None:
-    # The blocked boundary, the same parity: a full list holds the clean
-    # candidate only, and the blocked one never counts even with room at zero.
+    # The blocked boundary, same parity: a full list holds the two clean
+    # candidates, while the blocked candidate never counts even with room at zero.
     review_root, dispatch_dir, approvals = empty_sources(tmp_path)
     policy = parsed(state="open", limit=2)
     in_flight = in_flight_of(299, 300)
