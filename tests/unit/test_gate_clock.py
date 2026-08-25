@@ -1089,31 +1089,40 @@ def test_a_failed_leg_records_the_ids_its_run_named_and_they_survive_a_green_run
 
     The leg's child writes the node ids to the path the runner exported —
     exactly what the suite's conftest does on a red pytest run — and a failed
-    leg copies them onto its row. A failed leg whose run named nothing (a
-    non-pytest leg, a crash before summary) claims none rather than inheriting
-    any, a green leg claims none, and the row's ids are still there after a
-    later green run of the same recipe — the survival `lastfailed` cannot
-    offer, since the next green run erases it.
+    leg copies them onto its row. Three answers stay apart (#576 round 2): a
+    failed leg whose run completed and named nothing (a non-pytest leg, a
+    pytest red with no failed reports) claims an empty list, one whose id file
+    is gone or unreadable claims nothing at all, and neither inherits any ids;
+    a green leg claims none, and the row's ids are still there after a later
+    green run of the same recipe — the survival `lastfailed` cannot offer,
+    since the next green run erases it.
     """
     monkeypatch.delenv("CTI_GATE_CLOCK_COLLECTED_FILE", raising=False)
     naming = (
         'printf "tests/unit/test_a.py::test_one\\ntests/unit/test_a.py::test_two\\n"'
         ' > "$CTI_GATE_CLOCK_FAILED_FILE"; exit 1'
     )
+    losing = 'rm -f "$CTI_GATE_CLOCK_FAILED_FILE"; exit 1'
     status = gate_clock.run_recipe(
         "unit",
-        [("unit-python", ["sh", "-c", naming]), ("unit-rust", ["false"]), ("tail", ["true"])],
+        [
+            ("unit-python", ["sh", "-c", naming]),
+            ("unit-rust", ["false"]),
+            ("mutation", ["sh", "-c", losing]),
+            ("tail", ["true"]),
+        ],
         tmp_path,
     )
     assert status != 0
     (red_row,) = gate_clock.load_records(tmp_path)
     assert red_row.legs is not None
-    named, plain, green = red_row.legs
+    named, plain, lost, green = red_row.legs
     assert named.failed_tests == (
         "tests/unit/test_a.py::test_one",
         "tests/unit/test_a.py::test_two",
     )
-    assert (plain.outcome, plain.failed_tests) == ("failed", None)
+    assert (plain.outcome, plain.failed_tests) == ("failed", ())
+    assert (lost.outcome, lost.failed_tests) == ("failed", None)
     assert (green.outcome, green.failed_tests) == ("passed", None)
 
     assert gate_clock.run_recipe("unit", [("unit-python", ["true"])], tmp_path) == 0
@@ -1167,6 +1176,35 @@ def test_the_suites_own_hook_writes_the_ids_to_the_exported_path(
 
     conftest.pytest_terminal_summary(SimpleNamespace(stats={}), SimpleNamespace())
     assert not exported.exists()
+
+
+def test_failed_tests_belong_to_failed_legs_alone() -> None:
+    """The codec enforces the failed-only invariant in both directions (#576 round 2).
+
+    A future writer attaching ids to a passing or skipped leg finds the key
+    dropped at serialise, and a hand-edited row carrying the key on such a leg
+    finds it ignored at read — either way a leg that did not fail claims no
+    failure identities. On a failed leg an empty list survives the round trip
+    as an empty tuple, an affirmative "named none" distinct from the absent
+    key that means the id file could not be read.
+    """
+    stray = gate_clock.Leg("unit", "passed", 1.0, failed_tests=("tests/unit/test_a.py::t",))
+    assert "failed_tests" not in gate_clock.leg_document(stray)
+    skipped = gate_clock.Leg("tail", "not_run", None, "unit failed", ("tests/unit/test_a.py::t",))
+    assert "failed_tests" not in gate_clock.leg_document(skipped)
+
+    read = gate_clock.parse_leg(
+        {"name": "unit", "outcome": "passed", "wall_seconds": 1.0, "failed_tests": ["x"]}
+    )
+    assert read == gate_clock.Leg("unit", "passed", 1.0)
+
+    none_named = gate_clock.Leg("unit", "failed", 1.0, failed_tests=())
+    document = gate_clock.leg_document(none_named)
+    assert document["failed_tests"] == []
+    assert gate_clock.parse_leg(document) == none_named
+    unreadable = gate_clock.Leg("unit", "failed", 1.0)
+    assert "failed_tests" not in gate_clock.leg_document(unreadable)
+    assert gate_clock.parse_leg(gate_clock.leg_document(unreadable)) == unreadable
 
 
 def test_a_row_whose_failed_tests_will_not_read_claims_none(tmp_path: Path) -> None:
