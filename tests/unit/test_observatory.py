@@ -1741,6 +1741,9 @@ def test_the_rebuild_states_its_own_coverage(world: World) -> None:
     ]
     assert coverage["issues"] == 9
     assert coverage["issues_with_landings"] == 4
+    assert coverage["landing_rows"] == 4
+    assert coverage["landing_rows_journalled"] == 0
+    assert coverage["landing_rows_journal_less"] == 4
     lines = observatory.summary_lines(store, world.store_dir)
     assert any(
         "dispatches=12" in line
@@ -1749,11 +1752,13 @@ def test_the_rebuild_states_its_own_coverage(world: World) -> None:
         and "issues_with_landings=4" in line
         for line in lines
     )
+    assert any("landing_coverage rows=4 journalled=0" in line for line in lines)
 
 
 def test_the_landed_sha_is_attributed_to_the_issue_that_landed(world: World) -> None:
     store = rebuild_world(world)
     assert cost_row(store, ISSUE, "claude-native")["landed_sha"] == world.landed_sha
+    assert summary_row(store, ISSUE)["landing_source"] == observatory.LANDING_SOURCE_FALLBACK
     assert cost_row(store, OTHER_ISSUE, "claude-native")["landed"] is False
     assert cost_row(store, OTHER_ISSUE, "claude-native")["landed_sha_reason"]
 
@@ -1878,6 +1883,7 @@ def test_the_journal_s_produced_commit_owns_the_row_over_a_newer_referencing_com
     store = _rebuild_landing_world(world)
     assert cost_row(store, JOURNAL_ISSUE, "claude-native")["landed_sha"] == genuine
     assert summary_row(store, JOURNAL_ISSUE)["landed_sha"] == genuine
+    assert summary_row(store, JOURNAL_ISSUE)["landing_source"] == observatory.LANDING_SOURCE_JOURNAL
     item = work_item(store, JOURNAL_ISSUE)
     assert item["state"] == "landed"
     assert item["clock_end"] == GENUINE_AT

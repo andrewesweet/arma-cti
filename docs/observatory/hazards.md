@@ -194,3 +194,15 @@ reading the spike as history the issues actually have. It fires once per issue a
 most: the undetermined arrival founds the journal, and arrivals after it read
 against that (#490 round 2, finding 1; the global scope recorded by #552, whose
 reviewer accepted the direction as the safe one).
+
+## 9. A fallback can converge on the truth after being wrong
+
+The Git referencing-commit fallback cannot distinguish a bare issue list from a
+landing attribution. A false row can therefore become accidentally true when that issue
+lands later — the row's SHA changes or the issue's state changes, but neither proves
+that the earlier fallback was right. `just observatory backfill` never uses the current
+row as evidence: it accepts only an exact `just land` audit SHA, bounds it against
+`origin/main` and a landing-capable dispatch window, and records the result as
+`cti.relation.produced`. A closed issue without that evidence gets a reasoned,
+subject-only marker; an open issue gets no marker. Read `landing_source` and the
+`journal_coverage` line before treating a converged row as recovered.

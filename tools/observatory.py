@@ -144,6 +144,7 @@ by the engine, so the swap, if ever wanted, touches only the cookbook.
 from __future__ import annotations
 
 import argparse
+import importlib
 import json
 import os
 import shutil
@@ -170,7 +171,7 @@ import review_loop
 if TYPE_CHECKING:
     from collections.abc import Container
 
-SCHEMA: Final = "cti.observatory/9"
+SCHEMA: Final = "cti.observatory/10"
 STORE_NAME: Final = "store.json"
 SUMMARY_PATH: Final = Path("docs/observatory/landed-issues.md")
 SUMMARY_HEADER: Final = (
@@ -546,6 +547,8 @@ ISSUE_SUMMARY_COLUMNS: Final = (
     "issue",
     "landed_sha",
     "landed_sha_reason",
+    "landing_source",
+    "landing_source_reason",
     "dispatches",
     "review_rounds",
     "review_rounds_reason",
@@ -554,6 +557,13 @@ ISSUE_SUMMARY_COLUMNS: Final = (
     "lanes",
     "costs",
 )
+
+LANDING_SOURCE_JOURNAL: Final = "journal"
+LANDING_SOURCE_FALLBACK: Final = "git_fallback"
+LANDING_SOURCE_UNAVAILABLE_REASON: Final = (
+    "the landing has no recovered commit, so no source can be stated"
+)
+BACKFILL_DETAIL_PREFIX: Final = "observatory backfill: "
 
 # The stage view (#490): one row per stage of `attribute_registry.STAGES`, the yield
 # derived from the arrivals' own first-pass statuses — never from correlating rounds
@@ -917,11 +927,14 @@ class LandingJournals(NamedTuple):
 
     `produced` indexes the landing rows by issue, commits only; `damaged` holds every
     issue whose journal exists and read as damage — the set that keeps a wrecked
-    journal from passing for an absent one.
+    journal from passing for an absent one. `journalled` is every issue with a readable
+    landing event or a damaged journal, so coverage can distinguish no journal from a
+    journal that cannot answer.
     """
 
     produced: Mapping[int, tuple[str, ...]]
     damaged: frozenset[int]
+    journalled: frozenset[int]
 
 
 def _journalled_landing(
@@ -973,14 +986,16 @@ def _landing_journals(landing_read: LandingRead) -> LandingJournals:
         named = commits.setdefault(int(row["issue"]), [])
         if row["produced_commit"]:
             named.append(str(row["produced_commit"]))
-    issues: set[int] = set()
+    journalled: set[int] = {int(row["issue"]) for row in landing_read.landings}
+    damaged: set[int] = set()
     for name in landing_read.malformed:
         issue, separator, file = name.partition("/")
         if separator and file == attribute_registry.LANDING_JOURNAL and issue.isdecimal():
-            issues.add(int(issue))
+            damaged.add(int(issue))
     return LandingJournals(
         {issue: tuple(named) for issue, named in commits.items()},
-        frozenset(issues),
+        frozenset(damaged),
+        frozenset(journalled | damaged),
     )
 
 
@@ -1752,7 +1767,8 @@ def read_landings(review_root: Path) -> LandingRead:  # noqa: C901, PLR0912, PLR
     journals = 0
     events = 0
     newest: dict[
-        tuple[int, str], tuple[float, tuple[attribute_registry.Relation, ...], str | None]
+        tuple[int, str],
+        tuple[float, tuple[attribute_registry.Relation, ...], str | None, str | None],
     ] = {}
     order: list[tuple[int, str]] = []
 
@@ -1803,6 +1819,8 @@ def read_landings(review_root: Path) -> LandingRead:  # noqa: C901, PLR0912, PLR
             if gate_cause is not None and gate_cause not in attribute_registry.GATE_REVIEW_CAUSES:
                 damaged(key)
                 continue
+            detail = document.get("export_detail")
+            detail = detail if isinstance(detail, str) else None
             events += 1
             produced = next(
                 (
@@ -1815,19 +1833,24 @@ def read_landings(review_root: Path) -> LandingRead:  # noqa: C901, PLR0912, PLR
             pair = (issue, produced.object_id if produced is not None else "")
             if pair not in newest:
                 order.append(pair)
-            newest[pair] = (float(moment), relations, gate_cause)
+            newest[pair] = (float(moment), relations, gate_cause, detail)
 
     landing_rows: list[dict[str, Any]] = []
     relation_rows: list[dict[str, Any]] = []
     for issue, commit in order:
-        at, relations, gate_cause = newest[(issue, commit)]
+        at, relations, gate_cause, detail = newest[(issue, commit)]
         landing = f"{issue}/{commit}"
+        reason = (
+            detail.removeprefix(BACKFILL_DETAIL_PREFIX)
+            if not commit and detail and detail.startswith(BACKFILL_DETAIL_PREFIX)
+            else NO_COMMIT_RELATION_REASON
+        )
         landing_rows.append(
             {
                 "landing": landing,
                 "issue": issue,
                 "produced_commit": commit or None,
-                "produced_commit_reason": None if commit else NO_COMMIT_RELATION_REASON,
+                "produced_commit_reason": None if commit else reason,
                 "gate_cause": gate_cause,
                 "gate_cause_reason": None if gate_cause is not None else NO_GATE_CAUSE_REASON,
                 "at": at,
@@ -2352,6 +2375,11 @@ def issue_summary_rows(store: Mapping[str, Any], repo: Path | None = None) -> li
         costs_by_issue.setdefault(int(row["issue"]), {})[str(row["lane"])] = row
     dispatches_by_issue: dict[int, int] = {}
     lanes_by_issue: dict[int, set[str]] = {}
+    journal_produced_issues = {
+        int(row["issue"])
+        for row in store.get("landings", [])
+        if row.get("produced_commit") is not None
+    }
     for row in store["dispatches"]:
         issue = row.get("issue")
         lane = row.get("lane")
@@ -2377,11 +2405,23 @@ def issue_summary_rows(store: Mapping[str, Any], repo: Path | None = None) -> li
             )
         )
         landed_sha, landed_sha_reason = _newest_landed_sha(repo, landed_shas)
+        if landed_sha is None:
+            landing_source = None
+            landing_source_reason = landed_sha_reason or LANDING_SOURCE_UNAVAILABLE_REASON
+        else:
+            landing_source = (
+                LANDING_SOURCE_JOURNAL
+                if issue in journal_produced_issues
+                else LANDING_SOURCE_FALLBACK
+            )
+            landing_source_reason = None
         rows.append(
             {
                 "issue": issue,
                 "landed_sha": landed_sha,
                 "landed_sha_reason": landed_sha_reason,
+                "landing_source": landing_source,
+                "landing_source_reason": landing_source_reason,
                 "dispatches": dispatches_by_issue.get(issue, 0),
                 "review_rounds": rework.get("review_rounds"),
                 "review_rounds_reason": rework.get("review_rounds_reason"),
@@ -2431,6 +2471,7 @@ def render_summary(store: Mapping[str, Any]) -> str:
     columns = [
         "issue",
         "landed_sha",
+        "landing_source",
         "dispatches",
         "review_rounds",
         "lead_time_seconds",
@@ -2443,6 +2484,7 @@ def render_summary(store: Mapping[str, Any]) -> str:
         cells = [
             row["issue"],
             _summary_value(row["landed_sha"], row["landed_sha_reason"]),
+            row["landing_source"] or _summary_value(None, row["landing_source_reason"]),
             row["dispatches"],
             _summary_value(
                 row["review_rounds"],
@@ -2664,6 +2706,11 @@ def rebuild(  # noqa: PLR0913, PLR0917 — the source paths, destination and pro
     landed_issues = sorted(
         {int(row["issue"]) for row in issue_cost if row["landed"]}  # type: ignore[arg-type]
     )
+    landed_issue_set = set(landed_issues)
+    journalled_landed = landed_issue_set & set(journals.journalled)
+    unrecoverable_landings = sorted(
+        {f"{row['issue']}/" for row in landing_read.landings if row["produced_commit"] is None}
+    )
     by_issue = _group_by_issue(rows)
     work_items, state_counts = _work_items(by_issue, repo)
     issue_rework = [
@@ -2703,6 +2750,10 @@ def rebuild(  # noqa: PLR0913, PLR0917 — the source paths, destination and pro
             ],
             "issues": len({row["issue"] for row in rows if row["issue"]}),
             "issues_with_landings": len(landed_issues),
+            "landing_rows": len(landed_issues),
+            "landing_rows_journalled": len(journalled_landed),
+            "landing_rows_journal_less": len(landed_issue_set - set(journals.journalled)),
+            "unrecoverable_landings": unrecoverable_landings,
             "work_items": len(work_items),
             "work_items_landed": state_counts[STATE_LANDED],
             "work_items_open": state_counts[STATE_OPEN],
@@ -2907,6 +2958,23 @@ def summary_lines(store: Mapping[str, Any], store_dir: Path) -> tuple[str, ...]:
             )
         )
     )
+    lines.append(
+        " ".join(
+            (
+                "landing_coverage",
+                f"rows={coverage['landing_rows']}",
+                f"journalled={coverage['landing_rows_journalled']}",
+                f"journal_less={coverage['landing_rows_journal_less']}",
+                f"unrecoverable={len(coverage['unrecoverable_landings'])}",
+                f"journal_coverage={coverage['landing_rows_journalled']}/{coverage['landing_rows']}",
+            )
+        )
+    )
+    lines.extend(
+        f"unrecoverable_landing issue={row['issue']} reason={row['produced_commit_reason']}"
+        for row in store["landings"]
+        if row["produced_commit"] is None
+    )
     # The queue-depth line states the sample's own coverage rather than a depth: no
     # queue renders a number here, because the depth that matters is the newest one
     # and a summary that pre-computed it would be a second rendering path for the
@@ -3098,7 +3166,10 @@ def main(  # noqa: C901, PLR0911, PLR0912 — three CLI actions each own their r
     argv: Sequence[str] | None = None,
 ) -> int:
     """Run one action: rebuild the store, or query the one already shipped."""
-    args = parse_args(argv if argv is not None else sys.argv[1:])
+    raw_argv = list(argv if argv is not None else sys.argv[1:])
+    if raw_argv and raw_argv[0] == "backfill":
+        return importlib.import_module("observatory_backfill").main(raw_argv[1:])
+    args = parse_args(raw_argv)
     if args.action == "query":
         if not args.sql:
             print("refused=no_sql action=Pass one SQL statement.")  # noqa: T201

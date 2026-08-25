@@ -1167,7 +1167,10 @@ ledger-sync action="sync" *args:
 #
 #   just observatory                    full rebuild, coverage and cost lines
 #   just observatory query "<SQL>"      one SQL statement over the shipped store
+#   just observatory backfill            reconcile historical landing journals only
 #
+# `backfill` reads exact `just land` audit lines, dispatch windows and tracker state;
+# it writes only per-issue landing journals. It never writes the generated projection.
 # The store is a cache and never a source of truth: every run rebuilds
 # `~/.arma-cti/observatory/store.json` whole, deterministically — two runs over
 # the same inputs produce identical bytes. It reads **both** spend encodings,
