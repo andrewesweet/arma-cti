@@ -77,6 +77,7 @@ import json
 import re
 import subprocess
 from pathlib import Path
+from types import SimpleNamespace
 from typing import TYPE_CHECKING, Final
 
 from conftest import load_tool
@@ -465,7 +466,9 @@ def test_a_written_row_round_trips_every_field(tmp_path: Path) -> None:
         row()._replace(
             legs=(
                 gate_clock.Leg("unit-python", "passed", 71.2),
-                gate_clock.Leg("unit-rust", "failed", 0.4),
+                gate_clock.Leg(
+                    "unit-rust", "failed", 0.4, None, ("tests/unit/test_a.py::test_one",)
+                ),
                 gate_clock.Leg("a-third-leg", "not_run", None, "unit-rust failed"),
             )
         ),
@@ -1077,6 +1080,106 @@ def test_a_declared_prerequisite_that_passes_runs_its_dependent(
         ("unit", "passed"),
         ("mutation", "passed"),
     ]
+
+
+def test_a_failed_leg_records_the_ids_its_run_named_and_they_survive_a_green_run(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """#576's shape: the failing tests' identities land on the row, durably.
+
+    The leg's child writes the node ids to the path the runner exported —
+    exactly what the suite's conftest does on a red pytest run — and a failed
+    leg copies them onto its row. A failed leg whose run named nothing (a
+    non-pytest leg, a crash before summary) claims none rather than inheriting
+    any, a green leg claims none, and the row's ids are still there after a
+    later green run of the same recipe — the survival `lastfailed` cannot
+    offer, since the next green run erases it.
+    """
+    monkeypatch.delenv("CTI_GATE_CLOCK_COLLECTED_FILE", raising=False)
+    naming = (
+        'printf "tests/unit/test_a.py::test_one\\ntests/unit/test_a.py::test_two\\n"'
+        ' > "$CTI_GATE_CLOCK_FAILED_FILE"; exit 1'
+    )
+    status = gate_clock.run_recipe(
+        "unit",
+        [("unit-python", ["sh", "-c", naming]), ("unit-rust", ["false"]), ("tail", ["true"])],
+        tmp_path,
+    )
+    assert status != 0
+    (red_row,) = gate_clock.load_records(tmp_path)
+    assert red_row.legs is not None
+    named, plain, green = red_row.legs
+    assert named.failed_tests == (
+        "tests/unit/test_a.py::test_one",
+        "tests/unit/test_a.py::test_two",
+    )
+    assert (plain.outcome, plain.failed_tests) == ("failed", None)
+    assert (green.outcome, green.failed_tests) == ("passed", None)
+
+    assert gate_clock.run_recipe("unit", [("unit-python", ["true"])], tmp_path) == 0
+    red_again, green_row = gate_clock.load_records(tmp_path)
+    assert red_again == red_row  # the evidence survived the green run
+    assert green_row.legs is not None
+    assert green_row.legs[0].failed_tests is None
+
+
+def test_hundreds_of_failures_are_bounded_with_the_cut_stated() -> None:
+    """The cap holds the row's size, and the truncation names itself.
+
+    A run failing hundreds of tests writes twenty ids and one closing entry
+    counting the omitted rest — never a list that reads as complete when it is
+    not, which is the observatory's standing under-reporting hazard.
+    """
+    ids = [f"tests/unit/test_many.py::test_{n}" for n in range(25)]
+    bounded = gate_clock.bounded_failed_tests(ids)
+    assert len(bounded) == gate_clock.FAILED_TESTS_RECORDED + 1
+    assert bounded[:-1] == tuple(ids[: gate_clock.FAILED_TESTS_RECORDED])
+    assert bounded[-1] == "... and 5 more not recorded"
+    assert gate_clock.bounded_failed_tests(ids[:20]) == tuple(ids[:20])
+
+
+def test_the_suites_own_hook_writes_the_ids_to_the_exported_path(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The conftest half of #576: failures reach the file, dedup'd, controller only.
+
+    Failed and errored reports both name node ids, one appearing in both lands
+    once, an xdist worker writes nothing (the controller aggregates every
+    worker's reports), and a green summary leaves no file at all — so a green
+    run adds nothing to any record.
+    """
+    import conftest  # noqa: PLC0415 — the suite's own conftest, importable only under pytest
+
+    exported = tmp_path / "failed"
+    monkeypatch.setenv("CTI_GATE_CLOCK_FAILED_FILE", str(exported))
+    one = SimpleNamespace(nodeid="tests/unit/test_a.py::test_one")
+    twice = SimpleNamespace(nodeid="tests/unit/test_a.py::test_two")
+    reporter = SimpleNamespace(stats={"failed": [one, twice], "error": [twice]})
+    conftest.pytest_terminal_summary(reporter, SimpleNamespace())
+    assert exported.read_text(encoding="utf-8") == (
+        "tests/unit/test_a.py::test_one\ntests/unit/test_a.py::test_two\n"
+    )
+
+    exported.unlink()
+    worker = SimpleNamespace(workerinput={"workerid": "gw1"})
+    conftest.pytest_terminal_summary(reporter, worker)
+    assert not exported.exists()
+
+    conftest.pytest_terminal_summary(SimpleNamespace(stats={}), SimpleNamespace())
+    assert not exported.exists()
+
+
+def test_a_row_whose_failed_tests_will_not_read_claims_none(tmp_path: Path) -> None:
+    """A half-written value is no claim, never a red and never a guess."""
+    path = gate_clock.records_path(tmp_path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    document = gate_clock.record_document(row())
+    document["legs"] = [
+        {"name": "unit-python", "outcome": "failed", "wall_seconds": 1.0, "failed_tests": "oops"}
+    ]
+    path.write_text(json.dumps(document) + "\n", encoding="utf-8")
+    (read_back,) = gate_clock.load_records(tmp_path)
+    assert read_back.legs == (gate_clock.Leg("unit-python", "failed", 1.0),)
 
 
 def test_a_historical_row_without_legs_parses_and_claims_no_breakdown(

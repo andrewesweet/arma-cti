@@ -241,10 +241,12 @@ carrying reddens an unrelated run.
 from __future__ import annotations
 
 import argparse
+import contextlib
 import json
 import os
 import re
 import sys
+import tempfile
 from datetime import UTC, datetime, time
 from pathlib import Path
 from typing import Final, NamedTuple
@@ -328,6 +330,19 @@ ARMA_TIER_PREFIX: Final = "arma3server"
 # in `docs/observatory/hazards.md`.
 LEG_OUTCOMES: Final = ("passed", "failed", "not_run")
 
+# A failed leg's evidence, bounded (#576). A red unit leg used to leave only a
+# status integer: pytest's own `lastfailed` cache is erased by the next green
+# run, which is exactly when someone looks. So the runner mints a per-leg file,
+# names it in `CTI_GATE_CLOCK_FAILED_FILE`, and `tests/unit/conftest.py` writes
+# the failed node ids there at summary time; a leg that failed copies them onto
+# its row at the moment of failure, where no later run erases them. A green leg
+# writes nothing, so healthy rows do not grow. The cap bounds a hundreds-red
+# run to this many ids, and a truncation states itself as the list's last
+# entry — an under-reporting list that reads as complete is the observatory's
+# standing hazard, never repeated silently.
+FAILED_TESTS_RECORDED: Final = 20
+FAILED_FILE_VARIABLE: Final = "CTI_GATE_CLOCK_FAILED_FILE"
+
 # What the row's `foreign_gate_processes` counts: any process whose command
 # line names the Python or Rust test runners, the two things that make a gate
 # slow by being a gate. The shell scaffold this module replaced counted them
@@ -342,13 +357,17 @@ class Leg(NamedTuple):
     `wall_seconds` is `None` for a `not_run` leg — it was never measured — and
     a number for every leg that ran, passed or failed alike. `reason` names the
     prerequisite that did not pass, for a leg skipped by one (#566); `None` for
-    every leg that ran and for a row that predates the field.
+    every leg that ran and for a row that predates the field. `failed_tests`
+    carries the node ids a failed pytest leg named, bounded by
+    `FAILED_TESTS_RECORDED` (#576); `None` for a green leg, for a failed leg
+    whose run named nothing, and for a row that predates the field.
     """
 
     name: str
     outcome: str
     wall_seconds: float | None
     reason: str | None = None
+    failed_tests: tuple[str, ...] | None = None
 
 
 class Record(NamedTuple):
@@ -401,7 +420,9 @@ def leg_document(leg: Leg) -> dict[str, object]:
 
     `reason` is written only when there is one, so a row's passed and failed
     legs keep the shape they had before #566 and the archive stays readable
-    beside the new rows.
+    beside the new rows. `failed_tests` follows the same rule (#576): only a
+    failed leg whose run named its failures carries the key, so green rows do
+    not grow.
     """
     document: dict[str, object] = {
         "name": leg.name,
@@ -410,6 +431,8 @@ def leg_document(leg: Leg) -> dict[str, object]:
     }
     if leg.reason is not None:
         document["reason"] = leg.reason
+    if leg.failed_tests is not None:
+        document["failed_tests"] = list(leg.failed_tests)
     return document
 
 
@@ -424,11 +447,16 @@ def parse_leg(entry: object) -> Leg | None:
             return None
         wall = entry["wall_seconds"]
         reason = entry.get("reason")
+        raw_failed = entry.get("failed_tests")
+        # Anything but a list claims no failure identities, the same reading an
+        # absent key gets — a half-written value must not redden the archive.
+        failed = tuple(str(item) for item in raw_failed) if isinstance(raw_failed, list) else None
         return Leg(
             name,
             outcome,
             None if wall is None else float(wall),
             None if reason is None else str(reason),
+            failed,
         )
     except (KeyError, TypeError, ValueError):
         return None
@@ -1030,6 +1058,34 @@ def proc_uptime(path: Path | None = None) -> float | None:
         return None
 
 
+def bounded_failed_tests(ids: list[str]) -> tuple[str, ...]:
+    """Cap a failed leg's identities, stating the cut rather than making it silently.
+
+    Twenty ids bounds a hundreds-red run to a fixed row cost, and the omitted
+    count rides as the list's own last entry so every reader — the observatory,
+    a hand read of the JSONL, `just gate-clock-history`'s future — sees the
+    list is a sample without knowing this module's cap (#576).
+    """
+    if len(ids) > FAILED_TESTS_RECORDED:
+        omitted = len(ids) - FAILED_TESTS_RECORDED
+        return (*ids[:FAILED_TESTS_RECORDED], f"... and {omitted} more not recorded")
+    return tuple(ids)
+
+
+def read_failed_file(path: Path) -> list[str]:
+    """Read the node ids a leg's run named, empty for a leg that named none.
+
+    The file is minted empty by the runner and written only by a pytest run
+    that failed (`tests/unit/conftest.py`), so a non-pytest leg and a green
+    pytest leg both read as nothing to claim. Unreadable is the same answer:
+    evidence for a later investigation must never redden the gate it rides on.
+    """
+    try:
+        return [line for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    except OSError:
+        return []
+
+
 def runner_legs(names: list[str], forwarded: list[str]) -> list[tuple[str, list[str]]]:
     """Turn the CLI's `--leg` names and forwarded tail into runnable argv pairs.
 
@@ -1095,7 +1151,10 @@ def run_recipe(
     not tell them apart would let an unfinished recipe read as a fast green one
     (#83's shape). The cost is stated rather than discovered: a red run now
     pays the legs a green one always did, where it used to stop at the first
-    red.
+    red. A failed leg also carries the node ids its own run named through
+    `CTI_GATE_CLOCK_FAILED_FILE` (#576), bounded and never silently truncated,
+    because the row is the one place the identity of a failure survives the
+    next green run.
 
     Recording stays advisory: an unreadable clock or an unwritable records
     directory prints to stderr and never changes the exit status, because a
@@ -1145,15 +1204,34 @@ def run_recipe(
             leg_rows.append(Leg(name, "not_run", None, f"{prerequisite} {blocker}"))
             outcomes[name] = "not_run"
             continue
+        # Minted fresh per leg, so an id can only come from this leg's own run
+        # — never from an earlier red's leavings, which is `lastfailed`'s flaw
+        # (#576). The variable reaches every child; only a failing pytest run
+        # writes the file, and `just mutation` strips it from its judges, whose
+        # kills are failing tests by design and would misattribute here.
+        handle, minted = tempfile.mkstemp(prefix="gate-clock-failed-")
+        os.close(handle)
+        failed_file = Path(minted)
         leg_start = proc_uptime()
         done = subprocess.run(  # noqa: S603 — argv is the recipe's own leg list, never user text
             argv,
             check=False,
+            env={**os.environ, FAILED_FILE_VARIABLE: minted},
         )
         leg_end = proc_uptime()
         wall = None if leg_start is None or leg_end is None else max(leg_end - leg_start, 0.0)
         outcome = "passed" if done.returncode == 0 else "failed"
-        leg_rows.append(Leg(name, outcome, wall))
+        named_failures = read_failed_file(failed_file) if outcome == "failed" else []
+        with contextlib.suppress(OSError):
+            failed_file.unlink()
+        leg_rows.append(
+            Leg(
+                name,
+                outcome,
+                wall,
+                failed_tests=bounded_failed_tests(named_failures) if named_failures else None,
+            )
+        )
         outcomes[name] = outcome
         if done.returncode != 0 and status == 0:
             status = done.returncode
