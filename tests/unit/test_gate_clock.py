@@ -1543,6 +1543,9 @@ def test_the_cli_skips_a_declared_dependent_and_refuses_the_typo_shapes(
     with pytest.raises(SystemExit) as malformed:
         gate_clock.parse_depends(["mutation"], ["mutation"])
     assert "expects LEG=PREREQ" in str(malformed.value)
+    with pytest.raises(SystemExit) as duplicated:
+        gate_clock.parse_depends(["mutation=check", "mutation=unit"], ["check", "unit", "mutation"])
+    assert "names mutation twice" in str(duplicated.value)
     assert len(gate_clock.load_records(tmp_path)) == 1  # the refused shapes recorded nothing
 
 
