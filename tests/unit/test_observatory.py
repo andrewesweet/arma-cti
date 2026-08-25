@@ -2367,8 +2367,10 @@ def test_rework_credits_the_successful_dispatch_not_a_quota_dead_dispatch(
     issue = 542
     dead_profile = "dead-profile"
     producer_profile = "producer-profile"
+    harness_profile = "harness-profile"
     dead_dispatch = "d-20260805-120000-dead542"
     producer_dispatch = "d-20260805-120000-prod542"
+    harness_dispatch = "d-20260805-120000-harn542"
     world = _landing_world(tmp_path)
     base = _head_of(world["repo"])
     stage_record(
@@ -2383,6 +2385,13 @@ def test_rework_credits_the_successful_dispatch_not_a_quota_dead_dispatch(
         producer_dispatch,
         issue=issue,
         profile=producer_profile,
+        base_sha=base,
+    )
+    stage_record(
+        world["dispatch_root"],
+        harness_dispatch,
+        issue=issue,
+        profile=harness_profile,
         base_sha=base,
     )
     (world["dispatch_root"] / dead_dispatch / "result.json").write_text(
@@ -2406,6 +2415,18 @@ def test_rework_credits_the_successful_dispatch_not_a_quota_dead_dispatch(
                 "returncode": 0,
                 "started_at": "2026-08-25T12:00:02+00:00",
                 "ended_at": "2026-08-25T12:01:00+00:00",
+            }
+        ),
+        encoding="utf-8",
+    )
+    (world["dispatch_root"] / harness_dispatch / "result.json").write_text(
+        json.dumps(
+            {
+                "dispatch_id": harness_dispatch,
+                "status": "harness_failed_after_child",
+                "returncode": 1,
+                "started_at": "2026-08-25T12:01:02+00:00",
+                "ended_at": "2026-08-25T12:01:03+00:00",
             }
         ),
         encoding="utf-8",
@@ -2454,6 +2475,12 @@ def test_rework_credits_the_successful_dispatch_not_a_quota_dead_dispatch(
     rows = {row["profile"]: row for row in store["profile_rework"] if row["seat"] == "implementer"}
     assert rows[dead_profile]["landings"] == 0
     assert "quota_exhausted" in rows[dead_profile]["landings_reason"]
+    assert rows[harness_profile]["landings"] == 0
+    assert (
+        "end state does not establish that it contributed"
+        in rows[harness_profile]["landings_reason"]
+    )
+    assert "produced no result" not in rows[harness_profile]["landings_reason"]
     assert rows[producer_profile]["landings"] == 1
     assert rows[producer_profile]["landings_reason"] is None
 

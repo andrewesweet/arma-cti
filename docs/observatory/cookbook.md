@@ -145,8 +145,10 @@ implementer with no landings — an undefined rate, with its rounds still visibl
 distinguishes the five absences: no landing, lands-nothing-by-contract, the retro
 seat's journal-only landing, a registry row that lands nothing, and a seat no registry
 knows. `landings` credits only a dispatch with the issue's recovered produced landing
-and an `ok` end state. Typed non-results are known not to contribute; another end state
-is excluded and named in `landings_reason` when the available evidence cannot establish
+and an `ok` end state. `infra_unavailable`, `quota_exhausted` and `provider_refused`
+are known not to contribute; `untyped_harness_failure` is excluded but undetermined
+because its harness may have failed after the child finished. Another end state is
+excluded and named in `landings_reason` when the available evidence cannot establish
 contribution. The landing journal's author relation remains a potential-author set,
 not exact production proof. The strata are `profile` and `seat` alone — both written on the
 dispatch record before the work started — and the `measures` column names every other

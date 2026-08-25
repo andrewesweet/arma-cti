@@ -88,10 +88,14 @@ contract, journal-only landing, a registry row that lands nothing, unknown seat 
 which is why the reason column exists; a reader who flattens them has turned a
 contract into a score. The denominator has its own boundary: an issue-level produced
 landing is not automatically a dispatch contribution. A dispatch typed as
-`infra_unavailable`, `quota_exhausted`, `provider_refused` or
-`untyped_harness_failure` is excluded from `landings`, even when its base and start
-window see the same landing as another dispatch. A candidate with any other end state
-than `ok` is also excluded because its contribution cannot be established;
+`infra_unavailable`, `quota_exhausted` or `provider_refused` is known to have produced
+no result and is excluded from `landings`. With a Git-fallback landing, that exclusion
+can apply when its base and start window see the same landing as another dispatch; with
+a journalled landing, no base/start candidate test runs and every landing-seat dispatch
+is a candidate. `untyped_harness_failure` is also excluded, but its harness may have
+failed after the child finished, so its contribution is undetermined rather than known
+absent. A candidate with any other end state than `ok` is also excluded because its
+contribution cannot be established;
 `landings_reason` names the excluded dispatch and reason. The `issue_cost.landed` flag
 remains an issue outcome at its `(issue, lane)` grain, not a lane-contribution flag. The
 landing journal's `author` relation is a potential-author set, so the observatory does

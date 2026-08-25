@@ -337,14 +337,24 @@ both reaches `just land` and lands work rather than a journal. Today that is exa
 **The denominator credits a dispatch only where the dispatch evidence permits it.** The
 issue's `landed_sha` comes from the landing journal where a `cti.relation.produced`
 relation exists, or from the bounded Git candidate derivation where no journal covers
-the issue. That SHA is issue-level evidence and remains subject to `ledger.landed`'s
-candidate ceiling; it is not, by itself, dispatch production evidence. For the rework
-denominator, a dispatch carrying a typed not-a-result class — `infra_unavailable`,
-`quota_exhausted`, `provider_refused` or `untyped_harness_failure` — is known to have
-produced no result and is excluded even when the same issue's landing is visible through
-its base and start window. A dispatch with any other end state than `ok` is also excluded
-because the available evidence cannot establish that it contributed; both cases appear
-in `landings_reason`, even though the count remains numeric. The store does not relabel
+the issue. A journal-sourced SHA bypasses `ledger.landed`'s lexical candidate ceiling;
+only a Git-fallback SHA is subject to that ceiling. In either case, the SHA is
+issue-level evidence and is not, by itself, dispatch production evidence. `rounds`
+remains at issue-appearance grain — an issue's review rounds appear in every
+profile/seat row whose dispatch set touched it — while `landings` is at
+dispatch-contribution grain, so a row can retain rounds for an issue whose landing
+another dispatch produced. For the rework denominator, a dispatch carrying one of the
+three typed non-result classes — `infra_unavailable`, `quota_exhausted` or
+`provider_refused` — is known to have produced no result and is excluded. With a
+Git-fallback landing, that can be despite the same issue's landing being visible through
+its base and start window; with a journal-sourced landing, no base/start test runs and
+every landing-seat dispatch is a candidate. `untyped_harness_failure` is excluded too,
+but its harness may have failed after the child finished, so its contribution is
+undetermined rather than known absent. A dispatch with any other end state than `ok` is
+also excluded because the available evidence cannot establish that it contributed;
+`unknown` can reflect telemetry loss rather than dispatch failure, such as capture
+rotation after a landing, and still remains uncredited. All exclusions appear in
+`landings_reason`, even though the count remains numeric. The store does not relabel
 `cti.relation.author` as proof, because
 that relation is explicitly a potential-author set. A future dispatch-level production
 record can tighten this positive side without narrowing `ledger.landed`'s lexical ceiling.

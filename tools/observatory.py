@@ -2302,6 +2302,9 @@ def _profile_rework(
     ruling 6's "where rework appears": the same issue's rounds legitimately appear on
     several rows — the implementer's and the reviewer's among them — because this is
     attribution of appearance, never partition and never cause.
+    Landings attach by dispatch contribution, so these two measures deliberately have
+    different grains: a row can retain an issue's rounds while its dispatch is not
+    credited with that issue's landing.
     """
     grouped: dict[tuple[str | None, str | None], list[dict[str, Any]]] = {}
     for row in rows:
@@ -2318,10 +2321,20 @@ def _profile_rework(
             if not row["landed_sha"]:
                 continue
             end_state = row["end_state_class"]
+            if end_state == "untyped_harness_failure":
+                # This class remains a not-a-result for terminal/work-item state, but
+                # its closeout failed after the child may have finished. It therefore
+                # cannot support the rework view's stronger claim that no result was
+                # produced.
+                landing_reasons.add(
+                    f"{REWORK_LANDING_UNDETERMINED_REASON}"
+                    f" (dispatch={row['dispatch_id']} class={end_state})"
+                )
+                continue
             if end_state in attribute_registry.NOT_A_RESULT_CLASSES:
-                # A typed provider, lane or harness refusal is evidence that this
-                # dispatch produced no result, even when another dispatch's landing
-                # is visible through the same issue-level journal relation.
+                # A typed provider or lane refusal is evidence that this dispatch
+                # produced no result, even when another dispatch's landing is visible
+                # through the same issue-level journal relation.
                 landing_reasons.add(
                     f"{REWORK_LANDING_NOT_CREDITED_REASON}"
                     f" (dispatch={row['dispatch_id']} class={end_state})"
