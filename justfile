@@ -421,6 +421,11 @@ probe-contract:
 mutation *args:
     #!/usr/bin/env bash
     set -euo pipefail
+    for arg in "$@"; do
+        if [[ "$arg" == "--rules" ]]; then
+            exec uv run python tools/mutation_smoke.py "$@"
+        fi
+    done
     exec uv run python tools/gate_clock.py run --recipe mutation \
         --leg _mutation-body -- "$@"
 

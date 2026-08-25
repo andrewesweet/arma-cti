@@ -563,6 +563,126 @@ NO_MUTABLE_SUBJECT: Final[dict[str, str]] = {
     ),
 }
 
+
+def _format_paths(paths: tuple[str, ...]) -> str:
+    """Render a source-root tuple without keeping a second copy of its values."""
+    return ", ".join(f"`{path}`" for path in paths) or "(none)"
+
+
+def _format_rate(rate: float) -> str:
+    """Render the stored rate and its reader-facing percentage from one value."""
+    return f"{rate:g} ({rate:.0%})"
+
+
+def _format_seconds(seconds: float) -> str:
+    """Render a seconds value without rounding the policy source first."""
+    return f"{seconds:g}s"
+
+
+def _append_reasoned_entries(lines: list[str], name: str, entries: dict[str, str]) -> None:
+    """Append a named escape map, including the reason stored beside each entry."""
+    lines.append(f"  `{name}`:")
+    if not entries:
+        lines.append("    (none)")
+        return
+    lines.extend(f"    {path} — {reason}" for path, reason in entries.items())
+
+
+def render_contract() -> str:
+    """Render the mutation-smoke policy from the constants that enforce it."""
+    lines = [
+        "just mutation --rules — the mutation-smoke contract",
+        "",
+        "Derived from tools/mutation_smoke.py and the mutation arms it invokes.",
+        "The values below are read from the enforcing constants; this output has",
+        "no separately maintained policy figures. The command only reads and",
+        "renders: it does not run the smoke, gate a landing, or write anything.",
+        "",
+        "=== Mutable source roots (derived) ===",
+        f"  Python  `PRODUCT_ROOTS`: {_format_paths(PRODUCT_ROOTS)}",
+        f"  Shell   `SHELL_ROOTS` (mutation_shell): {_format_paths(mutation_shell.SHELL_ROOTS)}",
+        f"  Rust    `SCOPE` (mutation_rust): `{mutation_rust.SCOPE}`",
+        "",
+        "=== Python arm (derived) ===",
+        f"  mutants per test module  `CAP`: {CAP}",
+        f"  kill-rate floor          `FLOOR`: {_format_rate(FLOOR)}",
+        f"  module budget            `BUDGET_S`: {_format_seconds(BUDGET_S)}",
+        f"  collection budget        `COLLECT_S`: {_format_seconds(COLLECT_S)}",
+        f"  tests selected per mutant `TESTS_PER_MUTANT`: {TESTS_PER_MUTANT}",
+        (
+            "  test-selection ceiling   `TEST_SECONDS_PER_MUTANT`: "
+            f"{_format_seconds(TEST_SECONDS_PER_MUTANT)}"
+        ),
+        f"  duration rounding        `COST_GRAIN`: {_format_seconds(COST_GRAIN)}",
+        f"  timeout minimum           `TIMEOUT_FLOOR_S`: {_format_seconds(TIMEOUT_FLOOR_S)}",
+        f"  timeout multiplier        `TIMEOUT_FACTOR`: {TIMEOUT_FACTOR:g}",
+        "",
+        "=== Shell arm (derived) ===",
+        f"  mutants per shell module `SHELL_CAP`: {SHELL_CAP}",
+        f"  kill-rate floor          `SHELL_FLOOR`: {_format_rate(SHELL_FLOOR)}",
+        f"  module budget            `SHELL_BUDGET_S`: {_format_seconds(SHELL_BUDGET_S)}",
+        (
+            "  test-selection ceiling   `SHELL_TEST_SECONDS_PER_MUTANT`: "
+            f"{_format_seconds(SHELL_TEST_SECONDS_PER_MUTANT)}"
+        ),
+        f"  discriminating lines     `SHELL_DISCRIMINATING`: {SHELL_DISCRIMINATING}",
+        "",
+        "=== Rust arm (derived) ===",
+        f"  manifest                 `MANIFEST` (mutation_rust): `{mutation_rust.MANIFEST}`",
+        f"  engine version           `VERSION` (mutation_rust): `{mutation_rust.VERSION}`",
+        f"  parallel jobs            `JOBS` (mutation_rust): {mutation_rust.JOBS}",
+        (
+            "  rung budget              `BUDGET_S` (mutation_rust): "
+            f"{_format_seconds(mutation_rust.BUDGET_S)}"
+        ),
+        "",
+        "=== Ratchet and determinism (derived) ===",
+        f"  baseline                 `BASELINE`: `{BASELINE}`",
+        f"  allowed recorded loss   `SLACK`: {SLACK} kill(s)",
+        f"  subprocess hash seed    `HASH_SEED`: `{HASH_SEED}` (`PYTHONHASHSEED`)",
+        "  sample seed              `sample(..., seed=test_module)`: the test-module path",
+        "",
+        "=== Subject declarations and exemptions (derived) ===",
+        "  `SHELL_SUBJECT` declarations (test module → shell subject):",
+    ]
+    if SHELL_SUBJECT:
+        lines.extend(f"    {module} → {subject}" for module, subject in SHELL_SUBJECT.items())
+    else:
+        lines.append("    (none)")
+    _append_reasoned_entries(lines, "NO_MUTABLE_SUBJECT", NO_MUTABLE_SUBJECT)
+    _append_reasoned_entries(lines, "NO_TEST_MODULE", NO_TEST_MODULE)
+    lines.extend(
+        [
+            "  Rust survivor exemptions (`SURVIVES_BY_DESIGN`, from `mutation_rust`):",
+        ]
+    )
+    if mutation_rust.SURVIVES_BY_DESIGN:
+        lines.extend(
+            f"    {mutant} — {reason}"
+            for mutant, reason in mutation_rust.SURVIVES_BY_DESIGN.items()
+        )
+    else:
+        lines.append("    (none)")
+    lines.extend(
+        [
+            "",
+            "=== Narration (not additional policy) ===",
+            "  Narration: `TIMEOUT_FLOOR_S` is a per-mutant timeout bound, not a third",
+            "  kill-rate floor. A mutant that times out counts as killed, not as a survivor.",
+            "  Narration: the ratchet holds a matching recorded module rate, less `SLACK`",
+            "  kills; a changed subject or sample releases it to the arm's shared floor.",
+            "  Narration: no flag in `just fast` lowers either kill-rate floor; a red calls",
+            "  for stronger tests or an explicitly reviewed policy change.",
+            "",
+            "=== Failure-class reference ===",
+            '  See CLAUDE.md\'s "Failure classes" table for class semantics; this contract',
+            "  restates none of them.",
+            "",
+        ]
+    )
+    return "\n".join(lines)
+
+
 # Negating a comparison: the strongest single change to a decision that was
 # taken, and the one a suite which asserts nothing at all fails to notice.
 _FLIP: Final = {
@@ -2279,7 +2399,7 @@ def _judge_rust(root: Path) -> tuple[int, int]:
     return 1, 0
 
 
-def main(argv: list[str] | None = None) -> int:  # noqa: PLR0911 — every refusal is its own exit, and collapsing them hides which one fired
+def main(argv: list[str] | None = None) -> int:  # noqa: C901, PLR0911 — the rules action must bypass every gate-state read, while each refusal keeps its own exit
     """Smoke every test module in scope and print one line per module."""
     parser = argparse.ArgumentParser(
         description="Red a landing whose new tests do not notice the code changing.",
@@ -2287,6 +2407,11 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0911 — every refus
     parser.add_argument("--root", default=".", type=Path)
     parser.add_argument("--base", default="origin/main", help="ref the landing is measured against")
     parser.add_argument("--paths", nargs="*", help="smoke these test modules instead of the diff")
+    parser.add_argument(
+        "--rules",
+        action="store_true",
+        help="print the derived mutation-smoke contract and do nothing else",
+    )
     parser.add_argument("--cap", type=int, default=CAP)
     parser.add_argument("--floor", type=float, default=FLOOR)
     parser.add_argument("--budget", type=float, default=BUDGET_S)
@@ -2329,6 +2454,10 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0911 — every refus
         ),
     )
     args = parser.parse_args(argv)
+
+    if args.rules:
+        sys.stdout.write(render_contract())
+        return 0
 
     root = args.root.resolve()
     sidecar = root / RESTORE
