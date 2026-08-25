@@ -1128,6 +1128,7 @@ trial *args:
 # Arma, no lock, no turn held open.
 #
 #   just ledger-sync                        a row per dispatch, one line each
+#   just ledger-sync sync --behind          only missing or stale rows; skip current
 #   just ledger-sync sync --dispatch <id>   one dispatch
 #   just ledger-sync show --dispatch <id>   that dispatch's row in full
 #   just ledger-sync prune                  what the retention policy would delete
@@ -1160,8 +1161,13 @@ trial *args:
 # `infra_unavailable` and is not a result.
 #
 # Retention: rows are kept indefinitely; the raw export is pruned after 30 days
-# and only where a row was materialised from that same durable file. Full policy
-# and reasoning in docs/telemetry-ledger.md.
+# and only where a row at the current schema was materialised from that same
+# durable file — an export behind a stale row is retained and named, because it
+# is the only material a corrected row could be rebuilt from (#529). Staleness:
+# `sync --behind` materialises only records whose row is missing or behind the
+# current schema, reports the missing/stale/current split and how many records
+# remain behind, and writes nothing when the ledger is level. Full policy and
+# reasoning in docs/telemetry-ledger.md.
 [positional-arguments]
 ledger-sync action="sync" *args:
     uv run python tools/ledger.py "$@"

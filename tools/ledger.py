@@ -103,6 +103,22 @@ without `--apply`. Once an existing row has no durable export, `sync` preserves 
 prints `preserved=... reason=no_durable_export`; it does not replace the row with a
 partial rotating-capture read or an absent-source zero. Re-materialise while the durable
 export still exists if a corrected schema or calculation is needed.
+
+**Staleness** (#529). A row's own `schema` marker, against the schema this reader writes,
+is what decides whether it is current: a row whose marker matches is current, and a row
+whose marker differs, is absent, or sits in a file that will not parse is stale — a
+reading the current tool no longer performs. A record with a plan and no row at all is
+missing, counted apart from stale because they mean different things to a reader.
+`sync --behind` materialises only the missing and the stale, skips current rows without
+rewriting them, and reports the split plus how many records remain behind, so the next
+"6 of 691" gap is one summary line rather than an investigation. A full `sync` still
+recomputes every row — that is what refreshes the landed-SHA join after a landing — and
+either mode records, in the row it writes, the schema of any *differing* row it replaced
+(`previous_schema`, null on a same-schema recompute so repeated syncs stay byte-stable),
+so replacing an old reading is visible rather than silent. `prune`'s
+"a row has taken this file" tightens to "a row **at the current schema** has taken it":
+an export behind a stale row is the only material a corrected row could be rebuilt from,
+so it is retained and named, never deleted.
 """
 
 from __future__ import annotations
@@ -1433,6 +1449,15 @@ READ_ABSENT: Final = "absent"
 READ_DAMAGED: Final = "damaged"
 READ_NOT_AN_OBJECT: Final = "not_an_object"
 
+# What a dispatch's existing row is, against the schema this reader writes (#529).
+# `missing` is a record with a plan and no row; `stale` is a row the current reader
+# would write differently — its schema marker differs, is absent, or sits in a file
+# that will not parse; `current` needs no work. Missing and stale are counted apart
+# because they mean different things to a reader: no figure, or an old one.
+ROW_MISSING: Final = "missing"
+ROW_STALE: Final = "stale"
+ROW_CURRENT: Final = "current"
+
 
 def read_json(path: Path) -> tuple[dict[str, Any] | None, str | None]:
     """Read one JSON document, and name which of three conditions a `None` is.
@@ -1453,6 +1478,20 @@ def read_json(path: Path) -> tuple[dict[str, Any] | None, str | None]:
     if isinstance(document, dict):
         return document, None
     return None, READ_NOT_AN_OBJECT
+
+
+def row_state(row: Mapping[str, Any] | None, condition: str | None) -> str:
+    """Classify one record's existing row against the schema this reader writes (#529).
+
+    An unreadable row and a row with no schema marker are both stale rather than
+    current: nothing in either can prove the row means what the current reader
+    would write, and treating either as current would leave it standing forever.
+    """
+    if condition == READ_ABSENT:
+        return ROW_MISSING
+    if row is None:
+        return ROW_STALE
+    return ROW_CURRENT if row.get("schema") == SCHEMA else ROW_STALE
 
 
 class ParsedDispatchRecord(NamedTuple):
@@ -1567,7 +1606,7 @@ def _points(value: object) -> str:
     return f"{value:.6f}" if isinstance(value, (int, float)) else "none"
 
 
-def row_line(row: Mapping[str, Any], *, record_parse_failed: bool = False) -> str:
+def row_line(row: Mapping[str, Any], *, record_parse_failed: bool = False, was: str = "") -> str:
     """One dispatch, in the tier's `key=value` form.
 
     The spend fields are the five-hour window's two halves. Five-hour because it is the
@@ -1601,6 +1640,8 @@ def row_line(row: Mapping[str, Any], *, record_parse_failed: bool = False) -> st
         if terminal.get("class"):
             value += f":{terminal['class']}"
         fields.append(value)
+    if was:
+        fields.append(f"was={was}")
     if record_parse_failed:
         fields.insert(7, "record_parse=failed")
     return " ".join(fields)
@@ -1619,6 +1660,9 @@ class Options(NamedTuple):
     days: int
     apply: bool
     dispatch: str
+    # sync: materialise only records whose row is missing or stale, and skip
+    # current rows without rewriting them (#529).
+    behind: bool = False
 
 
 def records_under(root: Path, only: str) -> list[Path]:
@@ -1669,7 +1713,14 @@ def _record_terminal_state(record: Path, row: Mapping[str, Any], now: datetime) 
 
 
 def sync(options: Options, now: datetime) -> tuple[tuple[str, ...], int]:
-    """Materialise a row per dispatch, and say which source every one of them read."""
+    """Materialise a row per dispatch, and say which source every one of them read.
+
+    With `behind` set, materialise only the records whose row is missing or stale
+    (#529): current rows are skipped and their files left untouched, so the habitual
+    run is cheap and running it twice writes nothing the second time. Either way the
+    summary reports the missing/stale/current split the walk found and how many
+    records remain behind after it.
+    """
     if not options.export_dir.is_dir() and not options.capture.is_file():
         return (
             Refusal(
@@ -1697,19 +1748,27 @@ def sync(options: Options, now: datetime) -> tuple[tuple[str, ...], int]:
     lines: list[str] = []
     synced = 0
     preserved = 0
+    behind_after = 0
     degraded = 0
+    states = dict.fromkeys((ROW_MISSING, ROW_STALE, ROW_CURRENT), 0)
     for record in records:
         if not (record / "dispatch.json").is_file():
             lines.append(f"skipped={record.name} reason=no_dispatch_json")
             continue
 
+        existing, existing_condition = read_json(record / "ledger.json")
+        state = row_state(existing, existing_condition)
+        states[state] += 1
+        if options.behind and state == ROW_CURRENT:
+            continue
+
         plan, _ = read_json(record / "dispatch.json")
         dispatch_id = str((plan or {}).get("dispatch_id") or record.name)
         source = choose_source(dispatch_id, options.export_dir, options.capture)
-        existing, _ = read_json(record / "ledger.json")
         if existing is not None and source.kind != SOURCE_EXPORT:
             lines.append(f"preserved={record.name} reason=no_durable_export source={source.kind}")
             preserved += 1
+            behind_after += int(state != ROW_CURRENT)
             continue
 
         materialised = materialise(
@@ -1720,18 +1779,33 @@ def sync(options: Options, now: datetime) -> tuple[tuple[str, ...], int]:
             now=now,
         )
         row = materialised.row
+        # The schema of the *differing* row this write replaces, or null where the
+        # prior row was absent, unreadable or already current — so replacing an old
+        # reading is recorded in the row itself, not just in this run's output, while
+        # a same-schema recompute stays byte-stable across repeated syncs (#529).
+        previous = existing.get("schema") if existing is not None else None
+        row["previous_schema"] = previous if previous != SCHEMA else None
         _record_terminal_state(record, row, now)
         (record / "ledger.json").write_text(json.dumps(row, indent=2) + "\n", encoding="utf-8")
         synced += 1
         degraded += int(bool(row["source"]["degraded"]))
-        lines.append(row_line(row, record_parse_failed=materialised.record_parse_failed))
+        lines.append(row_line(row, record_parse_failed=materialised.record_parse_failed, was=state))
     if degraded:
         lines.append(
             f"warning=degraded_source rows={degraded} "
             f"detail=read from {options.capture}, which rotates at 50MB x 5 and loses records; "
             "run the #230 root script for the durable per-dispatch export"
         )
-    lines.append(f"ok=synced rows={synced} degraded={degraded} preserved={preserved}")
+    # `missing`/`stale`/`current` are what the walk found before it wrote anything —
+    # how far behind the ledger *was* — and `behind=` is what is still behind now the
+    # run has finished: only preserved records can remain so, and they are visible
+    # above with their reason.
+    lines.append(
+        f"ok=synced rows={synced} degraded={degraded} preserved={preserved} "
+        f"missing={states[ROW_MISSING]} stale={states[ROW_STALE]} "
+        f"current={states[ROW_CURRENT]} behind={behind_after}/{sum(states.values())} "
+        f"mode={'behind' if options.behind else 'all'}"
+    )
     return tuple(lines), 0
 
 
@@ -1765,10 +1839,12 @@ class Verdict(NamedTuple):
 def prunable(options: Options, now: float) -> list[Verdict]:
     """Decide, per raw export file, whether the view has already taken what it holds.
 
-    A raw file is prunable only when a row exists that was materialised **from the
-    durable export** and read at least one record out of it. Pruning ahead of the view,
-    or on the strength of a row read from the rotating capture, would delete the only
-    copy of records the ledger never saw.
+    A raw file is prunable only when a row **at the current schema** exists that was
+    materialised **from the durable export** and read at least one record out of it.
+    Pruning ahead of the view, on the strength of a row read from the rotating
+    capture, or behind a stale row (#529) would delete the only copy of records a
+    current row still needs: the export is the sole material a corrected row could
+    be rebuilt from once the rotating capture has turned over.
     """
     if not options.export_dir.is_dir():
         return []
@@ -1783,6 +1859,12 @@ def prunable(options: Options, now: float) -> list[Verdict]:
             kept = f"newer than the {options.days}-day horizon"
         elif row is None:
             kept = "no materialised row: run `just ledger-sync` first"
+        elif row.get("schema") != SCHEMA:
+            kept = (
+                f"the row is behind the current schema "
+                f"({row.get('schema') or 'none'}, current {SCHEMA}): "
+                "run `just ledger-sync sync --behind` first"
+            )
         elif row.get("source", {}).get("kind") != SOURCE_EXPORT:
             kept = "the row was read from the rotating capture, not this file"
         elif int(row.get("records", {}).get("total", 0)) <= 0:
@@ -1825,6 +1907,11 @@ def parse_args(argv: list[str]) -> tuple[str, Options]:
     parser.add_argument("--repo", default=".")
     parser.add_argument("--days", type=int, default=RETENTION_DAYS)
     parser.add_argument("--apply", action="store_true", help="prune: actually delete")
+    parser.add_argument(
+        "--behind",
+        action="store_true",
+        help="sync: only records whose row is missing or stale, skipping current rows",
+    )
     args = parser.parse_args(argv)
     return args.action, Options(
         dispatch_root=Path(args.dispatch_dir).expanduser(),
@@ -1834,6 +1921,7 @@ def parse_args(argv: list[str]) -> tuple[str, Options]:
         days=args.days,
         apply=args.apply,
         dispatch=args.dispatch,
+        behind=args.behind,
     )
 
 

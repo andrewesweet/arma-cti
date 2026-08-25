@@ -340,17 +340,34 @@ would not put it in the ledger. `OTEL_LOG_USER_PROMPTS` stays unset regardless.
 later, they are a few kilobytes each, and nothing in this tool deletes one at any age.
 
 **The raw per-dispatch export is pruned after 30 days** (`RETENTION_DAYS`), and only when
-all three hold:
+all four hold:
 
 1. the file is older than the horizon;
 2. a row exists for that dispatch;
-3. that row was materialised **from the durable export** and read at least one record out
+3. that row is **at the schema the current reader writes** (#529) — a row whose schema
+   marker is behind, absent or unreadable is stale, and the export behind it is the only
+   material a corrected row could be rebuilt from once the rotating capture has turned
+   over, so it is retained and the reason names the remedy (`sync --behind`);
+4. that row was materialised **from the durable export** and read at least one record out
    of it.
 
-Conditions 2 and 3 are what stop the policy destroying the only copy of records the view
-never saw. A raw file with no row, a row taken from the rotating capture, and a row that
-read zero records are all kept and each says why. `just ledger-sync prune` reports and
-deletes nothing; `--apply` deletes.
+Conditions 2–4 are what stop the policy destroying the only copy of records the view
+never saw or no longer trusts. A raw file with no row, a row behind the current schema,
+a row taken from the rotating capture, and a row that read zero records are all kept and
+each says why. `just ledger-sync prune` reports and deletes nothing; `--apply` deletes.
+
+**Staleness and the levelling run** (#529). A row's own `schema` marker against the
+current reader's decides its state: matching is current; differing, absent or unreadable
+is stale; a record with a plan and no row is missing. `just ledger-sync sync --behind`
+materialises only the missing and the stale, leaves current rows untouched (so running it
+twice writes nothing the second time), and its summary reports the split —
+`missing= stale= current=` is how far behind the walk found the ledger, and `behind=n/total`
+is what remains behind after it, which can only be preserved rows whose durable export is
+gone. A row written over a differing predecessor records that predecessor's schema in
+`previous_schema`; a same-schema recompute records null there, keeping repeated syncs
+byte-stable. A full `sync` still recomputes every row — that is what refreshes the
+landed-SHA join after a landing — so the habitual cheap run is `--behind` and the
+occasional full run is deliberate.
 
 The rotating capture keeps its existing 50 MB × 5 rotation. That is the diagnostics
 skill's input and not ours to change.
