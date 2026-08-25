@@ -840,6 +840,36 @@ def rebuild_world(world: World) -> dict[str, Any]:
     )
 
 
+def complete_dispatch(world: World, dispatch_id: str, *, lane: str = "claude-native") -> None:
+    """Give a staged dispatch the successful closeout needed for rework credit."""
+    (world.dispatch_root / dispatch_id / "result.json").write_text(
+        json.dumps(
+            {
+                "dispatch_id": dispatch_id,
+                "status": "child_finished",
+                "returncode": 0,
+                "started_at": PLANNED,
+                "ended_at": AFTER_PLANNED,
+            }
+        ),
+        encoding="utf-8",
+    )
+    export = world.export_dir / f"dispatch-{dispatch_id}.jsonl"
+    if not export.exists():
+        write_export(
+            world.export_dir,
+            dispatch_id,
+            [
+                log_batch(
+                    "claude_code.api_request",
+                    {"model": "opus"},
+                    dispatch_id=dispatch_id,
+                    lane=lane,
+                )
+            ],
+        )
+
+
 def summary_check_args(world: World, *, export_dir: Path | None = None) -> list[str]:
     """Build the CLI paths for the read-only committed-summary check."""
     return [
@@ -1542,12 +1572,16 @@ def test_every_null_in_the_store_carries_a_reason(world: World) -> None:
         """Flag a column whose null and reason sibling disagree, in either direction.
 
         A column is null exactly when its `<column>_reason` is non-null — so a null
-        never appears without its why, and a reason never dresses a number.
+        never appears without its why. `profile_rework.landings_reason` is an
+        explanatory exception: it can describe excluded candidates beside a known
+        numeric count.
         """
         bad: list[str] = []
         if isinstance(node, dict):
             for key, value in node.items():
                 name = str(key)
+                if name == "landings" and "landings_reason" in node:
+                    continue
                 if not name.endswith("_reason") and (value is None) != bool(
                     node.get(f"{name}_reason")
                 ):
@@ -2296,13 +2330,16 @@ def test_the_ruled_key_ranks_only_implementer_seat_profiles(world: World) -> Non
         issue=LANDED_TWO_HOURS,
         seat="review",
     )
+    complete_dispatch(world, CLAUDE_DISPATCH)
     store = rebuild_world(world)
     rows = {(row["profile"], row["seat"]): row for row in store["profile_rework"]}
     implementer = rows[("a-profile", "implementer")]
-    # Rounds over the implementer-dispatched issues with loops: 0 + 1 + 2; landings:
-    # the three ISSUE dispatches and FLOW_A/B/C each see their issue's commit.
-    assert (implementer["rounds"], implementer["landings"]) == (3, 6)
-    assert implementer["rounds_per_landing"] == 0.5
+    # Rounds over the implementer-dispatched issues with loops: 0 + 1 + 2. Only the
+    # completed ISSUE dispatch is credited; the other candidate rows have no successful
+    # end state and their reasons remain visible.
+    assert (implementer["rounds"], implementer["landings"]) == (3, 1)
+    assert implementer["landings_reason"]
+    assert implementer["rounds_per_landing"] == 3.0
     assert implementer["ranked"] == 1
     assert implementer["rounds_per_landing_reason"] is None
     review = rows[("a-profile", "review")]
@@ -2321,6 +2358,104 @@ def test_the_ruled_key_ranks_only_implementer_seat_profiles(world: World) -> Non
         dispatch.SEATS[name].lands and ledger.seat_shape(name) == "work"
         for name in observatory.RANKED_SEATS
     )
+
+
+def test_rework_credits_the_successful_dispatch_not_a_quota_dead_dispatch(
+    tmp_path: Path,
+) -> None:
+    """A shared issue landing does not make a failed dispatch a contributor (#542)."""
+    issue = 542
+    dead_profile = "dead-profile"
+    producer_profile = "producer-profile"
+    dead_dispatch = "d-20260805-120000-dead542"
+    producer_dispatch = "d-20260805-120000-prod542"
+    world = _landing_world(tmp_path)
+    base = _head_of(world["repo"])
+    stage_record(
+        world["dispatch_root"],
+        dead_dispatch,
+        issue=issue,
+        profile=dead_profile,
+        base_sha=base,
+    )
+    stage_record(
+        world["dispatch_root"],
+        producer_dispatch,
+        issue=issue,
+        profile=producer_profile,
+        base_sha=base,
+    )
+    (world["dispatch_root"] / dead_dispatch / "result.json").write_text(
+        json.dumps(
+            {
+                "dispatch_id": dead_dispatch,
+                "status": "child_finished",
+                "returncode": 1,
+                "outcome": "quota_exhausted",
+                "started_at": "2026-08-25T12:00:00+00:00",
+                "ended_at": "2026-08-25T12:00:01+00:00",
+            }
+        ),
+        encoding="utf-8",
+    )
+    (world["dispatch_root"] / producer_dispatch / "result.json").write_text(
+        json.dumps(
+            {
+                "dispatch_id": producer_dispatch,
+                "status": "child_finished",
+                "returncode": 0,
+                "started_at": "2026-08-25T12:00:02+00:00",
+                "ended_at": "2026-08-25T12:01:00+00:00",
+            }
+        ),
+        encoding="utf-8",
+    )
+    write_export(
+        world["export_dir"],
+        producer_dispatch,
+        [
+            log_batch(
+                "claude_code.api_request",
+                {"model": "opus"},
+                dispatch_id=producer_dispatch,
+                lane="claude-native",
+            )
+        ],
+    )
+    produced = _stage_landing(
+        world,
+        "feat: the produced work\n\nrefs #542",
+        "2026-08-25T12:02:00+00:00",
+    )
+    write_loop(world["review_root"], issue, 1)
+    journal = attribute_registry.landing_journal(issue, world["review_root"])
+    event = attribute_registry.landing_event(
+        (
+            attribute_registry.relation("subject", "issue", str(issue)),
+            attribute_registry.relation("produced", "commit", produced),
+        ),
+        1_800_000_000.0,
+    )
+    journal.parent.mkdir(parents=True, exist_ok=True)
+    journal.write_text(
+        json.dumps(
+            {
+                "event": event.name,
+                "at": event.at,
+                "attributes": dict(event.attributes),
+                "resource": dict(event.resource),
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    store = _rebuild_landing_world(world)
+    rows = {row["profile"]: row for row in store["profile_rework"] if row["seat"] == "implementer"}
+    assert rows[dead_profile]["landings"] == 0
+    assert "quota_exhausted" in rows[dead_profile]["landings_reason"]
+    assert rows[producer_profile]["landings"] == 1
+    assert rows[producer_profile]["landings_reason"] is None
 
 
 def test_a_profile_with_no_landings_is_unranked_with_its_rounds_visible(world: World) -> None:
@@ -2394,6 +2529,7 @@ def test_dispatches_per_issue_is_reported_beside_the_key_and_explicitly_unranked
 
 
 def test_the_rework_summary_line_states_its_spread_and_its_estimate(world: World) -> None:
+    complete_dispatch(world, CLAUDE_DISPATCH)
     store = rebuild_world(world)
     lines = observatory.summary_lines(store, world.store_dir)
     # One ranked profile holding one key value: the key does not vary, and the line
@@ -2412,6 +2548,7 @@ def test_the_rework_summary_line_states_its_spread_and_its_estimate(world: World
         profile="c-profile",
         base_sha=world.base_sha,
     )
+    complete_dispatch(world, "d-20260805-120000-vary01")
     store = rebuild_world(world)
     lines = observatory.summary_lines(store, world.store_dir)
     assert (

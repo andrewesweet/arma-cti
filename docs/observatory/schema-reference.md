@@ -26,7 +26,7 @@ silence. Both render as an absence with a reason, never as zero.
 
 | Key | Shape | Meaning |
 |---|---|---|
-| `schema` | string | `cti.observatory/10` |
+| `schema` | string | `cti.observatory/11` |
 | `inputs` | object | The six paths the rebuild read: `dispatch_root`, `export_dir`, `review_root`, `spool`, `repo`, `queue_root` |
 | `coverage` | object | The rebuild's own denominators — see below |
 | `malformed` | array | One entry per source file with unparseable lines — export, spool, stage, landing or queue journal: `file`, `lines` |
@@ -87,7 +87,9 @@ silence. Both render as an absence with a reason, never as zero.
 **Every nullable column carries a reason for its null.** A column named `x` is `null`
 exactly when its sibling `x_reason` is a non-null string saying why. An absence is
 never a zero, and the reason sibling is what keeps a lane with no calibration from
-being read as a lane that is cheap.
+being read as a lane that is cheap. `profile_rework.landings_reason` is an explicit
+diagnostic exception: `landings` remains a known numeric count, and this field names
+landing candidates excluded from that count rather than explaining a null.
 
 ## The `dispatches` table
 
@@ -132,7 +134,7 @@ single lane and a single issue: one meter, one currency.
 |---|---|---|
 | `issue` | never | The issue |
 | `lane` | never | The lane — every other column is in this lane's own meter |
-| `landed` | never | Whether any dispatch of this pair landed |
+| `landed` | never | Whether this issue has a recovered landing as observed through this lane's dispatch rows; it is an issue outcome, not a claim that this lane produced the landing |
 | `landed_sha` | + `landed_sha_reason` | The landing commit, or which of the three tests answered |
 | `dispatches` | never | Dispatches of this issue on this lane |
 | `spend_dispatches` | never | Of those, how many carried spend records — partial reads stay visible |
@@ -316,7 +318,8 @@ repeated three-round state can mean the item was under-specified upstream.
 | `dispatches` | never | The row's dispatch count — an outcome measure |
 | `issues` | never | Distinct issues the row dispatched on — an outcome measure |
 | `rounds` | never | Fix rounds over those issues, from the review journal — an outcome measure |
-| `landings` | never | The row's dispatches whose issue landed at or after their own start — an outcome measure, bounded as described below |
+| `landings` | never | The row's dispatches credited with the issue's journalled produced landing and an `ok` end state; candidates with other end states are not credited |
+| `landings_reason` | + | Why one or more issue-landing candidates were not credited: a typed not-a-result class or an end state that cannot establish contribution |
 | `rounds_per_landing` | + `rounds_per_landing_reason` | The ruled key: `rounds` over `landings` |
 | `ranked` | never | `1` only where the key exists; every other row is reported and unranked |
 | `measures` | never | The marker naming the outcome columns as description, never strata |
@@ -331,21 +334,20 @@ crossed with `ledger`'s `seat_shape` answers which seats may rank: a seat ranks 
 both reaches `just land` and lands work rather than a journal. Today that is exactly
 `implementer`; a new seat joins by its registry rows and not by an edit to the store.
 
-**The denominator is over-inclusive, and says so here.** `landings` is not "the row's
-dispatches that landed". A dispatch's `landed_sha` is derived by `tools/ledger.py`'s
-landing detection — commits referencing the issue that descend from the dispatch's base
-and postdate its start — so a dispatch counts whenever its issue landed at or after
-its start, whether or not that dispatch produced the landing. The tests bound the start
-and never the end, so a commit landing after the dispatch finished still counts; a
-degenerate record, one carrying no base SHA or no start time, clears none of the tests
-and never counts. Every dispatch an issue
-carried while it landed shares in that landing, superseded ones included. ADR-0071
-ruling 6 makes this column the key's denominator and says an implementer whose work
-never lands is a zero denominator; the code gives such a row a denominator wherever the
-issue landed at or after the start of any of its dispatches. A number wrong in that
-known, bounded way
-and saying so is honest; the same number silently is not. The semantics fix is filed
-separately as #542 and this view deliberately does not reach for it.
+**The denominator credits a dispatch only where the dispatch evidence permits it.** The
+issue's `landed_sha` comes from the landing journal where a `cti.relation.produced`
+relation exists, or from the bounded Git candidate derivation where no journal covers
+the issue. That SHA is issue-level evidence and remains subject to `ledger.landed`'s
+candidate ceiling; it is not, by itself, dispatch production evidence. For the rework
+denominator, a dispatch carrying a typed not-a-result class — `infra_unavailable`,
+`quota_exhausted`, `provider_refused` or `untyped_harness_failure` — is known to have
+produced no result and is excluded even when the same issue's landing is visible through
+its base and start window. A dispatch with any other end state than `ok` is also excluded
+because the available evidence cannot establish that it contributed; both cases appear
+in `landings_reason`, even though the count remains numeric. The store does not relabel
+`cti.relation.author` as proof, because
+that relation is explicitly a potential-author set. A future dispatch-level production
+record can tighten this positive side without narrowing `ledger.landed`'s lexical ceiling.
 
 **Five absences, five reasons.** A ranked seat with no landings is an undefined rate —
 rounds visible, `ranked` `0`, never a division. A seat that lands nothing by contract

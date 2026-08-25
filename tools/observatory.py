@@ -48,7 +48,9 @@ than routes — nothing here excludes a profile, reroutes work or trips a breake
   not be derived.
 - **Every null carries a reason.** A column that cannot be derived says why, in a
   sibling `<column>_reason` key that is non-null exactly when its column is null —
-  the `cap_fraction` pattern, applied store-wide.
+  the `cap_fraction` pattern, applied store-wide. `profile_rework.landings_reason`
+  is the one explanatory exception: its numeric count is known, and the text names
+  issue-landing candidates excluded from that count rather than explaining a null.
 - **Malformed input is counted and named, not swallowed and not fatal.** A truncated
   JSON line in the export increments a counter naming its file, the rebuild
   completes, and the count appears in the output (#496, #503).
@@ -80,9 +82,13 @@ than routes — nothing here excludes a profile, reroutes work or trips a breake
   reader quoting one number learns it is descriptive from the output and not from this
   file; the stratification columns are the dispatch record's own `profile` and `seat`,
   written before the child ran, and nothing known only after the work finished ever
-  stratifies. A profile with no landings keeps its rounds visible and its rate undefined
-  — never a division — and a seat that lands nothing by contract keeps its rework
-  reported and unranked, distinguished from a miss by the registry's own shape.
+  stratifies. `landings` credits a dispatch only when its issue has the journalled
+  produced landing and its end state is `ok`; the shared issue landing alone is not
+  enough. `landings_reason` names a typed run excluded from that denominator or an
+  end-state that cannot establish contribution. A profile with no credited landings
+  keeps its rounds visible and its rate undefined — never a division — and a seat that
+  lands nothing by contract keeps its rework reported and unranked, distinguished from
+  a miss by the registry's own shape.
 - **The session view (#488) reads the status-line spool and states its boundary in every
   rendering path.** The spool is the only per-session record for sessions no dispatch
   covers, and it is a record of *interactive* sessions: the tap fires on a status-line
@@ -171,7 +177,7 @@ import review_loop
 if TYPE_CHECKING:
     from collections.abc import Container
 
-SCHEMA: Final = "cti.observatory/10"
+SCHEMA: Final = "cti.observatory/11"
 STORE_NAME: Final = "store.json"
 SUMMARY_PATH: Final = Path("docs/observatory/landed-issues.md")
 SUMMARY_HEADER: Final = (
@@ -508,8 +514,16 @@ MEASURES_NOTE: Final = (
 )
 
 NO_LANDING_KEY_REASON: Final = (
-    "no landing among this profile's dispatches on this seat — the rate is undefined, "
-    "its rounds stay visible, and it is never rendered as a division"
+    "no credited landing among this profile's dispatches on this seat — the rate is "
+    "undefined, its rounds stay visible, and it is never rendered as a division"
+)
+REWORK_LANDING_NOT_CREDITED_REASON: Final = (
+    "the issue's produced landing is known, but this dispatch produced no result and "
+    "is not credited"
+)
+REWORK_LANDING_UNDETERMINED_REASON: Final = (
+    "the issue's produced landing is known, but this dispatch's end state does not "
+    "establish that it contributed"
 )
 NO_LOOP_REASON: Final = "no review loop is recorded for this issue"
 # The other absence a `review_rounds` null can be: a loop exists and would not parse, so
@@ -525,6 +539,7 @@ PROFILE_REWORK_COLUMNS: Final = (
     "issues",
     "rounds",
     "landings",
+    "landings_reason",
     # The ruled key, and why it is absent where it is.
     "rounds_per_landing",
     "rounds_per_landing_reason",
@@ -1294,9 +1309,11 @@ def _issue_cost_row(issue: int, lane: str, rows: Sequence[Mapping[str, Any]]) ->
     Summing within a lane is the one sum the store performs — one meter, one issue,
     one currency — and it is the only one its shape can express. `spend_dispatches`
     beside `dispatches` keeps a partial read visible as partial rather than as
-    small. The landing is whichever dispatch of the pair landed, newest named where
-    one did, and the reason is the first dispatch's own when none did, because a
-    ledger refusal already names which of the three tests answered.
+    small. `landed` is an issue-level outcome observed from this lane's dispatch rows:
+    it does not claim that this lane produced the landing. The landing is whichever
+    dispatch of the pair supplied a recovered SHA, newest named where one did, and
+    the reason is the first dispatch's own when none did, because a ledger refusal
+    already names which of the three tests answered.
     """
     shas = [str(row["landed_sha"]) for row in rows if row["landed_sha"]]
     with_spend = [row for row in rows if row["spend_encoding"] is not None]
@@ -2295,13 +2312,32 @@ def _profile_rework(
     ):
         issues = {int(row["issue"]) for row in members if row["issue"] is not None}
         total_rounds = sum(rounds.get(issue, 0) for issue in issues)
-        # Not "dispatches that landed": `landed_sha` derives from commits referencing
-        # the issue that descend from the dispatch's base and postdate its start, so a
-        # dispatch counts whenever the issue landed while it was open — whether or not
-        # that dispatch produced the landing. The ruling's zero denominator therefore
-        # arrives as one here; a known limit, bounded and stated in the schema
-        # reference, with the semantics fix filed as #542.
-        landings = sum(1 for row in members if row["landed_sha"])
+        landing_reasons: set[str] = set()
+        landings = 0
+        for row in members:
+            if not row["landed_sha"]:
+                continue
+            end_state = row["end_state_class"]
+            if end_state in attribute_registry.NOT_A_RESULT_CLASSES:
+                # A typed provider, lane or harness refusal is evidence that this
+                # dispatch produced no result, even when another dispatch's landing
+                # is visible through the same issue-level journal relation.
+                landing_reasons.add(
+                    f"{REWORK_LANDING_NOT_CREDITED_REASON}"
+                    f" (dispatch={row['dispatch_id']} class={end_state})"
+                )
+                continue
+            if end_state == "ok":
+                # `ok` is the only positive end-state evidence this view has. The
+                # issue-level produced relation supplies the landing; the successful
+                # dispatch result supplies the contribution-side discriminator.
+                landings += 1
+                continue
+            detail = row["end_state_class_reason"] or "the dispatch end state is absent"
+            landing_reasons.add(
+                f"{REWORK_LANDING_UNDETERMINED_REASON}"
+                f" (dispatch={row['dispatch_id']} class={end_state or 'unknown'}; {detail})"
+            )
         key, reason, ranked = _ranking_for(seat, total_rounds, landings)
         built.append(
             {
@@ -2311,6 +2347,7 @@ def _profile_rework(
                 "issues": len(issues),
                 "rounds": total_rounds,
                 "landings": landings,
+                "landings_reason": "; ".join(sorted(landing_reasons)) or None,
                 "rounds_per_landing": key,
                 "rounds_per_landing_reason": reason,
                 "ranked": ranked,

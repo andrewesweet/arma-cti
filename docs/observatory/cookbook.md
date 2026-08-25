@@ -15,7 +15,9 @@ just observatory
 
 The store's first question (#482). Spend is per lane and never summed — the three
 meters do not convert (ADR-0061 Decision 5) — so the answer is always a set of rows,
-one per lane, each in its own meter. Never aggregate over this table's lanes.
+one per lane, each in its own meter. `landed` means the issue has a recovered landing
+as observed through that lane's dispatch rows; it does not mean the lane produced it.
+Never aggregate over this table's lanes.
 
 ```sql
 SELECT issue, lane, dispatches, spend_dispatches, output_tokens, meter, cost, cost_reason
@@ -131,7 +133,7 @@ says a repeated three-round state can mean the item was under-specified upstream
 bad row is a place to look and never a verdict on a profile.
 
 ```sql
-SELECT profile, seat, dispatches, issues, rounds, landings,
+SELECT profile, seat, dispatches, issues, rounds, landings, landings_reason,
        rounds_per_landing, ranked, measures
 FROM profile_rework
 ORDER BY ranked DESC, rounds_per_landing
@@ -142,10 +144,11 @@ implementer with no landings — an undefined rate, with its rounds still visibl
 `rounds`, never a division. `ranked` is `0` on every such row, and the reason column
 distinguishes the five absences: no landing, lands-nothing-by-contract, the retro
 seat's journal-only landing, a registry row that lands nothing, and a seat no registry
-knows. `landings` itself counts a dispatch whenever its issue landed while it was open
-— not that the dispatch produced the landing — so the key's denominator is
-over-inclusive in a known, bounded way; the schema reference states the limit and #542
-carries the fix. The strata are `profile` and `seat` alone — both written on the
+knows. `landings` credits only a dispatch with the issue's recovered produced landing
+and an `ok` end state. Typed non-results are known not to contribute; another end state
+is excluded and named in `landings_reason` when the available evidence cannot establish
+contribution. The landing journal's author relation remains a potential-author set,
+not exact production proof. The strata are `profile` and `seat` alone — both written on the
 dispatch record before the work started — and the `measures` column names every other
 column as description, so a number quoted from this table arrives already marked as
 descriptive.

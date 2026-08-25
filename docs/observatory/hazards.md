@@ -86,11 +86,16 @@ three-round state can mean the item was under-specified upstream. And `null` in
 `rounds_per_landing` is one of five different facts — no landing, lands-nothing-by-
 contract, journal-only landing, a registry row that lands nothing, unknown seat —
 which is why the reason column exists; a reader who flattens them has turned a
-contract into a score. The denominator has its own trap: `landings` counts a dispatch
-whenever its issue landed while it was open, not that the dispatch produced the
-landing, so a superseded implementer shares in the landing and the ruling's zero
-denominator arrives as one — a known, bounded limit stated in the schema reference,
-with the semantics fix filed as #542.
+contract into a score. The denominator has its own boundary: an issue-level produced
+landing is not automatically a dispatch contribution. A dispatch typed as
+`infra_unavailable`, `quota_exhausted`, `provider_refused` or
+`untyped_harness_failure` is excluded from `landings`, even when its base and start
+window see the same landing as another dispatch. A candidate with any other end state
+than `ok` is also excluded because its contribution cannot be established;
+`landings_reason` names the excluded dispatch and reason. The `issue_cost.landed` flag
+remains an issue outcome at its `(issue, lane)` grain, not a lane-contribution flag. The
+landing journal's `author` relation is a potential-author set, so the observatory does
+not relabel it as exact dispatch production evidence.
 
 ## 6. The session view's source is interactive sessions, and its history has silent holes
 
