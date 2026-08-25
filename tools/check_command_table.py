@@ -401,8 +401,8 @@ def check(root: Path) -> Result:  # noqa: PLR0911 — each typed refusal names i
     )
 
 
-def _route_candidate(root: Path) -> bool:
-    """Return whether the current diff carries exactly one delegated record."""
+def _route_candidate(root: Path) -> tuple[bool, int | None]:
+    """Return whether the diff carries exactly one delegated record, and the issue."""
     # The gated-path checker remains the authority for path and ADR-0013 marker
     # discovery; this CLI only needs the same eligibility to expose a named leg.
     import gated_paths  # noqa: PLC0415 — delayed to avoid the checker import cycle
@@ -413,7 +413,7 @@ def _route_candidate(root: Path) -> bool:
         raise GitError(error.args_run, error.stderr) from error
     delegated = gated_paths.delegated_decisions(root, paths)
     issue, _issue_error = gated_paths.issue_of(root, os.environ)
-    return (
+    applicable = (
         "AGENTS.md" in paths
         and len(delegated) == 1
         and not gated_paths._has_current_approval_record(  # noqa: SLF001 — mirror the route precondition
@@ -423,6 +423,7 @@ def _route_candidate(root: Path) -> bool:
             AGENTS_PATH,
         )
     )
+    return applicable, issue
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -432,7 +433,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     root = args.root.resolve()
     try:
-        applicable = _route_candidate(root)
+        applicable, issue = _route_candidate(root)
     except (GitError, OSError) as error:
         print(f"refusal={COMMAND_TABLE_UNREADABLE}", file=sys.stderr)  # noqa: T201
         print(f"detail={error}", file=sys.stderr)  # noqa: T201
@@ -445,9 +446,14 @@ def main(argv: list[str] | None = None) -> int:
         print("command_table=not_applicable")  # noqa: T201 — CLI contract
         return 0
     if result.failure is not None:
+        import gated_paths  # noqa: PLC0415 — delayed to avoid the checker import cycle
+
+        # The standalone documented path must name the same exit as the gate
+        # route, or a human meeting it alone still dead-ends (#583).
+        action = gated_paths.direct_approval_remedy(root, issue, result.failure.action)
         print(f"refusal={result.failure.kind}", file=sys.stderr)  # noqa: T201
         print("\n".join(result.failure.details), file=sys.stderr)  # noqa: T201
-        print(f"action={result.failure.action}", file=sys.stderr)  # noqa: T201
+        print(f"action={action}", file=sys.stderr)  # noqa: T201
         return 1
     print("\n".join(result.lines))  # noqa: T201 — CLI contract
     return 0

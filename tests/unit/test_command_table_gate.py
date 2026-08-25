@@ -235,12 +235,66 @@ def test_a_delegated_row_change_with_an_unknown_recipe_is_refused(
         encoding="utf-8",
     )
     delegated_record(repo)
+    content_id = gated_paths.content_id_of(repo, "AGENTS.md")
 
     report = gated_paths.check(repo, tmp_path / "approvals", issue=544)
 
     assert report.exit_code == 1
     assert "refusal=command_table_recipe_unresolved" in report.lines
     assert "recipe=missing-recipe" in report.lines
+    action = next(line for line in report.lines if line.startswith("action="))
+    assert "Make the candidate justfile define the recipe named by the row." in action
+    command = f"just gated-paths approve --issue 544 --path AGENTS.md --content-id {content_id}"
+    assert command in action
+
+
+def test_an_unreadable_delegated_table_still_names_the_direct_approval(
+    tmp_path: Path,
+) -> None:
+    repo = repository(tmp_path)
+    (repo / "AGENTS.md").write_text(
+        (repo / "AGENTS.md")
+        .read_text(encoding="utf-8")
+        .replace(
+            "| `just old-recipe` | Old purpose | No | Always |\n",
+            "| `just old-recipe` | Old purpose | No |\n",
+        ),
+        encoding="utf-8",
+    )
+    delegated_record(repo)
+    content_id = gated_paths.content_id_of(repo, "AGENTS.md")
+
+    report = gated_paths.check(repo, tmp_path / "approvals", issue=544)
+
+    assert report.exit_code == 1
+    assert "refusal=command_table_unreadable" in report.lines
+    action = next(line for line in report.lines if line.startswith("action="))
+    command = f"just gated-paths approve --issue 544 --path AGENTS.md --content-id {content_id}"
+    assert command in action
+
+
+def test_the_standalone_command_names_the_direct_approval_on_refusal(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """#583: the documented standalone path must not dead-end either."""
+    monkeypatch.delenv("CTI_DISPATCH_ISSUE", raising=False)
+    repo = repository(tmp_path)
+    (repo / "AGENTS.md").write_text(
+        (repo / "AGENTS.md")
+        .read_text(encoding="utf-8")
+        .replace("`just old-recipe`", "`just missing-recipe`"),
+        encoding="utf-8",
+    )
+    delegated_record(repo)
+    content_id = gated_paths.content_id_of(repo, "AGENTS.md")
+
+    assert check_command_table.main(["--root", str(repo)]) == 1
+
+    stderr = capsys.readouterr().err
+    assert "refusal=command_table_recipe_unresolved" in stderr
+    action = next(line for line in stderr.splitlines() if line.startswith("action="))
+    command = f"just gated-paths approve --issue 544 --path AGENTS.md --content-id {content_id}"
+    assert command in action
 
 
 def test_just_check_runs_the_command_table_leg() -> None:

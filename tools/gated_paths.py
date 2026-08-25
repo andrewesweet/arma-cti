@@ -823,6 +823,26 @@ def _refused(kind: str, found: Sequence[str], action: str) -> Report:
     )
 
 
+def direct_approval_remedy(root: Path, issue: int | None, action: str) -> str:
+    """Append the human's direct-approval exit to a command-table refusal.
+
+    Shared by the gate route and `check_command_table`'s standalone CLI so the
+    documented `just check-command-table` path cannot dead-end either (#583).
+    """
+    try:
+        content_id = content_id_of(root, "AGENTS.md")
+    except GitError:
+        return action
+    issue_text = str(issue) if issue is not None else "<issue>"
+    command = (
+        f"just gated-paths approve --issue {issue_text} --path AGENTS.md --content-id {content_id}"
+    )
+    return (
+        f"{action} Or, after the human reviews this exact path diff, they run"
+        f" `{command}`. A session must not run it."
+    )
+
+
 class CommandTableRoute(NamedTuple):
     """The optional command-table authorisation result."""
 
@@ -856,26 +876,12 @@ def _command_table_route(inputs: CommandTableInputs) -> CommandTableRoute:
         return CommandTableRoute(lines=(), authorized=False, recipe_resolution=False, refusal=None)
     if result.failure is not None:
         failure = result.failure
-        action = failure.action
-        if failure.kind == check_command_table.COMMAND_TABLE_ESCAPE:
-            try:
-                content_id = content_id_of(inputs.root, "AGENTS.md")
-            except GitError:
-                pass
-            else:
-                issue = str(inputs.issue) if inputs.issue is not None else "<issue>"
-                command = (
-                    "just gated-paths approve"
-                    f" --issue {issue} --path AGENTS.md --content-id {content_id}"
-                )
-                action = (
-                    f"{action} Or, after the human reviews this exact path diff, they run"
-                    f" `{command}`. A session must not run it."
-                )
+        # Every route refusal returns before the per-path walk, so this is the
+        # last surface that can name the direct-approval exit (#575, #583).
         refusal = _refused(
             failure.kind,
             (*inputs.covered, *failure.details),
-            action,
+            direct_approval_remedy(inputs.root, inputs.issue, failure.action),
         )
         return CommandTableRoute(
             lines=(), authorized=False, recipe_resolution=False, refusal=refusal
