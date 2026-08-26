@@ -214,6 +214,7 @@ def test_a_delegated_row_change_with_prose_outside_the_table_is_refused(
     )
     delegated_record(repo)
     content_id = gated_paths.content_id_of(repo, "AGENTS.md")
+    change_id = gated_paths.binding_of(repo, "AGENTS.md").change_id
 
     report = gated_paths.check(repo, tmp_path / "approvals", issue=544)
 
@@ -222,8 +223,12 @@ def test_a_delegated_row_change_with_prose_outside_the_table_is_refused(
     assert any(line.startswith("escaped=") for line in report.lines)
     action = next(line for line in report.lines if line.startswith("action="))
     assert "Keep the delegated AGENTS.md change to command-table data rows only." in action
-    command = f"just gated-paths approve --issue 544 --path AGENTS.md --content-id {content_id}"
-    assert command in action
+    assert (
+        f"just gated-paths approve --issue 544 --path AGENTS.md --change-id {change_id}" in action
+    )
+    assert (
+        f"just gated-paths approve --issue 544 --path AGENTS.md --content-id {content_id}" in action
+    )
 
 
 def test_a_delegated_row_change_with_an_unknown_recipe_is_refused(
@@ -238,6 +243,7 @@ def test_a_delegated_row_change_with_an_unknown_recipe_is_refused(
     )
     delegated_record(repo)
     content_id = gated_paths.content_id_of(repo, "AGENTS.md")
+    change_id = gated_paths.binding_of(repo, "AGENTS.md").change_id
 
     report = gated_paths.check(repo, tmp_path / "approvals", issue=544)
 
@@ -246,8 +252,12 @@ def test_a_delegated_row_change_with_an_unknown_recipe_is_refused(
     assert "recipe=missing-recipe" in report.lines
     action = next(line for line in report.lines if line.startswith("action="))
     assert "Make the candidate justfile define the recipe named by the row." in action
-    command = f"just gated-paths approve --issue 544 --path AGENTS.md --content-id {content_id}"
-    assert command in action
+    assert (
+        f"just gated-paths approve --issue 544 --path AGENTS.md --change-id {change_id}" in action
+    )
+    assert (
+        f"just gated-paths approve --issue 544 --path AGENTS.md --content-id {content_id}" in action
+    )
 
 
 def test_an_unreadable_delegated_table_still_names_the_direct_approval(
@@ -265,14 +275,19 @@ def test_an_unreadable_delegated_table_still_names_the_direct_approval(
     )
     delegated_record(repo)
     content_id = gated_paths.content_id_of(repo, "AGENTS.md")
+    change_id = gated_paths.binding_of(repo, "AGENTS.md").change_id
 
     report = gated_paths.check(repo, tmp_path / "approvals", issue=544)
 
     assert report.exit_code == 1
     assert "refusal=command_table_unreadable" in report.lines
     action = next(line for line in report.lines if line.startswith("action="))
-    command = f"just gated-paths approve --issue 544 --path AGENTS.md --content-id {content_id}"
-    assert command in action
+    assert (
+        f"just gated-paths approve --issue 544 --path AGENTS.md --change-id {change_id}" in action
+    )
+    assert (
+        f"just gated-paths approve --issue 544 --path AGENTS.md --content-id {content_id}" in action
+    )
 
 
 def test_the_standalone_command_names_the_direct_approval_on_refusal(
@@ -289,14 +304,19 @@ def test_the_standalone_command_names_the_direct_approval_on_refusal(
     )
     delegated_record(repo)
     content_id = gated_paths.content_id_of(repo, "AGENTS.md")
+    change_id = gated_paths.binding_of(repo, "AGENTS.md").change_id
 
     assert check_command_table.main(["--root", str(repo)]) == 1
 
     stderr = capsys.readouterr().err
     assert "refusal=command_table_recipe_unresolved" in stderr
     action = next(line for line in stderr.splitlines() if line.startswith("action="))
-    command = f"just gated-paths approve --issue 544 --path AGENTS.md --content-id {content_id}"
-    assert command in action
+    assert (
+        f"just gated-paths approve --issue 544 --path AGENTS.md --change-id {change_id}" in action
+    )
+    assert (
+        f"just gated-paths approve --issue 544 --path AGENTS.md --content-id {content_id}" in action
+    )
 
 
 def test_an_unreadable_repository_names_the_repair_not_the_approval(
@@ -331,6 +351,7 @@ def test_an_issueless_checkout_says_the_human_supplies_the_issue(
     )
     delegated_record(repo)
     content_id = gated_paths.content_id_of(repo, "AGENTS.md")
+    change_id = gated_paths.binding_of(repo, "AGENTS.md").change_id
 
     assert check_command_table.main(["--root", str(repo)]) == 1
 
@@ -338,6 +359,7 @@ def test_an_issueless_checkout_says_the_human_supplies_the_issue(
     assert "refusal=command_table_recipe_unresolved" in stderr
     action = next(line for line in stderr.splitlines() if line.startswith("action="))
     assert "<issue>" not in action
+    assert f"--issue N --path AGENTS.md --change-id {change_id}" in action
     assert f"--issue N --path AGENTS.md --content-id {content_id}" in action
     assert "the issue this change lands under" in action
 
