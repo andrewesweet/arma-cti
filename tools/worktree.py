@@ -914,6 +914,39 @@ def restore(root: Path, name: str, ref: str) -> Report:
     )
 
 
+def restore_commit(root: Path, name: str, sha: str) -> Report:
+    """Recreate a detached worktree from an explicit full commit SHA."""
+    bad_name = classify_name(name)
+    if bad_name is not None:
+        return Report.refused(bad_name)
+    invalid = invalid_commit_sha(sha)
+    if invalid is not None:
+        return Report.refused(invalid)
+    path = root / WORKTREES / name
+    registrations = parse_registrations(git("worktree", "list", "--porcelain", cwd=root))
+    occupied = classify_target(path, gather(root, path, registrations))
+    if occupied is not None:
+        return Report.refused(occupied)
+    missing = validate_commit(root, sha)
+    if missing is not None:
+        return Report.refused(missing)
+    git("worktree", "add", str(path), sha, "--detach", cwd=root)
+    dirty = classify_preflight(path, read_status(git("status", "--porcelain", cwd=path)))
+    if dirty is not None:
+        return Report.refused(dirty)
+    subject = git("log", "-1", "--format=%s", sha, cwd=root, check=False).strip()
+    return Report(
+        (
+            "ok=worktree_restored",
+            f"worktree={path}",
+            f"base={sha[:7]} commit={sha} {subject}".rstrip(),
+            "preflight=clean",
+            "Restored from the requested base commit, not a preservation ref.",
+        ),
+        0,
+    )
+
+
 # ------------------------------------------------------------------ invocation
 
 

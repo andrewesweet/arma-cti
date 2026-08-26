@@ -101,6 +101,7 @@ def plan_for(tmp_path: Path, **overrides: object) -> tuple[Any, str, Any]:
     """
     injected = overrides.pop("now", None)
     now = datetime.now(tz=UTC) if injected is None else injected
+    dry_run = bool(overrides.pop("dry_run", False))
     worktree = overrides.pop("worktree", None) or git_worktree(tmp_path)
     request = {
         "lane": "",
@@ -120,6 +121,7 @@ def plan_for(tmp_path: Path, **overrides: object) -> tuple[Any, str, Any]:
         # #322: what a non-review dispatch passes, and the fail-closed value for a review
         # one. The review arrangements below override it.
         "reviewing": "",
+        "dry_run": dry_run,
     }
     request.update(overrides)
     return dispatch.plan_dispatch(type("Args", (), request)(), REPO, now)

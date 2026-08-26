@@ -271,6 +271,8 @@ if TYPE_CHECKING:
 
 EXIT_REFUSED: Final = 1
 
+RECON_DEFAULT_REF: Final = "refs/heads/main"
+
 DISPATCH_ROOT: Final = Path.home() / ".arma-cti" / "dispatches"
 CREDENTIALS: Final = Path.home() / ".arma-cti" / "credentials.env"
 CHILD_STATE_UNKNOWN_ACTION: Final = (
@@ -3247,24 +3249,20 @@ def default_brief(identity: Identity, worktree: Path) -> str:
     omit, because a dispatched session has no second turn to recover from missing it.
 
     The one line that varies is the gate line. A forced `plan` seat still cannot affect a
-    landing, but review and recon dispatches now run in a disposable tree, so they can run
-    `just fast`; the tree is removed after the dispatch and the verdict remains bound to the
-    reviewed SHA. `Seat.judgement_only` describes the forced mode, while `Seat.runs_gate`
-    describes this separate execution capability.
+    landing, and the dated human ruling says that review and recon do not re-run the
+    implementer's gate; the disposable tree is a containment capability, not a revision of
+    that instruction. `Seat.judgement_only` is the predicate for the no-gate arm.
     """
-    runs_gate = SEATS[identity.seat].runs_gate
+    judgement_only = SEATS[identity.seat].judgement_only
     gate_line = (
         (
-            "Run `just fast` after every edit in this disposable worktree. Do not commit or "
-            "land; the dispatcher removes this tree after the verdict."
+            "Run no gate and re-run none of the implementer's tests — you are passed their"
+            " report instead, and the wall time is the reason (human ruling 2026-08-14 on #353,"
+            " as clarified 2026-08-20 on #449); read what the issue thread and the repository"
+            " carry. Reading is this seat's work, not a breach of that (#421)."
         )
-        if runs_gate and SEATS[identity.seat].judgement_only
+        if judgement_only
         else "Run `just fast` after every edit."
-        if runs_gate
-        else "Run no gate and re-run none of the implementer's tests — you are passed their"
-        " report instead, and the wall time is the reason (human ruling 2026-08-14 on #353,"
-        " as clarified 2026-08-20 on #449); read what the issue thread and the repository"
-        " carry. Reading is this seat's work, not a breach of that (#421)."
     )
     rendered = (
         f"You are the {identity.seat} seat, dispatched as {identity.dispatch_id} on the "
@@ -4298,11 +4296,12 @@ def queue_refusal(args: argparse.Namespace, root: Path) -> Refusal | None:
         return _as_refusal(refusal)
     scan_root = Path(args.queue_root).expanduser() if args.queue_root else root
     in_flight = queue_policy.gather(scan_root, Path(args.dispatch_dir).expanduser())
-    # A forced `plan` is a runner policy, not proof that the session writes nothing: review
-    # and recon now execute gates in a disposable tree. Only a seat that cannot run a gate
-    # contributes no candidate surface; derive that from the registry rather than guessing
-    # from the runner's argv.
-    writes_nothing = not SEATS[args.seat].runs_gate
+    # A forced `plan` review or recon dispatch is isolated in its dispatch-owned disposable
+    # tree. It therefore contributes no candidate surface to this queue's persistent-tree
+    # scan; using the issue's registered surface would attribute the implementer's writes to
+    # the reviewer (#339). Derive that boundary from the registry rather than the runner's
+    # argv.
+    writes_nothing = SEATS[args.seat].judgement_only
     return _as_refusal(
         queue_policy.check_refusal(
             policy,
@@ -4617,7 +4616,7 @@ def _remove_provisional_owner(record: Path) -> None:
         return
 
 
-def _materialize_disposable_plan(  # noqa: C901, PLR0911, PLR0913 — setup owns the complete plan and one refusal per proof rung
+def _materialize_disposable_plan(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0915 — setup owns the complete plan, its source fallback and one refusal per proof rung
     plan: Plan,
     brief: str,
     root: Path,
@@ -4626,17 +4625,10 @@ def _materialize_disposable_plan(  # noqa: C901, PLR0911, PLR0913 — setup owns
     custom_brief: bool,
     writable_roots: tuple[Path, ...] | None,
 ) -> tuple[Plan | None, str, Refusal | None]:
-    """Restore the review ref into an id-owned tree and fail closed on every setup error."""
+    """Restore the selected review/recon base into an id-owned tree, failing closed."""
     ref = review_exchange.review_ref(plan.identity.issue)
     path = root / worktree_tool.WORKTREES / f"dispatch-{plan.identity.dispatch_id}"
-    owner = dispatch_stop.Record(
-        dispatch_id=plan.identity.dispatch_id,
-        worktree=path,
-        directory=plan.record,
-        disposable_worktree=True,
-        worktree_ref=ref,
-        worktree_owner=plan.identity.dispatch_id,
-    )
+    restore_from_commit = False
     if plan.record.exists():
         return (
             None,
@@ -4685,6 +4677,40 @@ def _materialize_disposable_plan(  # noqa: C901, PLR0911, PLR0913 — setup owns
                 failure_class="infra_unavailable",
             ),
         )
+    if plan.identity.seat == "recon":
+        try:
+            review_sha = worktree_tool.remote_ref_sha(root, ref)
+        except worktree_tool.GitError as failure:
+            return (
+                None,
+                "",
+                Refusal(
+                    "disposable_worktree_create_failed",
+                    (
+                        f"worktree={path}",
+                        f"ref={ref}",
+                        f"command=git {' '.join(failure.args_run)}",
+                        f"stderr={failure.stderr}",
+                    ),
+                    "The recon base could not be read. Nothing was dispatched; inspect the git "
+                    "error and retry only after the base is readable.",
+                    failure_class="infra_unavailable",
+                ),
+            )
+        if review_sha is None:
+            if requested_base_sha:
+                ref = requested_base_sha
+                restore_from_commit = True
+            else:
+                ref = RECON_DEFAULT_REF
+    owner = dispatch_stop.Record(
+        dispatch_id=plan.identity.dispatch_id,
+        worktree=path,
+        directory=plan.record,
+        disposable_worktree=True,
+        worktree_ref=ref,
+        worktree_owner=plan.identity.dispatch_id,
+    )
     owner_written = False
     created = False
 
@@ -4706,7 +4732,11 @@ def _materialize_disposable_plan(  # noqa: C901, PLR0911, PLR0913 — setup owns
     try:
         _write_disposable_owner(plan.record, owner)
         owner_written = True
-        restored = worktree_tool.restore(root, path.name, ref)
+        restored = (
+            worktree_tool.restore_commit(root, path.name, ref)
+            if restore_from_commit
+            else worktree_tool.restore(root, path.name, ref)
+        )
     except worktree_tool.GitError as failure:
         return failed(
             "disposable_worktree_create_failed",
@@ -4730,7 +4760,7 @@ def _materialize_disposable_plan(  # noqa: C901, PLR0911, PLR0913 — setup owns
         return failed(
             "disposable_worktree_create_failed",
             (f"worktree={path}", f"ref={ref}", *restored.lines),
-            "The review tree could not be restored from its review ref. Read the refusal "
+            "The disposable tree could not be restored from its selected base. Read the refusal "
             "above; nothing was dispatched.",
         )
     created = True
@@ -4824,7 +4854,8 @@ def plan_dispatch(  # noqa: C901, PLR0911, PLR0912 — planning owns the ordered
     lane = LANES[profile.lane]
     breaker_dir = Path(args.breaker_dir).expanduser()
     seat = SEATS[args.seat]
-    disposable = seat.disposable_worktree and materialize_worktree
+    preview = bool(getattr(args, "dry_run", False))
+    disposable = seat.disposable_worktree and (materialize_worktree or preview)
 
     worktree = (
         Path(args.worktree).expanduser()
@@ -4879,6 +4910,11 @@ def plan_dispatch(  # noqa: C901, PLR0911, PLR0912 — planning owns the ordered
         message = f"minted an id outside the alphabet: {dispatch_id}"
         raise ValueError(message)
 
+    if disposable:
+        # A dry run does not create this path, but it must describe the same dispatch-owned
+        # cwd that the real invocation would create rather than the caller's persistent tree.
+        worktree = root / worktree_tool.WORKTREES / f"dispatch-{dispatch_id}"
+
     identity = Identity(
         dispatch_id=dispatch_id,
         lane=lane.name,
@@ -4929,7 +4965,7 @@ def plan_dispatch(  # noqa: C901, PLR0911, PLR0912 — planning owns the ordered
         strata=capture_strata(found.body, args.issue, root, body_from_file=bool(args.issue_body)),
         disposable_worktree=disposable,
     )
-    if disposable:
+    if disposable and materialize_worktree:
         return _materialize_disposable_plan(
             plan,
             brief,

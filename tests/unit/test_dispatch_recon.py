@@ -210,6 +210,27 @@ def test_the_dry_run_on_the_claude_family_shows_it_too(
     assert WRITABLE_DEFAULT not in line
 
 
+def test_a_disposable_dry_run_names_the_tree_the_real_dispatch_would_use(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The rehearsal describes the dispatch-owned cwd without creating it."""
+    assert dispatch.main(recon_dry_run_argv(tmp_path)) == 0
+    output = capsys.readouterr().out.splitlines()
+    worktree = next(line for line in output if line.startswith("worktree="))
+    assert "/.claude/worktrees/dispatch-" in worktree
+    assert str(tmp_path / "tree") not in worktree
+
+
+def test_a_non_materialized_disposable_plan_is_recorded_as_disposable(tmp_path: Path) -> None:
+    """Dry-run planning keeps the same containment metadata as a real dispatch."""
+    plan, _, refusal = recon_plan(tmp_path, dry_run=True)
+    assert refusal is None, refusal
+    assert plan is not None
+    assert plan.disposable_worktree is True
+    assert plan.worktree.name.startswith("dispatch-")
+    assert not plan.worktree.exists()
+
+
 def test_the_registry_listing_states_the_recon_seats_containment(
     capsys: pytest.CaptureFixture[str],
 ) -> None:

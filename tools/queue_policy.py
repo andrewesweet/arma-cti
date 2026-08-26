@@ -719,12 +719,12 @@ def check_refusal(
     is sooner still and is advice about sequencing rather than about permission.
 
     `candidate` overrides what the surface rung reads as this dispatch's own surface, and the
-    one caller that passes it is `tools/dispatch.py`, which knows a seat that forces a read-only
-    mode writes nothing (#339): its surface is empty **by derivation** rather than by reading a
-    tree, where the default reads the tree registered under the issue — the implementer's, which
-    is the work a review dispatch is going to read and never the writes it would make. A
-    seat-less read (`just queue check`) passes nothing and keeps that default, which is the
-    conservative direction: it cannot know which seat is asking.
+    one caller that passes it is `tools/dispatch.py`, which knows a forced-`plan` seat runs in a
+    dispatch-owned disposable tree (#339): its surface is empty **by derivation** rather than
+    by reading a tree, where the default reads the tree registered under the issue — the
+    implementer's persistent tree, not the isolated review or recon tree. A seat-less read
+    (`just queue check`) passes nothing and keeps that default, which is the conservative
+    direction: it cannot know which seat is asking.
     """
     refusal = freeze_refusal(policy, issue)
     if refusal is not None:

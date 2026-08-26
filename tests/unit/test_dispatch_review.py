@@ -402,14 +402,16 @@ def test_no_other_seat_has_its_permission_mode_taken_away_from_the_caller(
     assert plan.permission_mode == "acceptEdits"
 
 
-def test_a_review_reserves_the_surface_it_can_write_in_its_disposable_tree(
+def test_a_review_is_not_refused_for_the_surface_it_was_sent_to_read(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """A review can run gates now, so its candidate surface is not empty.
+    """#339: the queue's surface rung read the implementer's tree as the review's writes.
 
     Two implementer trees in flight, both writing the same paths, and a review of one of
-    them — the surface rung must account for its disposable writes rather than pretending the
-    forced `plan` mode makes the runner unable to execute.
+    them — the observed refusal fired exactly there, on the critical path every landing now
+    takes (ADR-0071 ruling 4). The containment this file's criterion 3 forces is what makes
+    "this dispatch writes nothing" derivable, so the surface rung reads an empty surface for
+    such a seat rather than the issue's, and the refusal returns only without the column.
     """
     holders = (
         queue_policy.Holder(322, ("dispatch:d-1",), tmp_path / "issue-322"),
@@ -425,6 +427,16 @@ def test_a_review_reserves_the_surface_it_can_write_in_its_disposable_tree(
     monkeypatch.setattr(dispatch.queue_policy, "surfaces_of", lambda _ignored: surfaces)
     tree = git_worktree(tmp_path)
     # 324, not 322: the lower-numbered holder is the one that makes the conflict observable.
+    plan, _, refusal = plan_for(tmp_path, worktree=tree, issue=324)
+    assert refusal is None, refusal
+    assert plan is not None
+    # The control: strip the column that derives emptiness and the rung sees the conflict
+    # again, which is what pins the exemption to the registry rather than to a removed rung.
+    monkeypatch.setitem(
+        dispatch.SEATS,
+        "review",
+        dispatch.SEATS["review"]._replace(permission_mode=""),
+    )
     plan, _, refusal = plan_for(tmp_path, worktree=tree, issue=324)
     assert plan is None
     assert refusal is not None

@@ -553,6 +553,36 @@ def test_review_and_recon_dispatches_materialize_a_gateable_tree_for_each_runner
     assert not plan.worktree.exists()
 
 
+@pytest.mark.parametrize("requested_base", ["", "HEAD^"], ids=["origin-main", "base-sha"])
+def test_a_recon_without_a_review_ref_uses_a_safe_base(tmp_path: Path, requested_base: str) -> None:
+    """Recon has no review branch: use main, or the explicitly requested commit."""
+    root, main_sha = review_repository(tmp_path, issue=601)
+    requested_sha = (
+        dispatch.git("rev-parse", requested_base, cwd=root).strip() if requested_base else ""
+    )
+    plan, _brief, refusal = plan_for(
+        tmp_path,
+        root=root,
+        issue=600,
+        lane="claude-native",
+        profile="haiku-medium",
+        seat="recon",
+        reviewing="",
+        base_sha=requested_sha,
+        materialize_worktree=True,
+    )
+    assert refusal is None, refusal
+    assert plan is not None
+    expected_sha = requested_sha or main_sha
+    try:
+        assert dispatch.git("rev-parse", "HEAD", cwd=plan.worktree).strip() == expected_sha
+        assert plan.identity.base_sha == expected_sha
+    finally:
+        cleanup_refusal, _cleanup = dispatch._cleanup_plan_worktree(plan)  # noqa: SLF001
+        assert cleanup_refusal is None
+        dispatch._remove_provisional_owner(plan.record)  # noqa: SLF001
+
+
 def test_a_child_failure_removes_the_disposable_tree(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
