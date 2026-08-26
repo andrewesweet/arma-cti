@@ -639,7 +639,7 @@ def test_a_row_with_no_schema_marker_is_stale_rather_than_current(tmp_path: Path
     lines, code = ledger.sync(options(tmp_path, behind=True), NOW)
     row = json.loads((record / "ledger.json").read_text(encoding="utf-8"))
     assert (code, row["schema"]) == (0, ledger.SCHEMA)
-    assert row["previous_schema"] is None
+    assert row["previous_schema"] == ledger.PREVIOUS_SCHEMA_NO_MARKER
     assert any(" was=stale" in line for line in lines)
 
 
@@ -649,7 +649,34 @@ def test_an_unreadable_row_is_stale_rather_than_current(tmp_path: Path) -> None:
     lines, code = ledger.sync(options(tmp_path, behind=True), NOW)
     row = json.loads((record / "ledger.json").read_text(encoding="utf-8"))
     assert (code, row["schema"]) == (0, ledger.SCHEMA)
+    assert row["previous_schema"] == ledger.PREVIOUS_SCHEMA_UNREADABLE
     assert any(" was=stale" in line for line in lines)
+
+
+@pytest.mark.parametrize(
+    ("prior", "expected"),
+    [
+        (json.dumps({"usage": {}}), ledger.PREVIOUS_SCHEMA_NO_MARKER),
+        (json.dumps({"schema": 42}), ledger.PREVIOUS_SCHEMA_UNREADABLE),
+        ("{not json", ledger.PREVIOUS_SCHEMA_UNREADABLE),
+    ],
+)
+def test_repaired_rows_keep_the_prior_state_and_stay_byte_stable(
+    tmp_path: Path,
+    prior: str,
+    expected: str,
+) -> None:
+    record = staged_with_export(tmp_path)
+    (record / "ledger.json").write_text(prior, encoding="utf-8")
+
+    ledger.sync(options(tmp_path), NOW)
+    first = (record / "ledger.json").read_text(encoding="utf-8")
+    row = json.loads(first)
+
+    ledger.sync(options(tmp_path), NOW)
+
+    assert row["previous_schema"] == expected
+    assert (record / "ledger.json").read_text(encoding="utf-8") == first
 
 
 def test_a_behind_sync_run_twice_writes_nothing_the_second_time(tmp_path: Path) -> None:
@@ -692,8 +719,8 @@ def test_a_full_sync_still_recomputes_a_current_row(tmp_path: Path) -> None:
 
     row = json.loads((record / "ledger.json").read_text(encoding="utf-8"))
     assert (code, row["materialised_at"]) == (0, LATER.isoformat())
-    # A same-schema recompute records no previous_schema, so repeated full syncs
-    # over unchanged records stay byte-stable.
+    # This first current row has no prior history, so its same-schema recompute keeps a
+    # null previous_schema and repeated full syncs over unchanged records stay byte-stable.
     assert row["previous_schema"] is None
     assert any(" was=current" in line for line in lines)
 
@@ -730,6 +757,17 @@ def test_a_dispatcher_refusal_carries_its_own_class_through(tmp_path: Path) -> N
     )
     assert state.class_ == "infra_unavailable"
     assert "worktree_missing" in state.evidence[0]
+
+
+def test_a_dispatcher_refusal_without_a_class_defaults_to_infra_unavailable(
+    tmp_path: Path,
+) -> None:
+    state = ledger.type_end_state(
+        [],
+        {"refusal": "worktree_missing"},
+        ledger.Source(ledger.SOURCE_EXPORT, tmp_path / "f.jsonl"),
+    )
+    assert state.class_ == "infra_unavailable"
 
 
 def test_a_provider_refusal_record_types_the_dispatch_provider_refused() -> None:
@@ -801,6 +839,10 @@ def test_a_run_with_no_result_yet_is_unknown_rather_than_ended() -> None:
     state = ledger.type_end_state(items, None, ledger.Source(ledger.SOURCE_EXPORT, None))
     assert (state.class_, state.evidence) == ("unknown", ())
     assert "has not ended" in state.reason
+
+
+def test_started_without_a_result_is_the_false_boolean_not_none() -> None:
+    assert ledger.started(None) is False
 
 
 def test_read_json_names_which_of_three_conditions_a_none_is(tmp_path: Path) -> None:
@@ -1095,6 +1137,7 @@ def test_a_commit_made_before_the_dispatch_started_is_not_that_dispatch_s_landin
         "1 commit(s) on origin/main reference #227 but predate this dispatch's start "
         "(2026-08-05T22:17:43+00:00)"
     )
+    assert landing.commits == 0
 
 
 def test_a_commit_made_after_the_dispatch_started_is_still_that_dispatch_s_landing(
@@ -1867,6 +1910,7 @@ def test_any_dispatch_record_parse_failure_is_unclassified_reported_once_and_syn
     assert good_row["guidance_manifest"]["state"] == guidance.GUIDANCE_STATE_UNKNOWN
     assert len(reports) == 1
     assert "dispatch=d-bad" in reports[0]
+    assert reports[0].split().index("record_parse=failed") == 7
     assert any(line.startswith("ok=synced rows=2 degraded=0") for line in lines)
 
 
@@ -2353,9 +2397,10 @@ def age(path: Path, days: float) -> None:
     os.utime(path, (when, when))
 
 
-def stage_for_prune(
+def stage_for_prune(  # noqa: PLR0913 — the fixture exposes each retention dimension explicitly
     tmp_path: Path,
     *,
+    dispatch_id: str = DISPATCH,
     days: float,
     records: int = 1,
     source: str | None = None,
@@ -2363,16 +2408,28 @@ def stage_for_prune(
 ) -> Path:
     """Stage a raw export file plus, unless `source` says otherwise, the row from it."""
     export = write_jsonl(
-        tmp_path / "export" / f"dispatch-{DISPATCH}.jsonl",
-        [metric_batch("claude_code.token.usage", [({"type": "input"}, 1)])] * records,
+        tmp_path / "export" / f"dispatch-{dispatch_id}.jsonl",
+        [
+            metric_batch(
+                "claude_code.token.usage",
+                [({"type": "input"}, 1)],
+                dispatch_id=dispatch_id,
+            )
+        ]
+        * records,
     )
     if source is not None:
-        record = stage_record(tmp_path / "dispatches")
+        record = stage_record(tmp_path / "dispatches", dispatch_id=dispatch_id)
         (record / "ledger.json").write_text(
             json.dumps(
                 {
                     "schema": schema or ledger.SCHEMA,
-                    "source": {"kind": source},
+                    "dispatch_id": dispatch_id,
+                    "source": {
+                        "kind": source,
+                        "path": str(export),
+                        "degraded": source == ledger.SOURCE_CAPTURE,
+                    },
                     "records": {"total": records},
                 }
             ),
@@ -2397,9 +2454,10 @@ def test_a_raw_file_inside_the_horizon_is_kept(tmp_path: Path) -> None:
 
 def test_a_raw_file_the_view_never_read_is_never_pruned(tmp_path: Path) -> None:
     # Pruning ahead of the view destroys the only copy of records nothing has read.
-    stage_for_prune(tmp_path, days=99, source=None)
-    verdict = ledger.prunable(options(tmp_path), time.time())[0]
-    assert (verdict.prunable, "ledger-sync" in verdict.reason) == (False, True)
+    export = stage_for_prune(tmp_path, days=99, source=None)
+    lines, code = ledger.prune(options(tmp_path, apply=True), time.time())
+    assert (code, export.is_file()) == (ledger.EXIT_REFUSED, True)
+    assert "refused=prune_row_absent" in lines
 
 
 def test_a_row_taken_from_the_rotating_capture_does_not_licence_pruning_the_export(
@@ -2439,6 +2497,91 @@ def test_apply_does_not_delete_an_export_behind_a_stale_row(tmp_path: Path) -> N
     assert any(line.startswith("ok=pruned files=1 prunable=0") for line in lines)
 
 
+def test_apply_refuses_a_row_pointing_at_a_different_export(tmp_path: Path) -> None:
+    export = stage_for_prune(tmp_path, days=99, source=ledger.SOURCE_EXPORT)
+    record = tmp_path / "dispatches" / DISPATCH / "ledger.json"
+    record.write_text(
+        json.dumps(
+            {
+                "schema": "cti.ledger/5",
+                "source": {"kind": "ledger_export", "path": "/other/file"},
+                "records": {"total": 1},
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    lines, code = ledger.prune(options(tmp_path, apply=True), time.time())
+
+    assert (code, export.is_file()) == (ledger.EXIT_REFUSED, True)
+    assert any("source.path=/other/file" in line for line in lines)
+
+
+def test_prune_refuses_when_the_export_directory_is_absent(tmp_path: Path) -> None:
+    lines, code = ledger.prune(options(tmp_path, apply=True), time.time())
+    assert (code, lines[0]) == (ledger.EXIT_REFUSED, "refused=prune_export_dir_absent")
+
+
+def test_prune_refuses_when_the_export_selection_is_empty(tmp_path: Path) -> None:
+    (tmp_path / "export").mkdir()
+    lines, code = ledger.prune(options(tmp_path, apply=True), time.time())
+    assert (code, lines[0]) == (ledger.EXIT_REFUSED, "refused=prune_no_exports")
+
+
+@pytest.mark.parametrize(
+    ("case", "expected"),
+    [
+        ("damaged", "prune_row_damaged"),
+        ("not_an_object", "prune_row_not_an_object"),
+        ("malformed", "prune_row_malformed"),
+        ("capture_path_not_a_string", "prune_row_malformed"),
+    ],
+)
+def test_prune_refuses_when_row_evidence_is_unreadable_or_malformed(
+    tmp_path: Path,
+    case: str,
+    expected: str,
+) -> None:
+    export = stage_for_prune(tmp_path, days=99, source=ledger.SOURCE_EXPORT)
+    row_path = tmp_path / "dispatches" / DISPATCH / "ledger.json"
+    row_path.write_text(
+        {
+            "damaged": "{not json",
+            "not_an_object": "[]",
+            "malformed": json.dumps(
+                {
+                    "schema": ledger.SCHEMA,
+                    "dispatch_id": DISPATCH,
+                    "source": [],
+                    "records": {"total": 1},
+                }
+            ),
+            "capture_path_not_a_string": json.dumps(
+                {
+                    "schema": ledger.SCHEMA,
+                    "dispatch_id": DISPATCH,
+                    "source": {
+                        "kind": ledger.SOURCE_CAPTURE,
+                        "path": 42,
+                        "degraded": True,
+                    },
+                    "records": {"total": 1},
+                }
+            ),
+        }[case],
+        encoding="utf-8",
+    )
+
+    lines, code = ledger.prune(options(tmp_path, apply=True), time.time())
+
+    assert (
+        code,
+        export.is_file(),
+        lines[0],
+    ) == (ledger.EXIT_REFUSED, True, f"refused={expected}")
+    assert not any(line.startswith("ok=") for line in lines)
+
+
 def test_prune_deletes_nothing_without_apply(tmp_path: Path) -> None:
     export = stage_for_prune(tmp_path, days=45, source=ledger.SOURCE_EXPORT)
     lines, code = ledger.prune(options(tmp_path), time.time())
@@ -2449,11 +2592,26 @@ def test_prune_deletes_nothing_without_apply(tmp_path: Path) -> None:
 
 def test_prune_with_apply_deletes_only_the_prunable_files(tmp_path: Path) -> None:
     doomed = stage_for_prune(tmp_path, days=45, source=ledger.SOURCE_EXPORT)
-    spared = write_jsonl(tmp_path / "export" / "dispatch-d-unread.jsonl", [])
-    age(spared, 99)
+    spared = stage_for_prune(
+        tmp_path,
+        dispatch_id="d-spared",
+        days=2,
+        source=ledger.SOURCE_EXPORT,
+    )
     lines, code = ledger.prune(options(tmp_path, apply=True), time.time())
     assert (code, doomed.exists(), spared.is_file()) == (0, False, True)
     assert any(line.startswith("ok=pruned files=2 prunable=1") for line in lines)
+
+
+def test_prune_refuses_before_deleting_when_an_export_has_no_row(tmp_path: Path) -> None:
+    doomed = stage_for_prune(tmp_path, days=45, source=ledger.SOURCE_EXPORT)
+    unread = write_jsonl(tmp_path / "export" / "dispatch-d-unread.jsonl", [])
+    age(unread, 99)
+
+    lines, code = ledger.prune(options(tmp_path, apply=True), time.time())
+
+    assert (code, doomed.is_file(), unread.is_file()) == (ledger.EXIT_REFUSED, True, True)
+    assert "refused=prune_row_absent" in lines
 
 
 def test_the_materialised_rows_have_no_horizon_of_their_own(tmp_path: Path) -> None:
@@ -2486,6 +2644,28 @@ def test_the_command_line_defaults_to_a_sync_over_the_state_directory() -> None:
     assert parsed.export_dir == ledger.LEDGER_EXPORT
     assert parsed.capture == ledger.ROTATING_CAPTURE
     assert parsed.apply is False
+
+
+def test_main_without_a_dispatch_defaults_to_sync_not_show(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    export_dir = tmp_path / "export"
+    export_dir.mkdir()
+
+    code = ledger.main(
+        [
+            "--dispatch-dir",
+            str(tmp_path / "dispatches"),
+            "--export-dir",
+            str(export_dir),
+            "--capture",
+            str(tmp_path / "capture.jsonl"),
+        ]
+    )
+
+    assert code == 0
+    assert "ok=no_dispatches" in capsys.readouterr().out
 
 
 def test_show_without_a_dispatch_refuses_rather_than_printing_everything(
