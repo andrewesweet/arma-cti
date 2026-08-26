@@ -28,7 +28,7 @@ check:
     set -euo pipefail
     exec uv run python tools/gate_clock.py run --recipe check \
         --leg check-commits --leg check-generated --leg check-adr \
-        --leg check-source-link --leg check-gated-paths --leg check-command-table \
+        --leg check-source-link --leg check-gated-paths --leg check-unicode --leg check-command-table \
         --leg check-markers \
         --leg check-conflicts --leg check-changelog --leg check-gate-clock \
         --leg check-seats --leg check-just-grants --leg check-arbiter \
@@ -96,6 +96,12 @@ check-source-link:
 # ADR-0013 record remains the standing-authorisation route (#500).
 check-gated-paths:
     uv run python tools/gated_paths.py check
+
+# Refuse invisible, direction-controlling and unallowlisted confusable Unicode
+# in gated paths and repository Markdown. The checker owns the explicit wiki
+# exclusion and its open scope decision (#601).
+check-unicode:
+    uv run python tools/check_unicode.py
 
 # The ADR-0013 command-table route has a mechanical floor: its changed rows
 # must stay in the table and name recipes the candidate justfile resolves (#544).
