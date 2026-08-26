@@ -48,6 +48,19 @@ def test_the_repository_as_it_stands_declares_every_seat() -> None:
     assert check_seat_config.failures(REPO) == []
 
 
+def test_a_forced_plan_seat_must_declare_disposable_containment(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A new forced mode cannot silently lose the filesystem boundary (#600)."""
+    dispatch = check_seat_config.dispatch
+    real = dispatch.SEATS["review"]
+    monkeypatch.setitem(dispatch.SEATS, "review", real._replace(disposable_worktree=False))
+
+    found = check_seat_config.failures(REPO)
+
+    assert found == ["seat review: permission_mode=plan requires disposable_worktree=true"]
+
+
 def test_a_complete_agent_seat_passes(tmp_path: Path) -> None:
     write_agent(tmp_path, "cti-example", AGENT)
     assert check_seat_config.failures(tmp_path) == []

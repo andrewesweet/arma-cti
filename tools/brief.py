@@ -482,7 +482,8 @@ SEAT_REASON: Final[dict[str, str]] = {
     ),
     "recon": (
         "ADR-0071 ruling 2: read-only search, triage sweeps and state checks. A recon claim "
-        "that decides a routing choice is cited; no gate reads recon output."
+        "that decides a routing choice is cited; its disposable dispatch tree may run gates, "
+        "but no gate reads recon output."
     ),
     "retro": (
         "ADR-0071 ruling 3 as amended by A4: finds, researches and files backlog items; "
@@ -491,7 +492,8 @@ SEAT_REASON: Final[dict[str, str]] = {
     ),
     "review": (
         "ADR-0071 ruling 4: judges work another profile produced, never its own. Resolution "
-        "excludes that profile and the seat forces a read-only permission mode "
+        "excludes that profile and the seat forces `plan`, with execution contained by its "
+        "disposable worktree "
         "(`reviews` and `permission_mode` in `tools/dispatch.py`'s `SEATS`)."
     ),
     "fable": (
@@ -536,14 +538,21 @@ class Seat(NamedTuple):
     # it, which is why the derivation now lives on the registry row itself
     # (`dispatch.Seat.judgement_only`) and this property delegates rather than rederives:
     # one home, and neither brief path can disagree with the other. A seat that forces
-    # `plan` writes nothing, so it is told to run no gate, commit or landing — `review`
-    # because it judges, `recon` because it reads. What still follows `reviews` is the
-    # content *within* that arm: only a reviewer is handed the paste contract.
+    # `plan` still lands nothing; the registered review and recon rows run their gate in a
+    # disposable tree, while a defensive non-disposable row would run no gate. What still
+    # follows `reviews` is the content *within* that arm: only a reviewer is handed the paste
+    # contract.
     @property
     def judgement_only(self) -> bool:
-        """Whether the registry forces this seat read-only (`Seat.judgement_only` there)."""
+        """Whether the registry forces this seat's `plan` mode."""
         registered = dispatch.SEATS.get(self.name)
         return registered is not None and registered.judgement_only
+
+    @property
+    def runs_gate(self) -> bool:
+        """Whether this seat's registry row permits it to execute the gate."""
+        registered = dispatch.SEATS.get(self.name)
+        return registered is not None and registered.runs_gate
 
     # #345's predicate, in the same shape as the one above it: the derivation lives on
     # the registry row (`dispatch.Seat.lands`) and this delegates rather than rederives,
@@ -734,7 +743,8 @@ REVIEW_SUBJECT_RULE: Final = (
     "Dispatch this seat with `--reviewing <profile>`, the profile whose work is under review."
     " Resolution returns neither that profile nor any other one the issue's own dispatch"
     " records place on the work, prefers an entry on a different lane among what is left, and"
-    " the seat forces a read-only permission mode over whatever is passed. A declaration a"
+    " the seat forces `plan`; runner-specific containment comes from the disposable worktree."
+    " A declaration a"
     " complete read of those records contradicts is refused `review_subject_contradicted`;"
     " where they cannot answer, the route is recorded unchecked rather than passed off as"
     " checked (ADR-0071 ruling 4)."
@@ -760,16 +770,10 @@ FLAKE_NONE: Final = (
     " whose red shows in your gate can sit outside it. Before treating a red as yours,"
     " check the tracker for an open issue naming your failing test."
 )
-# The review seat's halves of the same three sections. The human ruled on 2026-08-14 (#353,
-# reversing the 2026-08-13 ruling in that issue's body) that a reviewer is passed the
-# implementer's gate report rather than running the gate itself — "reviewer must not trigger
-# tests themselves". Until that ruling every review brief asked for a gate run and every
-# review spent effort explaining why it could not, which produced nothing except the honest
-# sentence; these sections stop asking. The mutation question the issue left open is decided
-# by the same ruling, so the sampled-or-exhaustive distinction (#344: an exhaustive 91% hid
-# behind a reported 100%, because `just mutation` plants at most twenty of a module's
-# candidates) is a thing the *implementer* states in the paste, not a thing the reviewer
-# measures.
+# The review seat's fallback halves of the same three sections. Registered review and recon
+# rows now run the gate in a disposable tree; these strings remain the defensive branch for
+# a forced-`plan` seat that has not declared that boundary. The review-specific paste rule
+# below still applies to the report it returns.
 #
 # **The clarification of 2026-08-20 (#449) narrows what that ruling ever said**, and these
 # strings carry the narrower rule. It was transcribed here as "this seat runs no gate and
@@ -822,14 +826,13 @@ REVIEW_LANDING_RULE: Final = (
     " file — ADR-0071 ruling 4's never-alone invariant, which this ruling leaves untouched."
     f" Filing is not landing. {dispatch.REVIEW_DELIVERY_PROTOCOL}"
 )
-# The same three sections for a forced-read-only seat that is not the reviewer (#421
-# criterion 1). `recon` is that seat today: the same containment #407 forced on it, a
-# different job — it reads the repository and the thread rather than judging an
-# implementer's paste, so it gets the prohibitions without the paste contract.
+# The same three sections for a forced-`plan` seat that is not the reviewer (#421 criterion
+# 1). Registered `recon` uses the disposable branch above; this is the defensive fallback
+# for a seat whose filesystem boundary is missing and therefore must not be asked to gate.
 READONLY_GATE_RULE: Final = (
-    "This seat runs no gate and triggers no test — read-only by construction (ADR-0071"
-    " ruling 2; the forced `permission_mode` column, #407). Read the repository and the"
-    " issue thread; report what you find, never an edit."
+    "This defensive non-disposable branch runs no gate. The forced `plan` mode is a"
+    " runner-specific policy, not a filesystem guarantee; read the repository and issue"
+    " thread, and return findings without committing or landing them."
 )
 # Cited to `recon`'s own ground rather than to #353. The 2026-08-14 ruling is about a
 # reviewer re-running an implementer's suite, and #449 narrowed it to exactly that; a seat
@@ -837,13 +840,26 @@ READONLY_GATE_RULE: Final = (
 # because ADR-0071 ruling 2 makes it read-only, which is a different reason for the same
 # sentence, and a mis-citation is how a rule ends up wider than the ruling behind it.
 READONLY_FLAKE_RESPONSE: Final = (
-    "You re-run none of these: a read-only seat triggers no test (ADR-0071 ruling 2; the"
-    " forced `permission_mode` column, #407). They are context for what you read."
+    "This defensive non-disposable branch runs no gate, so do not retry these tests here."
+    " Report any relevant red as evidence for the host dispatcher."
 )
 READONLY_LANDING_RULE: Final = (
-    "A read-only seat lands nothing. Do not commit, do not push, do not run `just land`,"
-    " do not file an issue or a comment; your entire output is your final message"
-    " (ADR-0071 ruling 2)."
+    "This seat lands nothing. Do not commit, do not push, do not run `just land`, or"
+    " claim that a forced `plan` mode itself protects the persistent tree; return findings"
+    " to the host dispatcher."
+)
+DISPOSABLE_GATE_RULE: Final = (
+    "Run `just fast` in the disposable dispatch worktree after every edit. The runner may "
+    "execute the gates, but do not commit, push or run `just land`: the dispatcher removes "
+    "this tree, and the review verdict remains bound to the reviewed SHA."
+)
+DISPOSABLE_FLAKE_RESPONSE: Final = (
+    "A red in the gate is yours to investigate and report; do not weaken the gate or extend "
+    "a timeout. Quote the harness's typed failure class and evidence."
+)
+DISPOSABLE_LANDING_RULE: Final = (
+    "A disposable review or recon tree cannot affect the landing. Do not commit; do not "
+    "push; do not run `just land`; return the gate and review findings to the dispatcher."
 )
 # #345, re-derived after #439. The Landing section's close sentence used to be the
 # only mechanism that closed an issue, and before ADR-0071 telling every seat to run
@@ -1062,11 +1078,10 @@ def _escalation_lines(outcome: escalation.Evaluation) -> list[str]:
 def _worktree_lines(issue: int, seat: Seat, tree: Tree) -> list[str]:
     """Render the worktree section: the assignment, and whose the two commands are.
 
-    A forced-read-only seat cannot run either call — `just worktree add` writes a tree,
-    `just worktree done` verifies and removes one — so commanding them contradicts the
-    same brief's "no checkout, no mutation". Dispatch already requires the worktree to
-    exist before launch (`assert_worktree`), so for these seats the section names the
-    assignment and says the commands are not theirs (#421 finding 3).
+    A forced-`plan` seat does not own worktree management — `just worktree add` and
+    `just worktree done` belong to the dispatcher, which creates and removes the disposable
+    review tree. The section names the assigned tree and says not to manage its registration
+    from inside the run (#421 finding 3, extended by #600).
     """
     work_only = "Work only there. Files you did not write mean stop and report, never reset (#105)."
     if seat.judgement_only:
@@ -1095,20 +1110,13 @@ def _worktree_lines(issue: int, seat: Seat, tree: Tree) -> list[str]:
 def _protocol_lines(briefing: Briefing) -> list[str]:
     """Render the gate, flake and landing sections for whichever arm the seat is in.
 
-    The three sections are the implementer's until the registry forces the seat read-only:
-    a forced-`plan` seat runs no gate, retries no flake and lands nothing — the review by
-    the human ruling of 2026-08-14 (#353) as clarified on 2026-08-20 (#449), every other
-    such seat (`recon`, #407) by the same construction — so the gate ask, the re-run
-    instruction and the landing protocol would each demand something the seat is forbidden
-    to do. What the read-only arm does *not* say is that the seat may not file: #449 puts
-    the findings inside the reviewer's contract, while #496 moves their transport to the
-    harness; only landing, editing and re-running the implementer's gate stay out. The arm follows
-    `Seat.judgement_only`, the same predicate the default brief branches on and #339
-    derived surfaces from, because `reviews` reached only the reviewer and left `recon`
-    carrying the implementer's asks (#421): one predicate, both paths. The derived gate is still
-    composed — these seats meet the same headings and never a silence — and within the arm
-    the paste contract is the reviewer's alone, because `recon` judges no implementer's
-    work.
+    The three sections are the implementer's until the registry forces the seat's `plan`:
+    registered review and recon seats run the gate in a disposable tree, land nothing and
+    return their findings. A future forced seat without that boundary takes the defensive
+    no-gate branch. The arm follows `Seat.judgement_only` and `Seat.runs_gate`, the same
+    predicates the default brief branches on and #339/#421 derived surfaces from; within
+    the arm the paste contract is the reviewer's alone, because `recon` judges no
+    implementer's work.
     `CHANGELOG_CLAIM_RULE` reaches both arms: the implementer writes the fragment and the
     reviewer judges it, so each meets it where it works (#460). `recon` writes no fragment
     and judges none, so it is the one seat the rule is silent for.
@@ -1120,6 +1128,28 @@ def _protocol_lines(briefing: Briefing) -> list[str]:
     to close would be a second mechanism for an act the rung had already performed.
     """
     issue, seat, gate, flakes = briefing.issue, briefing.seat, briefing.gate, briefing.flakes
+    if seat.judgement_only and seat.runs_gate:
+        lines = [
+            "",
+            f"## Gate: {gate.line}",
+            *gate.because,
+            DISPOSABLE_GATE_RULE,
+            *([CHANGELOG_CLAIM_RULE] if seat.reviews else []),
+            "",
+            f"## Open flakes ({len(flakes)}, read live at composition)",
+        ]
+        if flakes:
+            lines += [flake.line() for flake in flakes]
+            lines.append(DISPOSABLE_FLAKE_RESPONSE)
+        else:
+            lines.append(FLAKE_NONE)
+        return [
+            *lines,
+            "",
+            "## Landing: none — this seat lands nothing",
+            DISPOSABLE_LANDING_RULE,
+            *([dispatch.REVIEW_DELIVERY_PROTOCOL] if seat.reviews else []),
+        ]
     if seat.judgement_only:
         lines = [
             "",

@@ -33,6 +33,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+sys.path.insert(0, str(Path(__file__).parent))
+
+import dispatch_stop
+
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
@@ -153,6 +157,22 @@ def finding_lines(target: FollowTarget, pending: Sequence[str] = ()) -> tuple[st
     )
 
 
+def cleanup_after_runner_disappeared(
+    target: FollowTarget, pending: Sequence[str] = ()
+) -> tuple[int, tuple[str, ...]]:
+    """Tear down an owned review tree when the detached runner dies before its result."""
+    finding = finding_lines(target, pending)
+    record = dispatch_stop.read_record(target.result_path.parent)
+    if record is None:
+        return EXIT_FINDING, finding
+    if not record.disposable_worktree:
+        return EXIT_FINDING, finding
+    refusal, cleanup = dispatch_stop.cleanup_disposable_worktree(record)
+    if refusal is not None:
+        return EXIT_REFUSED, (*finding, *refusal.lines())
+    return EXIT_FINDING, (*finding, *cleanup)
+
+
 def _review_delivery_lines(result_path: Path) -> tuple[str, ...]:
     """Read review transport facts from one atomically published result document."""
     document = json.loads(result_path.read_text(encoding="utf-8"))
@@ -207,7 +227,7 @@ def follow_first(targets: Sequence[FollowTarget]) -> tuple[int, tuple[str, ...]]
     pending = pending_ids(targets, first)
     if first.result_path.is_file():
         return recorded_result_lines(first, pending)
-    return EXIT_FINDING, finding_lines(first, pending)
+    return cleanup_after_runner_disappeared(first, pending)
 
 
 def follow(target: FollowTarget) -> tuple[int, tuple[str, ...]]:

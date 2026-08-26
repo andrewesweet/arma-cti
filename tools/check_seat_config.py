@@ -29,6 +29,10 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).parent))
+
+import dispatch
+
 FENCE = "---"
 AGENT_MODELS = frozenset({"opus", "sonnet", "haiku", "fable"})
 SKILL_MODELS = AGENT_MODELS | {"inherit"}
@@ -101,9 +105,19 @@ def skill_failures(root: Path) -> list[str]:
     return found
 
 
+def seat_failures() -> list[str]:
+    """Require every forced-`plan` seat to declare disposable containment."""
+    seats = {**dispatch.SEATS, **dispatch.DECLARED_ONLY_SEATS}
+    return [
+        f"seat {name}: permission_mode=plan requires disposable_worktree=true"
+        for name, seat in sorted(seats.items())
+        if seat.permission_mode == "plan" and not seat.disposable_worktree
+    ]
+
+
 def failures(root: Path) -> list[str]:
     """Every way a declared seat can be silently not the seat it names."""
-    return agent_failures(root) + skill_failures(root)
+    return seat_failures() + agent_failures(root) + skill_failures(root)
 
 
 def main() -> int:

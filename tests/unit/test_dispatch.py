@@ -46,6 +46,7 @@ if TYPE_CHECKING:
     from types import ModuleType
 
 dispatch = load_tool("dispatch")
+dispatch_follow = load_tool("dispatch_follow")
 breaker = load_tool("breaker")
 brief = load_tool("brief")
 gate_clock = load_tool("gate_clock")
@@ -140,6 +141,26 @@ def git_worktree(tmp_path: Path, name: str = "tree") -> Path:
     for args in (("add", "-A"), ("commit", "-qm", "t")):
         subprocess.run(["git", *args], cwd=root, check=True, capture_output=True)  # noqa: S603, S607
     return root
+
+
+def review_repository(tmp_path: Path, issue: int = 600) -> tuple[Path, str]:
+    """Make a local remote carrying the exact review ref a disposable plan restores."""
+    root = git_worktree(tmp_path, name="review-repo")
+    (root / "config").mkdir()
+    shutil.copyfile(REPO / "CONTEXT.md", root / "CONTEXT.md")
+    shutil.copyfile(
+        REPO / "config" / "dispatch-routing-policy.json",
+        root / "config" / "dispatch-routing-policy.json",
+    )
+    dispatch.git("add", "CONTEXT.md", "config", cwd=root)
+    dispatch.git("commit", "-qm", "test: add review inputs", cwd=root)
+    origin = tmp_path / "review-origin.git"
+    dispatch.git("init", "-q", "--bare", str(origin), cwd=tmp_path)
+    dispatch.git("remote", "add", "origin", str(origin), cwd=root)
+    sha = dispatch.git("rev-parse", "HEAD", cwd=root).strip()
+    for ref in ("main", f"issue-{issue}"):
+        dispatch.git("push", "-q", "origin", f"HEAD:refs/heads/{ref}", cwd=root)
+    return root, sha
 
 
 def fake_claude(tmp_path: Path) -> Path:
@@ -336,6 +357,8 @@ def plan_for(tmp_path: Path, **overrides: object) -> tuple[Any, str, Any]:
     do anything else, which is the point of that rung.
     """
     injected = overrides.pop("now", None)
+    root = overrides.pop("root", REPO)
+    assert isinstance(root, Path)
     now = datetime.now(tz=UTC) if injected is None else injected
     worktree = overrides.pop("worktree", None) or git_worktree(tmp_path)
     request = {
@@ -364,7 +387,7 @@ def plan_for(tmp_path: Path, **overrides: object) -> tuple[Any, str, Any]:
     }
     request.update(overrides)
     args = _namespace(**request)
-    return dispatch.plan_dispatch(args, REPO, now)
+    return dispatch.plan_dispatch(args, root, now)
 
 
 def assert_dispatch_no_longer_in_flight(plan: Any) -> None:  # noqa: ANN401 — dynamic tool type
@@ -376,6 +399,286 @@ def assert_dispatch_no_longer_in_flight(plan: Any) -> None:  # noqa: ANN401 — 
         lambda _numbers: (frozenset(), "read"),
     )
     assert derived.issues == ()
+
+
+def disposable_review_plan(
+    tmp_path: Path,
+    *,
+    lane: str = "claude-native",
+    profile: str = "opus-low",
+    seat: str = "review",
+) -> tuple[Any, str, Path, str]:
+    """Materialize one review/recon plan against a local remote."""
+    root, reviewed_sha = review_repository(tmp_path)
+    plan, brief, refusal = plan_for(
+        tmp_path,
+        root=root,
+        issue=600,
+        lane=lane,
+        profile=profile,
+        seat=seat,
+        reviewing="opus-high" if seat == "review" else "",
+        materialize_worktree=True,
+    )
+    assert refusal is None, refusal
+    assert plan is not None
+    return plan, brief, root, reviewed_sha
+
+
+def test_a_review_ref_sha_mismatch_refuses_and_removes_the_provisional_tree(
+    tmp_path: Path,
+) -> None:
+    """A caller cannot redirect review to a different commit and leave a slot behind."""
+    root, reviewed_sha = review_repository(tmp_path)
+    plan, _brief, refusal = plan_for(
+        tmp_path,
+        root=root,
+        issue=600,
+        lane="claude-native",
+        profile="opus-low",
+        seat="review",
+        reviewing="opus-high",
+        base_sha="0" * 40,
+        materialize_worktree=True,
+    )
+
+    assert plan is None
+    assert refusal is not None
+    assert refusal.kind == "review_ref_sha_mismatch"
+    assert f"reviewed_sha={reviewed_sha}" in refusal.found
+    worktree_root = root / ".claude" / "worktrees"
+    assert not list(worktree_root.glob("dispatch-*"))
+
+
+def test_forced_plan_seats_run_gates_only_with_disposable_containment() -> None:
+    """The mode and the filesystem boundary are separate registry predicates."""
+    review = dispatch.SEATS["review"]
+    assert review.judgement_only
+    assert review.runs_gate
+    assert not review._replace(disposable_worktree=False).runs_gate
+    assert dispatch.SEATS["implementer"].runs_gate
+
+
+def test_a_persistent_dispatch_still_refuses_a_missing_worktree(tmp_path: Path) -> None:
+    """Disposable review creation must not weaken ordinary worktree assignment."""
+    plan, _brief, refusal = plan_for(
+        tmp_path,
+        worktree=str(tmp_path / "missing-worktree"),
+        materialize_worktree=False,
+    )
+
+    assert plan is None
+    assert refusal is not None
+    assert refusal.kind == "worktree_missing"
+
+
+def test_a_dispatch_id_collision_refuses_without_removing_the_existing_tree(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A same-name holder is never mistaken for the tree this plan would create."""
+    root, _reviewed_sha = review_repository(tmp_path)
+    dispatch_id = "d-20260826-120001-aaaaaa"
+    existing = root / ".claude" / "worktrees" / f"dispatch-{dispatch_id}"
+    dispatch.git("worktree", "add", "--detach", str(existing), "HEAD", cwd=root)
+    monkeypatch.setattr(dispatch, "mint_dispatch_id", lambda *_args: dispatch_id)
+
+    try:
+        plan, _brief, refusal = plan_for(
+            tmp_path,
+            root=root,
+            issue=600,
+            seat="review",
+            profile="opus-low",
+            reviewing="opus-high",
+            materialize_worktree=True,
+        )
+        still_exists = existing.is_dir()
+    finally:
+        dispatch.git("worktree", "remove", "--force", str(existing), cwd=root)
+
+    assert plan is None
+    assert refusal is not None
+    assert refusal.kind == "disposable_worktree_unproven"
+    assert still_exists
+
+
+@pytest.mark.parametrize(
+    ("seat", "lane", "profile"),
+    [
+        ("review", "claude-native", "opus-low"),
+        ("review", "codex", "codex-sol-high"),
+        ("recon", "claude-native", "haiku-medium"),
+        ("recon", "codex", "codex-luna-medium"),
+    ],
+)
+def test_review_and_recon_dispatches_materialize_a_gateable_tree_for_each_runner_family(
+    tmp_path: Path, seat: str, lane: str, profile: str
+) -> None:
+    """Both families get an executable cwd, while the plan remains bound to the ref SHA."""
+    plan, _brief, root, reviewed_sha = disposable_review_plan(
+        tmp_path, lane=lane, profile=profile, seat=seat
+    )
+    try:
+        assert plan.disposable_worktree
+        assert (
+            plan.worktree
+            == root / ".claude" / "worktrees" / f"dispatch-{plan.identity.dispatch_id}"
+        )
+        assert dispatch.git("rev-parse", "HEAD", cwd=plan.worktree).strip() == reviewed_sha
+        assert plan.identity.base_sha == reviewed_sha
+        assert plan.worktree_ref == "refs/heads/issue-600"
+        gate_probe = plan.worktree / "gate-probe"
+        gate_probe.write_text("the runner can write its disposable cwd\n", encoding="utf-8")
+        assert gate_probe.read_text(encoding="utf-8")
+        (plan.worktree / "justfile").write_text(
+            "unit:\n    @test -f gate-probe\n",
+            encoding="utf-8",
+        )
+        unit = subprocess.run(
+            ["just", "unit"],  # noqa: S607 — the project command is resolved like the gate
+            cwd=plan.worktree,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        assert unit.returncode == 0, unit.stderr
+        if lane == "codex":
+            assert plan.argv[plan.argv.index("--sandbox") + 1] == "workspace-write"
+        else:
+            assert plan.argv[plan.argv.index("--permission-mode") + 1] == "plan"
+    finally:
+        cleanup_refusal, _cleanup = dispatch._cleanup_plan_worktree(plan)  # noqa: SLF001
+        assert cleanup_refusal is None
+        dispatch._remove_provisional_owner(plan.record)  # noqa: SLF001
+    assert not plan.worktree.exists()
+
+
+def test_a_child_failure_removes_the_disposable_tree(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The child-result path tears down before it publishes its failure result."""
+    plan, brief, _root, _reviewed_sha = disposable_review_plan(tmp_path)
+    dispatch.write_record(plan, brief)
+    failed_child = subprocess.CompletedProcess(plan.argv, 17, stdout="", stderr="gate failed")
+    monkeypatch.setattr(
+        dispatch,
+        "_run_child_with_gate_clock",
+        lambda *_args, **_kwargs: (failed_child, ()),
+    )
+
+    code, lines = dispatch.run_dispatch(plan.record, {"HOME": str(tmp_path)})
+
+    assert code == 17
+    assert any(line.startswith("worktree_cleanup=removed") for line in lines)
+    assert not plan.worktree.exists()
+    result = json.loads((plan.record / "result.json").read_text(encoding="utf-8"))
+    assert result["returncode"] == 17
+    assert any(line.startswith("worktree_cleanup=removed") for line in result["worktree_cleanup"])
+
+
+def test_stop_removes_a_disposable_tree_only_after_no_process_is_found(tmp_path: Path) -> None:
+    """The explicit stop path uses the same ownership proof as normal closeout."""
+    plan, _brief, _root, _reviewed_sha = disposable_review_plan(tmp_path)
+    procfs = tmp_path / "proc"
+    procfs.mkdir()
+    record = dispatch.dispatch_stop.read_record(plan.record)
+    assert record is not None
+
+    code, lines = dispatch.dispatch_stop.stop(
+        record,
+        dispatch.dispatch_stop.Machine(procfs=procfs, self_pid=999999),
+    )
+
+    assert code == 0
+    assert any(line.startswith("worktree_cleanup=removed") for line in lines)
+    assert not plan.worktree.exists()
+
+
+def test_runner_disappearance_removes_a_disposable_tree(tmp_path: Path) -> None:
+    """The detached follower handles the SIGKILL-shaped exit no finally block can see."""
+    plan, _brief, _root, _reviewed_sha = disposable_review_plan(tmp_path)
+    target = dispatch_follow.FollowTarget(
+        dispatch_id=plan.identity.dispatch_id,
+        result_path=plan.record / "result.json",
+        runner_pipe=tmp_path / "runner.pipe",
+    )
+
+    code, lines = dispatch_follow.cleanup_after_runner_disappeared(target)
+
+    assert code == dispatch_follow.EXIT_FINDING
+    assert "finding=runner_disappeared" in lines
+    assert any(line.startswith("worktree_cleanup=removed") for line in lines)
+    assert not plan.worktree.exists()
+
+
+def test_disposable_cleanup_refuses_another_dispatch_id_tree(tmp_path: Path) -> None:
+    """A mismatched id refuses before touching the other holder's registered tree."""
+    root, _reviewed_sha = review_repository(tmp_path)
+    other_id = "d-20260826-120000-bbbbbb"
+    target_id = "d-20260826-120001-aaaaaa"
+    other_path = root / ".claude" / "worktrees" / f"dispatch-{other_id}"
+    dispatch.git("worktree", "add", "--detach", str(other_path), "HEAD", cwd=root)
+    record = dispatch.dispatch_stop.Record(
+        dispatch_id=target_id,
+        worktree=other_path,
+        directory=tmp_path / "dispatches" / target_id,
+        disposable_worktree=True,
+        worktree_ref="refs/heads/issue-600",
+        worktree_owner=target_id,
+    )
+
+    refusal, _lines = dispatch.dispatch_stop.cleanup_disposable_worktree(record)
+
+    assert refusal is not None
+    assert refusal.kind == "disposable_worktree_unproven"
+    assert other_path.is_dir()
+    dispatch.git("worktree", "remove", "--force", str(other_path), cwd=root)
+
+
+def test_stop_refuses_before_signalling_another_dispatch_id_tree(tmp_path: Path) -> None:
+    """Stop proves the id before its process scan can signal another holder."""
+    root, _reviewed_sha = review_repository(tmp_path)
+    other_id = "d-20260826-120000-bbbbbb"
+    target_id = "d-20260826-120001-aaaaaa"
+    other_path = root / ".claude" / "worktrees" / f"dispatch-{other_id}"
+    dispatch.git("worktree", "add", "--detach", str(other_path), "HEAD", cwd=root)
+    record = dispatch.dispatch_stop.Record(
+        dispatch_id=target_id,
+        worktree=other_path,
+        directory=tmp_path / "dispatches" / target_id,
+        disposable_worktree=True,
+        worktree_ref="refs/heads/issue-600",
+        worktree_owner=target_id,
+    )
+    proc_root = tmp_path / "proc"
+    proc_root.mkdir()
+    (proc_root / "123").mkdir()
+    (proc_root / "123" / "cwd").symlink_to(other_path)
+    (proc_root / "123" / "cmdline").write_bytes(b"holder\0")
+    (proc_root / "123" / "status").write_text("PPid:\t1\n", encoding="utf-8")
+    killed: list[tuple[int, int]] = []
+
+    def kill(pid: int, signal_number: int) -> None:
+        killed.append((pid, signal_number))
+
+    code, lines = dispatch.dispatch_stop.stop(
+        record,
+        dispatch.dispatch_stop.Machine(
+            procfs=proc_root,
+            kill=kill,
+            pause=lambda _seconds: None,
+            term_grace=0.0,
+            kill_grace=0.0,
+            poll=0.0,
+            self_pid=999999,
+        ),
+    )
+
+    assert code == dispatch.EXIT_REFUSED
+    assert "refusal=disposable_worktree_unproven" in lines
+    assert killed == []
+    assert other_path.is_dir()
+    dispatch.git("worktree", "remove", "--force", str(other_path), cwd=root)
 
 
 def assert_dispatch_still_in_flight(plan: Any) -> None:  # noqa: ANN401 — dynamic tool type
@@ -2448,10 +2751,10 @@ def test_empty_review_report_requires_a_fresh_review_not_an_impossible_relay(
     assert all("relay it" not in line for line in lines)
 
 
-def test_read_only_review_without_a_body_file_ends_in_named_delivery_refusal(
+def test_a_non_disposable_codex_review_without_a_body_file_ends_in_named_delivery_refusal(
     tmp_path: Path,
 ) -> None:
-    """A real read-only cwd blocks the child file while the host still receives its report."""
+    """A direct non-disposable plan keeps the legacy read-only sandbox arrangement testable."""
     worktree = git_worktree(tmp_path, "read-only-tree")
     plan, brief_text, refusal = plan_for(
         tmp_path,
@@ -2677,7 +2980,11 @@ def test_returned_harness_failure_is_distinct_from_the_child_result(
     assert plan is not None
     dispatch.write_record(plan, brief_text)
     completed = subprocess.CompletedProcess(plan.argv, 0)
-    monkeypatch.setattr(dispatch, "harness_commits", lambda *_args: True)
+    monkeypatch.setattr(
+        dispatch,
+        "harness_commits",
+        lambda *_args, **_kwargs: True,
+    )
     monkeypatch.setattr(dispatch, "harness_start_refusal", lambda *_args: None)
     monkeypatch.setattr(
         dispatch,
@@ -2890,11 +3197,9 @@ def test_a_zai_dispatch_leaks_into_neither_the_parent_nor_the_next_lane(
 
     common = [
         "--seat",
-        "review",
-        "--reviewing",
-        REVIEWED,
+        "implementer",
         "--issue",
-        "223",
+        "525",
         "--worktree",
         str(worktree),
         "--dispatch-dir",

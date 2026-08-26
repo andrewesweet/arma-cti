@@ -24,10 +24,11 @@ rather than a convenience:
 - **Report what was killed.** The lingering MCP servers are the half nobody would have
   looked for.
 
-**Every refusal path here writes nothing and kills nothing**, which is
-`tools/worktree.py`'s property and matters more here because this tool sends signals. The
-refusals are all decided before a single `os.kill`, so "refused" and "nothing happened"
-are the same state.
+Refusals made before a disposable tree's ownership proof completes write nothing and kill
+nothing, which is `tools/worktree.py`'s property and matters more here because this tool
+sends signals. A teardown can still fail after signals were verified — for example when
+Git refuses to remove the exact owned registration — so that terminal refusal reports the
+kills and leaves no result rather than pretending removal succeeded.
 
 ## The predicate, and the negative case that matters more than the positive one
 
@@ -73,10 +74,15 @@ import json
 import os
 import re
 import signal
+import sys
 import time
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, NamedTuple
+
+sys.path.insert(0, str(Path(__file__).parent))
+
+import worktree
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Mapping, Sequence
@@ -113,6 +119,7 @@ ANCESTOR_LIMIT: Final = 64
 STOPPED: Final = "stopped"
 ALREADY_STOPPED: Final = "already_stopped"
 ALREADY_FINISHED: Final = "already_finished"
+DISPOSABLE_PREFIX: Final = "dispatch-"
 
 OCCUPIED_ACTION: Final = (
     "A dispatch is already attached to this worktree and has written no result, so it is "
@@ -157,6 +164,9 @@ class Record(NamedTuple):
     dispatch_id: str
     worktree: Path
     directory: Path
+    disposable_worktree: bool = False
+    worktree_ref: str = ""
+    worktree_owner: str = ""
 
     @property
     def finished(self) -> bool:
@@ -219,7 +229,14 @@ def read_record(directory: Path) -> Record | None:
         return None
     if not isinstance(dispatch_id, str) or not dispatch_id.strip():
         return None
-    return Record(dispatch_id, Path(worktree), directory)
+    return Record(
+        dispatch_id,
+        Path(worktree),
+        directory,
+        document.get("disposable_worktree") is True,
+        str(document.get("worktree_ref", "")),
+        str(document.get("worktree_owner", "")),
+    )
 
 
 def read_records(dispatch_dir: Path) -> tuple[Record, ...]:
@@ -228,6 +245,97 @@ def read_records(dispatch_dir: Path) -> tuple[Record, ...]:
         return ()
     found = (read_record(entry) for entry in sorted(dispatch_dir.iterdir()) if entry.is_dir())
     return tuple(record for record in found if record is not None)
+
+
+def _cleanup_refusal(record: Record, reason: str) -> Refusal:
+    """Refuse disposable-tree removal when the dispatch-owned proof is incomplete."""
+    return Refusal(
+        "disposable_worktree_unproven",
+        (
+            f"dispatch={record.dispatch_id}",
+            f"worktree={record.worktree}",
+            f"reason={reason}",
+        ),
+        "The dispatch cannot prove that this exact tree belongs to it. Nothing was removed; "
+        "inspect the record and worktree by hand rather than guessing (#105).",
+        failure_class="infra_unavailable",
+    )
+
+
+def _disposable_proof(  # noqa: PLR0911 — each ownership proof rung refuses independently
+    record: Record,
+) -> tuple[tuple[Path, Path] | None, Refusal | None]:
+    """Prove the id-derived disposable location without removing or touching it."""
+    if not record.disposable_worktree:
+        return None, None
+    if not ID_ALPHABET.fullmatch(record.dispatch_id):
+        return None, _cleanup_refusal(record, "invalid_dispatch_id")
+    if record.directory.name != record.dispatch_id:
+        return None, _cleanup_refusal(record, "record_path_not_derived_from_dispatch_id")
+    if record.worktree_owner != record.dispatch_id:
+        return None, _cleanup_refusal(record, "worktree_owner_mismatch")
+    if record.worktree.name != f"{DISPOSABLE_PREFIX}{record.dispatch_id}":
+        return None, _cleanup_refusal(record, "path_name_not_derived_from_dispatch_id")
+    try:
+        target = record.worktree.resolve()
+        root = record.worktree.parent.parent.parent.resolve()
+        expected = (root / worktree.WORKTREES / record.worktree.name).resolve()
+    except OSError:
+        return None, _cleanup_refusal(record, "path_unreadable")
+    if target != expected:
+        return None, _cleanup_refusal(record, "path_outside_dispatch_worktree_root")
+    return (target, root), None
+
+
+def cleanup_disposable_worktree(  # noqa: PLR0911 — every ownership proof fails closed
+    record: Record,
+) -> tuple[Refusal | None, tuple[str, ...]]:
+    """Remove only a dispatch-owned disposable tree, or refuse without guessing.
+
+    Ownership is three independent facts: the record explicitly marks the tree disposable,
+    its owner field is the dispatch id, and the path is exactly the id-derived slot below the
+    main checkout. Git's live worktree registration is checked before and after removal. A
+    missing proof, a missing registration with a directory still present, or a stale
+    registration is a refusal; this function never prunes or removes a path by name alone.
+    """
+    proof, refusal = _disposable_proof(record)
+    if refusal is not None:
+        return refusal, ()
+    if proof is None:
+        return None, ()
+    target, root = proof
+    try:
+        registrations = worktree.parse_registrations(
+            worktree.git("worktree", "list", "--porcelain", cwd=root)
+        )
+        registered = tuple(entry for entry in registrations if entry.path.resolve() == target)
+    except (OSError, ValueError, worktree.GitError) as failure:
+        detail = getattr(failure, "stderr", str(failure))
+        return _cleanup_refusal(record, f"git_failed:{detail}"), ()
+    if not registered and not target.exists():
+        return None, (f"worktree_cleanup=already_gone path={target}",)
+    if len(registered) != 1:
+        return _cleanup_refusal(
+            record,
+            "registration_missing" if not registered else "registration_ambiguous",
+        ), ()
+    if not target.is_dir():
+        return _cleanup_refusal(record, "registration_stale"), ()
+    try:
+        worktree.git("worktree", "remove", "--force", str(target), cwd=root)
+        remaining = worktree.parse_registrations(
+            worktree.git("worktree", "list", "--porcelain", cwd=root)
+        )
+    except (OSError, ValueError, worktree.GitError) as failure:
+        detail = getattr(failure, "stderr", str(failure))
+        return _cleanup_refusal(record, f"git_failed:{detail}"), ()
+    try:
+        still_registered = any(entry.path.resolve() == target for entry in remaining)
+    except OSError as failure:
+        return _cleanup_refusal(record, f"registration_read_failed:{failure}"), ()
+    if target.exists() or still_registered:
+        return _cleanup_refusal(record, "removal_not_verified"), ()
+    return None, (f"worktree_cleanup=removed path={target}",)
 
 
 def find_record(dispatch_dir: Path, dispatch_id: str) -> tuple[Record | None, Refusal | None]:
@@ -489,10 +597,12 @@ def _context(record: Record, found: Scan) -> tuple[str, ...]:
     return tuple(lines)
 
 
-def stop(record: Record, machine: Machine | None = None) -> tuple[int, tuple[str, ...]]:
+def stop(  # noqa: PLR0911 — the stop protocol preserves each typed terminal outcome
+    record: Record, machine: Machine | None = None
+) -> tuple[int, tuple[str, ...]]:
     """Stop every process working in this dispatch's worktree and prove it by re-scanning."""
     machine = machine or Machine()
-    if not record.worktree.is_dir():
+    if not record.worktree.is_dir() and not record.disposable_worktree:
         return EXIT_REFUSED, Refusal(
             "worktree_gone",
             (f"dispatch={record.dispatch_id}", f"worktree={record.worktree}"),
@@ -517,9 +627,28 @@ def stop(record: Record, machine: Machine | None = None) -> tuple[int, tuple[str
             failure_class="infra_unavailable",
         ).lines()
 
+    if record.disposable_worktree:
+        _, ownership_refusal = _disposable_proof(record)
+        if ownership_refusal is not None:
+            return EXIT_REFUSED, ownership_refusal.lines()
+
     found = scan(record.worktree, machine)
+    if not record.worktree.is_dir() and (found.matched or found.deleted):
+        return EXIT_REFUSED, Refusal(
+            "worktree_gone",
+            (f"dispatch={record.dispatch_id}", f"worktree={record.worktree}"),
+            (
+                "The disposable tree is gone but a process still reports its old path, so "
+                "the dispatch cannot be proven stopped. Nothing was removed; inspect the "
+                "deleted-cwd process by hand."
+            ),
+            failure_class="infra_unavailable",
+        ).lines()
     if not found.matched:
-        return _nothing_running(record, found)
+        cleanup_refusal, cleanup_lines = cleanup_disposable_worktree(record)
+        if cleanup_refusal is not None:
+            return EXIT_REFUSED, (*_context(record, found), *cleanup_refusal.lines())
+        return _nothing_running(record, found, cleanup_lines)
 
     done = _stop_processes(record.worktree, found, machine)
     if done.survivors:
@@ -533,17 +662,31 @@ def stop(record: Record, machine: Machine | None = None) -> tuple[int, tuple[str
             "result=none",
             f"action={UNVERIFIED_ACTION}",
         )
+    cleanup_refusal, cleanup_lines = cleanup_disposable_worktree(record)
+    if cleanup_refusal is not None:
+        return EXIT_REFUSED, (
+            f"stop={STOPPED}",
+            *_context(record, found),
+            *done.killed_lines(),
+            f"killed={len(done.finished)}",
+            "verified=no_process_in_worktree",
+            *cleanup_refusal.lines(),
+            "result=none",
+        )
     return 0, (
         f"stop={STOPPED}",
         *_context(record, found),
         *done.killed_lines(),
         f"killed={len(done.finished)}",
         "verified=no_process_in_worktree",
+        *cleanup_lines,
         f"result={_record_ending(record, done.finished)}",
     )
 
 
-def _nothing_running(record: Record, found: Scan) -> tuple[int, tuple[str, ...]]:
+def _nothing_running(
+    record: Record, found: Scan, cleanup_lines: tuple[str, ...] = ()
+) -> tuple[int, tuple[str, ...]]:
     """Answer the two benign endings: already finished, or dead without saying so.
 
     A seat that has lost track of what is running types `--stop` on a dispatch that ended
@@ -556,6 +699,7 @@ def _nothing_running(record: Record, found: Scan) -> tuple[int, tuple[str, ...]]
         *_context(record, found),
         "killed=0",
         "verified=no_process_in_worktree",
+        *cleanup_lines,
         f"result={'preserved' if already else _record_ending(record, {})}",
         (
             "note=the dispatch had already recorded its own ending; nothing was signalled"

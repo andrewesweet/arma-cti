@@ -1129,40 +1129,30 @@ def review_composed(**over: object) -> str:
     return composed(seat=brief.derive_seat("review", "opus-high"), **over)
 
 
-def test_a_review_briefing_asks_for_no_gate_run_and_names_the_paste_it_reads() -> None:
+def test_a_review_briefing_runs_the_gate_in_its_disposable_tree() -> None:
     rendered = review_composed()
-    assert "## Gate: none — this seat runs none" in rendered
-    assert brief.REVIEW_GATE_RULE in rendered
-    # The paste the ruling requires: three rungs with their result counts, and the
-    # sampled-or-exhaustive statement owed unconditionally (#421 finding 2).
-    assert "`just check`" in rendered
-    assert "`just unit`" in rendered
-    assert "`just mutation`" in rendered
-    assert "with their result counts" in rendered
-    assert "unconditionally, not only where a kill rate is quoted" in rendered
-    assert "mutation smoke: run was sampled" in rendered
-    assert "mutation smoke: run was exhaustive" in rendered
-    # The derived gate line an implementer would get is not handed to a seat that cannot run it.
-    assert "`just fast`" not in rendered
+    assert "## Gate: " in rendered
+    assert brief.DISPOSABLE_GATE_RULE in rendered
+    assert "`just fast`" in rendered
+    assert "do not commit" in rendered
 
 
-def test_a_review_briefing_with_open_flakes_is_told_to_re_run_nothing() -> None:
+def test_a_review_briefing_with_open_flakes_can_investigate_its_gate() -> None:
     flake = brief.Flake(issue=130, test="test_linger_refuses", module="tests/unit/test_recall.py")
     rendered = review_composed(flakes=(flake,))
-    assert brief.REVIEW_FLAKE_RESPONSE in rendered
-    assert brief.FLAKE_RESPONSE not in rendered
+    assert brief.DISPOSABLE_FLAKE_RESPONSE in rendered
+    assert brief.REVIEW_FLAKE_RESPONSE not in rendered
 
 
-def test_a_review_briefing_with_no_open_flakes_claims_no_red_of_its_own() -> None:
+def test_a_review_briefing_with_no_open_flakes_uses_the_filter_qualification() -> None:
     rendered = review_composed()
-    assert "None open." in rendered
-    assert "Any red is yours" not in rendered
+    assert brief.FLAKE_NONE in rendered
 
 
 def test_a_review_briefing_is_told_to_land_nothing() -> None:
     rendered = review_composed()
     assert "## Landing: none — this seat lands nothing" in rendered
-    assert brief.REVIEW_LANDING_RULE in rendered
+    assert brief.DISPOSABLE_LANDING_RULE in rendered
     assert "Land via `just land --audit-file FILE`" not in rendered
 
 
@@ -1198,7 +1188,7 @@ def test_a_review_briefing_hands_its_bounded_report_to_the_host_dispatcher() -> 
     # ADR-0071 ruling 4, untouched by #449.
     assert "do not commit" in rendered
     assert "do not push" in rendered
-    assert "edit no file" in rendered
+    assert "edit no file" not in rendered
 
 
 def test_a_review_briefing_commands_no_worktree_management() -> None:
@@ -1215,12 +1205,12 @@ def test_a_review_briefing_commands_no_worktree_management() -> None:
     assert "issue-251" in rendered
 
 
-def test_a_recon_briefing_receives_no_gate_commit_or_landing_instruction() -> None:
-    """#421 criterion 1: the other seat #407 forced read-only, covered by the same arm."""
+def test_a_recon_briefing_runs_a_gate_but_commits_or_lands_nothing() -> None:
+    """Recon executes its gate in a disposable tree and cannot affect the landing."""
     rendered = composed(seat=brief.derive_seat("recon"))
-    assert "## Gate: none — this seat runs none" in rendered
-    assert brief.READONLY_GATE_RULE in rendered
-    # The paste contract is the reviewer's alone: recon judges no implementer's work.
+    assert "## Gate: none — this seat runs none" not in rendered
+    assert brief.DISPOSABLE_GATE_RULE in rendered
+    assert "`just fast`" in rendered
     assert brief.REVIEW_GATE_RULE not in rendered
     assert "Land via `just land --audit-file FILE`" not in rendered
     assert "Conventional Commits" not in rendered
@@ -1232,8 +1222,8 @@ def test_a_recon_briefing_receives_no_gate_commit_or_landing_instruction() -> No
 def test_a_recon_briefing_with_open_flakes_is_told_to_re_run_nothing() -> None:
     flake = brief.Flake(issue=130, test="test_linger_refuses", module="tests/unit/test_recall.py")
     rendered = composed(seat=brief.derive_seat("recon"), flakes=(flake,))
-    assert brief.READONLY_FLAKE_RESPONSE in rendered
-    assert brief.FLAKE_RESPONSE not in rendered
+    assert brief.DISPOSABLE_FLAKE_RESPONSE in rendered
+    assert brief.READONLY_FLAKE_RESPONSE not in rendered
 
 
 def test_the_composed_gate_and_landing_arms_follow_the_forced_permission_mode() -> None:
@@ -1256,10 +1246,10 @@ def test_the_composed_gate_and_landing_arms_follow_the_forced_permission_mode() 
         rendered = composed(seat=brief.derive_seat(name))
         judgement_only = seat.judgement_only
         lands = seat.lands and not judgement_only
-        assert ("## Gate: none — this seat runs none" in rendered) is judgement_only, name
+        assert ("## Gate: none — this seat runs none" in rendered) is (not seat.runs_gate), name
         assert ("## Landing: none" in rendered) is not lands, name
         # The implementer's asks reach only a seat that may act on them.
-        assert ("`just fast`" in rendered) is not judgement_only, name
+        assert ("`just fast`" in rendered) is seat.runs_gate, name
         assert ("Land via `just land --audit-file FILE`" in rendered) is lands, name
         assert ("commit early" in rendered) is not judgement_only, name
 
@@ -1268,8 +1258,8 @@ def test_the_paste_contract_follows_the_reviews_column_within_that_arm() -> None
     """The reviewer's paste contract varies inside the read-only arm, never the arm itself."""
     for name, seat in dispatch.SEATS.items():
         rendered = composed(seat=brief.derive_seat(name))
-        assert (brief.REVIEW_GATE_RULE in rendered) is seat.reviews, name
-        assert (brief.REVIEW_LANDING_RULE in rendered) is seat.reviews, name
+        assert (brief.DISPOSABLE_GATE_RULE in rendered) is seat.judgement_only, name
+        assert (brief.DISPOSABLE_LANDING_RULE in rendered) is seat.judgement_only, name
 
 
 def test_an_implementer_briefing_is_asked_for_the_paste_the_review_reads() -> None:
@@ -1588,11 +1578,11 @@ def test_the_default_brief_asks_no_seat_that_cannot_run_a_gate_to_run_one() -> N
             base_sha="deadbee",
         )
         rendered = dispatch.default_brief(identity, REPO / ".claude" / "worktrees" / "issue-353")
-        asks = "Run `just fast` after every edit." in rendered
-        assert asks == (not seat.judgement_only), seat_name
+        asks = "Run `just fast` after every edit" in rendered
+        assert asks == seat.runs_gate, seat_name
         # #449: the line bars the gate and re-running, never the seat's whole activity.
         bars_reruns = "re-run none of the implementer's tests" in rendered
-        assert bars_reruns == seat.judgement_only, seat_name
+        assert bars_reruns == (not seat.runs_gate), seat_name
 
 
 def test_forcing_the_predicate_false_moves_both_brief_paths_together(
@@ -1659,9 +1649,9 @@ def test_the_default_briefs_prohibition_names_gates_and_tests_not_all_execution(
         base_sha="deadbee",
     )
     rendered = dispatch.default_brief(identity, REPO / ".claude" / "worktrees" / "issue-421")
-    assert "Run no gate and re-run none of the implementer's tests" in rendered
+    assert "Run `just fast` after every edit in this disposable worktree" in rendered
     assert "executing anything" not in rendered
-    assert "Reading is this seat's work" in rendered
+    assert "Do not commit or land" in rendered
 
 
 # ------------------------------------------------------------------- the CLI's refusals

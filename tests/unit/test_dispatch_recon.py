@@ -1,20 +1,15 @@
-"""The recon seat cannot edit, because the ADR reasons from that and the harness did not (#407).
+"""The recon seat cannot affect a landing, because its tree is disposable (#407, #600).
 
-ADR-0071 does not merely describe `recon` as read-only. Its ruling-2 table row says so, and
-the body *reasons from* the property: the unranked profile head, the routing class 2 admission
-and the absent escalation entry all rest on a seat that authors, lands and reviews nothing.
-The registry held none of it, so a recon dispatch inherited the writable `--permission-mode`
-default — `acceptEdits` on the Claude family, and on Codex the widened `workspace-write`
-sandbox with `writable_roots` and `network_access=true`. Dispatch
-`d-20260818-080132-cc45d2` (`codex`/`codex-luna-medium`, seat `recon`, briefed to map surfaces
-for #374) wrote a new constant and its composer branch into `tools/brief.py`, added tests, and
-ran the gate. Nothing refused it.
+ADR-0071 does not make `recon` a landing seat. Its ruling-2 table row and body still reason
+from the unranked profile head, the routing class 2 admission and the absent escalation
+entry. #600 gives the seat a dispatch-owned tree: both runner families can execute the gate,
+and edits remain disposable rather than reaching the reviewed ref.
 
 The claims are made through `plan_dispatch` and `main`, following `test_dispatch_seat.py`'s
 rule: what a caller gets is a plan or a refusal, and a registry column that read back correctly
 while `build_argv` rendered something else would satisfy an internal test and none of the
 criteria. So every containment claim below is about the **rendered argv**, on both runner
-families, and the Codex ones name the two grants a read-only sandbox must not carry.
+families, and the Codex ones name the scoped workspace-write policy and measured cache grants.
 
 Arrangements are clock-free for that module's reason, and its `plan_for` is reused rather than
 copied: the criterion is about the seat, and a second copy of the request shape is a second
@@ -100,7 +95,7 @@ def test_the_seats_that_gate_and_land_keep_the_mode_the_caller_asked_for() -> No
 # ---------------------------------------- criteria 2 and 3: the rendered argv on both families
 
 
-def test_a_codex_lane_recon_runs_read_only_without_the_caller_passing_anything(
+def test_a_codex_lane_recon_runs_in_the_disposable_tree_without_the_caller_passing_anything(
     tmp_path: Path,
 ) -> None:
     """The seat's head is a Codex profile, whose vocabulary for the mode is a sandbox policy."""
@@ -110,21 +105,18 @@ def test_a_codex_lane_recon_runs_read_only_without_the_caller_passing_anything(
     assert plan.identity.lane == "codex"
     assert plan.permission_mode == "plan"
     assert "--sandbox" in plan.argv
-    assert plan.argv[plan.argv.index("--sandbox") + 1] == "read-only"
+    assert plan.argv[plan.argv.index("--sandbox") + 1] == "workspace-write"
 
 
-def test_a_codex_lane_recon_is_granted_no_writable_root_and_no_network(tmp_path: Path) -> None:
-    """The read-only branch of `_codex_sandbox_argv`, unchanged: neither override is bought here.
-
-    Named as two absences rather than one, because they are two grants and the widening that
-    let #374's recon dispatch edit `tools/` carried both — `writable_roots` reaching the main
-    checkout and both git directories, and `network_access=true`.
-    """
+def test_a_codex_lane_recon_gets_only_the_measured_cache_roots_and_network(tmp_path: Path) -> None:
+    """The disposable cwd is writable; only the existing measured cache grants are added."""
     plan, _, refusal = recon_plan(tmp_path)
     assert refusal is None, refusal
     assert plan is not None
-    assert not [part for part in plan.argv if part.startswith("sandbox_workspace_write.")]
-    assert "workspace-write" not in plan.argv
+    roots = [part for part in plan.argv if part.startswith("sandbox_workspace_write.")]
+    assert len(roots) == 2
+    assert all("/home/andre/.claude" not in part for part in roots)
+    assert "workspace-write" in plan.argv
     assert "--dangerously-bypass-approvals-and-sandbox" not in plan.argv
 
 
@@ -190,7 +182,7 @@ def test_the_forcing_is_recorded_rather_than_silent(tmp_path: Path) -> None:
 # --------------------------------- criterion 4: the dry run a reader is asked to check shows it
 
 
-def test_the_dry_run_shows_the_read_only_flag_in_the_argv_it_would_launch(
+def test_the_dry_run_shows_the_disposable_workspace_flag_in_the_argv_it_would_launch(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
     """Criterion 4's substance, made a check rather than a transcript.
@@ -201,8 +193,9 @@ def test_the_dry_run_shows_the_read_only_flag_in_the_argv_it_would_launch(
     """
     assert dispatch.main(recon_dry_run_argv(tmp_path)) == 0
     line = dry_run_argv_line(capsys)
-    assert "--sandbox read-only" in line
-    assert "sandbox_workspace_write." not in line
+    assert "--sandbox workspace-write" in line
+    assert "sandbox_workspace_write.writable_roots=" in line
+    assert "sandbox_workspace_write.network_access=true" in line
     assert "--dangerously-bypass-approvals-and-sandbox" not in line
 
 

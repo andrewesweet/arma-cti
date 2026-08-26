@@ -1,10 +1,10 @@
-"""The review seat cannot review its own profile, and cannot edit (#322, ADR-0071 ruling 4).
+"""The review seat cannot review its own profile or affect the reviewed ref (#322, ADR-0071).
 
 Two halves of one invariant: no single model instance may both propose a change and produce
 the verdict that clears it. The first half is resolution — the profile under review is an
 input, it is removed before the list is walked, and a different lane goes first among what
-is left. The second is containment — the seat forces a read-only permission mode rather than
-inheriting the writable default, on both runner families.
+is left. The second is containment — the seat forces `plan`, runs in a dispatch-owned
+disposable tree, and never lands that tree, on both runner families.
 
 Claims are made through `plan_dispatch` or `main` wherever the criterion is about a dispatch,
 following `test_dispatch_seat.py`'s rule: what a caller gets is a plan or a refusal, and a
@@ -356,7 +356,7 @@ def test_a_claude_lane_review_runs_read_only_without_the_caller_passing_anything
     assert "acceptEdits" not in plan.argv
 
 
-def test_a_codex_lane_review_runs_read_only_without_the_caller_passing_anything(
+def test_a_codex_lane_review_runs_in_the_disposable_tree_without_the_caller_passing_anything(
     tmp_path: Path,
 ) -> None:
     """The other runner family, whose vocabulary for the same thing is a sandbox policy."""
@@ -366,9 +366,8 @@ def test_a_codex_lane_review_runs_read_only_without_the_caller_passing_anything(
     assert plan.identity.lane == "codex"
     assert plan.permission_mode == "plan"
     assert "--sandbox" in plan.argv
-    assert plan.argv[plan.argv.index("--sandbox") + 1] == "read-only"
-    # `workspace-write`'s widening is what a committing seat gets; a review buys none of it.
-    assert not [part for part in plan.argv if part.startswith("sandbox_workspace_write.")]
+    assert plan.argv[plan.argv.index("--sandbox") + 1] == "workspace-write"
+    assert [part for part in plan.argv if part.startswith("sandbox_workspace_write.")]
     assert "--dangerously-bypass-approvals-and-sandbox" not in plan.argv
 
 
@@ -403,16 +402,14 @@ def test_no_other_seat_has_its_permission_mode_taken_away_from_the_caller(
     assert plan.permission_mode == "acceptEdits"
 
 
-def test_a_review_is_not_refused_for_the_surface_it_was_sent_to_read(
+def test_a_review_reserves_the_surface_it_can_write_in_its_disposable_tree(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """#339: the queue's surface rung read the implementer's tree as the review's writes.
+    """A review can run gates now, so its candidate surface is not empty.
 
     Two implementer trees in flight, both writing the same paths, and a review of one of
-    them — the observed refusal fired exactly there, on the critical path every landing now
-    takes (ADR-0071 ruling 4). The containment this file's criterion 3 forces is what makes
-    "this dispatch writes nothing" derivable, so the surface rung reads an empty surface for
-    such a seat rather than the issue's, and the refusal returns only without the column.
+    them — the surface rung must account for its disposable writes rather than pretending the
+    forced `plan` mode makes the runner unable to execute.
     """
     holders = (
         queue_policy.Holder(322, ("dispatch:d-1",), tmp_path / "issue-322"),
@@ -427,18 +424,7 @@ def test_a_review_is_not_refused_for_the_surface_it_was_sent_to_read(
     )
     monkeypatch.setattr(dispatch.queue_policy, "surfaces_of", lambda _ignored: surfaces)
     tree = git_worktree(tmp_path)
-    # 324, not 322: the rung refuses only against a lower-numbered holder (#581), so the
-    # control below needs the dispatched issue to be the one that is not the holder.
-    plan, _, refusal = plan_for(tmp_path, worktree=tree, issue=324)
-    assert refusal is None, refusal
-    assert plan is not None
-    # The control: strip the column that derives emptiness and the rung sees the conflict
-    # again, which is what pins the exemption to the registry rather than to a removed rung.
-    monkeypatch.setitem(
-        dispatch.SEATS,
-        "review",
-        dispatch.SEATS["review"]._replace(permission_mode=""),
-    )
+    # 324, not 322: the lower-numbered holder is the one that makes the conflict observable.
     plan, _, refusal = plan_for(tmp_path, worktree=tree, issue=324)
     assert plan is None
     assert refusal is not None

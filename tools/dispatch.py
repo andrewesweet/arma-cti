@@ -158,7 +158,8 @@ later. A whole list unavailable is `seat_list_exhausted` — named, never a sile
 to something the seat's table does not carry. Naming `--profile` still works and is still
 subject to every `(profile, seat)` refusal: it is a way of choosing, never a way around.
 
-**The review seat cannot review its own profile, and cannot edit** (#322, ADR-0071 ruling 4).
+**The review seat cannot review its own profile, and cannot affect the reviewed ref** (#322,
+ADR-0071 ruling 4).
 Both halves come from one invariant: no single model instance may both propose a change and
 produce the verdict that clears it. So a review dispatch names the profile whose work it
 reviews — `--reviewing` — and resolution *removes* that profile from the list before walking
@@ -187,9 +188,12 @@ refuses rather than proceeding same-model, and the same refusal meets a caller w
 reviewed profile with `--profile`. The absent declaration refuses too: without it nothing
 could resolve past anything, and resolving anyway would take the head the implementer took.
 The second half is containment. `--permission-mode` defaults to `acceptEdits`, which is
-writable on both runner families, so a review dispatched at the default could edit; the seat
-now *forces* `plan` in `routed`, which `build_argv` renders as `--permission-mode plan` on
-the `claude` family and `--sandbox read-only` on `codex`.
+writable on both runner families, so a review dispatched at the default could edit the
+persistent tree; the seat now *forces* `plan` in `routed`. Claude receives that as a
+permission policy and can execute gates in its disposable tree. Codex receives it as an OS
+sandbox policy, which the same disposable tree maps to `workspace-write` plus the measured
+cache grants. The tree is removed when the dispatch ends, and the verdict's reviewed SHA is
+checked independently at landing.
 
 **Review delivery crosses that containment at the harness boundary** (#496). The review's
 stdout is written through a file descriptor the unsandboxed dispatcher opened, so the session
@@ -201,11 +205,11 @@ markers, an empty bounded report, or a refused call ends in `review_delivery_fai
 the child's own return code remains on `result.json`.
 
 **`recon` forces the same mode, for a reason of its own** (#407). ADR-0071 does not merely
-describe that seat as read-only; it reasons from the property — the unranked profile head, the
-routing class 2 admission and the absent escalation entry are all founded on a seat that
-authors, lands and reviews nothing. The registry did not hold it, and a dispatched `recon`
-session edited `tools/` and its tests. So the same one-column mechanism carries it, and the
-seat that most needed the guarantee stops being the one seat without it.
+describe that seat as non-landing; it reasons from the unranked profile head, the routing
+class 2 admission and the absent escalation entry. The seat authors no landing, but its
+disposable tree may execute gates and collect evidence without changing the reviewed ref.
+The same explicit worktree boundary protects it from the persistent-tree edit that prompted
+#407.
 
 **The routing class policy is a separate, per-dispatch read** (#266). Queue policy answers
 whether work may start now; `config/dispatch-routing-policy.json` answers which class the
@@ -693,7 +697,8 @@ class Seat(NamedTuple):
     # it", and `retro` because A4 makes the journal entry "land under ruling 4 like any
     # other change" — one artefact, scoped in the seat's own reason. The planner's
     # `False` is ruling 2's "neither gates nor lands"; `recon` and `review` land
-    # nothing by their own rulings and are read-only besides; no ruling names `fable`
+    # nothing by their own rulings and get disposable trees when they force `plan`; no ruling
+    # names `fable`
     # or the `orchestrator` as any route's lander, so they are `False`. Every row
     # spells its answer, because the column has no working default: `None` is the
     # undecided state and `refuse_undecided_lands` below fails this module's import on
@@ -704,6 +709,12 @@ class Seat(NamedTuple):
     # composed from, and the two are held in step by name-set only.
     lands: bool | None = None
 
+    # A seat that may write while it runs but must never affect a landing gets a fresh
+    # worktree for the dispatch. The flag is explicit rather than inferred from
+    # `permission_mode`: forced `plan` is a runner-specific policy, while disposal is the
+    # filesystem boundary that makes a writable review safe.
+    disposable_worktree: bool = False
+
     # #421's one predicate, stated where the column it reads lives so no caller rederives it.
     # Both brief paths branch on this — the composed brief's three sections through
     # `brief.Seat.judgement_only`, which delegates here, and `default_brief` below — and the
@@ -713,8 +724,19 @@ class Seat(NamedTuple):
     # with the predicate today and drifts the day one of them changes.
     @property
     def judgement_only(self) -> bool:
-        """Whether the forced mode makes this seat read-only, so it runs no gate."""
+        """Whether this seat forces `plan`; runner semantics decide what that permits.
+
+        Claude receives `plan` as a permission policy and can execute commands, including
+        commands that write. Codex receives a sandbox policy; a disposable review or recon
+        tree widens that policy to `workspace-write` for the tree and measured tool caches.
+        This predicate therefore does not mean that the seat cannot run a gate.
+        """
         return self.permission_mode == "plan"
+
+    @property
+    def runs_gate(self) -> bool:
+        """Whether the seat is expected to execute its gate in its assigned tree."""
+        return not self.judgement_only or self.disposable_worktree
 
 
 # Named once because two seats share it: ADR-0071 ruling 2 gives `review` "the
@@ -759,27 +781,28 @@ SEATS: Final[dict[str, Seat]] = {
     # The registry spells both states `()`, which is why the ADR marks the cell rather than
     # leaving it blank; a reader who needs the distinction reads it there.
     #
-    # `permission_mode` is #407's: the ADR says read-only in the table and reasons from
-    # read-only in the body, so the harness was the half that was wrong. It renders
-    # `--permission-mode plan` on the `claude` family and `--sandbox read-only` on `codex`,
-    # where the read-only branch of `_codex_sandbox_argv` grants neither `writable_roots`
-    # nor `network_access`. #392 — nothing compares the ADR's seat table to this registry —
-    # is the check that would have caught the gap; this is its first live instance.
+    # `permission_mode` is #407's forced `plan`: the ADR's no-landing contract is not a
+    # filesystem claim. The disposable flag gives both runner families a tree in which to
+    # execute gates; Codex maps the mode to `workspace-write` and the measured cache grants.
+    # #392 — nothing compares the ADR's seat table to this registry — is the check that would
+    # have caught the missing filesystem boundary; this is its first live instance.
     "recon": Seat(
         "recon",
         claude_only=False,
         preference=("codex-luna-medium", "haiku-medium"),
         permission_mode="plan",
         lands=False,
+        disposable_worktree=True,
     ),
     # ADR-0071 ruling 4 (#322) adds the two columns that make never-alone real. `reviews`
     # is what makes this seat's resolution take the profile under review as an input and
-    # never return it; `permission_mode` forces the containment `--permission-mode`'s
-    # writable default would otherwise have left to whoever typed the command.
+    # never return it; `permission_mode` forces `plan` while the disposable worktree keeps
+    # the runner's executable edits away from the reviewed ref.
     #
-    # **`plan` stays after #449 and #496.** The mode enforces that a review neither edits nor
-    # lands the change it judges (ADR-0071 ruling 4); it never meant that findings should be
-    # silent. Configuration originally expected the session itself to post: project settings
+    # **`plan` stays after #449 and #496.** The mode is forced as the runner-specific policy;
+    # the disposable worktree, not the word `plan`, keeps executable review edits away from
+    # the change it judges (ADR-0071 ruling 4). Findings should never be silent. Configuration
+    # originally expected the session itself to post: project settings
     # allowlisted `Bash(gh issue:*)`, the brief ordered `gh issue comment`, and two 2026-08-20
     # runs demonstrated that both runner families could do it from `plan`.
     #
@@ -803,6 +826,7 @@ SEATS: Final[dict[str, Seat]] = {
         reviews=True,
         permission_mode="plan",
         lands=False,
+        disposable_worktree=True,
     ),
     # Ruling 3's own kind of work: the retro seat, on the preference order the ADR's own
     # table carries. That order is not the human's enumerated retro list of 2026-08-09
@@ -1688,6 +1712,11 @@ class Plan(NamedTuple):
     # forked. Claude has no equivalent bounded prompt-capture surface, so this is absent
     # for its lanes rather than a claim that the two providers expose the same proof.
     guidance: codex_guidance.GuidanceProof | None = None
+    # Review and recon plans own their tree for exactly one dispatch. This is recorded
+    # rather than inferred during cleanup: missing proof refuses instead of risking a
+    # different holder's worktree.
+    disposable_worktree: bool = False
+    worktree_ref: str = ""
 
     def document(self) -> dict[str, object]:
         """Render the dispatch record, which names the credential key and never its value."""
@@ -1700,6 +1729,9 @@ class Plan(NamedTuple):
             "issue": self.identity.issue,
             "base_sha": self.identity.base_sha,
             "worktree": str(self.worktree),
+            "disposable_worktree": self.disposable_worktree,
+            "worktree_ref": self.worktree_ref,
+            "worktree_owner": self.identity.dispatch_id if self.disposable_worktree else "",
             "argv": list(self.argv),
             "permission_mode": self.permission_mode,
             "credential": lane.credential,
@@ -3109,12 +3141,11 @@ def routed(args: argparse.Namespace, route: Resolution) -> argparse.Namespace:
     **The seat's permission mode is completed here too, and that is a force rather than a
     default** (ADR-0071 ruling 4, #322). `--permission-mode` defaults to `acceptEdits`,
     which is writable on both runner families, so a review dispatched with the caller
-    passing nothing could edit — and a review that can edit is a review that can land its
-    own findings, which is the containment `docs/review-dispatch.md` says the mode is the
-    mechanism for. Overwriting whatever the caller passed is deliberate: a containment a
-    caller can switch off by typing a flag is a default, and this ruling asked for the other
-    thing. It is never silent — `Resolution.containment_lines` names the seat that forced
-    it, in the dry run and in the record's own argv.
+    passing nothing could edit the persistent tree. Overwriting whatever the caller passed
+    is deliberate: the seat must always enter its runner-specific `plan` policy, while the
+    disposable worktree is the filesystem boundary that prevents those edits from reaching
+    the reviewed ref. It is never silent — `Resolution.containment_lines` names the seat
+    that forced it, in the dry run and in the record's own argv.
 
     Here rather than in `build_argv`, because a seat is a property of the *route* and
     `build_argv` is handed a lane and a profile: putting it there would mean the record's
@@ -3180,7 +3211,7 @@ SINGLE_SHOT_CONTRACT: Final = (
 # The report is the reviewer's judgement; only its transport belongs to the harness. One
 # wording reaches both briefing paths: `default_brief` below and `tools/brief.py`'s composed
 # review protocol. Keeping `gh` out of the session removes all four #496 failure paths without
-# widening the read-only seat. Exact markers keep runner output outside the final response out
+# widening the non-landing seat. Exact markers keep runner output outside the final response out
 # of the comment; the visible notice says which stream and section the harness actually saw.
 # The dispatcher still makes only one attempt, so this promises visibility on failure rather
 # than reliable GitHub availability.
@@ -3215,20 +3246,20 @@ def default_brief(identity: Identity, worktree: Path) -> str:
     contract. The single-shot contract is the one operational rule a thin brief cannot
     omit, because a dispatched session has no second turn to recover from missing it.
 
-    The one line that varies is the gate line, because a judgement-only seat (`review`,
-    `recon` — `Seat.judgement_only`, the predicate whose home is the registry row) cannot
-    act on "run `just fast` after every edit", and a brief asking for what the seat is
-    forbidden to do is the ritual #353's ruling of 2026-08-14 stopped: such a seat runs
-    no gate and re-runs no test. The prohibition is stated narrowly on purpose, twice
-    over. #421 finding 4: "rather than executing anything" read as forbidding read-only
-    inspection too, which would make `recon` — a seat whose whole job is reading —
-    impossible. #449: "runs nothing" read as forbidding the seat to file its own findings,
-    which nobody had ruled and which cost fifteen hand-relayed verdicts in one session.
-    What the line bars is the gate, and the reason it gives is the ruling's own: wall time.
+    The one line that varies is the gate line. A forced `plan` seat still cannot affect a
+    landing, but review and recon dispatches now run in a disposable tree, so they can run
+    `just fast`; the tree is removed after the dispatch and the verdict remains bound to the
+    reviewed SHA. `Seat.judgement_only` describes the forced mode, while `Seat.runs_gate`
+    describes this separate execution capability.
     """
-    runs_gate = not SEATS[identity.seat].judgement_only
+    runs_gate = SEATS[identity.seat].runs_gate
     gate_line = (
-        "Run `just fast` after every edit."
+        (
+            "Run `just fast` after every edit in this disposable worktree. Do not commit or "
+            "land; the dispatcher removes this tree after the verdict."
+        )
+        if runs_gate and SEATS[identity.seat].judgement_only
+        else "Run `just fast` after every edit."
         if runs_gate
         else "Run no gate and re-run none of the implementer's tests — you are passed their"
         " report instead, and the wall time is the reason (human ruling 2026-08-14 on #353,"
@@ -3333,8 +3364,13 @@ CODEX_SANDBOX: Final = {
 }
 
 
-def _codex_sandbox_argv(permission_mode: str, granted: tuple[Path, ...] | None) -> tuple[str, ...]:
-    """Return the sandbox flags: the gate's roots, and never a git directory (#405).
+def _codex_sandbox_argv(
+    permission_mode: str,
+    granted: tuple[Path, ...] | None,
+    *,
+    disposable_worktree: bool = False,
+) -> tuple[str, ...]:
+    """Return Codex's per-runner sandbox policy, with no git directory in its grants.
 
     The human ruled on 2026-08-06 (#221 decision 2, #259) that a dispatched Codex session
     gets the same *intent* as the widened `zai` allowlist — run the gate, make its own
@@ -3399,11 +3435,13 @@ def _codex_sandbox_argv(permission_mode: str, granted: tuple[Path, ...] | None) 
     ADR-0061 decision 5's non-commensurability point is the reason the two are stated
     separately in `docs/multi-provider-dispatch.md` rather than claimed equal.
 
-    Read-only modes are left exactly as they were, which is the branch #407's `recon` seat
-    now takes. A review or recon seat has nothing to commit and nothing to gate, so neither
-    override has anything to buy there — no `writable_roots`, no `network_access` — and a
-    sandbox that stays narrow when nothing needs it wider is the point of mapping per mode
-    at all.
+    The forced `plan` mode is not one containment meaning across runners. Claude receives it
+    as a permission policy and may execute the gate; Codex receives it as an OS sandbox. For
+    a review or recon dispatch, the dispatcher creates a disposable worktree first, so Codex
+    maps that mode to `workspace-write` with the measured cache and network grants. The
+    worktree is the runner's cwd and the only project path made writable; the verdict binds
+    to the reviewed SHA and the dispatcher destroys this tree afterwards. A non-disposable
+    Codex plan stays `read-only` and carries no writable-root override.
 
     **Adding no override on that branch is not the same as the sandbox refusing what the
     override would have granted**, and reading it as such is what shipped a false sentence
@@ -3414,7 +3452,10 @@ def _codex_sandbox_argv(permission_mode: str, granted: tuple[Path, ...] | None) 
     (comment `5355112577`). What a read-only Codex session may *write* is untested here and
     stays unclaimed.
     """
-    flags = CODEX_SANDBOX.get(permission_mode, CODEX_SANDBOX["default"])
+    effective_mode = (
+        "acceptEdits" if disposable_worktree and permission_mode == "plan" else permission_mode
+    )
+    flags = CODEX_SANDBOX.get(effective_mode, CODEX_SANDBOX["default"])
     if flags != CODEX_SANDBOX["acceptEdits"]:
         return flags
     if granted is None:
@@ -3582,15 +3623,18 @@ message that is not Conventional Commits fails the commit.
 """
 
 
-def harness_commits(lane: Lane, permission_mode: str) -> bool:
+def harness_commits(lane: Lane, permission_mode: str, *, disposable_worktree: bool = False) -> bool:
     """Say whether this dispatch's commit is the harness's to make rather than the session's.
 
-    True exactly where the sandbox is the writable one — a read-only seat has nothing to
-    commit, and every other lane's session commits its own work. The mode is compared
-    through `CODEX_SANDBOX` rather than against the string `acceptEdits`, so this predicate
-    and `_codex_sandbox_argv` cannot come to disagree about which mode is the writable one.
+    True exactly where the harness must commit a persistent Codex worktree. A disposable
+    review or recon tree is deliberately never committed by the harness: its edits are
+    evidence for one run and the tree is removed. The mode is compared through
+    `CODEX_SANDBOX` rather than against the string `acceptEdits`, so this predicate and
+    `_codex_sandbox_argv` cannot disagree about which non-disposable mode is writable.
     """
     if lane.runner_family is not codex_guidance.GuidanceHarness.CODEX:
+        return False
+    if disposable_worktree:
         return False
     flags = CODEX_SANDBOX.get(permission_mode, CODEX_SANDBOX["default"])
     return flags == CODEX_SANDBOX["acceptEdits"]
@@ -4107,12 +4151,16 @@ def _harness_found(status: worktree_tool.Preflight) -> tuple[str, ...]:
     return tuple(found)
 
 
-def build_argv(
+def build_argv(  # noqa: PLR0913 — one complete runner contract
     lane: Lane,
     profile: Profile,
     permission_mode: str,
     project_dir: Path,
     writable_roots: tuple[Path, ...] | None,
+    # The builder keeps the lane/profile/mode/path/cache tuple together because it is the
+    # exact runner contract; the sixth value is the one issue-specific filesystem boundary.
+    *,
+    disposable_worktree: bool = False,
 ) -> tuple[str, ...]:
     """Build the runner's argv, which carries no secret, because a secret on argv is in `ps`.
 
@@ -4125,7 +4173,14 @@ def build_argv(
     lanes that share the `claude` binary sharing one builder.
     """
     if lane.runner_family is codex_guidance.GuidanceHarness.CODEX:
-        return _codex_argv(lane, profile, permission_mode, project_dir, writable_roots)
+        return _codex_argv(
+            lane,
+            profile,
+            permission_mode,
+            project_dir,
+            writable_roots,
+            disposable_worktree=disposable_worktree,
+        )
     return (
         lane.runner,
         "--print",
@@ -4138,12 +4193,15 @@ def build_argv(
     )
 
 
-def _codex_argv(
+def _codex_argv(  # noqa: PLR0913 — policy and cache grants stay together
     lane: Lane,
     profile: Profile,
     permission_mode: str,
     project_dir: Path,
     writable_roots: tuple[Path, ...] | None,
+    # See `build_argv`: this is the Codex half of the same complete runner contract.
+    *,
+    disposable_worktree: bool = False,
 ) -> tuple[str, ...]:
     """Build `codex exec`'s argv: model, reasoning effort, sandbox, and loopback telemetry.
 
@@ -4187,7 +4245,9 @@ def _codex_argv(
         "--config",
         _codex_metrics_override(),
         *_codex_hook_argv(project_dir),
-        *_codex_sandbox_argv(permission_mode, writable_roots),
+        *_codex_sandbox_argv(
+            permission_mode, writable_roots, disposable_worktree=disposable_worktree
+        ),
     )
 
 
@@ -4238,12 +4298,11 @@ def queue_refusal(args: argparse.Namespace, root: Path) -> Refusal | None:
         return _as_refusal(refusal)
     scan_root = Path(args.queue_root).expanduser() if args.queue_root else root
     in_flight = queue_policy.gather(scan_root, Path(args.dispatch_dir).expanduser())
-    # #339: a seat that forces a read-only mode writes nothing, so the surface rung reads
-    # its surface as empty by derivation rather than from the tree registered under the
-    # issue — which is the implementer's, and was refusing a review dispatch for the very
-    # work it had been sent to read. The registry column is the containment `routed` forces
-    # (#322, #407), so "this dispatch writes nothing" is derived, never declared here.
-    writes_nothing = SEATS[args.seat].judgement_only
+    # A forced `plan` is a runner policy, not proof that the session writes nothing: review
+    # and recon now execute gates in a disposable tree. Only a seat that cannot run a gate
+    # contributes no candidate surface; derive that from the registry rather than guessing
+    # from the runner's argv.
+    writes_nothing = not SEATS[args.seat].runs_gate
     return _as_refusal(
         queue_policy.check_refusal(
             policy,
@@ -4529,12 +4588,229 @@ def _state_refusal(
     return off_peak_refusal(LANES[PROFILES[args.profile].lane], now)
 
 
-def plan_dispatch(  # noqa: PLR0911 — one return per refusal rung and per half of the plan
+def _write_disposable_owner(record: Path, owner: dispatch_stop.Record) -> None:
+    """Publish the minimum stop-readable owner proof before creating the tree."""
+    record.mkdir(parents=True, exist_ok=False)
+    (record / "dispatch.json").write_text(
+        json.dumps(
+            {
+                "dispatch_id": owner.dispatch_id,
+                "worktree": str(owner.worktree),
+                "disposable_worktree": True,
+                "worktree_ref": owner.worktree_ref,
+                "worktree_owner": owner.worktree_owner,
+            },
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+
+def _remove_provisional_owner(record: Path) -> None:
+    """Remove only the provisional record this planner created after clean teardown."""
+    try:
+        (record / "dispatch.json").unlink(missing_ok=True)
+        record.rmdir()
+    except OSError:
+        # A surviving record is safer than guessing that a concurrent writer is ours.
+        return
+
+
+def _materialize_disposable_plan(  # noqa: C901, PLR0911, PLR0913 — setup owns the complete plan and one refusal per proof rung
+    plan: Plan,
+    brief: str,
+    root: Path,
+    requested_base_sha: str,
+    *,
+    custom_brief: bool,
+    writable_roots: tuple[Path, ...] | None,
+) -> tuple[Plan | None, str, Refusal | None]:
+    """Restore the review ref into an id-owned tree and fail closed on every setup error."""
+    ref = review_exchange.review_ref(plan.identity.issue)
+    path = root / worktree_tool.WORKTREES / f"dispatch-{plan.identity.dispatch_id}"
+    owner = dispatch_stop.Record(
+        dispatch_id=plan.identity.dispatch_id,
+        worktree=path,
+        directory=plan.record,
+        disposable_worktree=True,
+        worktree_ref=ref,
+        worktree_owner=plan.identity.dispatch_id,
+    )
+    if plan.record.exists():
+        return (
+            None,
+            "",
+            Refusal(
+                "dispatch_record_collision",
+                (f"dispatch={plan.identity.dispatch_id}", f"record={plan.record}"),
+                "The dispatch id already has a record. Nothing was created; choose no "
+                "replacement and inspect the existing dispatch.",
+                failure_class="infra_unavailable",
+            ),
+        )
+
+    try:
+        registrations = worktree_tool.parse_registrations(
+            worktree_tool.git("worktree", "list", "--porcelain", cwd=root)
+        )
+        registered = tuple(
+            entry for entry in registrations if entry.path.resolve() == path.resolve()
+        )
+    except (OSError, worktree_tool.GitError) as failure:
+        return (
+            None,
+            "",
+            Refusal(
+                "disposable_worktree_unproven",
+                (f"worktree={path}", f"reason=registration_read_failed:{failure}"),
+                "The dispatch cannot prove that its derived tree is free. Nothing was created; "
+                "inspect the worktree registrations before retrying.",
+                failure_class="infra_unavailable",
+            ),
+        )
+    if path.exists() or registered:
+        return (
+            None,
+            "",
+            Refusal(
+                "disposable_worktree_unproven",
+                (
+                    f"worktree={path}",
+                    "reason=derived_path_already_exists",
+                    f"registrations={len(registered)}",
+                ),
+                "The dispatch cannot prove that its derived tree is free. Nothing was removed; "
+                "inspect the existing holder rather than guessing (#105).",
+                failure_class="infra_unavailable",
+            ),
+        )
+    owner_written = False
+    created = False
+
+    def failed(kind: str, found: tuple[str, ...], action: str) -> tuple[None, str, Refusal]:
+        nonlocal created, owner_written
+        if owner_written:
+            if created:
+                cleanup_refusal, cleanup_lines = dispatch_stop.cleanup_disposable_worktree(owner)
+                if cleanup_refusal is None:
+                    _remove_provisional_owner(plan.record)
+                else:
+                    found = (*found, *cleanup_refusal.lines())
+                if cleanup_lines:
+                    found = (*found, *cleanup_lines)
+            else:
+                _remove_provisional_owner(plan.record)
+        return None, "", Refusal(kind, found, action, failure_class="infra_unavailable")
+
+    try:
+        _write_disposable_owner(plan.record, owner)
+        owner_written = True
+        restored = worktree_tool.restore(root, path.name, ref)
+    except worktree_tool.GitError as failure:
+        return failed(
+            "disposable_worktree_create_failed",
+            (
+                f"worktree={path}",
+                f"ref={ref}",
+                f"command=git {' '.join(failure.args_run)}",
+                f"stderr={failure.stderr}",
+            ),
+            "The review tree could not be created. Nothing was dispatched; inspect the git "
+            "error and retry only after the tree is proven gone.",
+        )
+    except (OSError, ValueError) as failure:
+        return failed(
+            "disposable_worktree_create_failed",
+            (f"worktree={path}", f"ref={ref}", f"reason={failure}"),
+            "The review tree could not be created. Nothing was dispatched; inspect the "
+            "record and tree before retrying.",
+        )
+    if restored.code != 0:
+        return failed(
+            "disposable_worktree_create_failed",
+            (f"worktree={path}", f"ref={ref}", *restored.lines),
+            "The review tree could not be restored from its review ref. Read the refusal "
+            "above; nothing was dispatched.",
+        )
+    created = True
+
+    try:
+        ref_sha = worktree_tool.git("rev-parse", "HEAD", cwd=path).strip()
+    except worktree_tool.GitError as failure:
+        return failed(
+            "disposable_worktree_create_failed",
+            (
+                f"worktree={path}",
+                f"ref={ref}",
+                f"command=git {' '.join(failure.args_run)}",
+                f"stderr={failure.stderr}",
+            ),
+            "The restored tree's reviewed SHA could not be read. Nothing was dispatched.",
+        )
+    if not ref_sha:
+        return failed(
+            "disposable_worktree_create_failed",
+            (f"worktree={path}", f"ref={ref}", "reviewed_sha=<empty>"),
+            "The restored tree did not name a reviewed SHA. Nothing was dispatched.",
+        )
+    if requested_base_sha and requested_base_sha != ref_sha:
+        return failed(
+            "review_ref_sha_mismatch",
+            (
+                f"worktree={path}",
+                f"ref={ref}",
+                f"reviewed_sha={ref_sha}",
+                f"requested_sha={requested_base_sha}",
+            ),
+            "The review ref does not hold the requested reviewed SHA. Do not dispatch a "
+            "reviewer against a different commit.",
+        )
+
+    identity = plan.identity._replace(base_sha=ref_sha)
+    materialized = plan._replace(
+        identity=identity,
+        worktree=path,
+        argv=build_argv(
+            LANES[identity.lane],
+            PROFILES[identity.profile],
+            plan.permission_mode,
+            path,
+            writable_roots,
+            disposable_worktree=True,
+        ),
+        disposable_worktree=True,
+        worktree_ref=ref,
+    )
+    rendered_brief = brief if custom_brief else default_brief(identity, path)
+    return materialized, rendered_brief, None
+
+
+def _cleanup_plan_worktree(plan: Plan) -> tuple[Refusal | None, tuple[str, ...]]:
+    """Run the same ownership-checked teardown before a child record can launch."""
+    if not plan.disposable_worktree:
+        return None, ()
+    owner = dispatch_stop.Record(
+        dispatch_id=plan.identity.dispatch_id,
+        worktree=plan.worktree,
+        directory=plan.record,
+        disposable_worktree=True,
+        worktree_ref=plan.worktree_ref,
+        worktree_owner=plan.identity.dispatch_id,
+    )
+    return dispatch_stop.cleanup_disposable_worktree(owner)
+
+
+def plan_dispatch(  # noqa: C901, PLR0911, PLR0912 — planning owns the ordered refusal ladder
     args: argparse.Namespace,
     root: Path,
     now: datetime,
+    *,
+    materialize_worktree: bool | None = None,
 ) -> tuple[Plan | None, str, Refusal | None]:
-    """Validate the request and mint the plan and the brief, writing nothing."""
+    """Validate the request and mint a plan, materializing only an owned review tree."""
+    if materialize_worktree is None:
+        materialize_worktree = bool(getattr(args, "materialize_worktree", False))
     found = read_issue(args.issue, args.issue_body)
     route, refusal = resolve_seat(args, now)
     if refusal is not None or route is None:
@@ -4547,13 +4823,15 @@ def plan_dispatch(  # noqa: PLR0911 — one return per refusal rung and per half
     profile = PROFILES[args.profile]
     lane = LANES[profile.lane]
     breaker_dir = Path(args.breaker_dir).expanduser()
+    seat = SEATS[args.seat]
+    disposable = seat.disposable_worktree and materialize_worktree
 
     worktree = (
         Path(args.worktree).expanduser()
         if args.worktree
         else root / ".claude" / "worktrees" / f"issue-{args.issue}"
     )
-    if not worktree.is_dir():
+    if not disposable and not worktree.is_dir():
         return (
             None,
             "",
@@ -4575,11 +4853,16 @@ def plan_dispatch(  # noqa: PLR0911 — one return per refusal rung and per half
     # record directory answers it — a record with no `result.json` is live, or dead
     # without having written one — and this rung sits directly below the existence check
     # because both are properties of the assigned tree rather than of the request (#308).
-    refusal = _from_stop(
-        dispatch_stop.occupancy_refusal(worktree, Path(args.dispatch_dir).expanduser())
-    )
-    if refusal is not None:
-        return None, "", refusal
+    if not disposable:
+        refusal = _from_stop(
+            dispatch_stop.occupancy_refusal(worktree, Path(args.dispatch_dir).expanduser())
+        )
+        if refusal is not None:
+            return None, "", refusal
+    else:
+        # The real tree is created from the review ref after the id is minted. The main
+        # checkout is only a temporary cwd for planning; it is never handed to the child.
+        worktree = root
 
     # The credential is checked here as well as in the child, and the order matters: a
     # dispatch that cannot start should refuse at the recipe rather than hand back an id
@@ -4609,20 +4892,33 @@ def plan_dispatch(  # noqa: PLR0911 — one return per refusal rung and per half
         if args.brief_file
         else default_brief(identity, worktree)
     )
+    sandbox_disposable = seat.disposable_worktree
     writable_roots = None
-    if harness_commits(lane, args.permission_mode):
+    needs_codex_roots = lane.runner_family is codex_guidance.GuidanceHarness.CODEX and (
+        sandbox_disposable
+        or harness_commits(lane, args.permission_mode, disposable_worktree=disposable)
+    )
+    if needs_codex_roots:
         # High 1's rung: the roots are minted into the argv below, so the environment is
         # checked here or not at all — the record freezes them for the child.
         writable_roots = _codex_writable_roots()
         refusal = writable_root_refusal(root, writable_roots)
         if refusal is not None:
             return None, "", refusal
+    if harness_commits(lane, args.permission_mode, disposable_worktree=disposable):
         brief += CODEX_COMMIT_PROTOCOL
     plan = Plan(
         identity=identity,
         worktree=worktree,
         record=Path(args.dispatch_dir).expanduser() / dispatch_id,
-        argv=build_argv(lane, profile, args.permission_mode, worktree, writable_roots),
+        argv=build_argv(
+            lane,
+            profile,
+            args.permission_mode,
+            worktree,
+            writable_roots,
+            disposable_worktree=sandbox_disposable,
+        ),
         credentials=credentials,
         permission_mode=args.permission_mode,
         route=route,
@@ -4631,7 +4927,17 @@ def plan_dispatch(  # noqa: PLR0911 — one return per refusal rung and per half
         advisories=readiness_advisories(args.issue, found),
         routing=routing_clearance(args, root, found, now),
         strata=capture_strata(found.body, args.issue, root, body_from_file=bool(args.issue_body)),
+        disposable_worktree=disposable,
     )
+    if disposable:
+        return _materialize_disposable_plan(
+            plan,
+            brief,
+            root,
+            args.base_sha,
+            custom_brief=bool(args.brief_file),
+            writable_roots=writable_roots,
+        )
     return plan, brief, None
 
 
@@ -4691,6 +4997,8 @@ def load_record(record: Path) -> Plan:
         advisories=tuple(str(line) for line in document.get("readiness_advisories", ())),
         routing=tuple(str(line) for line in document.get("routing_clearance", ())),
         strata=read_strata(document),
+        disposable_worktree=document.get("disposable_worktree") is True,
+        worktree_ref=str(document.get("worktree_ref", "")),
     )
 
 
@@ -4847,7 +5155,9 @@ def _run_dispatch_body(
     refusal = assert_worktree(plan.worktree, git("rev-parse", "--show-toplevel", cwd=plan.worktree))
     if refusal is None:
         token, refusal = lane_credential(lane, plan.credentials)
-    if refusal is None and harness_commits(lane, plan.permission_mode):
+    if refusal is None and harness_commits(
+        lane, plan.permission_mode, disposable_worktree=plan.disposable_worktree
+    ):
         refusal = harness_start_refusal(plan.worktree)
     if refusal is not None:
         return (
@@ -4905,7 +5215,7 @@ def _run_dispatch_body(
     finish: tuple[str, ...] = ()
     finish_code = 0
     progress.failure_phase = "harness_finish"
-    if harness_commits(lane, plan.permission_mode):
+    if harness_commits(lane, plan.permission_mode, disposable_worktree=plan.disposable_worktree):
         finish, finish_code = harness_finish(plan.worktree, plan.identity.issue, record)
     harness_code = review_delivery_code or finish_code
     result = {
@@ -4933,14 +5243,27 @@ def run_dispatch(record: Path, parent: Mapping[str, str]) -> tuple[int, tuple[st
     """Run a detached child and make one result write attempt however the body exits."""
     progress = _DispatchProgress(record.name)
     result: dict[str, object] = {}
+    code = EXIT_REFUSED
+    lines: tuple[str, ...] = ()
+    cleanup_refusal: Refusal | None = None
+    cleanup_lines: tuple[str, ...] = ()
     try:
         code, lines, result = _run_dispatch_body(record, parent, progress)
     except BaseException as failure:
         result = _failed_result(progress, failure)
         raise
     finally:
+        recorded = dispatch_stop.read_record(record)
+        if recorded is not None:
+            cleanup_refusal, cleanup_lines = dispatch_stop.cleanup_disposable_worktree(recorded)
+            if cleanup_refusal is not None:
+                result["worktree_cleanup"] = list(cleanup_refusal.lines())
+            elif cleanup_lines:
+                result["worktree_cleanup"] = list(cleanup_lines)
         _write_result_once(record, result)
-    return code, lines
+    if cleanup_refusal is not None:
+        return EXIT_REFUSED, (*lines, *cleanup_refusal.lines())
+    return code, (*lines, *cleanup_lines)
 
 
 def classify_finished_run(record: Path, returncode: int) -> tuple[str, float | None]:
@@ -5009,6 +5332,8 @@ def seat_listing(seat: Seat) -> tuple[str, ...]:
         )
     if seat.permission_mode:
         lines.append(f"  permission_mode={seat.permission_mode} forced=true (no caller override)")
+    if seat.disposable_worktree:
+        lines.append("  disposable_worktree=true creates-from=review-ref removes-on=dispatch-end")
     return tuple(lines)
 
 
@@ -5359,6 +5684,7 @@ def main(argv: list[str] | None = None, now: datetime | None = None) -> int:
         )
 
     when = datetime.now(tz=UTC) if now is None else now
+    args.materialize_worktree = not args.dry_run
     plan, brief, refusal = plan_dispatch(args, main_checkout(Path.cwd()), when)
     if refusal is not None or plan is None:
         # A peak-band rehearsal is read-only: unlike a real attempt, it must not make the
@@ -5375,11 +5701,26 @@ def main(argv: list[str] | None = None, now: datetime | None = None) -> int:
     if args.dry_run:
         return emit(dry_run_lines(plan, brief, os.environ), 0)
 
+    planned_plan = plan
     plan, refusal = instruction_preflight(plan, os.environ)
     if refusal is not None or plan is None:
-        return emit(refusal.lines() if refusal else (), EXIT_REFUSED)
+        cleanup_refusal, cleanup_lines = _cleanup_plan_worktree(planned_plan)
+        if cleanup_refusal is None:
+            _remove_provisional_owner(planned_plan.record)
+        else:
+            cleanup_lines = (*cleanup_refusal.lines(), *cleanup_lines)
+        refusal_lines = refusal.lines() if refusal else ()
+        return emit((*refusal_lines, *cleanup_lines), EXIT_REFUSED)
 
-    write_record(plan, brief)
+    try:
+        write_record(plan, brief)
+    except BaseException:
+        cleanup_refusal, _ = _cleanup_plan_worktree(plan)
+        if cleanup_refusal is not None:
+            emit(cleanup_refusal.lines(), EXIT_REFUSED)
+        else:
+            _remove_provisional_owner(plan.record)
+        raise
     return emit(
         (
             f"dispatch={plan.identity.dispatch_id}",
