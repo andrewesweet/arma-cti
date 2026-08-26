@@ -1166,8 +1166,9 @@ trial *args:
 # is the only material a corrected row could be rebuilt from (#529). Staleness:
 # `sync --behind` materialises only records whose row is missing or behind the
 # current schema, reports the missing/stale/current split and how many records
-# remain behind, and writes nothing when the ledger is level. Full policy and
-# reasoning in docs/telemetry-ledger.md.
+# remain behind, and writes nothing when no missing or stale row is selectable.
+# Existing stale rows without a durable export remain behind; full policy and
+# reasoning are in docs/telemetry-ledger.md.
 [positional-arguments]
 ledger-sync action="sync" *args:
     uv run python tools/ledger.py "$@"

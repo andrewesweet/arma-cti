@@ -96,10 +96,13 @@ the run's own end; its `ended_at` is therefore absent.
 **Retention.** The materialised rows are kept indefinitely — they are the evidence quoted
 into an issue months later, and they are a few kilobytes each. The raw per-dispatch export
 grows without bound by construction, so `prune` deletes raw files older than
-`RETENTION_DAYS` **and only once a row materialised from that same durable file exists**.
-A raw file with no row, or a row read from the degraded source, is never deleted: pruning
-the bus ahead of the view would destroy the only copy. `prune` reports and deletes nothing
-without `--apply`. Once an existing row has no durable export, `sync` preserves it and
+`RETENTION_DAYS` **only when a current-schema row proves the exact durable file was read**:
+its dispatch identity, source path and source shape must match, and its positive record
+count must be valid. An absent, damaged, malformed or mismatched row is a typed refusal
+before any deletion. A row read from the degraded source or one that read zero records is
+kept: pruning the bus ahead of the view would destroy the only copy. `prune` reports and
+deletes nothing without `--apply`; `--apply` deletes only after the whole selection passes
+that evidence check. Once an existing row has no durable export, `sync` preserves it and
 prints `preserved=... reason=no_durable_export`; it does not replace the row with a
 partial rotating-capture read or an absent-source zero. Re-materialise while the durable
 export still exists if a corrected schema or calculation is needed.
@@ -111,11 +114,16 @@ reading the current tool no longer performs. A record with a plan and no row at 
 missing, counted apart from stale because they mean different things to a reader.
 `sync --behind` materialises only the missing and the stale, skips current rows without
 rewriting them, and reports the split plus how many records remain behind, so the next
-"6 of 691" gap is one summary line rather than an investigation. A full `sync` still
-recomputes every row — that is what refreshes the landed-SHA join after a landing — and
-either mode records, in the row it writes, the schema of any *differing* row it replaced
-(`previous_schema`, null on a same-schema recompute so repeated syncs stay byte-stable),
-so replacing an old reading is visible rather than silent. `prune`'s
+"6 of 691" gap is one summary line rather than an investigation. A full `sync` revisits
+every record, but recomputes an existing row only when its durable export exists; otherwise
+it preserves that row; an existing stale row therefore remains behind. A missing row can
+still be materialised from the rotating capture. This still refreshes the landed-SHA join
+for rows with durable exports, but cannot claim a complete level without those exports.
+Either mode records the predecessor in `previous_schema`: an actual prior
+schema, `<schema_missing>` for a parseable row without one, or `<unreadable>` for damaged
+or wrong-shaped input; a new row uses null, while a same-schema recompute carries the
+current row's marker (null when it has no prior history), so repeated syncs stay byte-stable.
+`prune`'s
 "a row has taken this file" tightens to "a row **at the current schema** has taken it":
 an export behind a stale row is the only material a corrected row could be rebuilt from,
 so it is retained and named, never deleted.
@@ -1458,6 +1466,12 @@ ROW_MISSING: Final = "missing"
 ROW_STALE: Final = "stale"
 ROW_CURRENT: Final = "current"
 
+# `previous_schema` stays a string-or-null field, so these markers preserve the row
+# shape while distinguishing a schema-less predecessor from a recompute over a current
+# row. They are not schema values: actual schema markers always begin with `cti.ledger/`.
+PREVIOUS_SCHEMA_NO_MARKER: Final = "<schema_missing>"
+PREVIOUS_SCHEMA_UNREADABLE: Final = "<unreadable>"
+
 
 def read_json(path: Path) -> tuple[dict[str, Any] | None, str | None]:
     """Read one JSON document, and name which of three conditions a `None` is.
@@ -1492,6 +1506,31 @@ def row_state(row: Mapping[str, Any] | None, condition: str | None) -> str:
     if row is None:
         return ROW_STALE
     return ROW_CURRENT if row.get("schema") == SCHEMA else ROW_STALE
+
+
+def previous_schema(row: Mapping[str, Any] | None, condition: str | None) -> str | None:
+    """Persist what kind of predecessor a materialised row replaced.
+
+    `None` remains the value for a new row or a same-schema recompute with no prior
+    history. Reserved string markers distinguish a schema-less row from a damaged or
+    wrong-shaped document, and a current row carries its existing value forward so a
+    repeated full sync stays byte-stable while retaining that history.
+    """
+    if condition == READ_ABSENT:
+        return None
+    if condition in (READ_DAMAGED, READ_NOT_AN_OBJECT) or row is None:
+        return PREVIOUS_SCHEMA_UNREADABLE
+    prior = row.get("schema")
+    if prior == SCHEMA:
+        carried = row.get("previous_schema")
+        return (
+            carried if carried is None or isinstance(carried, str) else PREVIOUS_SCHEMA_UNREADABLE
+        )
+    if prior is None or prior == "":
+        return PREVIOUS_SCHEMA_NO_MARKER
+    if isinstance(prior, str):
+        return prior
+    return PREVIOUS_SCHEMA_UNREADABLE
 
 
 class ParsedDispatchRecord(NamedTuple):
@@ -1779,12 +1818,11 @@ def sync(options: Options, now: datetime) -> tuple[tuple[str, ...], int]:
             now=now,
         )
         row = materialised.row
-        # The schema of the *differing* row this write replaces, or null where the
-        # prior row was absent, unreadable or already current — so replacing an old
-        # reading is recorded in the row itself, not just in this run's output, while
-        # a same-schema recompute stays byte-stable across repeated syncs (#529).
-        previous = existing.get("schema") if existing is not None else None
-        row["previous_schema"] = previous if previous != SCHEMA else None
+        # Keep the predecessor's durable marker. A current row carries its existing
+        # history forward, while schema-less and unreadable predecessors use reserved
+        # values; repeated full syncs therefore stay byte-stable without conflating
+        # those states with a same-schema recompute (#529).
+        row["previous_schema"] = previous_schema(existing, existing_condition)
         _record_terminal_state(record, row, now)
         (record / "ledger.json").write_text(json.dumps(row, indent=2) + "\n", encoding="utf-8")
         synced += 1
@@ -1836,49 +1874,219 @@ class Verdict(NamedTuple):
     reason: str
 
 
+class PruneRefusalError(Exception):
+    """A prune scan could not prove its evidence safe to use for deletion."""
+
+    def __init__(self, refusal: Refusal) -> None:
+        """Keep the rendered refusal attached to the exception boundary."""
+        super().__init__(refusal.kind)
+        self.refusal = refusal
+
+
+def _row_refusal(
+    options: Options,
+    path: Path,
+    dispatch_id: str,
+    kind: str,
+    condition: str,
+    *detail: str,
+) -> PruneRefusalError:
+    """Build a typed refusal for one row the destructive scan cannot trust."""
+    ledger_path = options.dispatch_root / dispatch_id / "ledger.json"
+    return PruneRefusalError(
+        Refusal(
+            kind,
+            (
+                f"export={path}",
+                f"dispatch={dispatch_id}",
+                f"ledger={ledger_path}",
+                f"condition={condition}",
+                *detail,
+            ),
+            f"Run `just ledger-sync sync --dispatch {dispatch_id}` and inspect the row "
+            "before retrying prune.",
+        )
+    )
+
+
+def _resolved_path(value: str | Path) -> Path | None:
+    """Resolve a persisted path for identity comparison, without trusting its existence."""
+    try:
+        return Path(value).expanduser().resolve()
+    except (OSError, RuntimeError, TypeError, ValueError):
+        return None
+
+
+def _source_validation(source: object, path: Path) -> tuple[tuple[str, ...], str | None]:
+    """Validate the source block and return its problems plus its known kind."""
+    if not isinstance(source, dict):
+        return ("source=<missing or not an object>",), None
+
+    source_kind = source.get("kind")
+    problems: list[str] = []
+    if source_kind not in (SOURCE_EXPORT, SOURCE_CAPTURE):
+        problems.append("source.kind=<missing or unknown>")
+        source_kind = None
+
+    source_path = source.get("path")
+    if not isinstance(source_path, str) or not source_path:
+        problems.append("source.path=<missing or not a path>")
+    elif source_kind == SOURCE_EXPORT:
+        expected = _resolved_path(path)
+        actual = _resolved_path(source_path)
+        if expected is None or actual != expected:
+            problems.append(f"source.path={source_path} expected={path}")
+
+    degraded = source.get("degraded")
+    expected_degraded = source_kind == SOURCE_CAPTURE
+    if not isinstance(degraded, bool) or degraded != expected_degraded:
+        problems.append(f"source.degraded={degraded!r} expected={expected_degraded}")
+    return tuple(problems), source_kind if isinstance(source_kind, str) else None
+
+
+def _records_validation(records: object) -> tuple[tuple[str, ...], int | None]:
+    """Validate the record-count block and return its problems plus its total."""
+    if not isinstance(records, dict):
+        return ("records=<missing or not an object>",), None
+    total = records.get("total")
+    if not isinstance(total, int) or isinstance(total, bool) or total < 0:
+        return ("records.total=<missing or not a non-negative integer>",), None
+    return (), total
+
+
+def _current_row_keep_reason(
+    options: Options,
+    path: Path,
+    dispatch_id: str,
+    row: Mapping[str, Any],
+) -> str | None:
+    """Validate a current row, returning a known safe-to-keep reason or eligibility."""
+    problems = []
+    if row.get("dispatch_id") != dispatch_id:
+        problems.append(f"dispatch_id={row.get('dispatch_id', '<missing>')} expected={dispatch_id}")
+    source_problems, source_kind = _source_validation(row.get("source"), path)
+    record_problems, total = _records_validation(row.get("records"))
+    problems.extend(source_problems)
+    problems.extend(record_problems)
+    if problems:
+        raise _row_refusal(options, path, dispatch_id, "prune_row_malformed", "current", *problems)
+    if source_kind == SOURCE_CAPTURE:
+        return "the row was read from the rotating capture, not this file"
+    if total == 0:
+        return "the row read no records out of this file"
+    return None
+
+
+def _export_paths(options: Options) -> list[Path]:
+    """Find the durable exports, refusing when the selection cannot be read."""
+    if not options.export_dir.is_dir():
+        raise PruneRefusalError(
+            Refusal(
+                "prune_export_dir_absent",
+                (f"export_dir={options.export_dir}",),
+                "Restore the durable export directory before retrying prune.",
+            )
+        )
+    try:
+        paths = sorted(options.export_dir.glob("dispatch-*.jsonl"))
+    except OSError as failure:
+        raise PruneRefusalError(
+            Refusal(
+                "prune_export_scan_failed",
+                (f"export_dir={options.export_dir}", f"detail={failure}"),
+                "Make the durable export directory readable before retrying prune.",
+            )
+        ) from failure
+    if not paths:
+        raise PruneRefusalError(
+            Refusal(
+                "prune_no_exports",
+                (f"export_dir={options.export_dir}", "selection=dispatch-*.jsonl (empty)"),
+                "Restore or generate the durable per-dispatch exports before retrying prune.",
+            )
+        )
+    return paths
+
+
+def _read_prune_row(options: Options, path: Path, dispatch_id: str) -> dict[str, Any]:
+    """Read a row for an export, preserving every unreadable state as a refusal."""
+    row, condition = read_json(options.dispatch_root / dispatch_id / "ledger.json")
+    if condition is not None:
+        kind = {
+            READ_ABSENT: "prune_row_absent",
+            READ_DAMAGED: "prune_row_damaged",
+            READ_NOT_AN_OBJECT: "prune_row_not_an_object",
+        }.get(condition, "prune_row_unreadable")
+        raise _row_refusal(options, path, dispatch_id, kind, condition)
+    if row is None:
+        raise _row_refusal(options, path, dispatch_id, "prune_row_unreadable", "unknown")
+    return row
+
+
+def _scan_one_export(options: Options, path: Path, horizon: float) -> Verdict:
+    """Produce one retention verdict after proving its input files are readable."""
+    if not path.is_file():
+        raise PruneRefusalError(
+            Refusal(
+                "prune_export_not_file",
+                (f"export={path}",),
+                "Remove the non-file entry or inspect the export directory before retrying prune.",
+            )
+        )
+    try:
+        modified = path.stat().st_mtime
+    except OSError as failure:
+        raise PruneRefusalError(
+            Refusal(
+                "prune_export_unreadable",
+                (f"export={path}", f"detail={failure}"),
+                "Make the export metadata readable before retrying prune.",
+            )
+        ) from failure
+
+    dispatch_id = path.name[len("dispatch-") : -len(".jsonl")]
+    row = _read_prune_row(options, path, dispatch_id)
+    if modified > horizon:
+        return Verdict(path, prunable=False, reason=f"newer than the {options.days}-day horizon")
+    if row.get("schema") != SCHEMA:
+        return Verdict(
+            path,
+            prunable=False,
+            reason=(
+                f"the row is behind the current schema "
+                f"({row.get('schema') or 'none'}, current {SCHEMA}): "
+                "run `just ledger-sync sync --behind` first"
+            ),
+        )
+    kept = _current_row_keep_reason(options, path, dispatch_id, row)
+    return Verdict(path, prunable=kept is None, reason=kept or "materialised from this file")
+
+
+def _scan_prunable(options: Options, now: float) -> list[Verdict]:
+    """Scan every export and refuse before deletion if any required evidence is absent."""
+    horizon = now - options.days * SECONDS_PER_DAY
+    return [_scan_one_export(options, path, horizon) for path in _export_paths(options)]
+
+
 def prunable(options: Options, now: float) -> list[Verdict]:
     """Decide, per raw export file, whether the view has already taken what it holds.
 
-    A raw file is prunable only when a row **at the current schema** exists that was
-    materialised **from the durable export** and read at least one record out of it.
+    A raw file is prunable only when a row **at the current schema** proves the matching
+    dispatch, exact durable-export path and source shape, and a positive record count.
     Pruning ahead of the view, on the strength of a row read from the rotating
     capture, or behind a stale row (#529) would delete the only copy of records a
     current row still needs: the export is the sole material a corrected row could
     be rebuilt from once the rotating capture has turned over.
     """
-    if not options.export_dir.is_dir():
-        return []
-    horizon = now - options.days * SECONDS_PER_DAY
-    verdicts: list[Verdict] = []
-    for path in sorted(options.export_dir.glob("dispatch-*.jsonl")):
-        dispatch_id = path.name[len("dispatch-") : -len(".jsonl")]
-        # The condition is discarded: an unreadable row keeps its file, which is the
-        # conservative half — no deletion ever rides on telling the three apart here.
-        row, _ = read_json(options.dispatch_root / dispatch_id / "ledger.json")
-        if path.stat().st_mtime > horizon:
-            kept = f"newer than the {options.days}-day horizon"
-        elif row is None:
-            kept = "no materialised row: run `just ledger-sync` first"
-        elif row.get("schema") != SCHEMA:
-            kept = (
-                f"the row is behind the current schema "
-                f"({row.get('schema') or 'none'}, current {SCHEMA}): "
-                "run `just ledger-sync sync --behind` first"
-            )
-        elif row.get("source", {}).get("kind") != SOURCE_EXPORT:
-            kept = "the row was read from the rotating capture, not this file"
-        elif int(row.get("records", {}).get("total", 0)) <= 0:
-            kept = "the row read no records out of this file"
-        else:
-            verdicts.append(Verdict(path, prunable=True, reason="materialised from this file"))
-            continue
-        verdicts.append(Verdict(path, prunable=False, reason=kept))
-    return verdicts
+    return _scan_prunable(options, now)
 
 
 def prune(options: Options, now: float) -> tuple[tuple[str, ...], int]:
     """Report, and with `--apply` delete, the raw export files the view no longer needs."""
-    verdicts = prunable(options, now)
+    try:
+        verdicts = prunable(options, now)
+    except PruneRefusalError as refusal:
+        return refusal.refusal.lines(), EXIT_REFUSED
     lines = [
         f"{'prune' if verdict.prunable else 'keep'}={verdict.path.name} reason={verdict.reason}"
         for verdict in verdicts

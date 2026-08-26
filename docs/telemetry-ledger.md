@@ -54,7 +54,7 @@ lane's spend is invisible rather than zero.
 ## What a row holds
 
 ```
-schema, materialised_at, dispatch_id, lane, profile, seat, issue, base_sha
+schema, previous_schema, materialised_at, dispatch_id, lane, profile, seat, issue, base_sha
 source   { kind, path, degraded }
 records  { total, metrics, logs, spans }
 guidance_manifest { schema, state, harness, source_provenance, loader_outcome,
@@ -340,21 +340,24 @@ would not put it in the ledger. `OTEL_LOG_USER_PROMPTS` stays unset regardless.
 later, they are a few kilobytes each, and nothing in this tool deletes one at any age.
 
 **The raw per-dispatch export is pruned after 30 days** (`RETENTION_DAYS`), and only when
-all four hold:
+all five hold:
 
 1. the file is older than the horizon;
-2. a row exists for that dispatch;
+2. a row exists and its `dispatch_id` names that dispatch;
 3. that row is **at the schema the current reader writes** (#529) — a row whose schema
    marker is behind, absent or unreadable is stale, and the export behind it is the only
    material a corrected row could be rebuilt from once the rotating capture has turned
    over, so it is retained and the reason names the remedy (`sync --behind`);
-4. that row was materialised **from the durable export** and read at least one record out
-   of it.
+4. its source block is the durable export, has the non-degraded shape, and its path resolves
+   to this exact file;
+5. its records block is well-shaped and reports a positive count.
 
-Conditions 2–4 are what stop the policy destroying the only copy of records the view
-never saw or no longer trusts. A raw file with no row, a row behind the current schema,
-a row taken from the rotating capture, and a row that read zero records are all kept and
-each says why. `just ledger-sync prune` reports and deletes nothing; `--apply` deletes.
+Conditions 2–5 are what stop the policy destroying the only copy of records the view
+never saw or no longer trusts. Missing, damaged, malformed or mismatched evidence is a
+typed refusal before any deletion. A row behind the current schema, a row taken from the
+rotating capture, and a row that read zero records are known keep decisions and each says
+why. `just ledger-sync prune` reports and deletes nothing; `--apply` deletes only after the
+whole selection passes.
 
 **Staleness and the levelling run** (#529). A row's own `schema` marker against the
 current reader's decides its state: matching is current; differing, absent or unreadable
@@ -363,11 +366,17 @@ materialises only the missing and the stale, leaves current rows untouched (so r
 twice writes nothing the second time), and its summary reports the split —
 `missing= stale= current=` is how far behind the walk found the ledger, and `behind=n/total`
 is what remains behind after it, which can only be preserved rows whose durable export is
-gone. A row written over a differing predecessor records that predecessor's schema in
-`previous_schema`; a same-schema recompute records null there, keeping repeated syncs
-byte-stable. A full `sync` still recomputes every row — that is what refreshes the
-landed-SHA join after a landing — so the habitual cheap run is `--behind` and the
-occasional full run is deliberate.
+gone. A row written over a differing predecessor records that predecessor in
+`previous_schema`: the prior schema, `<schema_missing>` for a parseable schema-less row,
+or `<unreadable>` for damaged or wrong-shaped input. A new row uses null; a same-schema
+recompute retains the current row's marker, which is null when it has no prior history.
+Current rows carry that marker forward, keeping repeated syncs byte-stable while preserving
+the distinction. A full `sync` revisits every record but recomputes an existing
+row only when its durable export exists; otherwise it preserves that row, so an existing
+stale row remains in `behind=n/total`. A missing row can still be materialised from the
+rotating capture. It refreshes the landed-SHA join where the durable source exists but
+cannot promise a complete level without those exports. The habitual cheap run is `--behind`
+and the occasional full run is deliberate.
 
 The rotating capture keeps its existing 50 MB × 5 rotation. That is the diagnostics
 skill's input and not ours to change.
