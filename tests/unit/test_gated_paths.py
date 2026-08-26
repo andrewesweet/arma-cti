@@ -99,7 +99,8 @@ def test_a_codex_shaped_agents_edit_is_caught_without_running_the_hook(tmp_path:
     binding = gated_paths.binding_of(repo, "AGENTS.md")
     action = next(line for line in report.lines if line.startswith("action="))
     change_command = (
-        f"just gated-paths approve --issue {ISSUE} --path AGENTS.md --change-id {binding.change_id}"
+        f"just gated-paths approve --issue {ISSUE} --path AGENTS.md"
+        f" --change-id {binding.approval_id}"
     )
     content_command = (
         f"just gated-paths approve --issue {ISSUE} --path AGENTS.md"
@@ -108,6 +109,7 @@ def test_a_codex_shaped_agents_edit_is_caught_without_running_the_hook(tmp_path:
     assert change_command in action
     assert content_command in action
     assert action.index(change_command) < action.index(content_command)
+    assert "(default)" not in action
 
 
 def test_a_committed_gated_edit_is_still_caught_at_the_landing_boundary(tmp_path: Path) -> None:
@@ -144,7 +146,7 @@ def test_a_change_id_approval_survives_an_unrelated_commit_before_approval(
     store = tmp_path / "approvals"
     (repo / "AGENTS.md").write_text("approved instructions\n", encoding="utf-8")
     before = gated_paths.binding_of(repo, "AGENTS.md")
-    supplied_change_id = before.change_id
+    supplied_change_id = before.approval_id
 
     git(repo, "checkout", "-q", "-b", "main-ahead", "origin/main")
     (repo / "ordinary.txt").write_text("unrelated main work\n", encoding="utf-8")
@@ -166,7 +168,7 @@ def test_a_change_id_approval_survives_an_unrelated_commit_before_approval(
 
     assert added
     assert target == gated_paths.approval_path(store, ISSUE, approval.content_id)
-    assert approval.change_id == supplied_change_id
+    assert approval.change_id == before.change_id
     assert approval.content_id != before.content_id
     report = gated_paths.check(repo, store, issue=ISSUE)
 
@@ -175,6 +177,63 @@ def test_a_change_id_approval_survives_an_unrelated_commit_before_approval(
         line.startswith("approval=recorded") and f"content_id={approval.content_id}" in line
         for line in report.lines
     )
+
+
+def test_a_change_id_approval_refuses_when_an_identical_hunk_moves_before_approval(
+    tmp_path: Path,
+) -> None:
+    """The direct approval handoff binds bytes and their position, not hunk text alone."""
+    repo = repository(tmp_path)
+    target = repo / "AGENTS.md"
+    target.write_text(
+        "anchor\nbefore\nanchor\nbefore\n",
+        encoding="utf-8",
+    )
+    git(repo, "add", "AGENTS.md")
+    git(repo, "commit", "-q", "-m", "repeated baseline")
+    git(repo, "update-ref", "refs/remotes/origin/main", "HEAD")
+
+    target.write_text("anchor\nafter\nanchor\nbefore\n", encoding="utf-8")
+    before = gated_paths.binding_of(repo, "AGENTS.md")
+    target.write_text("anchor\nbefore\nanchor\nafter\n", encoding="utf-8")
+    after = gated_paths.binding_of(repo, "AGENTS.md")
+
+    assert before.change_id == after.change_id
+    assert before.approval_id != after.approval_id
+    with pytest.raises(gated_paths.ApprovalError) as refused:
+        gated_paths.record_approval(
+            repo,
+            tmp_path / "approvals",
+            issue=ISSUE,
+            path="AGENTS.md",
+            expected_change_id=before.approval_id,
+            approved_at=STAMP,
+            approved_by="andre",
+            environ={},
+        )
+
+    assert refused.value.kind == gated_paths.CHANGE_ID_MISMATCH
+    assert f"asked={before.approval_id}" in refused.value.detail
+    assert f"actual={after.approval_id}" in refused.value.detail
+
+
+def test_an_approval_for_one_gated_path_does_not_nominate_for_another(
+    tmp_path: Path,
+) -> None:
+    repo = repository(tmp_path)
+    store = tmp_path / "approvals"
+    (repo / "AGENTS.md").write_text("approved instructions\n", encoding="utf-8")
+    approve(repo, store)
+    skill = repo / ".claude" / "skills" / "example.py"
+    skill.parent.mkdir(parents=True)
+    skill.write_text("changed skill\n", encoding="utf-8")
+
+    report = gated_paths.check(repo, store, issue=ISSUE)
+
+    assert report.exit_code == 1
+    assert "refusal=approval_missing" in report.lines
+    assert "path=.claude/skills/example.py" in report.lines
+    assert not any("approval=carried" in line for line in report.lines)
 
 
 def test_content_and_change_id_routes_write_identical_records(tmp_path: Path) -> None:
@@ -199,7 +258,7 @@ def test_content_and_change_id_routes_write_identical_records(tmp_path: Path) ->
         change_store,
         issue=ISSUE,
         path="AGENTS.md",
-        expected_change_id=binding.change_id,
+        expected_change_id=binding.approval_id,
         approved_at=STAMP,
         approved_by="andre",
         environ={},
@@ -576,12 +635,12 @@ def test_a_delegated_adr_does_not_authorise_another_gated_path_in_the_same_diff(
     assert "refusal=approval_missing" in report.lines
     assert "path=AGENTS.md" in report.lines
     assert f"content_id={binding.content_id}" in report.lines
-    assert f"change_id={binding.change_id}" in report.lines
+    assert f"change_id={binding.approval_id}" in report.lines
     assert "delegated_record=docs/adr/9999-delegated.md" in report.lines
     action = next(line for line in report.lines if line.startswith("action="))
     assert (
         f"just gated-paths approve --issue {ISSUE} --path AGENTS.md"
-        f" --change-id {binding.change_id}" in action
+        f" --change-id {binding.approval_id}" in action
     )
     assert (
         f"just gated-paths approve --issue {ISSUE} --path AGENTS.md"
@@ -835,7 +894,7 @@ def test_the_cli_accepts_change_id_and_writes_the_same_record_shape(
             "--path",
             "AGENTS.md",
             "--change-id",
-            binding.change_id,
+            binding.approval_id,
         ],
         approval_root=store,
         clock=lambda: datetime(2026, 8, 22, 6, tzinfo=UTC),
