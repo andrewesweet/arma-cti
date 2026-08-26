@@ -75,6 +75,27 @@ sync run on 23 August — but the newest row is from that date, so it has been r
 rather than argued. And the rows that exist were computed before #526 lands, so the Codex ones
 carry that fault while looking authoritative.
 
+## Setpoints
+
+Ruled by the human on 2026-08-26. A level with no target is a number someone has to judge; a level
+with one is a variance that can be alarmed on. These are policy rather than anything derivable,
+and they are revisable — recorded here because #602 reports every level against its setpoint where
+one is ruled, and nothing else in the repository holds them.
+
+| stock | setpoint | alarm |
+|---|---|---|
+| worktrees owing `just worktree done` | 0 | 3 |
+| dispatches with no materialised ledger row | 0 | 20 |
+| unratified provisional terms | 0 | 5 |
+| open findings per Work Item | ≤ 2 | — |
+| ready Work Items | ≥ 3 | below 3 |
+
+The last is a floor rather than a ceiling: coordination starving is as much a fault as coordination
+overloading, and only one of the two is currently visible.
+
+Two of these are already breached at freeze — worktree debt at 17 against an alarm of 3, and
+unmaterialised ledger rows at 160 against an alarm of 20.
+
 ## A prediction, recorded while it is still falsifiable
 
 The stocks-and-flows reading says throughput is currently bounded by the WIP limit and by the
