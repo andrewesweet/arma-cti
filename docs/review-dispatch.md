@@ -188,15 +188,22 @@ duplicated or reversed markers and an empty marked section. Otherwise it posts o
 between the markers, prefaced by a visible notice that output outside the section or on another
 stream was not posted and cannot be verified as absent.
 
-**#599 preserves text when that prescribed boundary was lost.** On a marker refusal, the host
-may additionally post bounded unmarked stdout and non-empty regular files from the child's
-`~/.claude/plans` directory. A plan is selected only when its file modification time falls inside
-that dispatch's child launch-to-finish window; filename matching is never used. Stdout and plan
-files are posted as distinct, explicitly unverified sections when both exist. This transports
-text and states the method; it does not decide which text is the report, establish completeness
-or recover a judgement. A file outside the window, an unreadable candidate, or a missing child
-environment is not posted. Oversize text produces a bounded notice that says the content was not
-truncated. The refusal, child return code, missing verdict and review-loop state remain.
+**#599 preserves text when that prescribed boundary was lost.** Claude Code supports its
+`plansDirectory` setting, so each review dispatch passes a directory relative to its own
+disposable worktree and exposes that same absolute directory to the host as
+`CTI_REVIEW_PLAN_DIRECTORY`. The host never falls back to the shared `~/.claude/plans` tree.
+On a marker refusal, it may additionally post bounded unmarked stdout and non-empty regular
+files from that dispatch-scoped directory. A plan is selected only when its file modification
+time falls inside that dispatch's child launch-to-finish window; filename matching is never
+used. If more than one regular file falls in the window, the host reads and posts none of those
+files, and the refusal carries `plan_reason=plan_ambiguous` plus `plan_candidates=<count>`
+without their paths or contents. Stdout and one plan file are posted as distinct, explicitly
+unverified sections when both exist. This transports text and states the method; it does not
+decide which text is the report, establish completeness or recover a judgement. A file outside
+the window, an unreadable candidate, or a missing or unscoped child environment is not posted.
+Oversize text produces a bounded notice that says the content was not truncated; the final
+issue-comment bound counts characters, matching GitHub's limit. The refusal, child return code,
+missing verdict and review-loop state remain.
 
 **Delivery precedes fallible bookkeeping.** After a zero child exit, `deliver_review` makes its
 one bounded host-side `gh issue comment --body-file -` call before `classify_finished_run` and
@@ -566,10 +573,14 @@ deliberately thin and is wrong for this seat — it tells the agent to do the is
     must appear exactly once across everything you print, not only in the final
     response. Missing, duplicated or reversed markers, an empty bounded section,
     or a refused post ends the dispatch with `review_delivery_failed`. On that refusal the
-    unsandboxed dispatcher may post bounded unmarked stdout and regular plan files written during
-    this child window, each labelled as unverified text. It uses no filename matching, posts both
-    sources when both exist, posts no file it cannot attribute, and never infers completeness or
-    recovers a verdict. The refusal remains; there is no loop advance or retry (#496, #599).
+    unsandboxed dispatcher may post bounded unmarked stdout and regular plan files from this
+    dispatch's scoped plan directory whose modification time falls during this child window,
+    each labelled as unverified text. It uses no filename matching. More than one in-window
+    candidate fails closed: no plan file is posted, and the refusal names its count as
+    `plan_reason=plan_ambiguous` and `plan_candidates=<count>` without their contents. It posts
+    both sources when one candidate exists, posts no file it cannot attribute, and never infers
+    completeness or recovers a verdict. The refusal remains; there is no loop advance or retry
+    (#496, #599).
 
     A review re-runs none of the implementer's gate. Do not check out the branch
     under review, do not run `just fast` or any rung of it, do not run

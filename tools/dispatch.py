@@ -204,9 +204,11 @@ After a successful child exit it makes one bounded `gh issue comment --body-file
 outcome classification and breaker journaling. Missing or ambiguous markers, an empty bounded
 report, or a refused call ends in `review_delivery_failed`, while the child's own return code
 remains on `result.json`. If its prescribed markers are absent, the host may post bounded,
-explicitly unverified text from stdout and from regular files in the child's
-`~/.claude/plans` directory whose modification time falls inside the child's own window. That
-is transport only: the refusal, return code, missing verdict and review-loop state remain.
+explicitly unverified text from stdout and from regular files in the dispatch-scoped plan
+directory whose modification time falls inside the child's own window.
+Multiple regular-file candidates fail closed: no plan file is posted, and the refusal names the
+count without exposing paths or contents. That is transport only: the refusal, return code,
+missing verdict and review-loop state remain.
 
 **`recon` forces the same mode, for a reason of its own** (#407). ADR-0071 does not merely
 describe that seat as non-landing; it reasons from the unranked profile head, the routing
@@ -297,6 +299,8 @@ LOG_TAIL_BYTES: Final = 8192
 # the id is minted inside it and checked rather than hoped for.
 ID_ALPHABET: Final = re.compile(r"\A[a-z0-9][a-z0-9-]*\Z")
 
+REVIEW_PLAN_DIRECTORY_ENV: Final = "CTI_REVIEW_PLAN_DIRECTORY"
+
 # Stripped from the child's environment whatever the parent had in them, before this
 # lane's own values go back. The list is the union of every variable that can move a
 # Claude Code session onto a different endpoint or credential; leaving any one of them
@@ -322,6 +326,9 @@ LANE_OWNED: Final = (
     # property of the shell that dispatched. Set from `Lane.context_window` and nowhere
     # else (#444).
     "CLAUDE_CODE_MAX_CONTEXT_TOKENS",
+    # Review plan capture is scoped per child worktree. Never inherit a caller's path:
+    # doing so could make this dispatch publish another session's plans.
+    REVIEW_PLAN_DIRECTORY_ENV,
 )
 
 STOP_NOT_A_RESULT: Final = (
@@ -822,10 +829,11 @@ SEATS: Final[dict[str, Seat]] = {
     # the brief supplies; `_run_child_with_gate_clock` captures stdout through an anonymous
     # host-opened temporary file, then `deliver_review` posts only that section with a notice
     # stating what was captured. A failed, unbounded or empty delivery is
-    # `review_delivery_failed`; bounded unmarked stdout and regular plan files written during
-    # the child window may also be posted as explicitly unverified recovery. There is no retry,
-    # verdict recovery, lock, quarantine or dedupe. Abrupt dispatcher death and findings outside
-    # the two attributed sources remain outside the mechanism, stated in the changelog rather
+    # `review_delivery_failed`; bounded unmarked stdout and regular files in the dispatch's
+    # scoped plan directory may also be posted as explicitly unverified recovery. Multiple
+    # in-window plan candidates fail closed and post no plan file. There is no retry, verdict
+    # recovery, lock, quarantine or dedupe. Abrupt dispatcher death and findings outside the
+    # two attributed sources remain outside the mechanism, stated in the changelog rather
     # than promoted to guarantees.
     "review": Seat(
         "review",
@@ -1805,6 +1813,8 @@ def assemble_environment(
     profile: Profile,
     identity: Identity,
     token: str,
+    *,
+    project_dir: Path | None = None,
 ) -> dict[str, str]:
     """Build the child's environment: strip every lane-owned key, then add this lane's.
 
@@ -1838,6 +1848,14 @@ def assemble_environment(
     child["CTI_DISPATCH_PROFILE"] = identity.profile
     child["CTI_DISPATCH_SEAT"] = identity.seat
     child["CTI_DISPATCH_ISSUE"] = str(identity.issue)
+    if (
+        project_dir is not None
+        and SEATS[identity.seat].reviews
+        and lane.runner_family is codex_guidance.GuidanceHarness.CLAUDE_CODE
+    ):
+        child[REVIEW_PLAN_DIRECTORY_ENV] = str(
+            project_dir / ".claude" / "plans" / identity.dispatch_id
+        )
     return child
 
 
@@ -3231,9 +3249,12 @@ REVIEW_CAPTURE_NOTICE: Final = (
     "Output outside its markers and output on other streams were not posted; the harness "
     "cannot verify findings omitted from that section."
 )
-# Keep every issue-comment body within the harness transport bound; count encoded bytes so
-# multi-byte review text cannot cross it after the body has been assembled.
-REVIEW_COMMENT_MAX_BYTES: Final = 65_536
+# GitHub's issue-comment limit is characters, not encoded bytes. Count Python's decoded
+# characters after assembling the body so a bounded multi-byte report is not refused.
+REVIEW_COMMENT_MAX_CHARS: Final = 65_536
+# A valid UTF-8 character uses at most four bytes. This read cap lets a plan remain eligible
+# for the character-bound check while still bounding the recovery read.
+REVIEW_PLAN_READ_MAX_BYTES: Final = REVIEW_COMMENT_MAX_CHARS * 4
 REVIEW_UNBOUNDED_NOTICE: Final = (
     "> **UNMARKED STDOUT — extent unverified.** This review produced no prescribed report "
     "boundary, "
@@ -3268,10 +3289,12 @@ REVIEW_DELIVERY_PROTOCOL: Final = (
     " exactly once across everything you print, not only in the final response."
     " Missing, duplicated or reversed markers, an empty bounded section, or a refused post"
     " ends the dispatch with `review_delivery_failed`. On that refusal the host may post"
-    " bounded unmarked stdout and regular plan files whose modification time falls within"
-    " this child's window, each labelled as unverified text; it never chooses between them"
-    " or infers completeness. A plan filename is never an attribution method. The refusal"
-    " remains, with no verdict, loop advance or retry (#496, #599)."
+    " bounded unmarked stdout and regular files in this dispatch's scoped plan directory"
+    " whose modification time falls within this child's window, each labelled as unverified"
+    " text. If more than one candidate falls in that window, no plan file is posted and the"
+    " refusal carries `plan_reason=plan_ambiguous` and its count without their contents. A"
+    " plan filename is never an attribution method. The refusal remains, with no verdict,"
+    " loop advance or retry (#496, #599)."
 )
 
 
@@ -4082,12 +4105,24 @@ class _ReviewRecovery(NamedTuple):
     source_labels: tuple[str, ...]
     source_sizes: tuple[tuple[str, int], ...]
     plan_paths: tuple[Path, ...]
+    oversized_sources: tuple[str, ...]
+    plan_candidate_count: int
+
+
+class _ReviewPlanScan(NamedTuple):
+    """Scoped plan candidates and captures, with ambiguity retained without file contents."""
+
+    captures: tuple[_PlanCapture, ...]
+    candidate_count: int
 
 
 def _review_plan_directory(environment: Mapping[str, str]) -> Path | None:
-    """Resolve the child-visible Claude plan directory without consulting process globals."""
-    home = environment.get("HOME")
-    return (Path(home) / ".claude" / "plans") if home else None
+    """Resolve only the dispatch-scoped plan directory explicitly passed to the child."""
+    value = environment.get(REVIEW_PLAN_DIRECTORY_ENV, "")
+    if not value:
+        return None
+    directory = Path(value)
+    return directory if directory.is_absolute() else None
 
 
 def _read_review_plan_candidate(  # noqa: PLR0911 — each refusal is a distinct attribution/read boundary
@@ -4099,7 +4134,7 @@ def _read_review_plan_candidate(  # noqa: PLR0911 — each refusal is a distinct
         before = path.lstat()
         if not stat.S_ISREG(before.st_mode) or before.st_mtime_ns != expected_mtime_ns:
             return None
-        if before.st_size > REVIEW_COMMENT_MAX_BYTES:
+        if before.st_size > REVIEW_PLAN_READ_MAX_BYTES:
             after = path.lstat()
             if (
                 after.st_mode != before.st_mode
@@ -4109,7 +4144,7 @@ def _read_review_plan_candidate(  # noqa: PLR0911 — each refusal is a distinct
                 return None
             return _PlanCapture(path, None, after.st_size, "oversize")
         with path.open("rb") as source:
-            payload = source.read(REVIEW_COMMENT_MAX_BYTES + 1)
+            payload = source.read(REVIEW_PLAN_READ_MAX_BYTES + 1)
         after = path.lstat()
     except OSError:
         return None
@@ -4120,7 +4155,7 @@ def _read_review_plan_candidate(  # noqa: PLR0911 — each refusal is a distinct
         or len(payload) != after.st_size
     ):
         return None
-    if len(payload) > REVIEW_COMMENT_MAX_BYTES:
+    if len(payload) > REVIEW_PLAN_READ_MAX_BYTES:
         return _PlanCapture(path, None, after.st_size, "oversize")
     try:
         content = payload.decode("utf-8")
@@ -4129,34 +4164,49 @@ def _read_review_plan_candidate(  # noqa: PLR0911 — each refusal is a distinct
     return _PlanCapture(path, content, len(payload))
 
 
+def _review_plan_candidate(
+    path: Path,
+    window: ReviewWindow,
+) -> tuple[Path, int] | None:
+    """Return one regular in-window path without following symlinks."""
+    try:
+        metadata = path.lstat()
+    except OSError:
+        return None
+    if not stat.S_ISREG(metadata.st_mode):
+        return None
+    if not (window.started_ns <= metadata.st_mtime_ns <= window.ended_ns):
+        return None
+    return path, metadata.st_mtime_ns
+
+
 def _review_plan_captures(
     environment: Mapping[str, str],
     window: ReviewWindow,
-) -> tuple[_PlanCapture, ...]:
-    """Find regular files whose writes fall inside this child's dispatch window."""
+) -> _ReviewPlanScan:
+    """Find scoped regular files in-window, refusing to choose among multiple candidates."""
     if window.started_ns > window.ended_ns:
-        return ()
+        return _ReviewPlanScan((), 0)
     directory = _review_plan_directory(environment)
     if directory is None:
-        return ()
+        return _ReviewPlanScan((), 0)
     try:
         entries = sorted(directory.iterdir(), key=lambda path: path.name)
     except OSError:
-        return ()
+        return _ReviewPlanScan((), 0)
+    candidates = tuple(
+        candidate
+        for path in entries
+        if (candidate := _review_plan_candidate(path, window)) is not None
+    )
+    if len(candidates) > 1:
+        return _ReviewPlanScan((), len(candidates))
     captures: list[_PlanCapture] = []
-    for path in entries:
-        try:
-            metadata = path.lstat()
-        except OSError:
-            continue
-        if not stat.S_ISREG(metadata.st_mode):
-            continue
-        if not (window.started_ns <= metadata.st_mtime_ns <= window.ended_ns):
-            continue
-        capture = _read_review_plan_candidate(path, metadata.st_mtime_ns)
+    for path, mtime_ns in candidates:
+        capture = _read_review_plan_candidate(path, mtime_ns)
         if capture is not None:
             captures.append(capture)
-    return tuple(captures)
+    return _ReviewPlanScan(tuple(captures), len(candidates))
 
 
 def _review_comment_text(content: str) -> str:
@@ -4186,53 +4236,70 @@ def _review_recovery(
     labels: list[str] = []
     sizes: list[tuple[str, int]] = []
     plan_paths: list[Path] = []
+    oversized_sources: list[str] = []
     stdout_bytes = len(captured_stdout.encode("utf-8")) if captured_stdout.strip() else 0
+    stdout_chars = len(captured_stdout) if captured_stdout.strip() else 0
     if stdout_bytes:
         labels.append("stdout")
         sizes.append(("stdout", stdout_bytes))
-        if stdout_bytes <= REVIEW_COMMENT_MAX_BYTES:
+        if stdout_chars <= REVIEW_COMMENT_MAX_CHARS:
             parts.extend(
                 (
                     REVIEW_UNBOUNDED_NOTICE,
                     _review_comment_text(captured_stdout),
                 )
             )
+        else:
+            oversized_sources.append("stdout")
 
-    captures = _review_plan_captures(environment, window) if window is not None else ()
-    for index, capture in enumerate(captures, start=1):
+    scan = (
+        _review_plan_captures(environment, window) if window is not None else _ReviewPlanScan((), 0)
+    )
+    for index, capture in enumerate(scan.captures, start=1):
         label = f"plan_file_{index}"
         if capture.content is None:
             if capture.reason == "oversize":
                 labels.append(label)
                 sizes.append((label, capture.size_bytes))
                 plan_paths.append(capture.path)
+                oversized_sources.append(label)
             continue
-        content_bytes = len(capture.content.encode("utf-8"))
         if not capture.content.strip():
             continue
+        content_bytes = len(capture.content.encode("utf-8"))
         labels.append(label)
         sizes.append((label, content_bytes))
         plan_paths.append(capture.path)
-        if content_bytes <= REVIEW_COMMENT_MAX_BYTES and window is not None:
+        if len(capture.content) <= REVIEW_COMMENT_MAX_CHARS and window is not None:
             parts.extend(
                 (
                     _review_plan_notice(record, capture.path, window),
                     _review_comment_text(capture.content),
                 )
             )
+        else:
+            oversized_sources.append(label)
 
-    if not labels:
+    if not labels and scan.candidate_count <= 1:
         return None
     body = "\n\n".join(parts)
     if body and not body.endswith("\n"):
         body += "\n"
-    return _ReviewRecovery(body, tuple(labels), tuple(sizes), tuple(plan_paths))
+    return _ReviewRecovery(
+        body,
+        tuple(labels),
+        tuple(sizes),
+        tuple(plan_paths),
+        tuple(oversized_sources),
+        scan.candidate_count,
+    )
 
 
 def _review_oversize_body(
     record: Path,
     source_sizes: tuple[tuple[str, int], ...],
     attempted_body_bytes: int,
+    attempted_body_chars: int,
     *,
     plan_method: bool = False,
 ) -> str:
@@ -4246,8 +4313,9 @@ def _review_oversize_body(
     )
     return (
         f"{REVIEW_OVERSIZE_NOTICE}\n\n"
-        f"dispatch={record.name} limit_bytes={REVIEW_COMMENT_MAX_BYTES} "
-        f"attempted_body_bytes={attempted_body_bytes} {sizes}."
+        f"dispatch={record.name} limit_chars={REVIEW_COMMENT_MAX_CHARS} "
+        f"attempted_body_bytes={attempted_body_bytes} attempted_body_chars={attempted_body_chars} "
+        f"{sizes}."
         f"{method}"
     )
 
@@ -4331,7 +4399,7 @@ def _post_review_comment(
     return ((f"review_delivery=posted issue={issue}",), 0)
 
 
-def deliver_review(  # noqa: PLR0913 — process, attribution and delivery context are separate inputs
+def deliver_review(  # noqa: PLR0911, PLR0913 — each typed transport exit preserves its refusal
     issue: int,
     captured_stdout: str,
     record: Path,
@@ -4368,22 +4436,46 @@ def deliver_review(  # noqa: PLR0913 — process, attribution and delivery conte
         )
         if recovery is not None:
             attempted_body_bytes = len(recovery.body.encode("utf-8"))
-            content_bytes = sum(size for _, size in recovery.source_sizes)
             oversized = (
-                any(size > REVIEW_COMMENT_MAX_BYTES for _, size in recovery.source_sizes)
-                or attempted_body_bytes > REVIEW_COMMENT_MAX_BYTES
+                bool(recovery.oversized_sources) or len(recovery.body) > REVIEW_COMMENT_MAX_CHARS
             )
             body = (
                 _review_oversize_body(
                     record,
                     recovery.source_sizes,
-                    max(attempted_body_bytes, content_bytes),
+                    attempted_body_bytes,
+                    len(recovery.body),
                     plan_method=bool(recovery.plan_paths),
                 )
                 if oversized
                 else recovery.body
             )
             action = _review_oversize_action() if oversized else _review_recovery_action()
+            ambiguity = recovery.plan_candidate_count > 1
+            ambiguity_fields = (
+                ("plan_reason=plan_ambiguous", f"plan_candidates={recovery.plan_candidate_count}")
+                if ambiguity
+                else ()
+            )
+            if ambiguity:
+                action = (
+                    f"The dispatcher found {recovery.plan_candidate_count} regular plan-file "
+                    "candidates in this dispatch's scoped directory during the child window; "
+                    "no candidate plan file was posted. "
+                    f"{action}"
+                )
+            if not body:
+                return _harness_refusal(
+                    "review_delivery_failed",
+                    (
+                        f"issue={issue}",
+                        f"reason={boundary_refusal}",
+                        f"detail={boundary_detail}",
+                        *ambiguity_fields,
+                        f"log={log}",
+                    ),
+                    action,
+                )
             posted_lines, posted_code = _post_review_comment(
                 issue,
                 body,
@@ -4399,6 +4491,7 @@ def deliver_review(  # noqa: PLR0913 — process, attribution and delivery conte
                     f"issue={issue}",
                     f"reason={boundary_refusal}",
                     f"detail={boundary_detail}",
+                    *ambiguity_fields,
                     "recovery=posted_unverified",
                     f"sources={','.join(recovery.source_labels)}",
                     *(
@@ -4440,11 +4533,13 @@ def deliver_review(  # noqa: PLR0913 — process, attribution and delivery conte
     )
     body = f"{REVIEW_CAPTURE_NOTICE}\n\n{report}\n"
     body_bytes = len(body.encode("utf-8"))
-    if body_bytes > REVIEW_COMMENT_MAX_BYTES:
+    body_chars = len(body)
+    if body_chars > REVIEW_COMMENT_MAX_CHARS:
         body = _review_oversize_body(
             record,
             (("bounded_report", len(report.encode("utf-8"))),),
             body_bytes,
+            body_chars,
         )
         action = _review_oversize_action()
         posted_lines, posted_code = _post_review_comment(
@@ -4462,8 +4557,8 @@ def deliver_review(  # noqa: PLR0913 — process, attribution and delivery conte
                 f"issue={issue}",
                 "reason=report_oversize",
                 (
-                    f"detail=comment body would be {body_bytes} bytes; limit is "
-                    f"{REVIEW_COMMENT_MAX_BYTES}"
+                    f"detail=comment body would be {body_chars} characters; limit is "
+                    f"{REVIEW_COMMENT_MAX_CHARS}"
                 ),
                 "recovery=posted_unverified_size_notice",
                 f"log={log}",
@@ -4517,6 +4612,7 @@ def build_argv(  # noqa: PLR0913 — one complete runner contract
     # exact runner contract; the sixth value is the one issue-specific filesystem boundary.
     *,
     disposable_worktree: bool = False,
+    review_plan_dispatch_id: str = "",
 ) -> tuple[str, ...]:
     """Build the runner's argv, which carries no secret, because a secret on argv is in `ps`.
 
@@ -4537,7 +4633,7 @@ def build_argv(  # noqa: PLR0913 — one complete runner contract
             writable_roots,
             disposable_worktree=disposable_worktree,
         )
-    return (
+    argv = (
         lane.runner,
         "--print",
         "--model",
@@ -4547,6 +4643,15 @@ def build_argv(  # noqa: PLR0913 — one complete runner contract
         "--permission-mode",
         permission_mode,
     )
+    if review_plan_dispatch_id:
+        argv += (
+            "--settings",
+            json.dumps(
+                {"plansDirectory": f".claude/plans/{review_plan_dispatch_id}"},
+                separators=(",", ":"),
+            ),
+        )
+    return argv
 
 
 def _codex_argv(  # noqa: PLR0913 — policy and cache grants stay together
@@ -5166,6 +5271,7 @@ def _materialize_disposable_plan(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0
             path,
             writable_roots,
             disposable_worktree=True,
+            review_plan_dispatch_id=(identity.dispatch_id if SEATS[identity.seat].reviews else ""),
         ),
         disposable_worktree=True,
         worktree_ref=ref,
@@ -5312,6 +5418,7 @@ def plan_dispatch(  # noqa: C901, PLR0911, PLR0912 — planning owns the ordered
             worktree,
             writable_roots,
             disposable_worktree=sandbox_disposable,
+            review_plan_dispatch_id=(dispatch_id if seat.reviews else ""),
         ),
         credentials=credentials,
         permission_mode=args.permission_mode,
@@ -5583,7 +5690,7 @@ def _run_dispatch_body(
             _not_launched_result(plan.identity.dispatch_id, refusal),
         )
 
-    child = assemble_environment(parent, profile, plan.identity, token)
+    child = assemble_environment(parent, profile, plan.identity, token, project_dir=plan.worktree)
     progress.started = datetime.now(tz=UTC)
     progress.failure_phase = "child_setup"
 
@@ -5808,7 +5915,10 @@ def dry_run_lines(plan: Plan, brief: str, parent: Mapping[str, str]) -> tuple[st
     # Planning already refused if this lane's credential is absent, so the token is
     # either present or the lane needs none; either way it is redacted before printing.
     token, _ = lane_credential(LANES[plan.identity.lane], plan.credentials)
-    child = redacted(assemble_environment(parent, profile, plan.identity, token), token)
+    child = redacted(
+        assemble_environment(parent, profile, plan.identity, token, project_dir=plan.worktree),
+        token,
+    )
     lines = [
         f"dispatch={plan.identity.dispatch_id}",
         f"lane={plan.identity.lane}",

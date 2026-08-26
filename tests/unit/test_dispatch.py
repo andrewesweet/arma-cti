@@ -189,8 +189,9 @@ if [ -n "${CTI_FAKE_REVIEW_REPORT:-}" ]; then
   printf '%s\n' "$CTI_FAKE_REVIEW_REPORT"
 fi
 if [ -n "${CTI_FAKE_PLAN_BODY:-}" ]; then
-  mkdir -p "$HOME/.claude/plans"
-  printf '%s\n' "$CTI_FAKE_PLAN_BODY" >"$HOME/.claude/plans/${CTI_FAKE_PLAN_NAME:-dispatch-plan.md}"
+  mkdir -p "$CTI_REVIEW_PLAN_DIRECTORY"
+  plan_path="$CTI_REVIEW_PLAN_DIRECTORY/${CTI_FAKE_PLAN_NAME:-dispatch-plan.md}"
+  printf '%s\n' "$CTI_FAKE_PLAN_BODY" >"$plan_path"
 fi
 if [ -n "${CTI_FAKE_REVIEW_STDERR:-}" ]; then
   printf '%s\n' "$CTI_FAKE_REVIEW_STDERR" >&2
@@ -282,9 +283,10 @@ def review_plan(
     *,
     name: str = "arbitrary-plan-name.md",
 ) -> tuple[Path, dispatch.ReviewWindow, Path]:
-    """Write one plan file under a test HOME and return its attribution window."""
+    """Write one plan file under a dispatch-scoped directory and return its attribution window."""
     home = tmp_path / "home"
-    plans = home / ".claude" / "plans"
+    home.mkdir()
+    plans = tmp_path / "scoped-plans"
     plans.mkdir(parents=True)
     path = plans / name
     path.write_text(content, encoding="utf-8")
@@ -1452,6 +1454,32 @@ def test_a_plan_carries_the_profiles_flags_and_no_secret(tmp_path: Path) -> None
     assert plan.argv[plan.argv.index("--model") + 1] == "opus"
     assert plan.argv[plan.argv.index("--effort") + 1] == "high"
     assert f"#{plan.identity.issue}" in brief
+
+
+def test_a_review_plan_uses_a_dispatch_scoped_claude_directory(tmp_path: Path) -> None:
+    plan, _brief, refusal = plan_for(
+        tmp_path,
+        seat="review",
+        reviewing="codex-sol-high",
+    )
+    assert refusal is None
+    assert plan is not None
+
+    settings = json.loads(plan.argv[plan.argv.index("--settings") + 1])
+    assert settings == {"plansDirectory": f".claude/plans/{plan.identity.dispatch_id}"}
+    child = dispatch.assemble_environment(
+        {
+            "HOME": "/home/shared",
+            dispatch.REVIEW_PLAN_DIRECTORY_ENV: "/shared/plans",
+        },
+        dispatch.PROFILES[plan.identity.profile],
+        plan.identity,
+        "",
+        project_dir=plan.worktree,
+    )
+    assert child[dispatch.REVIEW_PLAN_DIRECTORY_ENV] == str(
+        plan.worktree / ".claude" / "plans" / plan.identity.dispatch_id
+    )
 
 
 def test_the_default_root_is_the_main_checkout_even_from_inside_a_worktree(
@@ -2640,6 +2668,7 @@ def test_review_delivery_recovers_plan_file_only_by_dispatch_window(tmp_path: Pa
     parent.update(
         {
             "HOME": str(home),
+            dispatch.REVIEW_PLAN_DIRECTORY_ENV: str(path.parent),
             "PATH": f"{tmp_path / 'bin'}:{parent['PATH']}",
             "CTI_FAKE_GH_CALL": str(gh_call),
             "CTI_FAKE_GH_BODY": str(gh_body),
@@ -2667,6 +2696,51 @@ def test_review_delivery_recovers_plan_file_only_by_dispatch_window(tmp_path: Pa
     assert "filename matching was not used" in body
     assert "plan finding at tools/ledger.py:1" in body
     assert "UNBOUNDED" not in body
+
+
+def test_review_delivery_posts_no_plan_file_when_two_candidates_are_in_window(
+    tmp_path: Path,
+) -> None:
+    first, _first_window, home = review_plan(tmp_path, "first secret", name="first.md")
+    second = first.parent / "second.md"
+    second.write_text("second secret", encoding="utf-8")
+    start_ns = min(first.stat().st_mtime_ns, second.stat().st_mtime_ns) - 1
+    end_ns = max(first.stat().st_mtime_ns, second.stat().st_mtime_ns) + 1
+    window = dispatch.ReviewWindow(
+        started_ns=start_ns,
+        ended_ns=end_ns,
+        started_at=datetime.fromtimestamp(start_ns / 1_000_000_000, tz=UTC),
+        ended_at=datetime.fromtimestamp(end_ns / 1_000_000_000, tz=UTC),
+    )
+    gh_call = tmp_path / "gh-call.txt"
+    fake_gh(tmp_path)
+    parent = dict(os.environ)
+    parent.update(
+        {
+            "HOME": str(home),
+            dispatch.REVIEW_PLAN_DIRECTORY_ENV: str(first.parent),
+            "PATH": f"{tmp_path / 'bin'}:{parent['PATH']}",
+            "CTI_FAKE_GH_CALL": str(gh_call),
+            "CTI_FAKE_GH_BODY": str(tmp_path / "gh-body.md"),
+        }
+    )
+
+    lines, code = dispatch.deliver_review(
+        599,
+        "",
+        tmp_path,
+        parent,
+        child_environment=parent,
+        review_window=window,
+    )
+
+    assert code == dispatch.EXIT_REFUSED
+    assert "reason=report_empty" in lines
+    assert "plan_reason=plan_ambiguous" in lines
+    assert "plan_candidates=2" in lines
+    assert not any("first secret" in line or "second secret" in line for line in lines)
+    assert not gh_call.exists()
+    assert not (tmp_path / "gh-body.md").exists()
 
 
 def test_dispatch_recovers_plan_written_by_child_and_keeps_refusal(tmp_path: Path) -> None:
@@ -2722,6 +2796,7 @@ def test_review_delivery_posts_unmarked_stdout_and_plan_file_separately(tmp_path
     parent.update(
         {
             "HOME": str(home),
+            dispatch.REVIEW_PLAN_DIRECTORY_ENV: str(path.parent),
             "PATH": f"{tmp_path / 'bin'}:{parent['PATH']}",
             "CTI_FAKE_GH_CALL": str(gh_call),
             "CTI_FAKE_GH_BODY": str(gh_body),
@@ -2753,6 +2828,9 @@ def test_review_delivery_posts_unmarked_stdout_and_plan_file_separately(tmp_path
 def test_review_delivery_neither_source_preserves_empty_refusal(tmp_path: Path) -> None:
     home = tmp_path / "home"
     home.mkdir()
+    shared_plan = home / ".claude" / "plans" / "other-session.md"
+    shared_plan.parent.mkdir(parents=True)
+    shared_plan.write_text("shared session secret", encoding="utf-8")
     gh_call = tmp_path / "gh-call.txt"
     fake_gh(tmp_path)
     parent = dict(os.environ)
@@ -2764,13 +2842,7 @@ def test_review_delivery_neither_source_preserves_empty_refusal(tmp_path: Path) 
             "CTI_FAKE_GH_BODY": str(tmp_path / "gh-body.md"),
         }
     )
-    now_ns = time.time_ns()
-    window = dispatch.ReviewWindow(
-        started_ns=now_ns - 1,
-        ended_ns=now_ns + 1,
-        started_at=datetime.fromtimestamp((now_ns - 1) / 1_000_000_000, tz=UTC),
-        ended_at=datetime.fromtimestamp((now_ns + 1) / 1_000_000_000, tz=UTC),
-    )
+    window = review_window_for(shared_plan)
 
     lines, code = dispatch.deliver_review(
         599,
@@ -2815,6 +2887,7 @@ def test_review_delivery_does_not_post_a_plan_outside_dispatch_window(tmp_path: 
     parent.update(
         {
             "HOME": str(home),
+            dispatch.REVIEW_PLAN_DIRECTORY_ENV: str(path.parent),
             "PATH": f"{tmp_path / 'bin'}:{parent['PATH']}",
             "CTI_FAKE_GH_CALL": str(gh_call),
             "CTI_FAKE_GH_BODY": str(tmp_path / "gh-body.md"),
@@ -2841,7 +2914,7 @@ def test_oversize_unbounded_review_posts_size_notice_without_truncation(tmp_path
     gh_call = tmp_path / "gh-call.txt"
     gh_body = tmp_path / "gh-body.md"
     fake_gh(tmp_path)
-    captured = "x" * (dispatch.REVIEW_COMMENT_MAX_BYTES + 1)
+    captured = "x" * (dispatch.REVIEW_COMMENT_MAX_CHARS + 1)
     parent = dict(os.environ)
     parent.update(
         {
@@ -2858,10 +2931,36 @@ def test_oversize_unbounded_review_posts_size_notice_without_truncation(tmp_path
     assert "recovery=posted_unverified" in lines
     body = gh_body.read_text(encoding="utf-8")
     assert "content not posted" in body
-    assert f"limit_bytes={dispatch.REVIEW_COMMENT_MAX_BYTES}" in body
+    assert f"limit_chars={dispatch.REVIEW_COMMENT_MAX_CHARS}" in body
+    assert "attempted_body_bytes=0" in body
+    assert "attempted_body_chars=0" in body
     assert "did not truncate" in body
     assert "x" * 100 not in body
-    assert len(body.encode("utf-8")) <= dispatch.REVIEW_COMMENT_MAX_BYTES
+    assert len(body) <= dispatch.REVIEW_COMMENT_MAX_CHARS
+
+
+def test_bounded_multibyte_review_uses_github_character_limit(tmp_path: Path) -> None:
+    gh_call = tmp_path / "gh-call.txt"
+    gh_body = tmp_path / "gh-body.md"
+    fake_gh(tmp_path)
+    report = "é" * (dispatch.REVIEW_COMMENT_MAX_CHARS - len(REVIEW_CAPTURE_NOTICE) - 3)
+    captured = bounded_review(report)
+    parent = dict(os.environ)
+    parent.update(
+        {
+            "PATH": f"{tmp_path / 'bin'}:{parent['PATH']}",
+            "CTI_FAKE_GH_CALL": str(gh_call),
+            "CTI_FAKE_GH_BODY": str(gh_body),
+        }
+    )
+
+    lines, code = dispatch.deliver_review(599, captured, tmp_path, parent)
+
+    assert code == 0
+    assert lines == ("review_delivery=posted issue=599",)
+    body = gh_body.read_text(encoding="utf-8")
+    assert len(body) <= dispatch.REVIEW_COMMENT_MAX_CHARS
+    assert len(body.encode("utf-8")) > dispatch.REVIEW_COMMENT_MAX_CHARS
 
 
 def test_inexact_marker_renderings_are_ordinary_text_not_duplication(tmp_path: Path) -> None:
