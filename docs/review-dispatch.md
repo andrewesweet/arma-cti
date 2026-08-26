@@ -188,6 +188,16 @@ duplicated or reversed markers and an empty marked section. Otherwise it posts o
 between the markers, prefaced by a visible notice that output outside the section or on another
 stream was not posted and cannot be verified as absent.
 
+**#599 preserves text when that prescribed boundary was lost.** On a marker refusal, the host
+may additionally post bounded unmarked stdout and non-empty regular files from the child's
+`~/.claude/plans` directory. A plan is selected only when its file modification time falls inside
+that dispatch's child launch-to-finish window; filename matching is never used. Stdout and plan
+files are posted as distinct, explicitly unverified sections when both exist. This transports
+text and states the method; it does not decide which text is the report, establish completeness
+or recover a judgement. A file outside the window, an unreadable candidate, or a missing child
+environment is not posted. Oversize text produces a bounded notice that says the content was not
+truncated. The refusal, child return code, missing verdict and review-loop state remain.
+
 **Delivery precedes fallible bookkeeping.** After a zero child exit, `deliver_review` makes its
 one bounded host-side `gh issue comment --body-file -` call before `classify_finished_run` and
 `breaker.record_outcome`. Those steps describe the completed run; they do not gate transport of
@@ -200,14 +210,15 @@ A marker refusal, an unavailable command, a timeout or a non-zero `gh` exit is t
 posted review prints `review_delivery=posted` as a completion, while an undelivered review prints
 the refusal and exits non-zero. Captured stdout is emitted to `dispatch.log` before the post.
 
-**Visibility is the target, not impossible loss.** There is no retry, recovery scan, lock,
-quarantine or dedupe. If the dispatcher dies abruptly after the child exits, nothing may remain
-to report that failure. A finding outside the marked stdout section, including one written to
-stderr or another tool channel, cannot be identified as part of the report; the notice on every
-posted comment states that limit instead of implying completeness. A timed-out post may have
-reached GitHub before its result was lost. Host-side authentication or network failure still
-leaves the bounded report undelivered and requires deliberate manual relay from the named log;
-an empty or unbounded report requires a fresh review or deliberate identification from the log.
+**Visibility is the target, not impossible loss.** There is no retry, lock, quarantine or dedupe.
+The one recovery scan is bounded to the child's own plan directory and launch-to-finish window;
+it is not a general log scan. If the dispatcher dies abruptly after the child exits, nothing may
+remain to report that failure. A finding outside the marked stdout section, including one written
+to stderr or another tool channel, cannot be identified as part of the report; the recovery
+notices state that limit instead of implying completeness. A timed-out post may have reached
+GitHub before its result was lost. Host-side authentication or network failure still leaves the
+review undelivered and requires deliberate manual relay from the named log; a refusal with no
+attributable text requires a fresh review.
 
 ### The reviewer is never the reviewed profile
 
@@ -554,8 +565,11 @@ deliberately thin and is wrong for this seat — it tells the agent to do the is
     a styled, prefixed or indented rendering of one is ordinary text — and the pair
     must appear exactly once across everything you print, not only in the final
     response. Missing, duplicated or reversed markers, an empty bounded section,
-    or a refused post ends the dispatch with `review_delivery_failed`; there is no
-    automatic retry or recovery (#496).
+    or a refused post ends the dispatch with `review_delivery_failed`. On that refusal the
+    unsandboxed dispatcher may post bounded unmarked stdout and regular plan files written during
+    this child window, each labelled as unverified text. It uses no filename matching, posts both
+    sources when both exist, posts no file it cannot attribute, and never infers completeness or
+    recovers a verdict. The refusal remains; there is no loop advance or retry (#496, #599).
 
     A review re-runs none of the implementer's gate. Do not check out the branch
     under review, do not run `just fast` or any rung of it, do not run

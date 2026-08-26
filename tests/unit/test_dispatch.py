@@ -188,6 +188,10 @@ fi
 if [ -n "${CTI_FAKE_REVIEW_REPORT:-}" ]; then
   printf '%s\n' "$CTI_FAKE_REVIEW_REPORT"
 fi
+if [ -n "${CTI_FAKE_PLAN_BODY:-}" ]; then
+  mkdir -p "$HOME/.claude/plans"
+  printf '%s\n' "$CTI_FAKE_PLAN_BODY" >"$HOME/.claude/plans/${CTI_FAKE_PLAN_NAME:-dispatch-plan.md}"
+fi
 if [ -n "${CTI_FAKE_REVIEW_STDERR:-}" ]; then
   printf '%s\n' "$CTI_FAKE_REVIEW_STDERR" >&2
 fi
@@ -259,6 +263,32 @@ exec "$CTI_REAL_GH" auth status
 def bounded_review(report: str, *, before: str = "", after: str = "") -> str:
     """Wrap one report in the stdout boundary the review brief requires."""
     return f"{before}{REVIEW_REPORT_BEGIN}\n{report}\n{REVIEW_REPORT_END}\n{after}"
+
+
+def review_window_for(path: Path) -> dispatch.ReviewWindow:
+    """Build a dispatch window containing a file's exact write timestamp."""
+    mtime_ns = path.stat().st_mtime_ns
+    return dispatch.ReviewWindow(
+        started_ns=mtime_ns - 1,
+        ended_ns=mtime_ns + 1,
+        started_at=datetime.fromtimestamp((mtime_ns - 1) / 1_000_000_000, tz=UTC),
+        ended_at=datetime.fromtimestamp((mtime_ns + 1) / 1_000_000_000, tz=UTC),
+    )
+
+
+def review_plan(
+    tmp_path: Path,
+    content: str,
+    *,
+    name: str = "arbitrary-plan-name.md",
+) -> tuple[Path, dispatch.ReviewWindow, Path]:
+    """Write one plan file under a test HOME and return its attribution window."""
+    home = tmp_path / "home"
+    plans = home / ".claude" / "plans"
+    plans.mkdir(parents=True)
+    path = plans / name
+    path.write_text(content, encoding="utf-8")
+    return path, review_window_for(path), home
 
 
 def seam_env(tmp_path: Path, capture: Path, **extra: str) -> dict[str, str]:
@@ -2573,15 +2603,19 @@ def test_review_delivery_posts_only_the_bounded_stdout_section_with_an_explicit_
         ),
     ],
 )
-def test_unbounded_review_stdout_refuses_without_posting(tmp_path: Path, captured: str) -> None:
+def test_unbounded_review_stdout_is_posted_as_unverified_recovery(
+    tmp_path: Path,
+    captured: str,
+) -> None:
     gh_call = tmp_path / "gh-call.txt"
+    gh_body = tmp_path / "gh-body.md"
     fake_gh(tmp_path)
     parent = dict(os.environ)
     parent.update(
         {
             "PATH": f"{tmp_path / 'bin'}:{parent['PATH']}",
             "CTI_FAKE_GH_CALL": str(gh_call),
-            "CTI_FAKE_GH_BODY": str(tmp_path / "gh-body.md"),
+            "CTI_FAKE_GH_BODY": str(gh_body),
         }
     )
 
@@ -2590,7 +2624,244 @@ def test_unbounded_review_stdout_refuses_without_posting(tmp_path: Path, capture
     assert code == dispatch.EXIT_REFUSED
     assert "refusal=review_delivery_failed" in lines
     assert "reason=report_unbounded" in lines
+    assert "recovery=posted_unverified" in lines
+    assert gh_call.read_text(encoding="utf-8") == "issue comment 496 --body-file -\n"
+    assert gh_body.read_text(encoding="utf-8") == (
+        f"{dispatch.REVIEW_UNBOUNDED_NOTICE}\n\n{captured}"
+    )
+
+
+def test_review_delivery_recovers_plan_file_only_by_dispatch_window(tmp_path: Path) -> None:
+    path, window, home = review_plan(tmp_path, "plan finding at tools/ledger.py:1")
+    gh_call = tmp_path / "gh-call.txt"
+    gh_body = tmp_path / "gh-body.md"
+    fake_gh(tmp_path)
+    parent = dict(os.environ)
+    parent.update(
+        {
+            "HOME": str(home),
+            "PATH": f"{tmp_path / 'bin'}:{parent['PATH']}",
+            "CTI_FAKE_GH_CALL": str(gh_call),
+            "CTI_FAKE_GH_BODY": str(gh_body),
+        }
+    )
+
+    lines, code = dispatch.deliver_review(
+        599,
+        "\n",
+        tmp_path,
+        parent,
+        child_environment=parent,
+        review_window=window,
+    )
+
+    assert code == dispatch.EXIT_REFUSED
+    assert "refusal=review_delivery_failed" in lines
+    assert "reason=report_empty" in lines
+    assert "recovery=posted_unverified" in lines
+    assert "sources=plan_file_1" in lines
+    assert "plan_method=regular_file_mtime_in_dispatch_window" in lines
+    body = gh_body.read_text(encoding="utf-8")
+    assert "PLAN FILE" in body
+    assert str(path) in body
+    assert "filename matching was not used" in body
+    assert "plan finding at tools/ledger.py:1" in body
+    assert "UNBOUNDED" not in body
+
+
+def test_dispatch_recovers_plan_written_by_child_and_keeps_refusal(tmp_path: Path) -> None:
+    plan, brief_text, refusal = plan_for(
+        tmp_path,
+        seat="review",
+        reviewing="codex-sol-high",
+    )
+    assert refusal is None
+    assert plan is not None
+    dispatch.write_record(plan, brief_text)
+    capture = tmp_path / "review-child.txt"
+    gh_call = tmp_path / "gh-call.txt"
+    gh_body = tmp_path / "gh-body.md"
+    home = tmp_path / "home"
+    home.mkdir()
+    bindir = fake_claude(tmp_path)
+    fake_gh(tmp_path)
+    parent = dict(os.environ)
+    parent.update(
+        {
+            "HOME": str(home),
+            "PATH": f"{bindir}:{parent['PATH']}",
+            "CTI_FAKE_CLAUDE_OUT": str(capture),
+            "CTI_FAKE_PLAN_BODY": "plan finding from child",
+            "CTI_FAKE_PLAN_NAME": "unrelated-name.md",
+            "CTI_FAKE_GH_CALL": str(gh_call),
+            "CTI_FAKE_GH_BODY": str(gh_body),
+        }
+    )
+
+    code, lines = dispatch.run_dispatch(plan.record, parent)
+
+    assert code == dispatch.EXIT_REFUSED
+    assert "refusal=review_delivery_failed" in lines
+    assert "reason=report_empty" in lines
+    body = gh_body.read_text(encoding="utf-8")
+    assert "plan finding from child" in body
+    assert "regular-file modification time fell within the dispatch's child window" in body
+    result = json.loads((plan.record / "result.json").read_text(encoding="utf-8"))
+    assert result["status"] == "harness_failed_after_child"
+    assert result["returncode"] == 0
+    assert "refusal=review_delivery_failed" in result["review_delivery"]
+    assert "review_delivery=posted" not in result["review_delivery"]
+
+
+def test_review_delivery_posts_unmarked_stdout_and_plan_file_separately(tmp_path: Path) -> None:
+    path, window, home = review_plan(tmp_path, "plan finding")
+    gh_call = tmp_path / "gh-call.txt"
+    gh_body = tmp_path / "gh-body.md"
+    fake_gh(tmp_path)
+    parent = dict(os.environ)
+    parent.update(
+        {
+            "HOME": str(home),
+            "PATH": f"{tmp_path / 'bin'}:{parent['PATH']}",
+            "CTI_FAKE_GH_CALL": str(gh_call),
+            "CTI_FAKE_GH_BODY": str(gh_body),
+        }
+    )
+    stdout = "stdout finding at tools/dispatch.py:1\n"
+
+    lines, code = dispatch.deliver_review(
+        599,
+        stdout,
+        tmp_path,
+        parent,
+        child_environment=parent,
+        review_window=window,
+    )
+
+    assert code == dispatch.EXIT_REFUSED
+    assert "reason=report_unbounded" in lines
+    body = gh_body.read_text(encoding="utf-8")
+    assert dispatch.REVIEW_UNBOUNDED_NOTICE in body
+    assert stdout in body
+    assert "PLAN FILE" in body
+    assert str(path) in body
+    assert "plan finding" in body
+    assert body.index(dispatch.REVIEW_UNBOUNDED_NOTICE) < body.index("PLAN FILE")
+    assert body.count("Nothing here is a recorded verdict.") == 2
+
+
+def test_review_delivery_neither_source_preserves_empty_refusal(tmp_path: Path) -> None:
+    home = tmp_path / "home"
+    home.mkdir()
+    gh_call = tmp_path / "gh-call.txt"
+    fake_gh(tmp_path)
+    parent = dict(os.environ)
+    parent.update(
+        {
+            "HOME": str(home),
+            "PATH": f"{tmp_path / 'bin'}:{parent['PATH']}",
+            "CTI_FAKE_GH_CALL": str(gh_call),
+            "CTI_FAKE_GH_BODY": str(tmp_path / "gh-body.md"),
+        }
+    )
+    now_ns = time.time_ns()
+    window = dispatch.ReviewWindow(
+        started_ns=now_ns - 1,
+        ended_ns=now_ns + 1,
+        started_at=datetime.fromtimestamp((now_ns - 1) / 1_000_000_000, tz=UTC),
+        ended_at=datetime.fromtimestamp((now_ns + 1) / 1_000_000_000, tz=UTC),
+    )
+
+    lines, code = dispatch.deliver_review(
+        599,
+        "",
+        tmp_path,
+        parent,
+        child_environment=parent,
+        review_window=window,
+    )
+
+    assert code == dispatch.EXIT_REFUSED
+    assert lines == (
+        "refusal=review_delivery_failed",
+        "issue=599",
+        "reason=report_empty",
+        "detail=captured stdout is empty",
+        f"log={tmp_path / 'dispatch.log'}",
+        (
+            "action=The completed review produced no bounded report. Do not read the missing"
+            " comment as a clean review; dispatch a fresh review. The dispatcher will"
+            " not retry or recover one automatically (#496)."
+        ),
+    )
     assert not gh_call.exists()
+
+
+def test_review_delivery_does_not_post_a_plan_outside_dispatch_window(tmp_path: Path) -> None:
+    path, actual_window, home = review_plan(tmp_path, "unrelated plan")
+    before_ns = actual_window.started_ns - 2
+    window = dispatch.ReviewWindow(
+        started_ns=before_ns,
+        ended_ns=actual_window.started_ns - 1,
+        started_at=datetime.fromtimestamp(before_ns / 1_000_000_000, tz=UTC),
+        ended_at=datetime.fromtimestamp(
+            (actual_window.started_ns - 1) / 1_000_000_000,
+            tz=UTC,
+        ),
+    )
+    gh_call = tmp_path / "gh-call.txt"
+    fake_gh(tmp_path)
+    parent = dict(os.environ)
+    parent.update(
+        {
+            "HOME": str(home),
+            "PATH": f"{tmp_path / 'bin'}:{parent['PATH']}",
+            "CTI_FAKE_GH_CALL": str(gh_call),
+            "CTI_FAKE_GH_BODY": str(tmp_path / "gh-body.md"),
+        }
+    )
+
+    lines, code = dispatch.deliver_review(
+        599,
+        "",
+        tmp_path,
+        parent,
+        child_environment=parent,
+        review_window=window,
+    )
+
+    assert code == dispatch.EXIT_REFUSED
+    assert "reason=report_empty" in lines
+    assert not gh_call.exists()
+    assert not (tmp_path / "gh-body.md").exists()
+    assert path.read_text(encoding="utf-8") == "unrelated plan"
+
+
+def test_oversize_unbounded_review_posts_size_notice_without_truncation(tmp_path: Path) -> None:
+    gh_call = tmp_path / "gh-call.txt"
+    gh_body = tmp_path / "gh-body.md"
+    fake_gh(tmp_path)
+    captured = "x" * (dispatch.REVIEW_COMMENT_MAX_BYTES + 1)
+    parent = dict(os.environ)
+    parent.update(
+        {
+            "PATH": f"{tmp_path / 'bin'}:{parent['PATH']}",
+            "CTI_FAKE_GH_CALL": str(gh_call),
+            "CTI_FAKE_GH_BODY": str(gh_body),
+        }
+    )
+
+    lines, code = dispatch.deliver_review(599, captured, tmp_path, parent)
+
+    assert code == dispatch.EXIT_REFUSED
+    assert "reason=report_unbounded" in lines
+    assert "recovery=posted_unverified" in lines
+    body = gh_body.read_text(encoding="utf-8")
+    assert "content not posted" in body
+    assert f"limit_bytes={dispatch.REVIEW_COMMENT_MAX_BYTES}" in body
+    assert "did not truncate" in body
+    assert "x" * 100 not in body
+    assert len(body.encode("utf-8")) <= dispatch.REVIEW_COMMENT_MAX_BYTES
 
 
 def test_inexact_marker_renderings_are_ordinary_text_not_duplication(tmp_path: Path) -> None:

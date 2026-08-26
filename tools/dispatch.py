@@ -195,14 +195,18 @@ sandbox policy, which the same disposable tree maps to `workspace-write` plus th
 cache grants. The tree is removed when the dispatch ends, and the verdict's reviewed SHA is
 checked independently at landing.
 
-**Review delivery crosses that containment at the harness boundary** (#496). The review's
+**Review delivery crosses that containment at the harness boundary** (#496, widened #599).
+The review's
 stdout is written through a file descriptor the unsandboxed dispatcher opened, so the session
 needs neither a writable body-file path nor GitHub credentials. Exact marker lines bound the
 report within that stream; the dispatcher posts only their contents with a capture notice.
 After a successful child exit it makes one bounded `gh issue comment --body-file -` call before
-outcome classification and breaker journaling. It retries nothing. Missing or ambiguous
-markers, an empty bounded report, or a refused call ends in `review_delivery_failed`, while
-the child's own return code remains on `result.json`.
+outcome classification and breaker journaling. Missing or ambiguous markers, an empty bounded
+report, or a refused call ends in `review_delivery_failed`, while the child's own return code
+remains on `result.json`. If its prescribed markers are absent, the host may post bounded,
+explicitly unverified text from stdout and from regular files in the child's
+`~/.claude/plans` directory whose modification time falls inside the child's own window. That
+is transport only: the refusal, return code, missing verdict and review-loop state remain.
 
 **`recon` forces the same mode, for a reason of its own** (#407). ADR-0071 does not merely
 describe that seat as non-landing; it reasons from the unranked profile head, the routing
@@ -236,6 +240,7 @@ import stat
 import subprocess
 import sys
 import tempfile
+import time
 from contextlib import nullcontext
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -817,9 +822,11 @@ SEATS: Final[dict[str, Seat]] = {
     # the brief supplies; `_run_child_with_gate_clock` captures stdout through an anonymous
     # host-opened temporary file, then `deliver_review` posts only that section with a notice
     # stating what was captured. A failed, unbounded or empty delivery is
-    # `review_delivery_failed`. There is no retry, recovery scan, lock, quarantine or dedupe.
-    # Abrupt dispatcher death and findings outside the bounded stdout section remain outside
-    # the mechanism, stated in the changelog rather than promoted to guarantees.
+    # `review_delivery_failed`; bounded unmarked stdout and regular plan files written during
+    # the child window may also be posted as explicitly unverified recovery. There is no retry,
+    # verdict recovery, lock, quarantine or dedupe. Abrupt dispatcher death and findings outside
+    # the two attributed sources remain outside the mechanism, stated in the changelog rather
+    # than promoted to guarantees.
     "review": Seat(
         "review",
         claude_only=False,
@@ -3224,6 +3231,31 @@ REVIEW_CAPTURE_NOTICE: Final = (
     "Output outside its markers and output on other streams were not posted; the harness "
     "cannot verify findings omitted from that section."
 )
+# Keep every issue-comment body within the harness transport bound; count encoded bytes so
+# multi-byte review text cannot cross it after the body has been assembled.
+REVIEW_COMMENT_MAX_BYTES: Final = 65_536
+REVIEW_UNBOUNDED_NOTICE: Final = (
+    "> **UNMARKED STDOUT — extent unverified.** This review produced no prescribed report "
+    "boundary, "
+    "so the harness cannot tell which part of the stream is the report or whether any of it is "
+    "complete. Nothing here is a recorded verdict. Read it as raw output, not as a review."
+)
+REVIEW_OVERSIZE_NOTICE: Final = (
+    "> **UNVERIFIED RECOVERY — content not posted.** Recovered review text exceeded the issue-"
+    "comment size limit. The dispatcher did not truncate it, because a shortened review could "
+    "look complete. Nothing here is a recorded verdict, and no review loop advanced."
+)
+
+
+class ReviewWindow(NamedTuple):
+    """The child lifetime used to attribute a plan-file write to one dispatch."""
+
+    started_ns: int
+    ended_ns: int
+    started_at: datetime
+    ended_at: datetime
+
+
 REVIEW_DELIVERY_PROTOCOL: Final = (
     "Put your review report, including an explicit clean verdict when you find nothing,"
     f" between exact lines `{REVIEW_REPORT_BEGIN}` and `{REVIEW_REPORT_END}` in your final"
@@ -3235,8 +3267,11 @@ REVIEW_DELIVERY_PROTOCOL: Final = (
     " prefixed or indented rendering of one is ordinary text — and the pair must appear"
     " exactly once across everything you print, not only in the final response."
     " Missing, duplicated or reversed markers, an empty bounded section, or a refused post"
-    " ends the dispatch with `review_delivery_failed`; there is no automatic retry or"
-    " recovery."
+    " ends the dispatch with `review_delivery_failed`. On that refusal the host may post"
+    " bounded unmarked stdout and regular plan files whose modification time falls within"
+    " this child's window, each labelled as unverified text; it never chooses between them"
+    " or infers completeness. A plan filename is never an attribution method. The refusal"
+    " remains, with no verdict, loop advance or retry (#496, #599)."
 )
 
 
@@ -3676,7 +3711,8 @@ def _run_child_with_gate_clock(
     The review outbox is opened by this unsandboxed process and inherited as stdout. The
     child writes a file descriptor, not a path, so a read-only filesystem cannot strand the
     report. It is anonymous and lives only for this call: delivery gets one later attempt,
-    with no orphan to scan or recover.
+    with no stdout orphan to scan; plan-file recovery is separately bounded by the child's
+    environment and launch-to-finish window.
     """
     canonical = gate_clock.DEFAULT_GATE_CLOCK_DIR.absolute()
     child_environment = dict(child)
@@ -3701,6 +3737,10 @@ def _run_child_with_gate_clock(
                 text=True,
                 check=False,
             )
+            # End the attribution window at the child boundary, before the host reads or
+            # echoes captured stdout. A plan written by another process during host-side
+            # bookkeeping must not enter this dispatch's recovery set.
+            child_finished(done.returncode)
             if review_outbox is not None:
                 review_outbox.seek(0)
                 done.stdout = review_outbox.read()
@@ -3711,9 +3751,8 @@ def _run_child_with_gate_clock(
                     if not done.stdout.endswith("\n"):
                         sys.stdout.write("\n")
                     sys.stdout.flush()
-        # Publish this fact before collection. A BaseException during collection is a
-        # harness failure after the child, never a launch failure.
-        child_finished(done.returncode)
+        # A BaseException during collection is a harness failure after the child, never a
+        # launch failure; the child boundary was recorded immediately after it returned above.
         collection = collect_gate_clock(session_directory, canonical)
     return done, collection
 
@@ -4027,52 +4066,229 @@ def _bounded_review_report(captured_stdout: str) -> tuple[str, str, str]:
     return report, "", ""
 
 
-def deliver_review(
-    issue: int,
+class _PlanCapture(NamedTuple):
+    """One plan-file candidate and the text the host could safely read from it."""
+
+    path: Path
+    content: str | None
+    size_bytes: int
+    reason: str = ""
+
+
+class _ReviewRecovery(NamedTuple):
+    """Raw review text that can be posted without making a judgement about it."""
+
+    body: str
+    source_labels: tuple[str, ...]
+    source_sizes: tuple[tuple[str, int], ...]
+    plan_paths: tuple[Path, ...]
+
+
+def _review_plan_directory(environment: Mapping[str, str]) -> Path | None:
+    """Resolve the child-visible Claude plan directory without consulting process globals."""
+    home = environment.get("HOME")
+    return (Path(home) / ".claude" / "plans") if home else None
+
+
+def _read_review_plan_candidate(  # noqa: PLR0911 — each refusal is a distinct attribution/read boundary
+    path: Path,
+    expected_mtime_ns: int,
+) -> _PlanCapture | None:
+    """Read one stable regular file, refusing a candidate that changes while read."""
+    try:
+        before = path.lstat()
+        if not stat.S_ISREG(before.st_mode) or before.st_mtime_ns != expected_mtime_ns:
+            return None
+        if before.st_size > REVIEW_COMMENT_MAX_BYTES:
+            after = path.lstat()
+            if (
+                after.st_mode != before.st_mode
+                or after.st_mtime_ns != before.st_mtime_ns
+                or after.st_size != before.st_size
+            ):
+                return None
+            return _PlanCapture(path, None, after.st_size, "oversize")
+        with path.open("rb") as source:
+            payload = source.read(REVIEW_COMMENT_MAX_BYTES + 1)
+        after = path.lstat()
+    except OSError:
+        return None
+    if (
+        after.st_mode != before.st_mode
+        or after.st_mtime_ns != before.st_mtime_ns
+        or after.st_size != before.st_size
+        or len(payload) != after.st_size
+    ):
+        return None
+    if len(payload) > REVIEW_COMMENT_MAX_BYTES:
+        return _PlanCapture(path, None, after.st_size, "oversize")
+    try:
+        content = payload.decode("utf-8")
+    except UnicodeDecodeError:
+        return None
+    return _PlanCapture(path, content, len(payload))
+
+
+def _review_plan_captures(
+    environment: Mapping[str, str],
+    window: ReviewWindow,
+) -> tuple[_PlanCapture, ...]:
+    """Find regular files whose writes fall inside this child's dispatch window."""
+    if window.started_ns > window.ended_ns:
+        return ()
+    directory = _review_plan_directory(environment)
+    if directory is None:
+        return ()
+    try:
+        entries = sorted(directory.iterdir(), key=lambda path: path.name)
+    except OSError:
+        return ()
+    captures: list[_PlanCapture] = []
+    for path in entries:
+        try:
+            metadata = path.lstat()
+        except OSError:
+            continue
+        if not stat.S_ISREG(metadata.st_mode):
+            continue
+        if not (window.started_ns <= metadata.st_mtime_ns <= window.ended_ns):
+            continue
+        capture = _read_review_plan_candidate(path, metadata.st_mtime_ns)
+        if capture is not None:
+            captures.append(capture)
+    return tuple(captures)
+
+
+def _review_comment_text(content: str) -> str:
+    """Keep recovered text intact while giving each section one terminal newline."""
+    return content if content.endswith("\n") else f"{content}\n"
+
+
+def _review_plan_notice(record: Path, path: Path, window: ReviewWindow) -> str:
+    """Explain the time-window attribution on every posted plan-file section."""
+    return (
+        f"> **PLAN FILE — content unverified.** Dispatch `{record.name}` selected `{path}` "
+        "because its regular-file modification time fell within the dispatch's child window "
+        f"({window.started_at.isoformat()} through {window.ended_at.isoformat()}); filename "
+        "matching was not used. This transports text only; it does not establish completeness "
+        "or judgement. Nothing here is a recorded verdict."
+    )
+
+
+def _review_recovery(
     captured_stdout: str,
     record: Path,
-    parent: Mapping[str, str],
-) -> tuple[tuple[str, ...], int]:
-    """Post one bounded stdout section from the host, or refuse once and stop.
+    environment: Mapping[str, str],
+    window: ReviewWindow | None,
+) -> _ReviewRecovery | None:
+    """Compose raw unbounded stdout and time-attributed plan text, never choosing between them."""
+    parts: list[str] = []
+    labels: list[str] = []
+    sizes: list[tuple[str, int]] = []
+    plan_paths: list[Path] = []
+    stdout_bytes = len(captured_stdout.encode("utf-8")) if captured_stdout.strip() else 0
+    if stdout_bytes:
+        labels.append("stdout")
+        sizes.append(("stdout", stdout_bytes))
+        if stdout_bytes <= REVIEW_COMMENT_MAX_BYTES:
+            parts.extend(
+                (
+                    REVIEW_UNBOUNDED_NOTICE,
+                    _review_comment_text(captured_stdout),
+                )
+            )
 
-    No GitHub validation read precedes the mutation and no retry follows it. `--body-file -`
-    keeps arbitrary findings off argv and removes the child-side body-file requirement that
-    failed live on #496. The environment is the dispatcher's parent, not the lane environment,
-    so provider credentials and sandbox-injected GitHub state do not decide this call.
-    """
-    log = record / "dispatch.log"
-    report, boundary_refusal, boundary_detail = _bounded_review_report(captured_stdout)
-    if boundary_refusal:
-        if boundary_refusal == "report_empty":
-            action = (
-                "The completed review produced no bounded report. Do not read the missing"
-                " comment as a clean review; dispatch a fresh review. The dispatcher will"
-                " not retry or recover one automatically (#496)."
+    captures = _review_plan_captures(environment, window) if window is not None else ()
+    for index, capture in enumerate(captures, start=1):
+        label = f"plan_file_{index}"
+        if capture.content is None:
+            if capture.reason == "oversize":
+                labels.append(label)
+                sizes.append((label, capture.size_bytes))
+                plan_paths.append(capture.path)
+            continue
+        content_bytes = len(capture.content.encode("utf-8"))
+        if not capture.content.strip():
+            continue
+        labels.append(label)
+        sizes.append((label, content_bytes))
+        plan_paths.append(capture.path)
+        if content_bytes <= REVIEW_COMMENT_MAX_BYTES and window is not None:
+            parts.extend(
+                (
+                    _review_plan_notice(record, capture.path, window),
+                    _review_comment_text(capture.content),
+                )
             )
-        else:
-            action = (
-                "The completed review's stdout did not contain exactly one ordered report"
-                f" boundary. Nothing was posted. Inspect {log}; dispatch a fresh review or"
-                " relay only after identifying the report deliberately. The dispatcher will"
-                " not infer, retry or recover it automatically (#496)."
-            )
-        return _harness_refusal(
-            "review_delivery_failed",
-            (
-                f"issue={issue}",
-                f"reason={boundary_refusal}",
-                f"detail={boundary_detail}",
-                f"log={log}",
-            ),
-            action,
-        )
-    action = (
-        "The completed review was not delivered. Do not read the missing comment as a clean"
-        f" review. Its bounded stdout report is in {log}; relay it deliberately after fixing"
-        " the host failure. The dispatcher will not retry or recover it automatically (#496)."
+
+    if not labels:
+        return None
+    body = "\n\n".join(parts)
+    if body and not body.endswith("\n"):
+        body += "\n"
+    return _ReviewRecovery(body, tuple(labels), tuple(sizes), tuple(plan_paths))
+
+
+def _review_oversize_body(
+    record: Path,
+    source_sizes: tuple[tuple[str, int], ...],
+    attempted_body_bytes: int,
+    *,
+    plan_method: bool = False,
+) -> str:
+    """Render a bounded refusal comment without truncating any recovered text."""
+    sizes = " ".join(f"{label}_bytes={size}" for label, size in source_sizes)
+    method = (
+        " Plan candidates use only regular-file modification times within the dispatch "
+        "child window; filename matching was not used."
+        if plan_method
+        else ""
     )
+    return (
+        f"{REVIEW_OVERSIZE_NOTICE}\n\n"
+        f"dispatch={record.name} limit_bytes={REVIEW_COMMENT_MAX_BYTES} "
+        f"attempted_body_bytes={attempted_body_bytes} {sizes}."
+        f"{method}"
+    )
+
+
+def _review_recovery_action() -> str:
+    """State that a posted recovery remains refusal, not a verdict."""
+    return (
+        "The completed review's text was posted only as unverified recovery. The marker "
+        "refusal remains: nothing is a recorded verdict, no review loop advanced, and the "
+        "dispatcher did not infer completeness or retry (#496). Dispatch a fresh review "
+        "before treating any recovered text as a review."
+    )
+
+
+def _review_oversize_action() -> str:
+    """State that only a bounded size notice was posted, never a truncated report."""
+    return (
+        "The completed review exceeded the issue-comment bound. Only an unverified size notice "
+        "was posted; content was not truncated. The marker refusal remains: nothing is a "
+        "recorded verdict, no review loop advanced, and the dispatcher did not infer or retry "
+        "(#496)."
+    )
+
+
+def _review_stdout_has_exact_marker(captured_stdout: str) -> bool:
+    """Tell empty-output handling apart from an empty marked section."""
+    return any(
+        line in (REVIEW_REPORT_BEGIN, REVIEW_REPORT_END) for line in captured_stdout.splitlines()
+    )
+
+
+def _post_review_comment(
+    issue: int,
+    body: str,
+    record: Path,
+    parent: Mapping[str, str],
+    action: str,
+) -> tuple[tuple[str, ...], int]:
+    """Make the one bounded host-side post attempt for any review body."""
+    log = record / "dispatch.log"
     argv = ["gh", "issue", "comment", str(issue), "--body-file", "-"]
-    body = f"{REVIEW_CAPTURE_NOTICE}\n\n{report}\n"
     try:
         posted = subprocess.run(  # noqa: S603 — fixed gh argv plus a validated integer
             argv,
@@ -4113,6 +4329,148 @@ def deliver_review(
             action,
         )
     return ((f"review_delivery=posted issue={issue}",), 0)
+
+
+def deliver_review(  # noqa: PLR0913 — process, attribution and delivery context are separate inputs
+    issue: int,
+    captured_stdout: str,
+    record: Path,
+    parent: Mapping[str, str],
+    *,
+    child_environment: Mapping[str, str] | None = None,
+    review_window: ReviewWindow | None = None,
+) -> tuple[tuple[str, ...], int]:
+    """Post one bounded review body from the host, or refuse once and stop.
+
+    No GitHub validation read precedes the mutation and no retry follows it. `--body-file -`
+    keeps arbitrary findings off argv and removes the child-side body-file requirement that
+    failed live on #496. The environment is the dispatcher's parent, not the lane environment,
+    so provider credentials and sandbox-injected GitHub state do not decide this call. Both the
+    child's environment and `review_window` are required before any plan file can be attributed
+    to this dispatch.
+    """
+    log = record / "dispatch.log"
+    report, boundary_refusal, boundary_detail = _bounded_review_report(captured_stdout)
+    if boundary_refusal:
+        can_recover = boundary_refusal == "report_unbounded" or (
+            boundary_refusal == "report_empty"
+            and not _review_stdout_has_exact_marker(captured_stdout)
+        )
+        recovery = (
+            _review_recovery(
+                captured_stdout,
+                record,
+                child_environment if child_environment is not None else {},
+                review_window if child_environment is not None else None,
+            )
+            if can_recover
+            else None
+        )
+        if recovery is not None:
+            attempted_body_bytes = len(recovery.body.encode("utf-8"))
+            content_bytes = sum(size for _, size in recovery.source_sizes)
+            oversized = (
+                any(size > REVIEW_COMMENT_MAX_BYTES for _, size in recovery.source_sizes)
+                or attempted_body_bytes > REVIEW_COMMENT_MAX_BYTES
+            )
+            body = (
+                _review_oversize_body(
+                    record,
+                    recovery.source_sizes,
+                    max(attempted_body_bytes, content_bytes),
+                    plan_method=bool(recovery.plan_paths),
+                )
+                if oversized
+                else recovery.body
+            )
+            action = _review_oversize_action() if oversized else _review_recovery_action()
+            posted_lines, posted_code = _post_review_comment(
+                issue,
+                body,
+                record,
+                parent,
+                action,
+            )
+            if posted_code:
+                return posted_lines, posted_code
+            return _harness_refusal(
+                "review_delivery_failed",
+                (
+                    f"issue={issue}",
+                    f"reason={boundary_refusal}",
+                    f"detail={boundary_detail}",
+                    "recovery=posted_unverified",
+                    f"sources={','.join(recovery.source_labels)}",
+                    *(
+                        ("plan_method=regular_file_mtime_in_dispatch_window",)
+                        if recovery.plan_paths
+                        else ()
+                    ),
+                    f"log={log}",
+                ),
+                action,
+            )
+        if boundary_refusal == "report_empty":
+            action = (
+                "The completed review produced no bounded report. Do not read the missing"
+                " comment as a clean review; dispatch a fresh review. The dispatcher will"
+                " not retry or recover one automatically (#496)."
+            )
+        else:
+            action = (
+                "The completed review's stdout did not contain exactly one ordered report"
+                f" boundary. Nothing was posted. Inspect {log}; dispatch a fresh review or"
+                " relay only after identifying the report deliberately. The dispatcher will"
+                " not infer, retry or recover it automatically (#496)."
+            )
+        return _harness_refusal(
+            "review_delivery_failed",
+            (
+                f"issue={issue}",
+                f"reason={boundary_refusal}",
+                f"detail={boundary_detail}",
+                f"log={log}",
+            ),
+            action,
+        )
+    action = (
+        "The completed review was not delivered. Do not read the missing comment as a clean"
+        f" review. Its bounded stdout report is in {log}; relay it deliberately after fixing"
+        " the host failure. The dispatcher will not retry or recover it automatically (#496)."
+    )
+    body = f"{REVIEW_CAPTURE_NOTICE}\n\n{report}\n"
+    body_bytes = len(body.encode("utf-8"))
+    if body_bytes > REVIEW_COMMENT_MAX_BYTES:
+        body = _review_oversize_body(
+            record,
+            (("bounded_report", len(report.encode("utf-8"))),),
+            body_bytes,
+        )
+        action = _review_oversize_action()
+        posted_lines, posted_code = _post_review_comment(
+            issue,
+            body,
+            record,
+            parent,
+            action,
+        )
+        if posted_code:
+            return posted_lines, posted_code
+        return _harness_refusal(
+            "review_delivery_failed",
+            (
+                f"issue={issue}",
+                "reason=report_oversize",
+                (
+                    f"detail=comment body would be {body_bytes} bytes; limit is "
+                    f"{REVIEW_COMMENT_MAX_BYTES}"
+                ),
+                "recovery=posted_unverified_size_notice",
+                f"log={log}",
+            ),
+            action,
+        )
+    return _post_review_comment(issue, body, record, parent, action)
 
 
 def _harness_git_failed(
@@ -5101,11 +5459,34 @@ def unreadable_record_refusal(record: Path, unreadable: Exception) -> Refusal:
     )
 
 
+def _clock_point() -> tuple[int, datetime]:
+    """Capture one filesystem-comparable nanosecond stamp and its UTC rendering."""
+    stamp = time.time_ns()
+    return stamp, datetime.fromtimestamp(stamp / 1_000_000_000, tz=UTC)
+
+
+def _review_window(
+    started: tuple[int, datetime] | None,
+    ended: tuple[int, datetime] | None,
+) -> ReviewWindow | None:
+    """Return a complete child window, or no attribution authority."""
+    if started is None or ended is None:
+        return None
+    return ReviewWindow(
+        started_ns=started[0],
+        ended_ns=ended[0],
+        started_at=started[1],
+        ended_at=ended[1],
+    )
+
+
 @dataclass
 class _DispatchProgress:
     dispatch_id: str
     failure_phase: str = "record_read"
     started: datetime | None = None
+    review_window_started: tuple[int, datetime] | None = None
+    review_window_ended: tuple[int, datetime] | None = None
     child_launch_attempted: bool = False
     returncode: int | None = None
     review_delivery: tuple[str, ...] = ()
@@ -5209,10 +5590,12 @@ def _run_dispatch_body(
     def mark_child_launch_attempted() -> None:
         progress.child_launch_attempted = True
         progress.failure_phase = "child_launch_or_wait"
+        progress.review_window_started = _clock_point()
 
     def mark_child_finished(code: int) -> None:
         progress.returncode = code
         progress.failure_phase = "gate_clock_collection"
+        progress.review_window_ended = _clock_point()
 
     done, gate_clock_collection = _run_child_with_gate_clock(
         plan, child, brief, mark_child_launch_attempted, mark_child_finished
@@ -5228,6 +5611,11 @@ def _run_dispatch_body(
                 done.stdout or "",
                 record,
                 parent,
+                child_environment=child,
+                review_window=_review_window(
+                    progress.review_window_started,
+                    progress.review_window_ended,
+                ),
             )
         else:
             review_delivery = (f"review_delivery=not_attempted child_exit={done.returncode}",)
