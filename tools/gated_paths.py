@@ -8,17 +8,20 @@ the hook and the lane-neutral gate cannot drift onto separate lists.
 
 An explicit human approval is one versioned record below
 ``~/.arma-cti/gated-path-approvals/``.  It names the issue and one path, and is
-bound to the exact change at that path.  Textual hunk bytes, section anchors,
-paths and modes remain exact; only hunk line ranges and textual whole-file blob
-IDs are discarded, because those name a moved baseline rather than the change.
-That normalised identity only nominates an earlier record: carrying it also
-requires the recorded baseline to be an ancestor and a clean three-way replay
-of the recorded approved result onto the current baseline to equal the current
-bytes.  This keeps an unrelated textual baseline edit without letting an
-identical hunk moved elsewhere reuse approval.  Another branch-side hunk or an
-altered approved hunk cannot carry.  Binary and non-regular diffs need fresh
-approval after a same-path baseline change.  A changed ADR carrying ADR-0013's
-exact ``Delegated-decision: yes`` line in the field block parsed by
+bound to the exact change at that path.  The base-independent ``approval_id``
+used for the human handoff hashes the path, baseline tree entry and current
+payload exactly, without the base commit ID.  The separate normalised
+``change_id`` only nominates an earlier record for carry: textual hunk bytes,
+section anchors, paths and modes remain exact, while hunk line ranges and
+textual whole-file blob IDs are discarded because they name a moved baseline
+rather than the change.  Carrying that nomination also requires the recorded
+baseline to be an ancestor and a clean three-way replay of the recorded
+approved result onto the current baseline to equal the current bytes.  This
+keeps an unrelated textual baseline edit without letting an identical hunk
+moved elsewhere reuse approval.  Another branch-side hunk or an altered
+approved hunk cannot carry.  Binary and non-regular diffs need fresh approval
+after a same-path baseline change.  A changed ADR carrying ADR-0013's exact
+``Delegated-decision: yes`` line in the field block parsed by
 ``check_adr_form.py`` remains the standing-authorisation route AGENTS.md defines,
 for that record alone (#548): every other gated path in the same diff still needs
 its own approval or its own marker.
@@ -243,10 +246,11 @@ class Approval(NamedTuple):
 
 
 class ChangeBinding(NamedTuple):
-    """Current exact state plus baseline-independent identity used for replay."""
+    """Current state plus the carry and direct-approval identities."""
 
     content_id: str
     change_id: str
+    approval_id: str
     base_sha: str
     result_payload: bytes
     binary: bool
@@ -442,8 +446,15 @@ def _change_id(path: str, baseline: bytes, current: bytes, diff: bytes) -> str:
     return hashlib.sha256(payload).hexdigest()
 
 
+def _approval_id(path: str, baseline: bytes, current: bytes) -> str:
+    """Identify exact path state without coupling it to the base commit."""
+    payload = b"gated-path-approval-v1\0" + path.encode("utf-8") + b"\0"
+    payload += baseline + b"current\0" + current
+    return hashlib.sha256(payload).hexdigest()
+
+
 def binding_of(root: Path, path: str) -> ChangeBinding:
-    """Compute exact state and replayable change identities for one path."""
+    """Compute exact state and both base-independent change identities."""
     baseline = _git_bytes("ls-tree", "-z", BASE, "--", path, cwd=root)
     current = _current_payload(root, path)
     diff = b"" if not baseline or current == b"absent\0" else _path_diff(root, path)
@@ -458,6 +469,7 @@ def binding_of(root: Path, path: str) -> ChangeBinding:
     return ChangeBinding(
         _state_id(path, decoded_base, baseline, current),
         _change_id(path, baseline, current, diff),
+        _approval_id(path, baseline, current),
         decoded_base,
         current,
         binary,
@@ -845,7 +857,7 @@ def direct_approval_remedy(root: Path, issue: int | None, action: str) -> str:
         # human supplies the number the tool refuses to guess.
         return (
             f"{action} The direct-approval exit is `{change_command}"
-            f" --issue N --path AGENTS.md --change-id {binding.change_id}` (default),"
+            f" --issue N --path AGENTS.md --change-id {binding.approval_id}`,"
             f" or `{content_command} --issue N --path AGENTS.md"
             f" --content-id {binding.content_id}`, run by the"
             " human after reviewing this exact path diff, with N the issue this"
@@ -853,14 +865,14 @@ def direct_approval_remedy(root: Path, issue: int | None, action: str) -> str:
             " guessed. A session must not run it."
         )
     change_command = (
-        f"{change_command} --issue {issue} --path AGENTS.md --change-id {binding.change_id}"
+        f"{change_command} --issue {issue} --path AGENTS.md --change-id {binding.approval_id}"
     )
     content_command = (
         f"{content_command} --issue {issue} --path AGENTS.md --content-id {binding.content_id}"
     )
     return (
         f"{action} Or, after the human reviews this exact path diff, they run"
-        f" `{change_command}` (default), or `{content_command}`. A session must not run it."
+        f" `{change_command}`, or `{content_command}`. A session must not run it."
     )
 
 
@@ -1055,7 +1067,7 @@ def check(  # noqa: C901, PLR0911, PLR0912, PLR0915 — one report per fail-clos
         else:
             command = (
                 "just gated-paths approve"
-                f" --issue {issue} --path {shlex.quote(path)} --change-id {binding.change_id}"
+                f" --issue {issue} --path {shlex.quote(path)} --change-id {binding.approval_id}"
             )
             content_command = (
                 "just gated-paths approve"
@@ -1067,13 +1079,13 @@ def check(  # noqa: C901, PLR0911, PLR0912, PLR0915 — one report per fail-clos
                     f"issue={issue}",
                     f"path={path}",
                     f"content_id={content_id}",
-                    f"change_id={binding.change_id}",
+                    f"change_id={binding.approval_id}",
                     f"record={record}",
                     *not_carried,
                 ),
                 (
                     f"After the human reviews this exact path diff, they run `{command}`"
-                    f" (default), or `{content_command}`."
+                    f", or `{content_command}`."
                     " A session must not run it."
                 ),
             )
@@ -1208,7 +1220,7 @@ def record_approval(  # noqa: C901, PLR0912, PLR0913 — validation ladder; one 
             (f"path={normalised} command={' '.join(failure.args_run)} stderr={failure.stderr}"),
             "Restore the readable path and baseline, then retry.",
         ) from failure
-    actual_identifier = binding.content_id if has_content_id else binding.change_id
+    actual_identifier = binding.content_id if has_content_id else binding.approval_id
     if actual_identifier != expected_identifier:
         if has_content_id:
             raise ApprovalError(

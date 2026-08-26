@@ -214,7 +214,7 @@ def test_a_delegated_row_change_with_prose_outside_the_table_is_refused(
     )
     delegated_record(repo)
     content_id = gated_paths.content_id_of(repo, "AGENTS.md")
-    change_id = gated_paths.binding_of(repo, "AGENTS.md").change_id
+    change_id = gated_paths.binding_of(repo, "AGENTS.md").approval_id
 
     report = gated_paths.check(repo, tmp_path / "approvals", issue=544)
 
@@ -243,7 +243,7 @@ def test_a_delegated_row_change_with_an_unknown_recipe_is_refused(
     )
     delegated_record(repo)
     content_id = gated_paths.content_id_of(repo, "AGENTS.md")
-    change_id = gated_paths.binding_of(repo, "AGENTS.md").change_id
+    change_id = gated_paths.binding_of(repo, "AGENTS.md").approval_id
 
     report = gated_paths.check(repo, tmp_path / "approvals", issue=544)
 
@@ -275,7 +275,7 @@ def test_an_unreadable_delegated_table_still_names_the_direct_approval(
     )
     delegated_record(repo)
     content_id = gated_paths.content_id_of(repo, "AGENTS.md")
-    change_id = gated_paths.binding_of(repo, "AGENTS.md").change_id
+    change_id = gated_paths.binding_of(repo, "AGENTS.md").approval_id
 
     report = gated_paths.check(repo, tmp_path / "approvals", issue=544)
 
@@ -304,7 +304,7 @@ def test_the_standalone_command_names_the_direct_approval_on_refusal(
     )
     delegated_record(repo)
     content_id = gated_paths.content_id_of(repo, "AGENTS.md")
-    change_id = gated_paths.binding_of(repo, "AGENTS.md").change_id
+    change_id = gated_paths.binding_of(repo, "AGENTS.md").approval_id
 
     assert check_command_table.main(["--root", str(repo)]) == 1
 
@@ -351,7 +351,7 @@ def test_an_issueless_checkout_says_the_human_supplies_the_issue(
     )
     delegated_record(repo)
     content_id = gated_paths.content_id_of(repo, "AGENTS.md")
-    change_id = gated_paths.binding_of(repo, "AGENTS.md").change_id
+    change_id = gated_paths.binding_of(repo, "AGENTS.md").approval_id
 
     assert check_command_table.main(["--root", str(repo)]) == 1
 
