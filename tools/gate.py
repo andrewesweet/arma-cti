@@ -84,6 +84,8 @@ PATH_TOKEN: Final = re.compile(r"[A-Za-z0-9_.\-]+(?:/[A-Za-z0-9_.\-]+)+")
 
 # How CONTEXT.md spells a term it is defining: a bold label opening a line, colon-closed.
 CONTEXT_TERM: Final = re.compile(r"^\*\*([A-Z][A-Za-z ]*)\*\*:", re.MULTILINE)
+AVOID_LINE: Final = re.compile(r"^[ \t]*_Avoid_:[ \t]*(.+?)\s*$", re.MULTILINE)
+QUOTED_AVOID: Final = re.compile(r'^["“]([^"”]+)["”]')
 
 # Two words that name the world without being domain nouns, so CONTEXT.md has no entry for
 # them and never will. Everything else in the vocabulary is read from that document.
@@ -103,14 +105,70 @@ class Gate(NamedTuple):
         return self.kind == GATE_REGRESS
 
 
+class Language(NamedTuple):
+    """The runtime-read domain language and its discouraged aliases."""
+
+    terms: tuple[str, ...]
+    avoids: tuple[tuple[str, str], ...]
+
+
+def _avoid_terms(value: str) -> tuple[str, ...]:
+    """Read comma/semicolon-separated aliases, dropping inline explanations."""
+    terms: list[str] = []
+    for raw_term in re.split(r"[;,]", value):
+        candidate = raw_term.strip()
+        if not candidate:
+            continue
+        quoted = QUOTED_AVOID.match(candidate)
+        if quoted is not None:
+            candidate = quoted.group(1).strip()
+        else:
+            candidate = candidate.partition("(")[0].strip()
+        if candidate:
+            terms.append(candidate)
+    return tuple(terms)
+
+
+def domain_language(context: str) -> Language:
+    """Read terms and their ``_Avoid_`` aliases from one CONTEXT.md document.
+
+    The existing briefing vocabulary is derived from this same representation. Keeping the
+    aliases beside the terms lets acceptance lint name the ratified replacement without making a
+    second copy of the glossary.
+    """
+    matches = tuple(CONTEXT_TERM.finditer(context))
+    terms = tuple(
+        sorted({match.group(1).strip() for match in matches}, key=lambda term: (-len(term), term))
+    )
+    avoided: list[tuple[str, str]] = []
+    for index, match in enumerate(matches):
+        end = matches[index + 1].start() if index + 1 < len(matches) else len(context)
+        block = context[match.end() : end]
+        avoid = AVOID_LINE.search(block)
+        if avoid is None:
+            continue
+        canonical = match.group(1).strip()
+        avoided.extend((candidate.strip(), canonical) for candidate in _avoid_terms(avoid.group(1)))
+    return Language(terms, tuple(sorted(set(avoided), key=lambda item: (item[0], item[1]))))
+
+
 def domain_vocabulary(context: str) -> tuple[str, ...]:
     """Return CONTEXT.md's Language terms plus the two engine words, longest first.
 
     Longest first so that `Command Port` is matched before `Command` and the alternation
     cannot report the shorter term for a mention of the longer one.
     """
-    terms = set(CONTEXT_TERM.findall(context)) | set(ENGINE_WORDS)
+    terms = set(domain_language(context).terms) | set(ENGINE_WORDS)
     return tuple(sorted(terms, key=lambda term: (-len(term), term)))
+
+
+def read_language(repo: Path = REPO) -> Language | None:
+    """Read the live glossary, returning ``None`` when CONTEXT.md cannot be read."""
+    document = repo / "CONTEXT.md"
+    try:
+        return domain_language(document.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError):
+        return None
 
 
 def read_vocabulary(repo: Path = REPO) -> tuple[str, ...]:
@@ -120,11 +178,11 @@ def read_vocabulary(repo: Path = REPO) -> tuple[str, ...]:
     not become a `just fast`: `derive_gate` takes the empty tuple as a reason to refuse to
     decide, on #41's shape — a check that could not run is not a check that passed.
     """
-    document = repo / "CONTEXT.md"
-    try:
-        return domain_vocabulary(document.read_text(encoding="utf-8"))
-    except OSError:
+    language = read_language(repo)
+    if language is None:
         return ()
+    terms = set(language.terms) | set(ENGINE_WORDS)
+    return tuple(sorted(terms, key=lambda term: (-len(term), term)))
 
 
 def named_paths(body: str) -> tuple[str, ...]:

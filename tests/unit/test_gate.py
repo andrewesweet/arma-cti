@@ -70,6 +70,47 @@ def test_domain_vocabulary_reads_terms_longest_first_with_the_engine_words() -> 
     assert vocab.index("Command Port") < vocab.index("Command")
 
 
+def test_domain_language_returns_avoid_aliases_with_their_ratified_term() -> None:
+    context = "## Language\n\n**Campaign**: a playthrough.\n_Avoid_: Game, save\n"
+
+    language = gate.domain_language(context)
+
+    assert language.terms == ("Campaign",)
+    assert language.avoids == (("Game", "Campaign"), ("save", "Campaign"))
+
+
+def test_domain_language_sorts_avoid_aliases_by_alias_not_canonical_term() -> None:
+    context = (
+        "## Language\n\n"
+        "**Zeta**: a term.\n_Avoid_: alpha\n\n"
+        "**Alpha**: another term.\n_Avoid_: zulu\n"
+    )
+
+    language = gate.domain_language(context)
+
+    assert language.avoids == (("alpha", "Zeta"), ("zulu", "Alpha"))
+
+
+def test_domain_language_does_not_assign_a_later_term_avoid_list_to_an_earlier_term() -> None:
+    context = "## Language\n\n**Zeta**: a term.\n\n**Alpha**: another term.\n_Avoid_: old\n"
+
+    language = gate.domain_language(context)
+
+    assert language.avoids == (("old", "Alpha"),)
+
+
+def test_domain_language_reads_aliases_before_semicolon_explanations() -> None:
+    context = (
+        "## Language\n\n"
+        "**Command**: an instruction.\n"
+        '_Avoid_: packet (wire data); "command" unqualified for engine scripting commands\n'
+    )
+
+    language = gate.domain_language(context)
+
+    assert language.avoids == (("command", "Command"), ("packet", "Command"))
+
+
 def test_domain_mentions_is_case_sensitive_and_bounded() -> None:
     # Case matters: a lower-case "base" is ordinary English, not a claim about the world. Word
     # boundaries matter: "FireBase" does not contain the term "Base" for these purposes. Empty

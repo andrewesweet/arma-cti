@@ -29,6 +29,7 @@ check:
     exec uv run python tools/gate_clock.py run --recipe check \
         --leg check-commits --leg check-generated --leg check-adr \
         --leg check-source-link --leg check-gated-paths --leg check-unicode --leg check-command-table \
+        --leg check-acceptance \
         --leg check-markers \
         --leg check-conflicts --leg check-changelog --leg check-gate-clock \
         --leg check-seats --leg check-just-grants --leg check-arbiter \
@@ -107,6 +108,17 @@ check-unicode:
 # must stay in the table and name recipes the candidate justfile resolves (#544).
 check-command-table:
     uv run python tools/check_command_table.py
+
+# Every authored obligation is Gherkin-parseable, vocabulary-linted and free of
+# unratified provisional terms before a landing can proceed (#592).
+check-acceptance:
+    uv run python tools/acceptance.py check
+
+# Lint and execute one key-addressed obligation, preserving passed, failure,
+# non-result and held-to-review as distinct JSON results (#592).
+[positional-arguments]
+accept *args:
+    uv run python tools/acceptance.py run "$@"
 
 # Human-facing writer for one change-bound approval. Dispatched sessions are
 # refused, and the approval store is outside every worktree.

@@ -1006,8 +1006,9 @@ def test_the_remedys_just_check_clause_is_true_of_every_tool_it_scopes() -> None
     `just check` tool and #358 a tenth, `tools/check_changelog.py`; #446's fix round added
     an eleventh, `tools/gate_clock.py`, when its anchor check gained a `check-gate-clock`
     leg; #448 added `tools/check_just_grants.py` as the twelfth; #484 added
-    `tools/check_attributes.py` as the thirteenth, the attribute registry's leg. The clause
-    scopes those thirteen and names `tools/breaker.py` separately, so this asserts both
+    `tools/check_attributes.py` as the thirteenth, the attribute registry's leg. #592 adds
+    `tools/acceptance.py` as a named gate path. The clause scopes the thirteen omitted
+    tools and names `tools/breaker.py` separately, so this asserts both
     halves against the justfile rather than against the sentence.
     """
     conflict = next(rule for rule in policy().rules if rule.id == 6)
