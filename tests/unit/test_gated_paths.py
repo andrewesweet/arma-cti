@@ -96,6 +96,18 @@ def test_a_codex_shaped_agents_edit_is_caught_without_running_the_hook(tmp_path:
     assert report.exit_code == 1
     assert "refusal=approval_missing" in report.lines
     assert "path=AGENTS.md" in report.lines
+    binding = gated_paths.binding_of(repo, "AGENTS.md")
+    action = next(line for line in report.lines if line.startswith("action="))
+    change_command = (
+        f"just gated-paths approve --issue {ISSUE} --path AGENTS.md --change-id {binding.change_id}"
+    )
+    content_command = (
+        f"just gated-paths approve --issue {ISSUE} --path AGENTS.md"
+        f" --content-id {binding.content_id}"
+    )
+    assert change_command in action
+    assert content_command in action
+    assert action.index(change_command) < action.index(content_command)
 
 
 def test_a_committed_gated_edit_is_still_caught_at_the_landing_boundary(tmp_path: Path) -> None:
@@ -122,6 +134,137 @@ def test_an_exact_tool_owned_approval_clears_the_gate(tmp_path: Path) -> None:
     assert report.lines[0] == "gated_paths=ok changed=1 authorization=recorded"
     assert any(f"content_id={content_id}" in line for line in report.lines)
     assert "verified=path_scan,record_shape,change_binding" in report.lines
+
+
+def test_a_change_id_approval_survives_an_unrelated_commit_before_approval(
+    tmp_path: Path,
+) -> None:
+    """The human's identifier remains usable while unrelated main work lands."""
+    repo = repository(tmp_path)
+    store = tmp_path / "approvals"
+    (repo / "AGENTS.md").write_text("approved instructions\n", encoding="utf-8")
+    before = gated_paths.binding_of(repo, "AGENTS.md")
+    supplied_change_id = before.change_id
+
+    git(repo, "checkout", "-q", "-b", "main-ahead", "origin/main")
+    (repo / "ordinary.txt").write_text("unrelated main work\n", encoding="utf-8")
+    git(repo, "add", "ordinary.txt")
+    git(repo, "commit", "-q", "-m", "unrelated main work")
+    git(repo, "update-ref", "refs/remotes/origin/main", "HEAD")
+    git(repo, "checkout", "-q", "work")
+
+    approval, target, added = gated_paths.record_approval(
+        repo,
+        store,
+        issue=ISSUE,
+        path="AGENTS.md",
+        expected_change_id=supplied_change_id,
+        approved_at=STAMP,
+        approved_by="andre",
+        environ={},
+    )
+
+    assert added
+    assert target == gated_paths.approval_path(store, ISSUE, approval.content_id)
+    assert approval.change_id == supplied_change_id
+    assert approval.content_id != before.content_id
+    report = gated_paths.check(repo, store, issue=ISSUE)
+
+    assert report.exit_code == 0
+    assert any(
+        line.startswith("approval=recorded") and f"content_id={approval.content_id}" in line
+        for line in report.lines
+    )
+
+
+def test_content_and_change_id_routes_write_identical_records(tmp_path: Path) -> None:
+    repo = repository(tmp_path)
+    (repo / "AGENTS.md").write_text("approved instructions\n", encoding="utf-8")
+    binding = gated_paths.binding_of(repo, "AGENTS.md")
+    content_store = tmp_path / "content-approvals"
+    change_store = tmp_path / "change-approvals"
+
+    content_approval, _content_target, content_added = gated_paths.record_approval(
+        repo,
+        content_store,
+        issue=ISSUE,
+        path="AGENTS.md",
+        expected_content_id=binding.content_id,
+        approved_at=STAMP,
+        approved_by="andre",
+        environ={},
+    )
+    change_approval, _change_target, change_added = gated_paths.record_approval(
+        repo,
+        change_store,
+        issue=ISSUE,
+        path="AGENTS.md",
+        expected_change_id=binding.change_id,
+        approved_at=STAMP,
+        approved_by="andre",
+        environ={},
+    )
+
+    assert content_added
+    assert change_added
+    assert content_approval == change_approval
+    assert gated_paths.approval_path(content_store, ISSUE, binding.content_id).read_bytes() == (
+        gated_paths.approval_path(change_store, ISSUE, binding.content_id).read_bytes()
+    )
+
+
+def test_both_or_neither_approval_identifiers_are_typed_refusals(tmp_path: Path) -> None:
+    repo = repository(tmp_path)
+    store = tmp_path / "approvals"
+
+    with pytest.raises(gated_paths.ApprovalError) as missing:
+        gated_paths.record_approval(
+            repo,
+            store,
+            issue=ISSUE,
+            path="AGENTS.md",
+            approved_at=STAMP,
+            approved_by="andre",
+            environ={},
+        )
+    assert missing.value.kind == gated_paths.APPROVAL_IDENTIFIER_MISSING
+    assert "content_id=missing change_id=missing" in missing.value.detail
+
+    with pytest.raises(gated_paths.ApprovalError) as both:
+        gated_paths.record_approval(
+            repo,
+            store,
+            issue=ISSUE,
+            path="AGENTS.md",
+            expected_content_id="a" * 64,
+            expected_change_id="b" * 64,
+            approved_at=STAMP,
+            approved_by="andre",
+            environ={},
+        )
+    assert both.value.kind == gated_paths.APPROVAL_IDENTIFIERS_BOTH
+    assert "content_id=provided change_id=provided" in both.value.detail
+
+
+def test_a_nonmatching_change_id_is_refused_by_name(tmp_path: Path) -> None:
+    repo = repository(tmp_path)
+    (repo / "AGENTS.md").write_text("approved instructions\n", encoding="utf-8")
+
+    with pytest.raises(gated_paths.ApprovalError) as refused:
+        gated_paths.record_approval(
+            repo,
+            tmp_path / "approvals",
+            issue=ISSUE,
+            path="AGENTS.md",
+            expected_change_id="a" * 64,
+            approved_at=STAMP,
+            approved_by="andre",
+            environ={},
+        )
+
+    assert refused.value.kind == gated_paths.CHANGE_ID_MISMATCH
+    assert "asked=" + "a" * 64 in refused.value.detail
+    assert "actual=" in refused.value.detail
 
 
 def test_an_approval_written_before_commit_still_binds_after_commit(tmp_path: Path) -> None:
@@ -424,7 +567,7 @@ def test_a_delegated_adr_does_not_authorise_another_gated_path_in_the_same_diff(
         encoding="utf-8",
     )
     (repo / "AGENTS.md").write_text("delegated instructions\n", encoding="utf-8")
-    content_id = gated_paths.content_id_of(repo, "AGENTS.md")
+    binding = gated_paths.binding_of(repo, "AGENTS.md")
 
     report = gated_paths.check(repo, tmp_path / "approvals", issue=ISSUE)
 
@@ -432,10 +575,18 @@ def test_a_delegated_adr_does_not_authorise_another_gated_path_in_the_same_diff(
     assert report.lines[0] == "gated_paths=refused"
     assert "refusal=approval_missing" in report.lines
     assert "path=AGENTS.md" in report.lines
-    assert f"content_id={content_id}" in report.lines
+    assert f"content_id={binding.content_id}" in report.lines
+    assert f"change_id={binding.change_id}" in report.lines
     assert "delegated_record=docs/adr/9999-delegated.md" in report.lines
-    command = f"just gated-paths approve --issue {ISSUE} --path AGENTS.md --content-id {content_id}"
-    assert any(line.startswith("action=") and command in line for line in report.lines)
+    action = next(line for line in report.lines if line.startswith("action="))
+    assert (
+        f"just gated-paths approve --issue {ISSUE} --path AGENTS.md"
+        f" --change-id {binding.change_id}" in action
+    )
+    assert (
+        f"just gated-paths approve --issue {ISSUE} --path AGENTS.md"
+        f" --content-id {binding.content_id}" in action
+    )
     assert gated_paths.LIMIT_LINE in report.lines
 
 
@@ -664,3 +815,35 @@ def test_the_cli_writes_the_record_with_time_and_os_identity(
     assert record["approved_at"] == STAMP
     assert record["approved_by"] == "andre"
     assert record["source"] == "declared_human"
+
+
+def test_the_cli_accepts_change_id_and_writes_the_same_record_shape(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    repo = repository(tmp_path)
+    store = tmp_path / "approvals"
+    (repo / "AGENTS.md").write_text("approved\n", encoding="utf-8")
+    binding = gated_paths.binding_of(repo, "AGENTS.md")
+
+    result = gated_paths.main(
+        [
+            "approve",
+            "--root",
+            str(repo),
+            "--issue",
+            str(ISSUE),
+            "--path",
+            "AGENTS.md",
+            "--change-id",
+            binding.change_id,
+        ],
+        approval_root=store,
+        clock=lambda: datetime(2026, 8, 22, 6, tzinfo=UTC),
+        environ={},
+        approved_by="andre",
+    )
+
+    assert result == 0
+    assert "approval_recorded=yes" in capsys.readouterr().out
+    record = gated_paths.approval_path(store, ISSUE, binding.content_id)
+    assert record.is_file()

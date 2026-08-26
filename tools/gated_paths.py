@@ -90,8 +90,12 @@ PATH_NOT_GATED: Final = "path_not_gated"
 GATED_PATHS_UNREADABLE: Final = "gated_paths_unreadable"
 PATH_NOT_CHANGED: Final = "path_not_changed"
 INVALID_CONTENT_ID: Final = "invalid_content_id"
+INVALID_CHANGE_ID: Final = "invalid_change_id"
 GATED_CONTENT_UNREADABLE: Final = "gated_content_unreadable"
 CONTENT_CHANGED: Final = "content_changed"
+CHANGE_ID_MISMATCH: Final = "change_id_mismatch"
+APPROVAL_IDENTIFIER_MISSING: Final = "approval_identifier_missing"
+APPROVAL_IDENTIFIERS_BOTH: Final = "approval_identifiers_both"
 APPROVAL_UNWRITTEN: Final = "approval_unwritten"
 
 LIMIT_LINE: Final = "not_verified=content_or_quality,human_identity,semantic_gates"
@@ -830,24 +834,33 @@ def direct_approval_remedy(root: Path, issue: int | None, action: str) -> str:
     documented `just check-command-table` path cannot dead-end either (#583).
     """
     try:
-        content_id = content_id_of(root, "AGENTS.md")
+        binding = binding_of(root, "AGENTS.md")
     except GitError:
         return action
+    change_command = "just gated-paths approve"
+    content_command = "just gated-paths approve"
     if issue is None:
         # `approve` requires --issue and this checkout names none, so a printed
         # placeholder would be a usage error, not a remedy (#583 round 4). The
         # human supplies the number the tool refuses to guess.
         return (
-            f"{action} The direct-approval exit is `just gated-paths approve"
-            f" --issue N --path AGENTS.md --content-id {content_id}`, run by the"
+            f"{action} The direct-approval exit is `{change_command}"
+            f" --issue N --path AGENTS.md --change-id {binding.change_id}` (default),"
+            f" or `{content_command} --issue N --path AGENTS.md"
+            f" --content-id {binding.content_id}`, run by the"
             " human after reviewing this exact path diff, with N the issue this"
             " change lands under — this checkout names none, so N was not"
             " guessed. A session must not run it."
         )
-    command = f"just gated-paths approve --issue {issue} --path AGENTS.md --content-id {content_id}"
+    change_command = (
+        f"{change_command} --issue {issue} --path AGENTS.md --change-id {binding.change_id}"
+    )
+    content_command = (
+        f"{content_command} --issue {issue} --path AGENTS.md --content-id {binding.content_id}"
+    )
     return (
         f"{action} Or, after the human reviews this exact path diff, they run"
-        f" `{command}`. A session must not run it."
+        f" `{change_command}` (default), or `{content_command}`. A session must not run it."
     )
 
 
@@ -1042,6 +1055,10 @@ def check(  # noqa: C901, PLR0911, PLR0912, PLR0915 — one report per fail-clos
         else:
             command = (
                 "just gated-paths approve"
+                f" --issue {issue} --path {shlex.quote(path)} --change-id {binding.change_id}"
+            )
+            content_command = (
+                "just gated-paths approve"
                 f" --issue {issue} --path {shlex.quote(path)} --content-id {content_id}"
             )
             return refused(
@@ -1055,7 +1072,8 @@ def check(  # noqa: C901, PLR0911, PLR0912, PLR0915 — one report per fail-clos
                     *not_carried,
                 ),
                 (
-                    f"After the human reviews this exact path diff, they run `{command}`."
+                    f"After the human reviews this exact path diff, they run `{command}`"
+                    f" (default), or `{content_command}`."
                     " A session must not run it."
                 ),
             )
@@ -1105,13 +1123,14 @@ def _write_record(target: Path, document: str) -> None:
         temporary.unlink(missing_ok=True)
 
 
-def record_approval(  # noqa: C901, PLR0913 — validation ladder; one input per recorded fact
+def record_approval(  # noqa: C901, PLR0912, PLR0913 — validation ladder; one input per recorded fact
     root: Path,
     approvals: Path,
     *,
     issue: int,
     path: str,
-    expected_content_id: str,
+    expected_content_id: str | None = None,
+    expected_change_id: str | None = None,
     approved_at: str,
     approved_by: str,
     environ: Mapping[str, str],
@@ -1126,6 +1145,20 @@ def record_approval(  # noqa: C901, PLR0913 — validation ladder; one input per
                 "A dispatched session cannot approve its own change. Ask the human"
                 " to run the exact command from the refusal."
             ),
+        )
+    has_content_id = expected_content_id is not None
+    has_change_id = expected_change_id is not None
+    if not has_content_id and not has_change_id:
+        raise ApprovalError(
+            APPROVAL_IDENTIFIER_MISSING,
+            "content_id=missing change_id=missing",
+            "Provide exactly one of --change-id or --content-id.",
+        )
+    if has_content_id and has_change_id:
+        raise ApprovalError(
+            APPROVAL_IDENTIFIERS_BOTH,
+            "content_id=provided change_id=provided",
+            "Provide exactly one of --change-id or --content-id, not both.",
         )
     if issue <= 0:
         raise ApprovalError(INVALID_ISSUE, f"issue={issue}", "Name a positive issue number.")
@@ -1158,11 +1191,14 @@ def record_approval(  # noqa: C901, PLR0913 — validation ladder; one input per
             f"path={normalised}",
             "Approve only a path in the current diff; a standing path approval is forbidden.",
         )
-    if not CONTENT_ID.fullmatch(expected_content_id):
+    identifier_name = "content_id" if has_content_id else "change_id"
+    identifier_kind = INVALID_CONTENT_ID if has_content_id else INVALID_CHANGE_ID
+    expected_identifier = expected_content_id if has_content_id else cast("str", expected_change_id)
+    if not CONTENT_ID.fullmatch(expected_identifier):
         raise ApprovalError(
-            INVALID_CONTENT_ID,
-            f"content_id={expected_content_id!r}",
-            "Paste the 64-character content_id from the gate refusal.",
+            identifier_kind,
+            f"{identifier_name}={expected_identifier!r}",
+            f"Paste the 64-character {identifier_name} from the gate refusal.",
         )
     try:
         binding = binding_of(root, normalised)
@@ -1172,19 +1208,25 @@ def record_approval(  # noqa: C901, PLR0913 — validation ladder; one input per
             (f"path={normalised} command={' '.join(failure.args_run)} stderr={failure.stderr}"),
             "Restore the readable path and baseline, then retry.",
         ) from failure
-    actual = binding.content_id
-    if actual != expected_content_id:
+    actual_identifier = binding.content_id if has_content_id else binding.change_id
+    if actual_identifier != expected_identifier:
+        if has_content_id:
+            raise ApprovalError(
+                CONTENT_CHANGED,
+                f"path={normalised} asked={expected_identifier} actual={actual_identifier}",
+                (
+                    "Run `just check` again. It may carry a prior text approval by exact replay;"
+                    " otherwise review the current path diff and use the new content_id it prints."
+                ),
+            )
         raise ApprovalError(
-            CONTENT_CHANGED,
-            f"path={normalised} asked={expected_content_id} actual={actual}",
-            (
-                "Run `just check` again. It may carry a prior text approval by exact replay;"
-                " otherwise review the current path diff and use the new content_id it prints."
-            ),
+            CHANGE_ID_MISMATCH,
+            f"path={normalised} asked={expected_identifier} actual={actual_identifier}",
+            "Run `just check` again. Review the current path diff and use the change_id it prints.",
         )
 
     approval = _approval_for(issue, normalised, binding, approved_at, approved_by)
-    target = approval_path(approvals, issue, actual)
+    target = approval_path(approvals, issue, binding.content_id)
     with _approval_lock(approvals, issue):
         if target.exists():
             read_approval(target, approval)
@@ -1193,7 +1235,7 @@ def record_approval(  # noqa: C901, PLR0913 — validation ladder; one input per
             "version": APPROVAL_VERSION,
             "issue": issue,
             "path": normalised,
-            "content_id": actual,
+            "content_id": binding.content_id,
             "change_id": binding.change_id,
             "base_sha": binding.base_sha,
             "result_payload": base64.b64encode(binding.result_payload).decode("ascii"),
@@ -1224,7 +1266,8 @@ def _parser() -> argparse.ArgumentParser:
     approve.add_argument("--root", type=Path, default=Path.cwd())
     approve.add_argument("--issue", type=int, required=True)
     approve.add_argument("--path", required=True)
-    approve.add_argument("--content-id", required=True)
+    approve.add_argument("--content-id")
+    approve.add_argument("--change-id")
     return parser
 
 
@@ -1262,6 +1305,7 @@ def main(
             issue=args.issue,
             path=args.path,
             expected_content_id=args.content_id,
+            expected_change_id=args.change_id,
             approved_at=now,
             approved_by=actor,
             environ=environment,
