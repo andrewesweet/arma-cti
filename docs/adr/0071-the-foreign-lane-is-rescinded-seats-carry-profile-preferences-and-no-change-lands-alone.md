@@ -104,9 +104,10 @@ kept from drifting and states the check's two limits beside the mechanism.
 Amended: 2026-08-27, on the human's ruling of that date, which replaces four
 rows of ruling 2's table. One amendment, marked inline at the passage it changes
 — **A10** gives `implementer`, `recon`, `review` and `retro` new preference
-orders, gives `review` its own list and its own escalation entry in place of the
-implementer's, and registers GLM-5.3-Flash on the z.ai lane's sonnet slot to
-carry the two seats whose heads the ruling moved there. It reverses no other
+orders, replaces `retro`'s escalation entry as well, gives `review` its own list
+and its own escalation entry in place of the implementer's, and registers
+GLM-5.3-Flash on the z.ai lane's sonnet slot to carry the two seats whose heads
+the ruling moved there. It reverses no other
 decision: ruling 4's exclusion rule, the different-lane preference and
 `review_same_profile` are untouched. The `Reviewed-by-human:` line above covers
 the version at the 2026-08-15 sign-off and does not reach A10; this ruling is
@@ -247,7 +248,7 @@ replaced by a preference list per seat, resolved at dispatch time.
 | `implementer` | `zai-glm53flash-max`, `codex-luna-max`, `opus-low` *(A10; the row was decided as `codex-luna-max`, `zai-glm52-max`, `opus-low`, and A6 had already recorded that the z.ai entry is `zai-glm53-max` in the registry since `89fc445`)* | `codex-sol-high`, `zai-glm53-max`, `opus-high` *(A10)* |
 | `recon` (read-only) | `zai-glm53flash-high`, `codex-luna-medium`, `haiku-medium` *(A10)* | — never escalates (A1) |
 | `review` | its own list — `codex-sol-xhigh`, `zai-glm53-max`, `opus-medium` — resolved to the first profile that is **not** the one being reviewed and not one the issue's records place on the work, preferring a different lane *(A10, replacing "the implementer's list")* | `codex-sol-max`, `opus-xhigh` *(A10, replacing "the implementer's escalation head")* |
-| `retro` (ruling 3) | `fable-high`, `codex-sol-max`, `opus-xhigh` *(A10)* | `opus-max`, `fable-max` (A1) |
+| `retro` (ruling 3) | `fable-high`, `opus-xhigh`, `codex-sol-max` *(A10)* | `fable-xhigh`, `opus-max` *(A10, replacing A1's cell)* |
 | `orchestrator` | `opus-xhigh`; Claude only, provisional per ruling 1 | `opus-max`, `fable-xhigh` (A1) |
 | interlocutor — **not dispatched** | `opus-xhigh`, `codex-sol-xhigh` | — not dispatched (A1) |
 
@@ -271,7 +272,15 @@ the lane the human's rule of 2026-08-05 confines to off-peak hours, so a peak
 dispatch to that seat resolves past it to `codex-luna-max` and records that it
 did; and `review`'s first `claude-native` entry moved from `opus-low` to
 `opus-medium`, which is the pair a generated Claude seat surface would declare
-if that seat ever gained one.)*
+if that seat ever gained one. A third is worth stating because A1 chose the cell
+this ruling replaces: `retro`'s escalation head is now `fable-xhigh` while its
+preference head is `fable-high`. Ruling 4 is satisfied — they are different
+profiles, and `review_same_profile` is about the instance producing the verdict
+— but A1 filled that cell so the arbiter would not be the profile most likely to
+have authored the rounds it judges (#318: `fable-high` authored every one), and
+the arbiter and that likely author now share a model where they previously
+shared neither model nor lane. Recorded rather than argued: the cell is the
+human's.)*
 
 *(Amendment A1, 2026-08-15, on the human's ruling of 2026-08-14 recorded at
 #361: the escalation column had four empty cells, and the question put was
