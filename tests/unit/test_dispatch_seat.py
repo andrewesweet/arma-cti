@@ -336,7 +336,7 @@ def test_the_dry_run_prints_the_resolved_profile_and_why_that_one(
 
     The instant is injected for the module docstring's reason: the z.ai entry must be
     walked past on its absent credential, and inside the published peak band it would be
-    walked past on the hour instead, which is a different claim (#341). The codex head is
+    walked past on the hour instead, which is a different claim (#341). The codex rung is
     tripped so that the list is walked at all — since #405 it resolves, and a criterion
     about *which entries were passed over and why* needs a list with something in front of
     the answer.
@@ -353,7 +353,7 @@ def test_the_dry_run_prints_the_resolved_profile_and_why_that_one(
     assert "route_passed_over=zai-glm53flash-max refusal=credentials_missing" in printed
 
 
-def test_a_blocked_head_is_stepped_past_rather_than_dispatched(
+def test_a_blocked_entry_is_stepped_past_rather_than_dispatched(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """The pair block is a skip for a resolver and a refusal for a caller who names it.
@@ -564,7 +564,7 @@ def test_naming_a_blocked_profile_is_refused_rather_than_resolved_around(
     assert refusal.kind == "profile_blocked_for_seat"
 
 
-def test_naming_the_codex_head_for_the_implementer_seat_now_dispatches(tmp_path: Path) -> None:
+def test_naming_the_codex_rung_for_the_implementer_seat_now_dispatches(tmp_path: Path) -> None:
     """#405: the pair that was the block list's only entry is an ordinary dispatch now.
 
     And its brief carries the seam the sandbox forces — the session gates, the harness

@@ -389,14 +389,14 @@ def test_every_incomplete_read_leaves_the_resolution_unchecked() -> None:
 def test_the_production_read_sees_reviewers_and_excludes_them(tmp_path: Path) -> None:
     """#333 round 1, High 2: the reviewers are on the dispatch records, not in a parameter.
 
-    #318's shape, read the way production reads it, on the cells the registry carries today:
-        `fable-high` authored the issue and the reviewer holds the walk's head. On #318 itself
-        that reviewer was `opus-xhigh`, which the ruling of 2026-08-27 moved off the head, so
-        the arrangement stages `fable-xhigh` there instead — the point being that the reviewer
-        is whoever the walk would otherwise take. The arbiter scan must see the reviewer,
-        exclude it, and answer `opus-max`; the authorship-only scan the review seat uses walks
-        past the same record, which would read that reviewer as free and hand the walk its own
-        reviewer.
+    #318's shape, read the way production reads it, on the cells the registry carries
+    today: `fable-high` authored the issue and the reviewer sits on the walk's head. The
+    claim needs a reviewer *at the head*, so the arrangement stages whichever profile heads
+    the walk today — `fable-xhigh` since the ruling of 2026-08-27, and not #318's own
+    reviewer, which was `opus-xhigh` and sits in the preference list rather than at the
+    head. The arbiter scan must see the reviewer, exclude it, and answer `opus-max`; the
+    authorship-only scan the review seat uses walks past the same record, which would read
+    that reviewer as free and hand the walk its own reviewer.
     """
     dispatch_dir = tmp_path / "dispatches"
     record(dispatch_dir, "d1", issue=318, profile="fable-high", seat="retro")
