@@ -317,8 +317,9 @@ NAMES: Final[dict[str, Name]] = {
     "cti.relation.reviewer": Name(
         "attribute",
         "required",
-        "The dispatch whose verdict cleared the work, distinguished from the authors"
-        " by qualifier alone — the distinction #491 exists to make checkable.",
+        "The dispatch or declared human reviewer whose verdict cleared the work,"
+        " distinguished from the authors by qualifier alone — the distinction #491"
+        " and #586 exist to make checkable.",
     ),
     "cti.relation.produced": Name(
         "attribute",
@@ -986,20 +987,22 @@ class Relation(NamedTuple):
 
 # The relation vocabulary's two closed halves (#491), each value with its reason.
 # Qualifiers are the roles an object can play in an event; types are the kinds of
-# object a relation can name. The spec's seven types are joined by an eighth,
-# `authorship_declaration`, because #398's second author source is a live shape the
-# seven could not express — a declared author is not a dispatch, and relating it as
-# one would forge a record #294's bar guarantees cannot exist. A relation that only
-# names dispatches silently exempts exactly the changes #398 exists to cover.
+# object a relation can name. The spec's seven types are joined by two more,
+# `authorship_declaration` and `human_reviewer`, because #398's second author source
+# and #586's declared review source are live shapes the seven could not express — a
+# declared object is not a dispatch, and relating it as one would forge a record the
+# never-alone bar guarantees cannot exist. A relation that only names dispatches
+# silently loses exactly the human-authored and human-reviewed changes these records
+# exist to make visible.
 RELATION_QUALIFIERS: Final[dict[str, str]] = {
     "subject": "The object the event is chiefly about — the landing's issue.",
     "author": "An object the records place on the work as a potential author: a"
     " dispatch, or an authorship declaration where an interactive session declared"
     " itself (#398). A potential-author set entry, never a finding that it wrote a"
     " line.",
-    "reviewer": "The dispatch whose verdict cleared the work. Distinguishing author"
-    " from reviewer by qualifier alone is what makes the never-alone rule checkable"
-    " from the record (#491's third criterion).",
+    "reviewer": "The dispatch or declared human reviewer whose verdict cleared the work."
+    " Distinguishing author from reviewer by qualifier alone is what makes the never-alone"
+    " rule checkable from the record (#491's third criterion, #586).",
     "produced": "An object this event brought into being — the commit a landing pushed.",
     "consumed": "An object this event read without changing. Registered ahead of the"
     " surface, not emitted by one: no event carries this qualifier yet, and the row"
@@ -1023,6 +1026,8 @@ OBJECT_TYPES: Final[dict[str, str]] = {
     "authorship_declaration": "An interactive session's declared authorship (#398),"
     " by the profile it declared — the record is `authorship.json`, and the profile"
     " is the id a never-alone check needs.",
+    "human_reviewer": "A registered profile a human declared as the reviewer (#586);"
+    " the review-state record is `human-verdict.json`, and no dispatch id is implied.",
 }
 
 # The four gate-review causes (ADR-0073 Amendment A2, #426), stated once here so

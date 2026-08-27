@@ -27,6 +27,7 @@ if TYPE_CHECKING:
 
 review_exchange = load_tool("review_exchange")
 attribute_registry = load_tool("attribute_registry")
+review_loop = load_tool("review_loop")
 worktree = load_tool("worktree")
 
 SHA = "a" * 40
@@ -327,6 +328,123 @@ def test_record_writes_the_derived_identity_beside_the_dispatch(tmp_path: Path) 
     assert recorded["reviewed_sha"] == SHA
     assert recorded["diff_id"] == DIFF_ID
     assert recorded["findings"] == [{"id": "f1", "severity": "high"}]
+    assert recorded["reviewer_kind"] == "derived"
+
+
+def test_a_human_record_declares_identity_in_a_separate_review_record(
+    tmp_path: Path,
+) -> None:
+    """A human's identity is explicit, while the agent path remains dispatcher-derived."""
+    dispatch_root = tmp_path / "dispatches"
+    dispatch_dir(
+        dispatch_root,
+        "d-author",
+        seat="implementer",
+        profile="codex-luna-max",
+        lane="codex",
+    )
+    review_root = tmp_path / "review"
+
+    outcome = review_exchange.record_human_verdict(
+        332,
+        SHA,
+        json.dumps([{"id": "f1", "severity": "high"}]),
+        dispatch_root,
+        review_root=review_root,
+        diff_id=DIFF_ID,
+        reviewer_profile="opus-high",
+        now="2026-08-15T12:00:00+00:00",
+    )
+
+    assert not isinstance(outcome, review_exchange.Refusal)
+    assert outcome.verdict.reviewer_kind == "declared"
+    assert outcome.verdict.review_dispatch == ""
+    assert outcome.verdict.reviewer_profile == "opus-high"
+    assert outcome.verdict.reviewer_lane == "claude-native"
+    assert outcome.path == review_root / "332" / review_exchange.HUMAN_VERDICT_NAME
+    recorded = json.loads(outcome.path.read_text(encoding="utf-8"))
+    assert recorded["reviewer_kind"] == "declared"
+    assert recorded["review_dispatch"] == ""
+
+    bound = review_exchange.bound_verdict(332, SHA, dispatch_root, DIFF_ID, review_root=review_root)
+    assert isinstance(bound, review_exchange.BoundVerdict)
+    assert bound.binding.dispatch_id == ""
+    assert bound.binding.reviewer_kind == "declared"
+
+
+def test_a_declared_human_verdict_refuses_a_dispatched_session(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    dispatch_root = tmp_path / "dispatches"
+    dispatch_dir(dispatch_root, "d-author", seat="implementer", profile="codex-luna-max")
+    review_root = tmp_path / "review"
+    monkeypatch.setenv("CTI_DISPATCH_ID", "d-agent")
+
+    outcome = review_exchange.record_human_verdict(
+        332,
+        SHA,
+        "[]",
+        dispatch_root,
+        review_root=review_root,
+        diff_id=DIFF_ID,
+        reviewer_profile="opus-high",
+    )
+
+    assert isinstance(outcome, review_exchange.Refusal)
+    assert outcome.kind == "human_verdict_from_dispatch"
+    assert "mechanical floor" in outcome.action
+    assert not (review_root / "332" / review_exchange.HUMAN_VERDICT_NAME).exists()
+
+
+def test_a_human_verdict_refuses_the_human_author(tmp_path: Path) -> None:
+    dispatch_root = tmp_path / "dispatches"
+    dispatch_dir(dispatch_root, "d-author", seat="implementer", profile="opus-high")
+
+    outcome = review_exchange.record_human_verdict(
+        332,
+        SHA,
+        "[]",
+        dispatch_root,
+        review_root=tmp_path / "review",
+        diff_id=DIFF_ID,
+        reviewer_profile="opus-high",
+    )
+
+    assert isinstance(outcome, review_exchange.Refusal)
+    assert outcome.kind == "review_same_profile"
+    assert "reviewer_profile=opus-high" in outcome.found
+
+
+def test_a_human_verdict_refuses_a_declared_human_author(tmp_path: Path) -> None:
+    dispatch_root = tmp_path / "dispatches"
+    dispatch_root.mkdir()
+    review_root = tmp_path / "review"
+    author_record = review_loop.authorship_path(review_root, 332)
+    author_record.parent.mkdir(parents=True)
+    author_record.write_text(
+        json.dumps(
+            {
+                "version": review_loop.AUTHORSHIP_VERSION,
+                "issue": 332,
+                "authors": [{"profile": "opus-high"}],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    outcome = review_exchange.record_human_verdict(
+        332,
+        SHA,
+        "[]",
+        dispatch_root,
+        review_root=review_root,
+        diff_id=DIFF_ID,
+        reviewer_profile="opus-high",
+    )
+
+    assert isinstance(outcome, review_exchange.Refusal)
+    assert outcome.kind == "review_same_profile"
+    assert f"authored_by={author_record}" in outcome.found
 
 
 def test_a_second_record_of_the_same_dispatch_refuses_and_swaps_nothing(
@@ -517,6 +635,8 @@ def test_verdict_document_roundtrips() -> None:
         {"reviewer_profile": ""},
         {"recorded_at": ""},
         {"alternates": ("d-0", 7)},
+        {"reviewer_kind": "declared"},  # declared identity cannot carry a dispatch id
+        {"reviewer_kind": "other"},
     ],
 )
 def test_verdict_parsing_refuses_every_shape_below_the_floor(
@@ -1481,6 +1601,50 @@ def test_cli_records_shows_and_prints_the_limit(
     shown = capsys.readouterr().out
     assert f"satisfies={head} yes" in shown
     assert review_exchange.SAME_USER_LIMIT in shown
+
+
+def test_cli_records_a_declared_human_verdict_and_prints_its_kind(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    repo, head = ahead_repo(tmp_path)
+    dispatch_root = tmp_path / "dispatches"
+    dispatch_dir(
+        dispatch_root,
+        "d-author",
+        seat="implementer",
+        profile="codex-luna-max",
+        lane="codex",
+        base_sha=head,
+    )
+    review_root = tmp_path / "review"
+    findings = tmp_path / "findings.json"
+    findings.write_text("[]", encoding="utf-8")
+
+    result = review_exchange.main(
+        [
+            "record",
+            "--issue",
+            "332",
+            "--reviewed-sha",
+            head,
+            "--findings",
+            str(findings),
+            "--repo",
+            str(repo),
+            "--dispatch-dir",
+            str(dispatch_root),
+            "--review-root",
+            str(review_root),
+            "--reviewer-profile",
+            "opus-high",
+        ]
+    )
+
+    assert result == 0
+    output = capsys.readouterr().out
+    assert "reviewer_kind=declared" in output
+    assert "dispatch=none" in output
+    assert (review_root / "332" / review_exchange.HUMAN_VERDICT_NAME).is_file()
 
 
 def test_cli_record_refuses_a_sha_that_names_no_commit(

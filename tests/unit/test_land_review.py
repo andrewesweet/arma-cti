@@ -813,6 +813,32 @@ def test_a_clean_review_clears_without_a_loop(tmp_path: Path) -> None:
     assert "loop=not_needed reason=no_finding_above_low" in cleared
 
 
+def test_a_declared_human_review_clears_and_names_its_provenance(tmp_path: Path) -> None:
+    roots = _stage(tmp_path, plan=None, result=None, verdict=None, rebases=())
+    dispatch_root, review_root = roots
+    recorded = review_exchange.record_human_verdict(
+        ISSUE,
+        SHA,
+        "[]",
+        dispatch_root,
+        review_root=review_root,
+        diff_id=DIFF_ID,
+        reviewer_profile=REVIEWER,
+        now=STAMP,
+    )
+    assert not isinstance(recorded, review_exchange.Refusal)
+
+    outcome = _rung(roots)
+
+    assert outcome.refusal is None
+    assert "reviewer_kind=declared" in outcome.cleared
+    assert "review_dispatch=none profile=codex-luna-max lane=codex" in outcome.cleared
+    assert (
+        land_review.attribute_registry.Relation("reviewer", "human_reviewer", REVIEWER)
+        in outcome.relations
+    )
+
+
 def test_low_findings_adjudicate_nothing(tmp_path: Path) -> None:
     """Low is below the stop condition's band: no loop, no route, no refusal."""
     outcome = _rung(_stage(tmp_path, verdict=_verdict(findings=(("f1", "low"),))))

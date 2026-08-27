@@ -3,9 +3,10 @@
 ADR-0071 ruling 4 names three facts a landing must be able to show, and this module
 is the ladder that reads them off records other tools wrote:
 
-1. **A review dispatch record for the commit being landed** — `seat=review`, on
-   this issue, whose `base_sha` is this SHA, completed. `review_exchange`'s
-   derivation decides it (#332), and this rung enforces rather than re-derives:
+1. **A review record for the commit being landed** — either a completed
+   `seat=review` dispatch on this issue whose `base_sha` is this SHA, or a declared
+   human record for this issue. `review_exchange`'s derivation decides the agent
+   case (#332), and this rung enforces rather than re-derives:
    a verdict satisfies the SHA it names, or a moved SHA where two facts both
    hold (`satisfies`, #417 reworked) — the move is a chain of clean rebases the
    tooling recorded, and the landing diff's exact identity matches the recorded
@@ -118,10 +119,12 @@ act of it that is this issue's: it folds the findings of the verdict *this rung
 will read* into the loop, from the record rather than from a flag, so the seat
 under review cannot re-grade its own review on the way in.
 
-**The loop record is not identity-bound, and the verdict is.** A verdict names a
-dispatch, a profile and a lane, and `verify` re-derives all three from the records
-at read time, so a hand-edit is caught. A loop record carries no dispatch, no SHA
-and no arbiter identity: `route` is a string, and a hand-written
+**The loop record is not identity-bound, and the verdict is.** A derived verdict names
+a dispatch, a profile and a lane, and `verify` re-derives all three from the records
+at read time, so a hand-edit is caught. A declared human verdict names a registered
+profile and lane in its separate review-state record, and the landing re-reads that
+record rather than treating it as an agent dispatch. A loop record carries no
+dispatch, no SHA and no arbiter identity: `route` is a string, and a hand-written
 `arbiter_dismissed` clears as readily as an arbiter's. ADR-0071 ruling 4 concedes
 the same-user limit — every dispatch runs as one user, so these records protect
 against the accident and the shortcut, not against a deceptive agent — and the
@@ -437,10 +440,11 @@ def _landing_relations(
     One derivation, this function, feeding both halves of the record: the clearance
     lines a lander quotes and the event the landing journals — a second derivation
     anywhere is the two-readers drift #445's finding 3 named. The subject is the
-    issue, the produced object the commit the verdict bound, the reviewer the
-    dispatch that bound it, and every potential author an object of its own source:
-    a `dispatch` where a dispatch record placed the profile, an
-    `authorship_declaration` where an interactive session declared it (#398). The
+    issue, the produced object the commit the verdict bound, the reviewer provenance
+    that bound it (`dispatch` for a derived reviewer, `human_reviewer` for a declared
+    one), and every potential author an object of its own source: a `dispatch` where
+    a dispatch record placed the profile, an `authorship_declaration` where an
+    interactive session declared it (#398). The
     two are told apart by the record that placed the profile, never by whether the
     profile also appears in the declaration: `with_declared_authors` appends the
     declaration's own path as the record for a name it adds and never re-adds a
@@ -457,10 +461,20 @@ def _landing_relations(
         )
         for profile, record in zip(authorship.potential, authorship.records, strict=True)
     ]
+    reviewer_type = (
+        "human_reviewer"
+        if binding.reviewer_kind == review_exchange.DECLARED_REVIEWER
+        else "dispatch"
+    )
+    reviewer_id = (
+        binding.profile
+        if binding.reviewer_kind == review_exchange.DECLARED_REVIEWER
+        else binding.dispatch_id
+    )
     return (
         attribute_registry.relation("subject", "issue", str(issue)),
         attribute_registry.relation("produced", "commit", sha),
-        attribute_registry.relation("reviewer", "dispatch", binding.dispatch_id),
+        attribute_registry.relation("reviewer", reviewer_type, reviewer_id),
         *authors,
     )
 
@@ -686,7 +700,7 @@ def _gate_review_decision(
                 f"gate_review={attribute_registry.GATE_SAME_LANE_CHOSEN}"
                 f" reviewer_lane={reviewer_lane} {where}"
                 f" same_lane_authors={shared} free_lanes={' '.join(available)}"
-                f" barred_lanes={named} review_dispatch={binding.dispatch_id}"
+                f" barred_lanes={named} review_dispatch={binding.dispatch_id or 'none'}"
             ),
             SAME_LANE_CHOSEN_LIMIT,
         ),
@@ -899,7 +913,12 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
     # recorded clean-rebase links ride the same call for the same reason: both halves of
     # #417's binding are part of the binding, not of this rung.
     bound = review_exchange.bound_verdict(
-        issue, sha, dispatch_root, diff_id, review_exchange.read_rebases(review_root, issue)
+        issue,
+        sha,
+        dispatch_root,
+        diff_id,
+        review_exchange.read_rebases(review_root, issue),
+        review_root=review_root,
     )
     if not isinstance(bound, review_exchange.BoundVerdict):
         return Outcome(_landing_refusal(bound), ())
@@ -948,12 +967,18 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
                     f"authored_by={' '.join(authored)}",
                     f"review_dispatch={binding.dispatch_id}",
                 ),
-                "The verdict clearing this commit was produced by a profile the"
-                " issue's own dispatch records place on the work — the proposer"
-                " approving itself, which ruling 4 refuses. Dispatch a review on a"
-                " profile that did not author (`just dispatch --seat review"
-                " --reviewing <profile>`), record its verdict, and land again."
-                " Nothing was pushed.",
+                "The verdict clearing this commit names a profile the issue's own"
+                " records place on the work — the proposer approving itself, which"
+                " ruling 4 refuses. "
+                + (
+                    "Record the human verdict with a registered profile that did not"
+                    " author this change."
+                    if binding.reviewer_kind == review_exchange.DECLARED_REVIEWER
+                    else "Dispatch a review on a profile that did not author (`just"
+                    " dispatch --seat review --reviewing <profile>`), record its verdict,"
+                    " and land again."
+                )
+                + " Nothing was pushed.",
             ),
             (),
         )
@@ -1082,8 +1107,9 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
             (
                 *_authorship_lines(authorship, declared),
                 *gate_review,
+                f"reviewer_kind={verdict.reviewer_kind}",
                 (
-                    f"review_dispatch={binding.dispatch_id} profile={binding.profile}"
+                    f"review_dispatch={binding.dispatch_id or 'none'} profile={binding.profile}"
                     f" lane={binding.lane}"
                 ),
                 f"verdict_sha={sha}",
@@ -1211,7 +1237,11 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
             *_authorship_lines(authorship, declared),
             *gate_review,
             *authorised,
-            f"review_dispatch={binding.dispatch_id} profile={binding.profile} lane={binding.lane}",
+            f"reviewer_kind={verdict.reviewer_kind}",
+            (
+                f"review_dispatch={binding.dispatch_id or 'none'} profile={binding.profile}"
+                f" lane={binding.lane}"
+            ),
             f"verdict_sha={sha}",
             *_binding_lines(bound),
             # Read off the loop rather than written as a literal: the count a lander

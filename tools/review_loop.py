@@ -1604,7 +1604,9 @@ def _cmd_sync(
 
     root = Path(args.root)
     dispatch_root = Path(args.dispatch_dir) if args.dispatch_dir else review_exchange.DISPATCH_ROOT
-    bound = review_exchange.bound_verdict(args.issue, args.reviewed_sha, dispatch_root)
+    bound = review_exchange.bound_verdict(
+        args.issue, args.reviewed_sha, dispatch_root, review_root=root
+    )
     if not isinstance(bound, review_exchange.BoundVerdict):
         for line in bound.lines():
             print(f"[review-loop] {line}")  # noqa: T201 — a CLI's refusal channel

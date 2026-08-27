@@ -25,24 +25,27 @@ preservation act. `exchange` verifies after pushing (`git ls-remote`) that the
 remote resolves to this tree's exact HEAD, because a handover that names a SHA the
 remote does not hold hands the reviewer nothing.
 
-## The verdict record: derived identity, bound SHA
+## The verdict record: derived or declared identity, bound SHA
 
-The verdict lives in `verdict.json` **beside the dispatch that produced it**, under
+An agent verdict lives in `verdict.json` **beside the dispatch that produced it**, under
 `~/.arma-cti/dispatches/<id>/` — outside every worktree, because a record inside the
-tree changes the commit being reviewed.
+tree changes the commit being reviewed. A declared human verdict is the separate
+`human-verdict.json` under the issue's review state; it is never made to look like a
+dispatch record, so its provenance stays visible to every reader.
 
-**The reviewing identity is derived, not declared** — #322's reasoning, one layer
-over. There, a declaration the caller controlled settled nothing, so the dispatch
-records were read for a potential-author set and the route says `checked` rather
-than `verified`. Here, the half a reviewed agent controls is any field it might
-write into a verdict, so `derive_binding` reads the records the **dispatcher**
+**For an agent, the reviewing identity is derived, not declared** — #322's reasoning,
+one layer over. There, a declaration the caller controlled settled nothing, so the
+dispatch records were read for a potential-author set and the route says `checked`
+rather than `verified`. Here, the half a reviewed agent controls is any field it
+might write into a verdict, so `derive_binding` reads the records the **dispatcher**
 wrote: a binding dispatch is one whose record carries `seat=review`, this issue and
 this reviewed SHA as its `base_sha` — which on the review seat is the reviewed
 commit (`docs/review-dispatch.md`), and which defaults to the reviewer
 worktree's own HEAD, so the dispatcher records it without trusting anyone's
 transcription. What the derivation supports is that a review dispatch was bound to
 this commit and completed; it is not evidence the reviewer examined the code well,
-and nothing here says `verified`.
+and nothing here says `verified`. The human route is a different trust class, written
+beside its own seam below rather than weakening this derivation.
 
 **Fail-closed where #322's scan fails open on purpose.** `potential_authors`
 returns the profiles a partial read *did* see, because an incomplete superset still
@@ -111,7 +114,10 @@ import sys
 import tempfile
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Final, NamedTuple
+from typing import TYPE_CHECKING, Final, NamedTuple
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
 
 # tools/ holds standalone scripts rather than an importable package, so a sibling import
 # needs the script's own directory on the path — the device `dispatch.py`, `brief.py` and
@@ -127,6 +133,10 @@ from worktree import Refusal, Report
 VERDICT_NAME: Final = "verdict.json"
 REVIEW_SEAT: Final = "review"
 BOUND: Final = "bound"
+HUMAN_VERDICT_NAME: Final = "human-verdict.json"
+DERIVED_REVIEWER: Final = "derived"
+DECLARED_REVIEWER: Final = "declared"
+DISPATCH_ENV: Final = "CTI_DISPATCH_ID"
 
 
 # Where a review's recognised waits are journalled (#484): beside the loop's per-issue
@@ -622,6 +632,8 @@ FINDING_UNIQUE_ERROR: Final = "a finding id may appear once in a verdict"
 DISPATCH_NAMED_ERROR: Final = "a verdict names the dispatch that produced it"
 PROFILE_NAMED_ERROR: Final = "a verdict names the reviewer profile derived for it"
 LANE_NAMED_ERROR: Final = "a verdict names the reviewer lane derived for it"
+REVIEWER_KIND_ERROR: Final = "a verdict names reviewer_kind as derived or declared"
+DECLARED_DISPATCH_ERROR: Final = "a declared human verdict has no dispatch identity"
 RECORDED_AT_ERROR: Final = "a verdict carries the instant it was recorded"
 ALTERNATES_ERROR: Final = "a verdict's alternates are dispatch ids"
 DISPATCH_ID_ERROR: Final = "a dispatch id is a directory name, never a path"
@@ -661,13 +673,15 @@ def parse_findings(text: str) -> tuple[ReportedFinding, ...]:
 
 
 class Bound(NamedTuple):
-    """The reviewing dispatch the records support for one (issue, reviewed SHA).
+    """The reviewing provenance the records support for one (issue, reviewed SHA).
 
-    `dispatch_id`, `profile` and `lane` are read off that record — written by the
-    dispatcher, never by the reviewed agent. `alternates` names any other completed
-    review dispatch bound to the same commit, so a reader can see the choice the
-    latest-first rule made. Consumers narrow on `kind`, by value rather than
-    `isinstance`, for the re-exec reason `review_loop` documents.
+    For an agent, `dispatch_id`, `profile` and `lane` are read off the dispatch record —
+    written by the dispatcher, never by the reviewed agent. A declared human binding
+    has an empty `dispatch_id`; its profile and lane are read from the separate
+    review-state record. `alternates` names any other completed review dispatch bound
+    to the same commit, so a reader can see the choice the latest-first rule made.
+    Consumers narrow on `kind`, by value rather than `isinstance`, for the re-exec
+    reason `review_loop` documents.
     """
 
     dispatch_id: str
@@ -675,6 +689,7 @@ class Bound(NamedTuple):
     lane: str
     planned_at: str
     alternates: tuple[str, ...]
+    reviewer_kind: str = DERIVED_REVIEWER
 
     @property
     def kind(self) -> str:
@@ -895,6 +910,7 @@ def derive_binding(issue: int, reviewed_sha: str, dispatch_root: Path) -> Bound 
         # Latest-first candidates reversed back to chronological, so `alternates` stays
         # oldest-first as it was when the sort ran the other way.
         alternates=tuple(record.dispatch_id for record in reversed(candidates[1:])),
+        reviewer_kind=DERIVED_REVIEWER,
     )
 
 
@@ -902,11 +918,12 @@ def derive_binding(issue: int, reviewed_sha: str, dispatch_root: Path) -> Bound 
 
 
 class Verdict(NamedTuple):
-    """One review's judgement as a durable record: what commit, who derived, what found.
+    """One review's judgement as a durable record: what commit, which provenance, what found.
 
-    Every identity field is written by `record_verdict` from a `Bound` — never
-    supplied by the caller — so the only hands between the dispatch records and this
-    record are the tool's.
+    A derived verdict's identity fields are written by `record_verdict` from a `Bound` —
+    never supplied by the caller — so the only hands between the dispatch records and
+    that record are the tool's. A declared human verdict carries its provenance kind
+    in a separate review-state record.
     """
 
     issue: int
@@ -918,6 +935,7 @@ class Verdict(NamedTuple):
     findings: tuple[ReportedFinding, ...]
     recorded_at: str
     alternates: tuple[str, ...]
+    reviewer_kind: str = DERIVED_REVIEWER
 
 
 def verdict_document(verdict: Verdict) -> dict[str, object]:
@@ -935,10 +953,11 @@ def verdict_document(verdict: Verdict) -> dict[str, object]:
         ],
         "recorded_at": verdict.recorded_at,
         "alternates": list(verdict.alternates),
+        "reviewer_kind": verdict.reviewer_kind,
     }
 
 
-def parse_verdict(text: str) -> Verdict:
+def parse_verdict(text: str) -> Verdict:  # noqa: C901 — the closed record schema keeps each malformed field's refusal explicit
     """Validate a verdict record's shape, refusing anything that cannot be trusted as one.
 
     The same validation `record_verdict` applies on the way in, applied on the way
@@ -956,14 +975,24 @@ def parse_verdict(text: str) -> Verdict:
     profile = document.get("reviewer_profile")
     lane = document.get("reviewer_lane")
     recorded_at = document.get("recorded_at")
+    reviewer_kind = document.get("reviewer_kind", DERIVED_REVIEWER)
     if not isinstance(issue, int) or isinstance(issue, bool) or issue <= 0:
         raise ReviewExchangeError(ISSUE_ERROR)
     if not isinstance(reviewed_sha, str) or not FULL_SHA.fullmatch(reviewed_sha):
         raise ReviewExchangeError(SHA_ERROR)
     if not isinstance(diff_id, str) or not DIFF_ID.fullmatch(diff_id):
         raise ReviewExchangeError(DIFF_ID_ERROR)
-    if not isinstance(dispatch, str) or not dispatch:
+    if not isinstance(dispatch, str):
         raise ReviewExchangeError(DISPATCH_NAMED_ERROR)
+    if not isinstance(reviewer_kind, str) or reviewer_kind not in (
+        DERIVED_REVIEWER,
+        DECLARED_REVIEWER,
+    ):
+        raise ReviewExchangeError(REVIEWER_KIND_ERROR)
+    if reviewer_kind == DERIVED_REVIEWER and not dispatch:
+        raise ReviewExchangeError(DISPATCH_NAMED_ERROR)
+    if reviewer_kind == DECLARED_REVIEWER and dispatch:
+        raise ReviewExchangeError(DECLARED_DISPATCH_ERROR)
     if not isinstance(profile, str) or not profile:
         raise ReviewExchangeError(PROFILE_NAMED_ERROR)
     if not isinstance(lane, str):
@@ -984,6 +1013,7 @@ def parse_verdict(text: str) -> Verdict:
         findings=findings,
         recorded_at=recorded_at,
         alternates=tuple(alternates),
+        reviewer_kind=reviewer_kind,
     )
 
 
@@ -1020,6 +1050,18 @@ def verdict_path(dispatch_root: Path, dispatch_id: str) -> Path:
         message = f"{DISPATCH_ID_ERROR}: {dispatch_id!r}"
         raise ReviewExchangeError(message)
     return dispatch_root.expanduser() / dispatch_id / VERDICT_NAME
+
+
+def human_verdict_path(review_root: Path, issue: int) -> Path:
+    """Return the separate record path for one declared human review.
+
+    A human verdict is not put beside a fake dispatch: doing so would make a declared
+    identity look derived to every reader that treats `review_dispatch` as provenance.
+    Keeping its own name and root lets the landing say which trust class cleared it.
+    """
+    if issue <= 0:
+        raise ReviewExchangeError(ISSUE_ERROR)
+    return review_root.expanduser() / str(issue) / HUMAN_VERDICT_NAME
 
 
 class Recorded(NamedTuple):
@@ -1165,6 +1207,163 @@ def record_verdict(  # noqa: PLR0911, PLR0913 — one refusal per way a record c
         alternates=binding.alternates,
     )
     path = verdict_path(dispatch_root, binding.dispatch_id)
+    written = _write_verdict_once(path, verdict_document(verdict))
+    if written is not None:
+        return written
+    return Recorded(verdict, path)
+
+
+def _human_dispatch_refusal(environ: Mapping[str, str] | None = None) -> Refusal | None:
+    """Refuse a declared human verdict from a dispatched session.
+
+    This is the mechanical floor, not an identity proof: every session on the box runs
+    as the same user, and a caller can remove this environment variable. It still closes
+    the ordinary route by which a dispatched agent could declare a human clearance for
+    its own work, the same floor `review-loop author` uses.
+    """
+    values = os.environ if environ is None else environ
+    dispatch_id = values.get(DISPATCH_ENV, "").strip()
+    if not dispatch_id:
+        return None
+    return Refusal(
+        "human_verdict_from_dispatch",
+        (f"dispatch_id={dispatch_id}",),
+        "A declared human verdict cannot be recorded from a dispatched session: the"
+        " session already carries a dispatch identity. This environment check is a"
+        " mechanical floor, not an identity proof, because every session runs as the"
+        " same user. Run the human route from an interactive session. Nothing was written.",
+    )
+
+
+def record_human_verdict(  # noqa: C901, PLR0911, PLR0913 — one explicit refusal per way a declared record can be wrong, one parameter per fact the writer owns
+    issue: int,
+    reviewed_sha: str,
+    findings_text: str,
+    dispatch_root: Path,
+    *,
+    review_root: Path,
+    diff_id: str,
+    reviewer_profile: str,
+    now: str | None = None,
+    environ: Mapping[str, str] | None = None,
+) -> Recorded | Refusal:
+    """Write a declared human verdict without changing the agent derivation path.
+
+    This is deliberately the mirror of `record_verdict`, not an identity input added to
+    it. `derive_binding` says an agent identity is never declared because an agent could
+    name a peer and manufacture the separation ruling 4 protects. A human declaring a
+    review is a different trust class: the human is the authority the sign-off gates
+    already defer to, and there is no dispatch whose identity could be misattributed.
+    The distinction is therefore written as `reviewer_kind=declared` in a separate file,
+    not smuggled into the derived record. The dispatch check below is only a mechanical
+    floor, not proof of who is at the keyboard, because every session runs as the same
+    user.
+
+    The human still cannot clear a profile the issue's records place on the work. The
+    same potential-author and declared-author set feeds this check as the landing rung,
+    so the substrate does not weaken never-alone just because the reviewer is declared.
+    """
+    if refusal := _human_dispatch_refusal(environ):
+        return refusal
+    if issue <= 0:
+        return Refusal("invalid_issue", (f"issue={issue}",), "Name the issue the review was given.")
+    if invalid := worktree.invalid_commit_sha(reviewed_sha, field="reviewed_sha"):
+        return invalid
+    if not isinstance(diff_id, str) or not DIFF_ID.fullmatch(diff_id):
+        return Refusal(
+            "invalid_diff_id",
+            (f"diff_id={diff_id!r}", DIFF_ID_ERROR),
+            f"Record the diff identity `diff_id_of` returns — {DIFF_ID_ERROR}. A verdict"
+            " without one can never carry across a rebase, and an unreadable one is a"
+            " refusal, never a pass (#41).",
+        )
+    try:
+        findings = parse_findings(findings_text)
+    except (ValueError, json.JSONDecodeError) as error:
+        return Refusal(
+            "invalid_findings",
+            (f"findings={type(error).__name__}: {error}",),
+            "The findings must be a JSON list of objects carrying an id and one of the"
+            f" four severities ({', '.join(review_loop.SEVERITIES)}).",
+        )
+
+    import dispatch  # noqa: PLC0415 — dispatch imports this exchange through command paths
+
+    profile = dispatch.PROFILES.get(reviewer_profile)
+    if profile is None:
+        return Refusal(
+            "invalid_reviewer_profile",
+            (f"reviewer_profile={reviewer_profile!r}",),
+            "Name a registered profile for the declared human reviewer. The profile is"
+            " checked against the registry so its lane can be derived and the same-profile"
+            " never-alone refusal cannot be bypassed with an arbitrary string. Nothing was"
+            " written.",
+        )
+
+    authorship = dispatch.potential_authors(issue, dispatch_root)
+    declared_record = review_loop.authorship_path(review_root, issue)
+    try:
+        declared = review_loop.recorded_authors(review_root, issue)
+    except review_loop.ExternalError as error:
+        return Refusal(
+            "authorship_unreadable",
+            (f"issue={issue}", f"record={declared_record}", f"reason={error}"),
+            "An interactive authorship record for this issue could not be read, so the"
+            " human reviewer cannot be checked against the work's authors. Repair the"
+            " record or remove and re-declare it before recording the verdict. Nothing was"
+            " written (#41).",
+        )
+    authorship = dispatch.with_declared_authors(authorship, declared, str(declared_record))
+    if authorship.why == dispatch.RECORDS_UNREADABLE:
+        return Refusal(
+            "records_unreadable",
+            (
+                f"issue={issue}",
+                f"reviewer_profile={reviewer_profile}",
+                f"potential={' '.join(authorship.potential) or 'none'}",
+            ),
+            "A dispatch record could not be read, so the human reviewer might be one of"
+            " the profiles the scan did not see. Record nothing until the author scan is"
+            " readable (#41).",
+        )
+    if reviewer_profile in dispatch.never_alone_exclusions(authorship):
+        authored = tuple(
+            record
+            for profile_name, record in zip(authorship.potential, authorship.records, strict=True)
+            if reviewer_profile in dispatch.retired_names(profile_name)
+        )
+        return Refusal(
+            "review_same_profile",
+            (
+                f"issue={issue}",
+                f"reviewer_profile={reviewer_profile}",
+                f"authored_by={' '.join(authored)}",
+                "review_dispatch=none",
+                "reviewer_kind=declared",
+            ),
+            "The declared human reviewer is a profile the issue's own records place on"
+            " the work — the proposer approving itself, which ruling 4 refuses. Record"
+            " the human verdict with a registered profile that did not author this change."
+            " Nothing was written.",
+        )
+
+    verdict = Verdict(
+        issue=issue,
+        reviewed_sha=reviewed_sha,
+        diff_id=diff_id,
+        review_dispatch="",
+        reviewer_profile=reviewer_profile,
+        reviewer_lane=profile.lane,
+        findings=findings,
+        recorded_at=now or datetime.now(tz=UTC).isoformat(),
+        alternates=(),
+        reviewer_kind=DECLARED_REVIEWER,
+    )
+    path = human_verdict_path(review_root, issue)
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+    except OSError as failure:
+        return _unwritten(path, failure)
     written = _write_verdict_once(path, verdict_document(verdict))
     if written is not None:
         return written
@@ -1349,18 +1548,123 @@ def identity_mismatch(verdict: Verdict, binding: Bound) -> Refusal | None:
     )
 
 
-def verify(verdict: Verdict, dispatch_root: Path) -> Bound | Refusal:
-    """Re-derive a verdict's reviewing identity from the dispatch records, now.
+def _read_declared_verdict(  # noqa: PLR0911 — each unreadable or mismatched provenance fact gets its own refusal
+    review_root: Path | None, issue: int
+) -> tuple[Verdict, Path] | Refusal | None:
+    """Read and validate the separately stored declared-human record, if present."""
+    if review_root is None:
+        return Refusal(
+            "verdict_unreadable",
+            ("review_root=<absent>", f"issue={issue}"),
+            "A declared human verdict needs its review-state record, but no review root"
+            " was supplied. Nothing is cleared until that record can be read (#41).",
+        )
+    path = human_verdict_path(review_root, issue)
+    try:
+        text = path.read_text(encoding="utf-8")
+    except FileNotFoundError:
+        return None
+    except OSError as error:
+        return Refusal(
+            "verdict_unreadable",
+            (f"verdict={path}", f"reason={error}"),
+            "The declared human verdict exists but cannot be read. Repair or re-record"
+            " it — a check that could not run is not a check that passed (#41).",
+        )
+    try:
+        verdict = parse_verdict(text)
+    except (OSError, ValueError, json.JSONDecodeError) as error:
+        return Refusal(
+            "verdict_unreadable",
+            (f"verdict={path}", f"reason={error}"),
+            "The declared human verdict exists but will not parse. Repair or re-record"
+            " it — a check that could not run is not a check that passed (#41).",
+        )
+    if verdict.reviewer_kind != DECLARED_REVIEWER or verdict.review_dispatch:
+        return Refusal(
+            "verdict_unreadable",
+            (f"verdict={path}", f"reviewer_kind={verdict.reviewer_kind}"),
+            "The human review-state record is not a declared verdict with no dispatch"
+            " identity. It cannot be used as a different provenance class. Re-record it.",
+        )
+    if verdict.issue != issue:
+        return Refusal(
+            "review_issue_mismatch",
+            (f"asked_issue={issue}", f"verdict_issue={verdict.issue}", f"verdict={path}"),
+            "The declared human verdict is stored under this issue but names another item."
+            " Record a verdict for the issue being landed; identity does not cross items.",
+        )
 
-    The check that makes criterion three mechanical rather than declared: the record
-    may claim any dispatch, and what settles the claim is the same derivation that
-    wrote it, run again at read time over the records as they stand. Every identity
-    field is checked, not only the dispatch id — the profile and the lane are as
-    much the derivation's to say, and a hand-edit of either is the same forged
-    identity wearing two of its three names correctly. A verdict whose named
-    identity no longer derives — because the records changed, or because the name
-    was never derived — refuses `identity_mismatch`.
+    import dispatch  # noqa: PLC0415 — dispatch reaches this module through command paths
+
+    profile = dispatch.PROFILES.get(verdict.reviewer_profile)
+    if profile is None or profile.lane != verdict.reviewer_lane:
+        return Refusal(
+            "verdict_unreadable",
+            (
+                f"verdict={path}",
+                f"reviewer_profile={verdict.reviewer_profile}",
+                f"reviewer_lane={verdict.reviewer_lane}",
+            ),
+            "The declared human reviewer's profile or lane no longer matches the registry"
+            " used to record it. Re-record with a registered profile; a stale identity"
+            " cannot clear a landing.",
+        )
+    return verdict, path
+
+
+def _declared_binding(verdict: Verdict, review_root: Path | None) -> Bound | Refusal:
+    """Bind a declared verdict only through its own separately stored record."""
+    stored = _read_declared_verdict(review_root, verdict.issue)
+    if isinstance(stored, Refusal):
+        return stored
+    if stored is None:
+        return Refusal(
+            "no_verdict",
+            (f"issue={verdict.issue}",),
+            "The declared human verdict is not present in review state. A human identity"
+            " is never inferred from a dispatch-shaped record; record it through the human"
+            " route before landing.",
+        )
+    declared, path = stored
+    if declared != verdict:
+        return Refusal(
+            "identity_mismatch",
+            (
+                f"verdict={path}",
+                f"reviewer_kind={verdict.reviewer_kind}",
+                f"stored_reviewer_kind={declared.reviewer_kind}",
+                f"reviewed_sha={verdict.reviewed_sha}",
+            ),
+            "The declared human verdict read from the review-state record differs from"
+            " the record being consumed. A declared identity is taken only from that"
+            " exact record, never from a caller's claim.",
+        )
+    return Bound(
+        dispatch_id="",
+        profile=declared.reviewer_profile,
+        lane=declared.reviewer_lane,
+        planned_at=declared.recorded_at,
+        alternates=(),
+        reviewer_kind=DECLARED_REVIEWER,
+    )
+
+
+def verify(verdict: Verdict, dispatch_root: Path) -> Bound | Refusal:
+    """Verify an agent verdict through the dispatcher records, never its own identity fields.
+
+    This existing path is deliberately derived-only. Declared human identity is a separate
+    trust class and is bound by `_declared_binding` from `human-verdict.json`; it never enters
+    this agent verifier or turns a dispatch-side record into a caller-supplied identity.
     """
+    if verdict.reviewer_kind != DERIVED_REVIEWER:
+        return Refusal(
+            "verdict_unreadable",
+            (f"reviewer_kind={verdict.reviewer_kind}",),
+            "The agent verifier accepts only dispatcher-derived identity. A declared human"
+            " verdict belongs in the separate review-state record and cannot enter the"
+            " existing agent verdict path.",
+        )
     binding = derive_binding(verdict.issue, verdict.reviewed_sha, dispatch_root)
     if isinstance(binding, Refusal):
         return binding
@@ -1388,12 +1692,13 @@ class BoundVerdict(NamedTuple):
     carried_by_diff: bool
 
 
-def bound_verdict(  # noqa: C901, PLR0911, PLR0912 — one branch and one return per way a record can fail to bind, as the landing's own ladder has
+def bound_verdict(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — one branch and one return per way a record can fail to bind, with the two provenance roots kept explicit
     issue: int,
     sha: str,
     dispatch_root: Path,
     diff_id: str | Refusal | None = None,
     rebase_links: tuple[RebaseLink, ...] | Refusal | None = None,
+    review_root: Path | None = None,
 ) -> BoundVerdict | Refusal:
     """Read the verdict that binds one issue's commit, or the refusal that stops it.
 
@@ -1413,13 +1718,42 @@ def bound_verdict(  # noqa: C901, PLR0911, PLR0912 — one branch and one return
     caller because both #334's landing rung and #333's `review-loop sync` need
     the *same* verdict — a loop opened from anything else would be a record of
     findings no verdict is on the hook for, and a landing cleared against a different
-    one would be a landing cleared by a review of another commit.
+    one would be a landing cleared by a review of another commit. A declared human
+    record, when `review_root` is supplied, is checked first and kept separate from the
+    dispatch walk: a malformed one refuses rather than disappearing behind an agent
+    verdict, while a non-matching one may be followed by an independent agent verdict.
     """
+    human_mismatch: Refusal | None = None
+    if review_root is not None:
+        declared = _read_declared_verdict(review_root, issue)
+        if isinstance(declared, Refusal):
+            return declared
+        if declared is not None:
+            human_verdict, _human_path = declared
+            human_provenance: bool | Refusal | None = None
+            if isinstance(rebase_links, tuple):
+                human_provenance = carried_by_clean_rebase(
+                    rebase_links, human_verdict.reviewed_sha, sha
+                )
+            else:
+                human_provenance = rebase_links
+            human_mismatch = satisfies(human_verdict, sha, diff_id, clean_rebase=human_provenance)
+            if human_mismatch is None:
+                binding = _declared_binding(human_verdict, review_root)
+                if isinstance(binding, Refusal):
+                    return binding
+                return BoundVerdict(
+                    human_verdict,
+                    binding,
+                    carried_by_diff=human_verdict.reviewed_sha != sha,
+                )
     scanned = _completed_candidates(dispatch_root, issue, None)
     if isinstance(scanned, Refusal):
         return scanned
     candidates = scanned
     if not candidates:
+        if human_mismatch is not None:
+            return human_mismatch
         return Refusal(
             "no_review_dispatch",
             (f"issue={issue}", f"sha={sha}"),
@@ -1469,6 +1803,14 @@ def bound_verdict(  # noqa: C901, PLR0911, PLR0912 — one branch and one return
                 "The verdict record exists but will not parse. Repair or re-record it — a"
                 " check that could not run is not a check that passed (#41).",
             )
+        if verdict.reviewer_kind != DERIVED_REVIEWER:
+            return Refusal(
+                "verdict_unreadable",
+                (f"verdict={path}", f"reviewer_kind={verdict.reviewer_kind}"),
+                "A verdict beside a dispatch must carry derived identity. A declared"
+                " human identity belongs in the separate review-state record and cannot"
+                " be smuggled into an agent verdict path.",
+            )
         if verdict.issue != issue:
             return Refusal(
                 "review_issue_mismatch",
@@ -1496,6 +1838,8 @@ def bound_verdict(  # noqa: C901, PLR0911, PLR0912 — one branch and one return
         # Unreachable in a walk that had candidates: every iteration either returns
         # or sets `mismatch`, and the empty-candidates case returned above. Stated as
         # a raise rather than an assert because this module runs outside pytest.
+        if human_mismatch is not None:
+            return human_mismatch
         raise ReviewExchangeError(WALK_WITHOUT_REFUSAL_ERROR)
     return mismatch
 
@@ -1541,7 +1885,8 @@ def _record_report(outcome: Recorded | Refusal) -> Report:
     return Report(
         (
             "ok=verdict_recorded",
-            f"dispatch={verdict.review_dispatch}",
+            f"reviewer_kind={verdict.reviewer_kind}",
+            f"dispatch={verdict.review_dispatch or 'none'}",
             f"reviewer_profile={verdict.reviewer_profile}",
             f"reviewer_lane={verdict.reviewer_lane}",
             f"issue={verdict.issue}",
@@ -1568,7 +1913,7 @@ def _reviewed_commit_refusal(repo: Path, sha: str) -> Refusal | None:
     return worktree.validate_commit(repo, sha)
 
 
-def _show(  # noqa: PLR0911 — one return per refusal, so each stays a whole thought
+def _show(  # noqa: C901, PLR0911 — the read ladder has one explicit refusal per provenance or satisfaction failure
     dispatch_id: str,
     dispatch_root: Path,
     review_root: Path,
@@ -1619,12 +1964,23 @@ def _show(  # noqa: PLR0911 — one return per refusal, so each stays a whole th
                 " re-record from the dispatch records if it should exist.",
             )
         )
+    if verdict.reviewer_kind != DERIVED_REVIEWER:
+        return Report.refused(
+            Refusal(
+                "verdict_unreadable",
+                (f"verdict={path}", f"reviewer_kind={verdict.reviewer_kind}"),
+                "A verdict beside a dispatch must carry derived identity. A declared"
+                " human verdict belongs in review state and cannot turn an agent record"
+                " into a caller-supplied identity.",
+            )
+        )
     binding = verify(verdict, dispatch_root)
     if isinstance(binding, Refusal):
         return Report.refused(binding)
     lines = [
         "ok=verdict",
-        f"dispatch={verdict.review_dispatch}",
+        f"reviewer_kind={verdict.reviewer_kind}",
+        f"dispatch={verdict.review_dispatch or 'none'}",
         f"reviewer_profile={verdict.reviewer_profile}",
         f"reviewer_lane={verdict.reviewer_lane}",
         f"issue={verdict.issue}",
@@ -1632,7 +1988,11 @@ def _show(  # noqa: PLR0911 — one return per refusal, so each stays a whole th
         f"diff_id={verdict.diff_id}",
         f"findings={len(verdict.findings)}",
         f"alternates={' '.join(verdict.alternates) or 'none'}",
-        f"derived=yes identity_checked-not-verified records={binding.dispatch_id}",
+        (
+            f"declared=yes identity_checked-not-verified record={path}"
+            if verdict.reviewer_kind == DECLARED_REVIEWER
+            else f"derived=yes identity_checked-not-verified records={binding.dispatch_id}"
+        ),
         f"recorded_at={verdict.recorded_at}",
         f"verdict={path}",
         SHA_BINDING_NOTE,
@@ -1697,6 +2057,18 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     write.add_argument(
         "--dispatch-dir", default=str(DISPATCH_ROOT), help="the dispatch records' root"
     )
+    write.add_argument(
+        "--reviewer-profile",
+        "--reviewer",
+        "--human-reviewer",
+        dest="reviewer_profile",
+        help="declare the registered human reviewer; omit for dispatcher-derived identity",
+    )
+    write.add_argument(
+        "--review-root",
+        default=str(review_loop.REVIEW_ROOT),
+        help="the review state directory for a declared human verdict",
+    )
 
     read = actions.add_parser("show", help="read a verdict and re-derive its identity")
     read.add_argument("dispatch_id", help="the review dispatch id")
@@ -1717,6 +2089,46 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     )
 
     return parser.parse_args(argv)
+
+
+def _record_action(args: argparse.Namespace, issue: int) -> Report:
+    """Compute the diff identity, then write either the derived or declared verdict."""
+    if args.reviewer_profile is not None:
+        dispatched = _human_dispatch_refusal()
+        if dispatched is not None:
+            return Report.refused(dispatched)
+
+    repo = Path(args.repo)
+    try:
+        commit = _reviewed_commit_refusal(repo, args.reviewed_sha)
+    except worktree.GitError as failure:
+        return _git_failed(repo, failure)
+    if commit is not None:
+        return Report.refused(commit)
+
+    identity = diff_id_of(repo, args.reviewed_sha)
+    if not isinstance(identity, str):
+        return Report.refused(identity)
+    findings = Path(args.findings).read_text(encoding="utf-8")
+    if args.reviewer_profile is not None:
+        recorded = record_human_verdict(
+            issue,
+            args.reviewed_sha,
+            findings,
+            Path(args.dispatch_dir),
+            review_root=Path(args.review_root),
+            diff_id=identity,
+            reviewer_profile=args.reviewer_profile,
+        )
+    else:
+        recorded = record_verdict(
+            issue,
+            args.reviewed_sha,
+            findings,
+            Path(args.dispatch_dir),
+            diff_id=identity,
+        )
+    return _record_report(recorded)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -1748,35 +2160,7 @@ def main(argv: list[str] | None = None) -> int:
                     )
                 )
             else:
-                # The diff identity is computed here rather than passed in, because a
-                # flag is a hand that retypes what git can say — the same mistype #319
-                # paid for. The fetch is what makes the range honest: without it a
-                # stale `origin/main` puts main's own commits inside the
-                # merge-base-relative diff and the record would bind a diff nobody
-                # reviewed.
-                repo = Path(args.repo)
-                try:
-                    commit = _reviewed_commit_refusal(repo, args.reviewed_sha)
-                except worktree.GitError as failure:
-                    report = _git_failed(repo, failure)
-                else:
-                    if commit is not None:
-                        report = Report.refused(commit)
-                    else:
-                        identity = diff_id_of(repo, args.reviewed_sha)
-                        report = (
-                            _record_report(
-                                record_verdict(
-                                    issue,
-                                    args.reviewed_sha,
-                                    Path(args.findings).read_text(encoding="utf-8"),
-                                    Path(args.dispatch_dir),
-                                    diff_id=identity,
-                                )
-                            )
-                            if isinstance(identity, str)
-                            else Report.refused(identity)
-                        )
+                report = _record_action(args, issue)
         elif not args.dispatch_id:
             report = Report.refused(
                 Refusal(
