@@ -214,6 +214,39 @@ def test_default_controller_refuses_unimplemented_actions_before_claiming_succes
     assert [row["phase"] for row in rows] == ["planned"]
 
 
+def test_default_controller_reads_default_queue_policy_when_environment_is_unset(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The production default reaches ruled WIP capacity without CTI_QUEUE_DIR."""
+    item = policy.WorkItemFact("item-1", "open", issue=1)
+    base_facts = coordination_facts((item,), wip_limit=None)
+    facts_path = tmp_path / "facts.json"
+    facts_path.write_text(
+        json.dumps({"schema": ports.CONTROL_FACTS_SCHEMA, **policy.facts_document(base_facts)})
+        + "\n",
+        encoding="utf-8",
+    )
+    queue_path = tmp_path / "queue"
+    ports.queue_policy.write_policy(
+        ports.queue_policy.Store(queue_path),
+        ports.queue_policy.Policy(
+            ports.queue_policy.Freeze("open", "2026-08-27T12:00:00+00:00", "test"),
+            ports.queue_policy.WipLimit(0, "2026-08-27T12:00:00+00:00", "test"),
+        ),
+    )
+    monkeypatch.delenv("CTI_QUEUE_DIR", raising=False)
+    monkeypatch.setattr(ports.queue_policy, "DEFAULT_QUEUE_DIR", queue_path)
+    monkeypatch.setenv("CTI_CONTROL_FACTS_FILE", str(facts_path))
+    monkeypatch.setenv("CTI_DISPATCH_DIR", str(tmp_path / "dispatches"))
+    monkeypatch.chdir(tmp_path)
+
+    report = controller.default_controller(tmp_path / "controller").run_cycle(dry_run=True)
+
+    assert report.facts.wip_limit == 0
+    assert report.lifecycle.reason == "wip_reached_by_live_runs_or_worktree_debt"
+    assert report.lifecycle.reason != "wip_limit_unconfigured"
+
+
 def test_confirmed_phase_attests_applied_plan_without_recollecting_or_rederiving(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -546,6 +579,50 @@ def test_coordination_launch_records_work_run_and_replays_without_duplication(
     assert second.actions == ()
     assert len(store.load().facts.work_runs) == 1  # type: ignore[union-attr]
     assert store.load().facts.work_runs[0].dispatch_id == payload["dispatch_id"]  # type: ignore[union-attr]
+
+
+def test_real_queue_sweep_composes_with_two_controller_cycles(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A real queue sweep supplies one live run to both controller reconciliations."""
+    item = policy.WorkItemFact("item-1", "open", issue=1)
+    dispatch_dir = tmp_path / "dispatches"
+    dispatch_record = dispatch_dir / "dispatch-1"
+    dispatch_record.mkdir(parents=True)
+    (dispatch_record / "dispatch.json").write_text('{"issue": 1}\n', encoding="utf-8")
+    monkeypatch.setattr(
+        ports.queue_policy,
+        "closed_issues",
+        lambda _numbers: (frozenset(), "read"),
+    )
+    collector = ports.RuntimeFactCollector(
+        ports.FakeFactCollector(coordination_facts((item,))),
+        tmp_path,
+        dispatch_dir,
+    )
+    instance, store, mutation_ports = make_controller_with_collector(
+        tmp_path / "controller", collector
+    )
+
+    first = instance.run_cycle(dry_run=False)
+    second = instance.run_cycle(dry_run=False)
+
+    assert first.actions == ()
+    assert second.actions == ()
+    assert first.facts.work_runs == (
+        policy.WorkRunFact(
+            "dispatch-1",
+            "running",
+            "item-1",
+            "dispatch-1",
+            None,
+            None,
+            1,
+        ),
+    )
+    assert second.facts.work_runs == first.facts.work_runs
+    assert store.load().facts.work_runs == first.facts.work_runs  # type: ignore[union-attr]
+    assert all(port.applied == [] for port in mutation_ports)
 
 
 def test_launch_rechecks_facts_and_refuses_when_a_precondition_changes(

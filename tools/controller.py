@@ -570,7 +570,7 @@ def default_controller(root: Path | None = None) -> Controller:
     state_root = root or Path(os.environ.get("CTI_CONTROLLER_DIR", DEFAULT_ROOT))
     repository = os.environ.get("CTI_GITHUB_REPOSITORY", "andrewesweet/arma-cti")
     tracker = planning.PlanPublisher(planning.GitHubTracker(repository))
-    queue_directory = os.environ.get("CTI_QUEUE_DIR")
+    queue_directory = os.environ.get("CTI_QUEUE_DIR", str(ports.queue_policy.DEFAULT_QUEUE_DIR))
     facts: ports.FactCollector = ports.RuntimeFactCollector(
         ports.DefaultFactCollector(),
         Path.cwd(),

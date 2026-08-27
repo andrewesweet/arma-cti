@@ -96,6 +96,31 @@ def test_renderers_preserve_normalized_facts_and_action_order() -> None:
     ]
 
 
+def test_work_item_renderer_preserves_non_default_optional_fields() -> None:
+    """Render non-default seat and recorded readiness without inventing defaults."""
+    item = policy.WorkItemFact(
+        "review-item",
+        "open",
+        issue=380,
+        seat="review",
+        ready_at="2026-08-27T12:00:00+00:00",
+    )
+    default_item = policy.WorkItemFact("default-item", "open")
+
+    rendered = policy.facts_document(coordination_facts((item, default_item)))["work_items"]
+
+    assert rendered == [
+        {
+            "key": "review-item",
+            "state": "open",
+            "issue": 380,
+            "seat": "review",
+            "ready_at": "2026-08-27T12:00:00+00:00",
+        },
+        {"key": "default-item", "state": "open"},
+    ]
+
+
 def test_fact_renderer_returns_a_new_document() -> None:
     """Rendering cannot mutate the immutable fact input through its result."""
     current = facts(curator="curator-1", outcomes=(OUTCOME,))
@@ -185,6 +210,34 @@ def test_worktree_debt_keeps_its_exclusive_resources_held() -> None:
     current = coordination_facts((holder, conflict), debt=(debt,), limit=2)
 
     assert policy.eligible_work_items(current) == ()
+
+
+def test_worktree_debt_matches_resource_holder_by_issue_without_a_graph_key() -> None:
+    """Debt without a Work Item key still holds its issue's exclusive resources."""
+    holder = policy.WorkItemFact("holder", "complete", issue=1, exclusive_resources=("shared",))
+    conflict = policy.WorkItemFact("conflict", "open", issue=2, exclusive_resources=("shared",))
+    debt = policy.WorktreeDebtFact(1, "/trees/issue-1")
+    current = coordination_facts((holder, conflict), debt=(debt,), limit=2)
+
+    assert policy.eligible_work_items(current) == ()
+
+
+def test_unlisted_work_items_use_explicit_nonnegative_priority() -> None:
+    """An explicit priority orders items that configured priority leaves unlisted."""
+    prioritized = policy.WorkItemFact("prioritized", "open", issue=1, priority=1)
+    unprioritized = policy.WorkItemFact("unprioritized", "open", issue=2)
+    current = coordination_facts((unprioritized, prioritized))
+
+    assert policy.eligible_work_items(current) == (prioritized, unprioritized)
+
+
+def test_unlisted_item_without_priority_stays_before_an_extremely_large_rank() -> None:
+    """Missing priority remains below every accepted explicit nonnegative priority."""
+    unprioritized = policy.WorkItemFact("unprioritized", "open", issue=1)
+    large_rank = policy.WorkItemFact("large-rank", "open", issue=2, priority=2**31)
+    current = coordination_facts((large_rank, unprioritized))
+
+    assert policy.eligible_work_items(current) == (unprioritized, large_rank)
 
 
 def test_new_work_run_keeps_terminal_history_but_replaces_a_live_duplicate() -> None:
