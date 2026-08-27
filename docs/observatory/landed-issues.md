@@ -181,3 +181,4 @@
 |600|3a4a073397cbcb92edfdfd4382b8c3e986eaa6dd|journal|4|0|53169|claude-native,codex,zai|C0.37469|U|U|
 |601|64f5e656c8102449469e161495a3ef3df1404151|journal|2|0|2049|codex,zai|N|U|U|
 |606|0c6ccf4fb30ffdf0e0242813d67b6d4d43f144ba|journal|3|0|21134|codex,zai|N|U|U|
+|621|d32f59ebb1e60b6277b71a88fc9291c7fcda7a93|journal|2|R|919|codex,zai|N|U|U|
