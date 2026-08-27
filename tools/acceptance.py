@@ -236,9 +236,13 @@ def _read_record(root: Path, key: str) -> tuple[Path, dict[str, object]]:
     return record, raw
 
 
-def read_obligation(root: Path, key: str) -> Obligation:
-    """Read one obligation envelope addressed only by its stable key."""
-    record, raw = _read_record(root, key)
+def _obligation_from_document(
+    root: Path,
+    key: str,
+    record: Path,
+    raw: Mapping[str, object],
+) -> Obligation:
+    """Build one obligation from a validated record document."""
     kind = _text_field(raw, "kind").strip()
     if kind == "non_behavioral":
         kind = NON_BEHAVIOURAL
@@ -287,6 +291,12 @@ def read_obligation(root: Path, key: str) -> Obligation:
     )
 
 
+def read_obligation(root: Path, key: str) -> Obligation:
+    """Read one obligation envelope addressed only by its stable key."""
+    record, raw = _read_record(root, key)
+    return _obligation_from_document(root, key, record, raw)
+
+
 def _step_nodes(node: object) -> tuple[Step, ...]:
     """Traverse the parser's AST and read only actual Gherkin step nodes."""
     found: list[Step] = []
@@ -314,14 +324,10 @@ def _has_scenario(node: object) -> bool:
     return False
 
 
-def _parse_feature(path: Path) -> tuple[dict[str, object] | None, tuple[Finding, ...]]:
-    """Parse one feature with the standard parser and keep parser errors typed."""
-    try:
-        source = path.read_text(encoding="utf-8")
-    except (OSError, UnicodeError) as error:
-        return None, (
-            _finding("specification_unreadable", f"feature={path} could not be read: {error}"),
-        )
+def _parse_feature_source(
+    path: Path, source: str
+) -> tuple[dict[str, object] | None, tuple[Finding, ...]]:
+    """Parse one feature source with the standard parser and keep errors typed."""
     try:
         parsed = Parser().parse(source)
     except CompositeParserException as error:
@@ -335,6 +341,17 @@ def _parse_feature(path: Path) -> tuple[dict[str, object] | None, tuple[Finding,
     if not _has_scenario(feature):
         return document, (_finding("no_scenarios", f"feature={path} has no executable Scenario"),)
     return document, ()
+
+
+def _parse_feature(path: Path) -> tuple[dict[str, object] | None, tuple[Finding, ...]]:
+    """Read and parse one repository feature with the standard parser."""
+    try:
+        source = path.read_text(encoding="utf-8")
+    except (OSError, UnicodeError) as error:
+        return None, (
+            _finding("specification_unreadable", f"feature={path} could not be read: {error}"),
+        )
+    return _parse_feature_source(path, source)
 
 
 def _marked_term_findings(
@@ -374,19 +391,20 @@ def _marked_term_findings(
     return tuple(findings)
 
 
-def lint_obligation(root: Path, key: str) -> LintReport:
-    """Lint one obligation, reading the current glossary at invocation time."""
-    try:
-        obligation = read_obligation(root, key)
-    except SpecificationError as error:
-        return LintReport(None, None, (), (_finding(error.code, error.detail),), (), ())
+def _lint_obligation(
+    root: Path,
+    obligation: Obligation,
+    *,
+    feature_source: str | None = None,
+) -> LintReport:
+    """Lint one already-read obligation against the live glossary."""
     errors: list[Finding] = []
     if obligation.kind != NON_BEHAVIOURAL and obligation.runner != PYTHON_RUNNER:
         errors.append(
             _finding(
                 "runner_unsupported",
                 (
-                    f"obligation={key!r} runner={obligation.runner!r} is unsupported; "
+                    f"obligation={obligation.key!r} runner={obligation.runner!r} is unsupported; "
                     "use runner='python'"
                 ),
             )
@@ -406,7 +424,10 @@ def lint_obligation(root: Path, key: str) -> LintReport:
     unratified = tuple(sorted(term for term in provisional_names if term not in language.terms))
     if obligation.kind == NON_BEHAVIOURAL:
         return LintReport(obligation, None, (), tuple(errors), obligation.provisional, unratified)
-    document, parse_errors = _parse_feature(obligation.feature)
+    if feature_source is None:
+        document, parse_errors = _parse_feature(obligation.feature)
+    else:
+        document, parse_errors = _parse_feature_source(obligation.feature, feature_source)
     errors.extend(parse_errors)
     if document is None:
         return LintReport(obligation, None, (), tuple(errors), obligation.provisional, unratified)
@@ -420,6 +441,30 @@ def lint_obligation(root: Path, key: str) -> LintReport:
         obligation.provisional,
         tuple(sorted(unratified)),
     )
+
+
+def lint_obligation(root: Path, key: str) -> LintReport:
+    """Lint one obligation, reading the current glossary at invocation time."""
+    try:
+        obligation = read_obligation(root, key)
+    except SpecificationError as error:
+        return LintReport(None, None, (), (_finding(error.code, error.detail),), (), ())
+    return _lint_obligation(root, obligation)
+
+
+def lint_embedded_obligation(
+    root: Path,
+    key: str,
+    record: Mapping[str, object],
+    feature_source: str | None,
+) -> LintReport:
+    """Lint an embedded plan obligation through this runner's normal lint path."""
+    virtual_record = root / SPEC_DIR / f"{key}.json"
+    try:
+        obligation = _obligation_from_document(root, key, virtual_record, record)
+    except SpecificationError as error:
+        return LintReport(None, None, (), (_finding(error.code, error.detail),), (), ())
+    return _lint_obligation(root, obligation, feature_source=feature_source)
 
 
 def lint_repository(root: Path) -> RepositoryLint:
@@ -570,6 +615,16 @@ def run_obligation(
 ) -> RunResult:
     """Lint and execute one obligation, preserving failure/non-result/held distinctions."""
     report = lint_obligation(root, key)
+    return _run_lint_report(root, key, report, definitions)
+
+
+def _run_lint_report(
+    root: Path,
+    key: str,
+    report: LintReport,
+    definitions: Mapping[str, object] | None,
+) -> RunResult:
+    """Execute one lint report while keeping all typed outcome branches shared."""
     if report.errors:
         detail = "; ".join(finding.detail for finding in report.errors)
         return RunResult(key, NON_RESULT, 0, f"specification could not execute: {detail}")
@@ -596,6 +651,19 @@ def run_obligation(
         step_definitions,
         uri=report.obligation.feature.as_posix(),
     )
+
+
+def run_embedded_obligation(
+    root: Path,
+    key: str,
+    record: Mapping[str, object],
+    feature_source: str | None,
+    *,
+    definitions: Mapping[str, object] | None = None,
+) -> RunResult:
+    """Execute a plan package's embedded specification through the keyed runner."""
+    report = lint_embedded_obligation(root, key, record, feature_source)
+    return _run_lint_report(root, key, report, definitions)
 
 
 def check(root: Path) -> CheckReport:

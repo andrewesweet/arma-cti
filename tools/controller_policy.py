@@ -20,6 +20,8 @@ class DesiredOutcomeFact:
     key: str
     revision: int
     content_digest: str
+    content: str | None = None
+    parent_issue: int | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -112,9 +114,21 @@ def derive(
 
 def facts_document(facts: ControlFacts) -> dict[str, object]:
     """Render normalized facts without introducing an I/O dependency."""
+    desired_outcomes = []
+    for outcome in facts.desired_outcomes:
+        document: dict[str, object] = {
+            "key": outcome.key,
+            "revision": outcome.revision,
+            "content_digest": outcome.content_digest,
+        }
+        if outcome.content is not None:
+            document["content"] = outcome.content
+        if outcome.parent_issue is not None:
+            document["parent_issue"] = outcome.parent_issue
+        desired_outcomes.append(document)
     return {
         "configured_curator": facts.configured_curator,
-        "desired_outcomes": [asdict(item) for item in facts.desired_outcomes],
+        "desired_outcomes": desired_outcomes,
         "initiatives": [asdict(item) for item in facts.initiatives],
         "work_items": [asdict(item) for item in facts.work_items],
         "work_runs": [asdict(item) for item in facts.work_runs],

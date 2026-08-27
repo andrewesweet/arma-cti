@@ -77,6 +77,96 @@ def test_complete_cycle_reloads_and_binds_view_to_exact_journal_bytes(tmp_path: 
     assert not list(controller_store.root.glob(".view.json.*"))
 
 
+def test_bootstrap_recovery_refuses_journal_even_without_a_view(tmp_path: Path) -> None:
+    controller_store = store.ControllerStore(tmp_path / "controller")
+    controller_store.mark_started()
+    controller_store.root.mkdir()
+    controller_store.journal_path.write_text("state needs review\n", encoding="utf-8")
+
+    with pytest.raises(
+        store.ControllerStateUnreadable,
+        match="controller_bootstrap_recovery_requires_state_review",
+    ):
+        controller_store.recover_interrupted_bootstrap()
+
+    assert controller_store.started_marker_path.exists()
+
+
+def test_empty_desired_outcome_content_is_rejected_from_local_state(tmp_path: Path) -> None:
+    controller_store = store.ControllerStore(tmp_path / "controller")
+    invalid_facts = policy.facts_document(empty_facts())
+    invalid_facts["desired_outcomes"] = [
+        {
+            "key": "outcome-1",
+            "revision": 1,
+            "content_digest": "digest",
+            "content": "",
+        }
+    ]
+    invalid_payload = payload()
+    invalid_payload["facts"] = invalid_facts
+
+    with pytest.raises(store.ControllerStateUnreadable, match="facts_invalid_content"):
+        controller_store.append_phase(
+            "cycle-1",
+            "planned",
+            invalid_payload,
+            recorded_at="now",
+            recorded_by="test-controller",
+        )
+
+
+def test_boolean_desired_outcome_revision_is_rejected_from_local_state(tmp_path: Path) -> None:
+    controller_store = store.ControllerStore(tmp_path / "controller")
+    invalid_facts = policy.facts_document(empty_facts())
+    invalid_facts["desired_outcomes"] = [
+        {
+            "key": "outcome-1",
+            "revision": True,
+            "content_digest": "digest",
+        }
+    ]
+    invalid_payload = payload()
+    invalid_payload["facts"] = invalid_facts
+
+    with pytest.raises(store.ControllerStateUnreadable, match="facts_desired_outcomes_revision"):
+        controller_store.append_phase(
+            "cycle-1",
+            "planned",
+            invalid_payload,
+            recorded_at="now",
+            recorded_by="test-controller",
+        )
+
+
+def test_partial_new_cycle_does_not_replay_previous_cycle_actions(tmp_path: Path) -> None:
+    controller_store = store.ControllerStore(tmp_path / "controller")
+    previous = payload()
+    previous["actions"] = policy.actions_document(
+        (policy.ControlAction("tracker.previous", "previous"),)
+    )
+    controller_store.write_cycle(
+        "cycle-1",
+        previous,
+        recorded_at="now",
+        recorded_by="test-controller",
+    )
+
+    current = payload()
+    controller_store.append_phase(
+        "cycle-2",
+        "planned",
+        current,
+        recorded_at="now",
+        recorded_by="test-controller",
+    )
+
+    recovered = controller_store.load_recoverable()
+
+    assert recovered.phase == "planned"
+    assert recovered.actions == ()
+
+
 def test_append_phase_rejects_unknown_phase_before_writing(tmp_path: Path) -> None:
     controller_store = store.ControllerStore(tmp_path / "controller")
 

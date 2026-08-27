@@ -77,11 +77,40 @@ def test_one_cycle_reports_facts_state_and_an_explicit_empty_action_list(tmp_pat
     assert document["dry_run"] is True
 
 
+def test_controller_builds_local_defaults_for_optional_planning_capabilities(
+    tmp_path: Path,
+) -> None:
+    instance, _store, _collector, _mutation_ports = make_controller(tmp_path / "controller")
+
+    assert isinstance(instance.repository_context, controller.planning.FileRepositoryContext)
+    assert isinstance(instance.plan_store, controller.planning.ValidatedPlanStore)
+
+
+def test_cycle_report_includes_a_plan_revision_when_one_exists() -> None:
+    report = controller.CycleReport(
+        cycle_id="test-controller-cycle-1",
+        facts=empty_facts(),
+        lifecycle=policy.LifecycleState(policy.NO_ADMISSIBLE_INITIATIVE, None, "reason"),
+        actions=(),
+        dry_run=True,
+        journal_written=False,
+        state_source="bootstrap",
+        planning_status="valid",
+        plan_revision="initiative-1-r1-digest",
+    )
+
+    assert report.to_document()["planning"] == {
+        "status": "valid",
+        "plan_revision": "initiative-1-r1-digest",
+    }
+
+
 def test_controller_slice_stays_outside_the_campaign_commander_runtime() -> None:
     """The first controller slice is tooling, not an in-game runtime feature."""
     tooling_modules = {path.name for path in (REPO / "tools").glob("controller*.py")}
     assert tooling_modules == {
         "controller.py",
+        "controller_planning.py",
         "controller_policy.py",
         "controller_ports.py",
         "controller_store.py",

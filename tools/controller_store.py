@@ -7,11 +7,12 @@ import fcntl
 import hashlib
 import json
 import os
+import re
 import tempfile
 from contextlib import suppress
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Final, NoReturn, Self
+from typing import TYPE_CHECKING, Any, Final, NoReturn, Self, cast
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
@@ -35,10 +36,21 @@ JOURNAL_FIELDS: Final = frozenset(
     {"schema", "cycle_id", "phase", "recorded_at", "recorded_by", "payload"}
 )
 PAYLOAD_FIELDS: Final = frozenset({"facts", "lifecycle", "actions"})
+PLAN_FIELDS: Final = frozenset(
+    {
+        "revision_id",
+        "initiative_key",
+        "desired_outcome_key",
+        "desired_outcome_revision",
+        "content_digest",
+    }
+)
 FACTS_FIELDS: Final = frozenset(
     {"configured_curator", "desired_outcomes", "initiatives", "work_items", "work_runs"}
 )
 DESIRED_OUTCOME_FIELDS: Final = frozenset({"key", "revision", "content_digest"})
+DESIRED_OUTCOME_OPTIONAL_FIELDS: Final = frozenset({"content", "parent_issue"})
+SHA256: Final = re.compile(r"[0-9a-f]{64}\Z")
 LIFECYCLE_FACT_FIELDS: Final = frozenset({"key", "state"})
 VIEW_FIELDS: Final = frozenset({"schema", "journal_sha256", "last_cycle_id", "confirmed"})
 
@@ -92,6 +104,9 @@ class LoadedControllerState:
     actions: tuple[policy.ControlAction, ...]
     last_cycle_id: str
     record_count: int
+    facts: policy.ControlFacts | None = None
+    plan: dict[str, object] | None = None
+    phase: str = "confirmed"
 
 
 class SchedulingLock:
@@ -156,6 +171,11 @@ class ControllerStore:
     def lock_path(self) -> Path:
         """Return the singleton scheduling lock path."""
         return self.root / LOCK_NAME
+
+    @property
+    def plans_root(self) -> Path:
+        """Return the exact validated-plan store root."""
+        return self.root / "plans"
 
     @property
     def started_marker_path(self) -> Path:
@@ -311,15 +331,61 @@ class ControllerStore:
         if not isinstance(actions_raw, list):
             _refuse("actions_not_list")
         actions = tuple(_action(item) for item in actions_raw)
+        facts = _facts_value(confirmed["facts"])
+        plan = _plan_value(confirmed.get("plan"))
         return LoadedControllerState(
             confirmed=confirmed,
             lifecycle=lifecycle,
             actions=actions,
             last_cycle_id=_string(final, "cycle_id"),
             record_count=len(records),
+            facts=facts,
+            plan=plan,
         )
 
-    def _read_records(self) -> list[dict[str, object]]:
+    def load_recoverable(self) -> LoadedControllerState:
+        """Load a confirmed state or one trailing planned/applied transition for resumption."""
+        records = self._read_records(allow_incomplete=True)
+        remainder = len(records) % len(PHASES)
+        if remainder == 0:
+            return self.load()
+        trailing = records[-remainder:]
+        payload = _payload_document(trailing[-1]["payload"])
+        if self.view_path.exists():
+            view = self._read_view()
+            prefix_count = len(records) - remainder
+            if prefix_count == 0:
+                _refuse("partial_cycle_has_view")
+            journal_lines = self.journal_path.read_bytes().splitlines(keepends=True)
+            prefix_bytes = b"".join(journal_lines[:prefix_count])
+            if view["journal_sha256"] != _sha256(prefix_bytes):
+                _refuse("view_journal_digest_mismatch")
+            if view["last_cycle_id"] != records[prefix_count - 1]["cycle_id"]:
+                _refuse("view_last_cycle_mismatch")
+            if view["confirmed"] != records[prefix_count - 1]["payload"]:
+                _refuse("view_confirmed_payload_mismatch")
+            _payload_document(view["confirmed"])
+        elif len(records) != remainder:
+            _refuse("partial_cycle_view_missing")
+        lifecycle = _lifecycle_value(payload["lifecycle"])
+        actions = _actions_value(payload["actions"])
+        facts = _facts_value(payload["facts"])
+        plan = _plan_value(payload.get("plan"))
+        completed_ids = {row["cycle_id"] for row in records[:-remainder]}
+        if trailing[0]["cycle_id"] in completed_ids:
+            _refuse("partial_cycle_duplicate_identity")
+        return LoadedControllerState(
+            confirmed=payload,
+            lifecycle=lifecycle,
+            actions=actions,
+            last_cycle_id=_string(trailing[-1], "cycle_id"),
+            record_count=len(records),
+            facts=facts,
+            plan=plan,
+            phase=_string(trailing[-1], "phase"),
+        )
+
+    def _read_records(self, *, allow_incomplete: bool = False) -> list[dict[str, object]]:
         """Read, parse, and sequence every journal record fail-closed."""
         raw = self._journal_bytes()
         text = _journal_text(raw)
@@ -327,7 +393,7 @@ class ControllerStore:
             _parse_record(line, line_number)
             for line_number, line in enumerate(text.splitlines(), 1)
         ]
-        _validate_record_sequence(records)
+        _validate_record_sequence(records, allow_incomplete=allow_incomplete)
         return records
 
     def _journal_bytes(self) -> bytes:
@@ -376,7 +442,8 @@ class ControllerStore:
 
 def _payload_document(payload: Mapping[str, object]) -> dict[str, object]:
     """Validate and copy the stable payload envelope."""
-    if set(payload) != PAYLOAD_FIELDS:
+    fields = set(payload)
+    if fields not in {PAYLOAD_FIELDS, PAYLOAD_FIELDS | {"plan"}}:
         _refuse("payload_fields")
     facts = payload.get("facts")
     lifecycle = payload.get("lifecycle")
@@ -397,7 +464,95 @@ def _payload_document(payload: Mapping[str, object]) -> dict[str, object]:
         _action(item)
         if item["order"] != order:
             _refuse("action_order_sequence")
-    return {"facts": facts, "lifecycle": lifecycle, "actions": actions}
+    document: dict[str, object] = {"facts": facts, "lifecycle": lifecycle, "actions": actions}
+    if "plan" in fields:
+        document["plan"] = _plan_value(payload.get("plan"))
+    return document
+
+
+def _plan_value(value: object) -> dict[str, object] | None:
+    """Validate optional journal metadata tying actions to one stored Plan Revision."""
+    if value is None:
+        return None
+    if not isinstance(value, dict) or set(value) != PLAN_FIELDS:
+        _refuse("payload_plan_fields")
+    for field_name in ("revision_id", "initiative_key", "desired_outcome_key", "content_digest"):
+        _string(value, field_name)
+    revision = value.get("desired_outcome_revision")
+    if isinstance(revision, bool) or not isinstance(revision, int) or revision < 1:
+        _refuse("payload_plan_revision")
+    digest = value["content_digest"]
+    if SHA256.fullmatch(digest) is None:  # type: ignore[arg-type] — _string above validates text
+        _refuse("payload_plan_digest")
+    return dict(value)
+
+
+def _lifecycle_value(value: object) -> policy.LifecycleState:
+    """Decode one serialized lifecycle state."""
+    if not isinstance(value, dict):
+        _refuse("lifecycle_not_object")
+    if set(value) != {"state", "admitted_initiative", "reason"}:
+        _refuse("payload_lifecycle_fields")
+    return policy.LifecycleState(
+        _string(value, "state"),
+        _nullable_string(value, "admitted_initiative"),
+        _string(value, "reason"),
+    )
+
+
+def _actions_value(value: object) -> tuple[policy.ControlAction, ...]:
+    """Decode serialized actions while preserving their order."""
+    if not isinstance(value, list):
+        _refuse("actions_not_list")
+    actions: list[policy.ControlAction] = []
+    for order, item in enumerate(value, start=1):
+        action = _action(item)
+        if not isinstance(item, dict) or item.get("order") != order:
+            _refuse("action_order_sequence")
+        actions.append(action)
+    return tuple(actions)
+
+
+def _facts_value(value: object) -> policy.ControlFacts:
+    """Decode normalized facts from a journal payload."""
+    if not isinstance(value, dict):
+        _refuse("payload_facts_not_object")
+    _facts_document(value)
+    curator = value.get("configured_curator")
+    outcomes_raw = value["desired_outcomes"]
+    initiatives_raw = value["initiatives"]
+    work_items_raw = value["work_items"]
+    work_runs_raw = value["work_runs"]
+    if not all(
+        isinstance(entries, list)
+        for entries in (outcomes_raw, initiatives_raw, work_items_raw, work_runs_raw)
+    ):
+        _refuse("facts_collection_not_list")
+    outcomes = tuple(
+        policy.DesiredOutcomeFact(
+            _string(item, "key"),
+            _positive_revision(item),
+            _string(item, "content_digest"),
+            _optional_text(item, "content"),
+            _optional_issue(item, "parent_issue"),
+        )
+        for item in cast("list[dict[str, object]]", outcomes_raw)
+    )
+    initiatives = tuple(
+        policy.InitiativeFact(_string(item, "key"), _string(item, "state"))
+        for item in cast("list[dict[str, object]]", initiatives_raw)
+    )
+    work_items = tuple(
+        policy.WorkItemFact(_string(item, "key"), _string(item, "state"))
+        for item in cast("list[dict[str, object]]", work_items_raw)
+    )
+    work_runs = tuple(
+        policy.WorkRunFact(_string(item, "key"), _string(item, "state"))
+        for item in cast("list[dict[str, object]]", work_runs_raw)
+    )
+    return policy.ControlFacts(
+        cast("str | None", curator), outcomes, initiatives, work_items, work_runs
+    )
 
 
 def _facts_document(facts: Mapping[str, object]) -> None:
@@ -420,7 +575,12 @@ def _fact_entry(field_name: str, value: object) -> None:
     if not isinstance(value, dict):
         _refuse(f"facts_{field_name}_entry_not_object")
     expected = DESIRED_OUTCOME_FIELDS if field_name == "desired_outcomes" else LIFECYCLE_FACT_FIELDS
-    if set(value) != expected:
+    actual = set(value)
+    if field_name == "desired_outcomes":
+        allowed = expected | DESIRED_OUTCOME_OPTIONAL_FIELDS
+        if not actual.issubset(allowed) or not expected.issubset(actual):
+            _refuse(f"facts_{field_name}_entry_fields")
+    elif actual != expected:
         _refuse(f"facts_{field_name}_entry_fields")
     _string(value, "key")
     if field_name != "desired_outcomes":
@@ -430,6 +590,34 @@ def _fact_entry(field_name: str, value: object) -> None:
     if isinstance(revision, bool) or not isinstance(revision, int) or revision < 1:
         _refuse("facts_desired_outcomes_revision")
     _string(value, "content_digest")
+    if "content" in value:
+        _optional_text(value, "content")
+    if "parent_issue" in value:
+        _optional_issue(value, "parent_issue")
+
+
+def _positive_revision(value: Mapping[str, object]) -> int:
+    """Read a validated Desired Outcome revision from local state."""
+    revision = value.get("revision")
+    if isinstance(revision, bool) or not isinstance(revision, int) or revision < 1:
+        _refuse("facts_desired_outcomes_revision")
+    return revision
+
+
+def _optional_text(value: Mapping[str, object], field_name: str) -> str | None:
+    """Read an optional non-empty text field."""
+    item = value.get(field_name)
+    if item is not None and (not isinstance(item, str) or not item):
+        _refuse(f"facts_invalid_{field_name}")
+    return cast("str | None", item)
+
+
+def _optional_issue(value: Mapping[str, object], field_name: str) -> int | None:
+    """Read an optional positive issue number."""
+    item = value.get(field_name)
+    if item is not None and (isinstance(item, bool) or not isinstance(item, int) or item < 1):
+        _refuse(f"facts_invalid_{field_name}")
+    return cast("int | None", item)
 
 
 def _action(value: object) -> policy.ControlAction:
@@ -548,24 +736,41 @@ def _parse_record(line: str, line_number: int) -> dict[str, object]:
     return value
 
 
-def _validate_record_sequence(records: list[dict[str, object]]) -> None:
-    """Require complete, ordered, uniquely identified transition triples."""
+def _validate_record_sequence(  # noqa: C901, PLR0912 — recovery validates complete triples and one trailing prefix
+    records: list[dict[str, object]],
+    *,
+    allow_incomplete: bool = False,
+) -> None:
+    """Require complete triples, or one ordered trailing prefix when recovering."""
+    if not records:
+        _refuse("journal_empty")
     cycle_ids: list[object] = []
     for start in range(0, len(records), len(PHASES)):
         cycle = records[start : start + len(PHASES)]
         if len(cycle) < len(PHASES):
+            if not allow_incomplete:
+                break
+            phases = [row["phase"] for row in cycle]
+            if phases != list(PHASES[: len(cycle)]):
+                _refuse(f"journal_phase_sequence:{start + 1}")
+            if len({row["cycle_id"] for row in cycle}) != 1:
+                _refuse(f"journal_cycle_identity:{start + 1}")
+            if any(row["payload"] != cycle[0]["payload"] for row in cycle[1:]):
+                _refuse(f"journal_payload_mismatch:{start + 1}")
             break
         if [row["phase"] for row in cycle[:2]] != list(PHASES[:2]):
             _refuse(f"journal_phase_sequence:{start + 1}")
         ids = {row["cycle_id"] for row in cycle}
         if len(ids) != 1:
             _refuse(f"journal_cycle_identity:{start + 1}")
+        if any(row["payload"] != cycle[0]["payload"] for row in cycle[1:]):
+            _refuse(f"journal_payload_mismatch:{start + 1}")
         cycle_ids.append(cycle[0]["cycle_id"])
-    if len(records) % len(PHASES) != 0:
+    if len(records) % len(PHASES) != 0 and not allow_incomplete:
         _refuse("journal_incomplete_cycle")
     if len(set(cycle_ids)) != len(cycle_ids):
         _refuse("journal_duplicate_cycle")
-    if records[-1]["phase"] != "confirmed":
+    if len(records) % len(PHASES) == 0 and records[-1]["phase"] != "confirmed":
         _refuse("journal_last_transition_unconfirmed")
 
 

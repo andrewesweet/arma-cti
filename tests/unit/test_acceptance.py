@@ -341,6 +341,49 @@ def test_the_keyed_runner_loads_the_declared_shared_step_library(tmp_path: Path)
     assert result.scenarios == 1
 
 
+def test_embedded_plan_spec_uses_the_same_keyed_runner_and_typed_result(
+    tmp_path: Path,
+) -> None:
+    root = repository(tmp_path)
+    record = {
+        "binding": "unit",
+        "feature": "embedded.feature",
+        "kind": acceptance.BEHAVIOURAL,
+        "provisional_terms": [],
+        "runner": acceptance.PYTHON_RUNNER,
+        "step_library": "steps.py",
+    }
+
+    def satisfied(_context: acceptance.ExecutionContext, _text: str) -> bool:
+        return True
+
+    result = acceptance.run_embedded_obligation(
+        root,
+        "embedded",
+        record,
+        feature("Then the `Campaign` is visible"),
+        definitions={"the `Campaign` is visible": satisfied},
+    )
+
+    assert result == acceptance.RunResult("embedded", acceptance.PASSED, 1, None)
+
+
+def test_embedded_non_behavioural_specification_is_held_to_review(tmp_path: Path) -> None:
+    root = repository(tmp_path)
+    record = {
+        "binding": "review",
+        "feature": "human-judgement.feature",
+        "kind": acceptance.NON_BEHAVIOURAL,
+        "provisional_terms": [],
+        "runner": "",
+        "step_library": "",
+    }
+
+    result = acceptance.run_embedded_obligation(root, "human-judgement", record, None)
+
+    assert result.result == acceptance.HELD_TO_REVIEW
+
+
 def test_a_step_library_without_a_loader_is_a_typed_refusal(tmp_path: Path) -> None:
     root = repository(tmp_path)
     (root / "steps.py").write_text("STEPS = {}\n", encoding="utf-8")
