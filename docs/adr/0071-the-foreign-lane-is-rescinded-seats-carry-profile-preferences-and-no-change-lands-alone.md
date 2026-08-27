@@ -841,8 +841,9 @@ requires deciding its arbiter.)*
 **And the reviewer must not be the reviewed profile.** The `review` seat resolves
 down its own list — the implementer's as ruling 2 first wrote it, and its own since
 A10 — to the first profile that is not the one under review, preferring a different
-lane. Without that rule a seat sharing the implementer's list resolves to the same
-head and every review is same-model — which would make never-alone a ritual, since the
+lane. Without that rule the seat walks its list with nothing excluded, so whichever
+entry is dispatchable answers, the profile under review included — and where the
+list is the implementer's, as it was until A10, every review is same-model — which would make never-alone a ritual, since the
 whole argument for it, and every finding in this document's own four reviews,
 rests on the second instance being genuinely different. "Different model
 preferred" was a word nothing read.
@@ -948,7 +949,10 @@ prose with extra steps.
 Consultative escalation is available only on Claude Code. Codex has no Advisor
 equivalent and heads four seats under this map — planner, implementer once its
 ceiling lifts *(A6: lifted, #405 — it heads it now)*, recon and review — so those
-reach the same conditions by re-dispatch, at the cost re-dispatch carries.
+reach the same conditions by re-dispatch, at the cost re-dispatch carries. *(A10,
+2026-08-27: Codex heads two of them now, `planner` and `review`; the ruling moved
+`implementer` and `recon` to z.ai. The cost this paragraph names is unchanged in
+kind and reaches four seats across two lanes rather than four on one.)*
 
 ### 6. Judgement moves from an upfront bar to a retrospective observatory
 
@@ -1261,11 +1265,12 @@ question — the gates this row's path list does not name.)*
   no test that could clear it. That is a reason, not a justification, and it is
   the weakest place in ruling 1's binary rule.
 - **Consultative escalation is unavailable on the lane heading four seats.** *(A10,
-  2026-08-27: no lane heads four seats now — the heads are spread two apiece across
-  `codex`, `zai` and `claude-native`. The cost this line named is not the cost the
-  registry carries; the underlying point, that a lane heading seats cannot be
-  consulted about its own work, is unchanged and now applies to three lanes at two
-  seats each.)*
+  2026-08-27: no lane heads four seats now. Of the seven rows in `SEATS`, `codex`
+  heads two — `planner` and `review`; `zai` heads two — `implementer` and `recon`;
+  and `claude-native` heads three — `retro`, `orchestrator` and `fable`. The cost
+  this line named is not the cost the registry carries, and the underlying point —
+  that a lane heading a seat cannot be consulted about that seat's own work — now
+  reaches all three lanes.)*
 - **The implementer head is blocked on #265's ceiling**, so ruling 2's headline
   allocation is not the one that runs on the day this lands. *(A6, #405: no longer
   a cost — the ceiling lifted on the human's instruction of 2026-08-18, and the

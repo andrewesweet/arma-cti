@@ -98,7 +98,12 @@ def test_the_seats_that_gate_and_land_keep_the_mode_the_caller_asked_for() -> No
 def test_a_codex_lane_recon_runs_in_the_disposable_tree_without_the_caller_passing_anything(
     tmp_path: Path,
 ) -> None:
-    """The seat's head is a Codex profile, whose vocabulary for the mode is a sandbox policy."""
+    """The seat's Codex rung, whose vocabulary for the mode is a sandbox policy.
+
+    `codex-luna-medium` headed this seat until the human's ruling of 2026-08-27 put
+    `zai-glm53flash-high` in front of it; this arrangement carries no z.ai key, so the
+    Codex rung is what a bare `--seat recon` reaches here.
+    """
     plan, _, refusal = recon_plan(tmp_path)
     assert refusal is None, refusal
     assert plan is not None
@@ -123,7 +128,7 @@ def test_a_codex_lane_recon_gets_only_the_measured_cache_roots_and_network(tmp_p
 def test_a_claude_lane_recon_runs_read_only_without_the_caller_passing_anything(
     tmp_path: Path,
 ) -> None:
-    """The other family, reached by walking the seat's Codex head past a tripped breaker."""
+    """The other family, reached by walking the seat's Codex rung past a tripped breaker."""
     trip(tmp_path, "codex", "gate_failed", 3)
     plan, _, refusal = recon_plan(tmp_path)
     assert refusal is None, refusal
@@ -202,7 +207,7 @@ def test_the_dry_run_shows_the_disposable_workspace_flag_in_the_argv_it_would_la
 def test_the_dry_run_on_the_claude_family_shows_it_too(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    """The same reading on the other runner, reached by walking the Codex head past a breaker."""
+    """The same reading on the other runner, reached by walking the Codex rung past a breaker."""
     trip(tmp_path, "codex", "gate_failed", 3)
     assert dispatch.main(recon_dry_run_argv(tmp_path)) == 0
     line = dry_run_argv_line(capsys)

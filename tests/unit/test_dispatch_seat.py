@@ -92,12 +92,13 @@ def plan_for(tmp_path: Path, **overrides: object) -> tuple[Any, str, Any]:
     """Plan a dispatch that names a seat and no profile, over a real worktree.
 
     The credentials file is deliberately absent by default, which makes the `implementer`
-    list deterministic from its z.ai entry down: that entry cannot be reached without a
-    key, so a box with no z.ai credential walks it past at any hour. The Codex head
-    resolves unless an arrangement stages it away — it needs no credential from this file,
-    Codex reading its own `~/.codex/auth.json` — and since #405 nothing else holds it back,
-    so a test that wants the list *walked* trips the codex breaker rather than relying on a
-    block that no longer exists.
+    list deterministic from its head down: since the human's ruling of 2026-08-27 that head
+    is a z.ai profile, and no z.ai entry can be reached without a key, so a box without one
+    walks it past at any hour. The Codex entry behind it resolves unless an arrangement
+    stages it away — it needs no credential from this file, Codex reading its own
+    `~/.codex/auth.json` — and since #405 nothing else holds it back, so a test that wants
+    the list *walked* trips the codex breaker rather than relying on a block that no longer
+    exists.
     """
     injected = overrides.pop("now", None)
     now = datetime.now(tz=UTC) if injected is None else injected
