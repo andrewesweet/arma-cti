@@ -429,7 +429,9 @@ rather than trust the summary. That is the same move ruling 3 makes for retro
 findings, for the same reason.
 
 The `mechanical` seat is **retired**, and not because it would share a preference
-list — `review` shares one too and is retained. It is retired because it has no
+list — `review` shared one at this ruling and was retained *(A10, 2026-08-27:
+`review` carries its own list now, which changes nothing about why `mechanical`
+went; sharing was never the reason)*. It is retired because it has no
 distinct *kind of work* left once implementation moves down-tier: `review` names a
 different activity with a different containment requirement, and `mechanical`
 named a cheaper tier rather than a different job.
