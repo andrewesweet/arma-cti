@@ -1325,6 +1325,33 @@ def test_a_mention_glued_to_a_word_cannot_land_the_longer_issue(repo: Path) -> N
     assert "only in descriptive prose" in landing.reason
 
 
+def test_a_hash_prefixed_token_is_not_a_reference_at_all(repo: Path) -> None:
+    # The `#` half of the same lookbehind, its own observable effect on
+    # `issue_reference_pattern`: in `##555` the second `#` is not a word character,
+    # so `(?<!\w)` alone would admit the token as a bare `#555`. It must not be a
+    # reference of any kind — not even the descriptive-prose kind — so the reason is
+    # the no-reference one, and this test is what separates the two patterns'
+    # lookbehinds (#591).
+    base = head(repo)
+    land(repo, "docs: follow-up\n\nsee ##555")
+    landing = ledger.landed(repo, 555, base, ARMED)
+    assert landing.sha is None
+    assert "references #555" in landing.reason
+
+
+def test_a_hash_prefixed_token_cannot_name_the_issue_behind_a_possessive(repo: Path) -> None:
+    # The `#` half again, on `landing_reference_pattern`'s own copy: the commit is in
+    # the referencing set through its guarded possessive `#555's`, and the narrowed
+    # naming pattern would admit it through the `##555` token — so the sibling test's
+    # no-reference reason never appears and this one is what holds the second copy
+    # (#591).
+    base = head(repo)
+    land(repo, "docs: follow-up\n\nabout #555's fix, see ##555")
+    landing = ledger.landed(repo, 555, base, ARMED)
+    assert landing.sha is None
+    assert "only in descriptive prose" in landing.reason
+
+
 # ---------------------------------------------------- what each seat's gate can even say
 
 
