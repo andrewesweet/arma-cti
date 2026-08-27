@@ -2185,8 +2185,9 @@ def test_escalate_derives_its_routing_inputs_and_passes_the_refused_head_over(
     """#391: the walk reads the policy and the branch itself — no caller flag to forget.
 
     Class 6 planted back to refusing on the scratch origin's `main`, the branch under
-    review touching a gate path: the entry head (`codex-sol-high`, codex lane) is passed
-    over `routing_refused` and the tail (`opus-high`, the lane the row exempts) resolves.
+    review touching a gate path: the entry head (`codex-sol-high`, codex lane) and the
+    entry's middle rung (`zai-glm53-max`, zai lane) are each passed over
+    `routing_refused`, and the tail (`opus-high`, the lane the row exempts) resolves.
     Against the shipped policy this same command resolves the head — the inert
     arrangement the end-to-end test above already carries — so this is the rung biting on
     inputs the command derived, which is the whole of what #391 asked for.
@@ -2246,7 +2247,11 @@ def test_escalate_derives_its_routing_inputs_and_passes_the_refused_head_over(
     assert resolutions, "the resolution event is the rung's durable trace"
     attributes = resolutions[-1]["attributes"]
     assert attributes["cti.review.arbiter"] == "opus-high"
-    assert "codex-sol-high:routing_refused" in attributes["cti.review.arbiter.excluded"]
+    # The walk is head first, then the entry tail: both refusing rungs are recorded, the
+    # middle one included, before the exempt tail resolves.
+    assert attributes["cti.review.arbiter.excluded"] == (
+        "codex-sol-high:routing_refused,zai-glm53-max:routing_refused"
+    )
 
 
 def test_escalate_without_an_exchange_ref_refuses_rather_than_skipping_the_rung(
