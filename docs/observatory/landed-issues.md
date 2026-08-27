@@ -89,6 +89,9 @@
 |367|f54c78487d3715de6a7d590bce90bb383ccedced|git_fallback|2|R|52365|codex,zai|N|U|U|
 |370|e4a403b85101920c95e7adda0be1abf2f864169c|journal|9|R|108919|claude-native,codex,zai|C3.21709|U|U|
 |374|56f91c229cd24dc9d71b227d51cdd1cfa6c6eb40|git_fallback|4|R|14911|claude-native,codex,zai|C0.661194|U|U|
+|378|ac56579c8184e1017cbb86a7df9ed55ca6b09f6c|journal|4|1|7171|claude-native,codex,zai|C0.522725|U|U|
+|379|7a756280a30119c48a5e77c63c0b6fb71a24d7bb|journal|2|0|7481|codex,zai|N|U|U|
+|380|3c7856e44aba04b21148236649e1d20300e1734a|journal|4|0|9267|codex,zai|N|U|U|
 |393|a962c6fbe0214316e81a632e271579b8a9f20a22|git_fallback|1|R|271471|claude-native|C1.82942|N|N|
 |434|c23d07cf9ad42225d1472725fe2aee0ba76522b8|journal|4|0|7730|codex,zai|N|U|U|
 |436|c5192702054960381604d2c9ffc9157f7b8680e6|journal|4|R|2657|claude-native,codex,zai|C0.709193|U|U|
@@ -128,6 +131,9 @@
 |502|75cda71bf2a2cea44556ab09d46643ad7c550f66|journal|5|0|42656|codex|N|U|N|
 |503|f6f9963c87df59a333c8d3db93f9fa7d09fb860b|journal|12|0|16222|codex|N|U|N|
 |504|b5423df20137cdb7e620e6e413444199ecf3a0ca|journal|12|0|15297|codex,zai|N|U|U|
+|525|31d2d341b62ec44d39a853f34a9ba994d9192565|journal|6|1|5752|claude-native,codex|C3.39846|U|N|
+|528|70eb295f6733d8966d375a32d04101ee1f2e46dc|journal|2|0|1371|codex,zai|N|U|U|
+|529|b71e804c930a2680e33f8a81295dc7f5436d0eda|journal|5|0|95034|claude-native,codex,zai|C2.1338|U|U|
 |542|0ee5c0aac2cdbb054eb203146b491194e2aaf111|journal|4|0|4067|claude-native,codex|C1.98159|U|N|
 |543|220529a70d6b6a1fb815bd6cc584ff1a32c3a646|journal|2|0|15144|zai|N|N|U|
 |544|d3be8718cbf9a1afc910396b1db2c9276e1e70ba|journal|6|2|8837|claude-native,codex|C4.49015|U|N|
@@ -165,4 +171,13 @@
 |579|c94174eb0c3280cff5ffc8936250c674689448fb|journal|4|0|1431|claude-native,codex|C0.861399|U|N|
 |580|f8fdaca2b51d67976707dcf48d04cc9a227ed9a1|journal|2|0|979|claude-native,codex|C0.851402|U|N|
 |581|f959f579fa1db0baa88e62bb07781a049c5af714|journal|2|0|574|claude-native,codex|C0.505677|U|N|
+|583|73cf39a11701afbe4dac68a89be2608868b6d433|journal|8|3|6805|claude-native,codex|C3.20673|U|N|
 |584|cec1c6db7bcd116a031018dbd054865f63cfa29e|journal|2|0|2364|claude-native,codex|C1.12556|U|N|
+|585|957d954b58f71d5340657aaa19638329df61b449|journal|2|0|771|claude-native,codex|C0.768049|U|N|
+|586|b24e7c24f7557b9a302aa29d6201dcd4465213fa|journal|5|0|7718|codex,zai|N|U|U|
+|592|369f9e0e9e3a46911077be6cb5b619582f69fba3|journal|4|0|28863|codex,zai|N|U|U|
+|598|d5416713a5b09b4408db09bf5de6262a0bb9aa9a|journal|5|1|53606|codex,zai|N|U|U|
+|599|c3846e909a47a351075964f875512189b2b18ac5|journal|4|1|7045|codex,zai|N|U|U|
+|600|3a4a073397cbcb92edfdfd4382b8c3e986eaa6dd|journal|4|0|53169|claude-native,codex,zai|C0.37469|U|U|
+|601|64f5e656c8102449469e161495a3ef3df1404151|journal|2|0|2049|codex,zai|N|U|U|
+|606|0c6ccf4fb30ffdf0e0242813d67b6d4d43f144ba|journal|3|0|21134|codex,zai|N|U|U|
