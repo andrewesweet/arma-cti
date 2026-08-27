@@ -279,9 +279,10 @@ preference head is `fable-high`. Ruling 4 is satisfied — they are different
 profiles, and `review_same_profile` is about the instance producing the verdict
 — but A1 filled that cell so the arbiter would not be the profile most likely to
 have authored the rounds it judges (#318: `fable-high` authored every one), and
-the arbiter and that likely author now share a model where they previously
-shared neither model nor lane. Recorded rather than argued: the cell is the
-human's.)*
+the arbiter and that likely author now share a model where A1's pair did not.
+Both pairs sit on `claude-native`, so no lane separation is lost and none
+existed: what A1's cell avoided was the exact likely-author profile, not its
+model and not its lane. Recorded rather than argued: the cell is the human's.)*
 
 *(Amendment A1, 2026-08-15, on the human's ruling of 2026-08-14 recorded at
 #361: the escalation column had four empty cells, and the question put was

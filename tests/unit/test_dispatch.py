@@ -834,6 +834,21 @@ def test_the_ruled_2026_08_19_additions_resolve_with_lane_model_and_effort() -> 
     assert slots["ANTHROPIC_DEFAULT_OPUS_MODEL"] == "glm-5.3"
 
 
+def test_the_ruled_2026_08_27_flash_profiles_resolve_with_lane_model_and_effort() -> None:
+    # The same pin for the human's ruling of 2026-08-27, one name at a time. Without it the
+    # suite fixes the lane's model *set* and each seat's order but never the two effort
+    # values, so swapping `max` for `high` between the pair — or giving both the same one —
+    # stays green while the registry says something the ruling did not (review round 4).
+    assert dispatch.resolved_profile("zai-glm53flash-max") == dispatch.Profile(
+        "zai-glm53flash-max", "zai", "sonnet", "max"
+    )
+    assert dispatch.resolved_profile("zai-glm53flash-high") == dispatch.Profile(
+        "zai-glm53flash-high", "zai", "sonnet", "high"
+    )
+    slots = dict(dispatch.LANES["zai"].model_slots)
+    assert slots["ANTHROPIC_DEFAULT_SONNET_MODEL"] == "glm-5.3-flash"
+
+
 def test_every_zai_profile_selects_a_model_the_lane_actually_maps() -> None:
     # A profile whose `--model` had no slot would reach z.ai asking for `opus`, which is
     # not a model it serves. The registry is the only place this can be caught.

@@ -985,7 +985,7 @@ def escalation_for(body: str, seat_name: str, repo: Path) -> escalation.Evaluati
     That seat, and not the `implementer` row, is what ADR-0071 ruling 4 means by "the implementing
     seat's escalation entry" as amendment A1 (#361) leaves it. Reading `IMPLEMENTER_ESCALATION[0]`
     — which this did until #361 — emitted `codex-sol-high` as the arbiter for a retro brief, whose
-    tabled arbiter is `opus-max`, and made every other row's entry unreachable. A seat with no
+    tabled arbiter was `opus-max` under A1 and is `fable-xhigh` under A10, and made every other row's entry unreachable. A seat with no
     entry resolves to `None` and condition 1 stays silent, which is the struck blanket fallback's
     accepted consequence rather than a gap: it must not fire naming an arbiter nobody chose.
 
