@@ -798,8 +798,11 @@ def test_the_zai_lane_registers_only_the_models_the_rulings_named() -> None:
     # differ only in the budget they send. That once read as one name per model; the
     # human ruled a second glm-5.3 name back on 2026-08-19 (#433, for #432's
     # codex-absence substitution table), so what survives as an invariant is the model
-    # set: the two arms worth reaching, with no third model slipping in under a new
-    # name. Two names on one model are now a ruled fact, not a registry bug.
+    # set — whichever models the rulings have named, and no further one slipping in
+    # under a new name. Two names on one model are a ruled fact, not a registry bug,
+    # and so is the third model: the set was two arms until the human's ruling of
+    # 2026-08-27 added GLM-5.3-Flash, and this assertion pins the ruled set rather than
+    # the number two.
     #
     # The third model is the human's ruling of 2026-08-27, which heads two seats with
     # GLM-5.3-Flash: the set grows by a ruling, and this assertion is still what stops a
@@ -1058,7 +1061,8 @@ def test_the_carve_out_is_the_only_provenance_rule_the_registry_states() -> None
 
 # ---------------------------------------------- ADR-0071: new profiles and the pair block
 # Luna enters on publication — a named exception to the measure-before-building rule — and
-# heads the implementer preference list. #265's gate ceiling held that pair below the seat
+# headed the implementer preference list until the human's ruling of 2026-08-27 put
+# `zai-glm53flash-max` in front of it. #265's gate ceiling held that pair below the seat
 # until #405 lifted it, so the block list now ships empty and the mechanism is exercised
 # against a staged entry. See `SEAT_PROFILE_BLOCKS` and `pair_block` in tools/dispatch.py.
 

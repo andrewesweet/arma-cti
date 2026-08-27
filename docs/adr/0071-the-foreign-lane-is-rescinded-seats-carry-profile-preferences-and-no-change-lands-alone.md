@@ -266,11 +266,12 @@ this lane had been pointing at `glm-5.3` as a synonym for the opus slot, so it
 costs no arm. Its slug was read back from the endpoint's own model list on the
 day of the ruling — `GET /api/paas/v4/models` returns ten models,
 `glm-5.3-flash` among them — rather than taken from z.ai's Claude Code
-integration page, which documents no default mapping for it. Two consequences
+integration page, which documents no default mapping for it. Three consequences
 are stated rather than left to be discovered: the implementer's head now sits on
 the lane the human's rule of 2026-08-05 confines to off-peak hours, so a peak
-dispatch to that seat resolves past it to `codex-luna-max` and records that it
-did; and `review`'s first `claude-native` entry moved from `opus-low` to
+dispatch to that seat resolves past it and records that it did — reaching
+`codex-luna-max` where that profile is itself dispatchable, and walking on down the
+list where it is not; and `review`'s first `claude-native` entry moved from `opus-low` to
 `opus-medium`, which is the pair a generated Claude seat surface would declare
 if that seat ever gained one. A third is worth stating because A1 chose the cell
 this ruling replaces: `retro`'s escalation head is now `fable-xhigh` while its
@@ -396,7 +397,9 @@ repository layout while the commit moves to the dispatcher, which is not
 sandboxed. `SEAT_PROFILE_BLOCKS`' one entry —
 `("implementer", "codex-luna-max")` — is gone with the ceiling, and the registry
 heads `implementer` with `codex-luna-max` again, per the preference table above
-and not per this paragraph's "until it lifts" ordering. What survives unchanged is
+and not per this paragraph's "until it lifts" ordering. *(A10, 2026-08-27: the head
+is `zai-glm53flash-max` now and Luna is the second rung. What this paragraph records
+— the ceiling lifted, the block list empty — is unchanged by that re-ordering.)* What survives unchanged is
 the binary rule this paragraph applied and the rejected alternative it records:
 gating Codex's output elsewhere is still the graded ladder ruling 1 withdrew, and
 the division of labour — the session gates, `harness_finish` commits — is the
@@ -836,9 +839,10 @@ failure under #361's own acceptance criterion, and it means adding a seat now
 requires deciding its arbiter.)*
 
 **And the reviewer must not be the reviewed profile.** The `review` seat resolves
-down the implementer's list to the first profile that is not the one under review,
-preferring a different lane. Without that rule both seats resolve to the same head
-and every review is same-model — which would make never-alone a ritual, since the
+down its own list — the implementer's as ruling 2 first wrote it, and its own since
+A10 — to the first profile that is not the one under review, preferring a different
+lane. Without that rule a seat sharing the implementer's list resolves to the same
+head and every review is same-model — which would make never-alone a ritual, since the
 whole argument for it, and every finding in this document's own four reviews,
 rests on the second instance being genuinely different. "Different model
 preferred" was a word nothing read.
@@ -1256,7 +1260,12 @@ question — the gates this row's path list does not name.)*
   visible only in a bill, so blocking on it would stop the lane indefinitely with
   no test that could clear it. That is a reason, not a justification, and it is
   the weakest place in ruling 1's binary rule.
-- **Consultative escalation is unavailable on the lane heading four seats.**
+- **Consultative escalation is unavailable on the lane heading four seats.** *(A10,
+  2026-08-27: no lane heads four seats now — the heads are spread two apiece across
+  `codex`, `zai` and `claude-native`. The cost this line named is not the cost the
+  registry carries; the underlying point, that a lane heading seats cannot be
+  consulted about its own work, is unchanged and now applies to three lanes at two
+  seats each.)*
 - **The implementer head is blocked on #265's ceiling**, so ruling 2's headline
   allocation is not the one that runs on the day this lands. *(A6, #405: no longer
   a cost — the ceiling lifted on the human's instruction of 2026-08-18, and the

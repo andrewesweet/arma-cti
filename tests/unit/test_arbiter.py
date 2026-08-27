@@ -120,7 +120,12 @@ SUNDAY = datetime(2026, 8, 9, 12, 0, tzinfo=UTC)
 
 
 def test_the_ruled_cells_are_transcribed_head_first() -> None:
-    """The human ruling on #361 (2026-08-14) filled exactly these — data, not derivation."""
+    """The rulings' own cells, transcribed head first — data, not derivation.
+
+    The human ruling on #361 (2026-08-14) filled both of these; the ruling of 2026-08-27
+    replaced `retro`'s with `fable-xhigh`, `opus-max` and left `orchestrator`'s alone. What
+    is asserted is that each cell is whatever the newest ruling for it says, in its order.
+    """
     assert dispatch.SEATS["retro"].escalation == ("fable-xhigh", "opus-max")
     assert dispatch.SEATS["orchestrator"].escalation == ("opus-max", "fable-xhigh")
     # The two not-applicable rows stay empty, and so does the fable seat #329/#330 own.
