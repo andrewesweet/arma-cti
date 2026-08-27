@@ -101,6 +101,16 @@ non-authoritative statement must become a pointer or carry a reasoned marker.
 It reverses no decision about arbiter resolution; it changes how copies are
 kept from drifting and states the check's two limits beside the mechanism.
 <!-- arbiter-rule: stated — this header names A1's third paragraph ("the conflicted-head fall-through") to say what the amendment added; it states nothing about what the walk does. #390 -->
+Amended: 2026-08-27, on the human's ruling of that date, which replaces four
+rows of ruling 2's table. One amendment, marked inline at the passage it changes
+— **A10** gives `implementer`, `recon`, `review` and `retro` new preference
+orders, gives `review` its own list and its own escalation entry in place of the
+implementer's, and registers GLM-5.3-Flash on the z.ai lane's sonnet slot to
+carry the two seats whose heads the ruling moved there. It reverses no other
+decision: ruling 4's exclusion rule, the different-lane preference and
+`review_same_profile` are untouched. The `Reviewed-by-human:` line above covers
+the version at the 2026-08-15 sign-off and does not reach A10; this ruling is
+A10's sign-off.
 Supersedes: ADR-0061 decisions 2, 3, 4 and 6 (2026-08-06)
 Supersedes: ADR-0061 decision 1's quality-floor clause (2026-08-06)
 Supersedes: ADR-0009's rule that a retro *applies* the process changes it finds — the retro remains where process change originates
@@ -234,12 +244,34 @@ replaced by a preference list per seat, resolved at dispatch time.
 | seat | preference, head first | escalation |
 |---|---|---|
 | `planner` (new; absorbs `cti-implementer-xhigh`) | `codex-sol-xhigh`, `opus-xhigh` | `fable-high` |
-| `implementer` | `codex-luna-max`, `zai-glm52-max`, `opus-low` *(A6: live as written — and the z.ai entry is `zai-glm53-max` in the registry since `89fc445` re-named the current GLM model; the table keeps the name it was decided with and the registry is the authority)* | `codex-sol-high`, `opus-high` |
-| `recon` (read-only) | `codex-luna-medium`, `haiku-medium` | — never escalates (A1) |
-| `review` | the implementer's list, resolved to the first profile that is **not** the one being reviewed, preferring a different lane | the implementer's escalation head |
-| `retro` (ruling 3) | `fable-high`, `opus-xhigh`, `codex-sol-xhigh` | `opus-max`, `fable-max` (A1) |
+| `implementer` | `zai-glm53flash-max`, `codex-luna-max`, `opus-low` *(A10; the row was decided as `codex-luna-max`, `zai-glm52-max`, `opus-low`, and A6 had already recorded that the z.ai entry is `zai-glm53-max` in the registry since `89fc445`)* | `codex-sol-high`, `zai-glm53-max`, `opus-high` *(A10)* |
+| `recon` (read-only) | `zai-glm53flash-high`, `codex-luna-medium`, `haiku-medium` *(A10)* | — never escalates (A1) |
+| `review` | its own list — `codex-sol-xhigh`, `zai-glm53-max`, `opus-medium` — resolved to the first profile that is **not** the one being reviewed and not one the issue's records place on the work, preferring a different lane *(A10, replacing "the implementer's list")* | `codex-sol-max`, `opus-xhigh` *(A10, replacing "the implementer's escalation head")* |
+| `retro` (ruling 3) | `fable-high`, `codex-sol-max`, `opus-xhigh` *(A10)* | `opus-max`, `fable-max` (A1) |
 | `orchestrator` | `opus-xhigh`; Claude only, provisional per ruling 1 | `opus-max`, `fable-xhigh` (A1) |
 | interlocutor — **not dispatched** | `opus-xhigh`, `codex-sol-xhigh` | — not dispatched (A1) |
+
+*(Amendment A10, 2026-08-27, on the human's ruling of that date. Four rows of
+this table are replaced as written above, and one structural fact goes with
+them: `review` no longer takes "the implementer's list" but carries its own
+preference and its own escalation entry, so the registry's shared tuple — one
+object, which was how the two seats could not drift apart — becomes four
+constants. What the ruling does not touch is where `review`'s resolution
+differs: the profile under review and every profile the issue's records place on
+the work are still removed, and a different lane is still preferred rather than
+required. The ruling also names a model no profile carried, GLM-5.3-Flash, which
+heads `implementer` and `recon`; it reaches z.ai through the sonnet slot, which
+this lane had been pointing at `glm-5.3` as a synonym for the opus slot, so it
+costs no arm. Its slug was read back from the endpoint's own model list on the
+day of the ruling — `GET /api/paas/v4/models` returns ten models,
+`glm-5.3-flash` among them — rather than taken from z.ai's Claude Code
+integration page, which documents no default mapping for it. Two consequences
+are stated rather than left to be discovered: the implementer's head now sits on
+the lane the human's rule of 2026-08-05 confines to off-peak hours, so a peak
+dispatch to that seat resolves past it to `codex-luna-max` and records that it
+did; and `review`'s first `claude-native` entry moved from `opus-low` to
+`opus-medium`, which is the pair a generated Claude seat surface would declare
+if that seat ever gained one.)*
 
 *(Amendment A1, 2026-08-15, on the human's ruling of 2026-08-14 recorded at
 #361: the escalation column had four empty cells, and the question put was

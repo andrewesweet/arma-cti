@@ -781,14 +781,16 @@ def test_the_zai_lane_carries_z_ais_published_mirror_configuration() -> None:
     assert lane.runner == "claude"
     assert lane.base_url == "https://api.z.ai/api/anthropic"
     assert lane.credential == "ZAI_API_KEY"
+    # The sonnet slot was glm-5.3's synonym until the human's ruling of 2026-08-27 seated
+    # GLM-5.3-Flash on it; the other two slots are unmoved.
     assert dict(lane.model_slots) == {
         "ANTHROPIC_DEFAULT_OPUS_MODEL": "glm-5.3",
-        "ANTHROPIC_DEFAULT_SONNET_MODEL": "glm-5.3",
+        "ANTHROPIC_DEFAULT_SONNET_MODEL": "glm-5.3-flash",
         "ANTHROPIC_DEFAULT_HAIKU_MODEL": "glm-4.7",
     }
 
 
-def test_the_zai_lane_registers_only_the_two_models_worth_reaching() -> None:
+def test_the_zai_lane_registers_only_the_models_the_rulings_named() -> None:
     # #225's collapse, as a registry invariant rather than a comment. The endpoint
     # ignores `thinking.budget_tokens` (measured: budget 1,024 and budget 32,000 both
     # thought past 9,000 tokens and both stopped on `max_tokens` —
@@ -798,13 +800,19 @@ def test_the_zai_lane_registers_only_the_two_models_worth_reaching() -> None:
     # codex-absence substitution table), so what survives as an invariant is the model
     # set: the two arms worth reaching, with no third model slipping in under a new
     # name. Two names on one model are now a ruled fact, not a registry bug.
+    #
+    # The third model is the human's ruling of 2026-08-27, which heads two seats with
+    # GLM-5.3-Flash: the set grows by a ruling, and this assertion is still what stops a
+    # fourth arriving without one. The slug was read back from the endpoint's own model
+    # list that day rather than assumed from the docs page, which documents no default
+    # Claude-name mapping for it.
     slots = dict(dispatch.LANES["zai"].model_slots)
     resolved = {
         slots[f"ANTHROPIC_DEFAULT_{profile.model.upper()}_MODEL"]
         for profile in dispatch.PROFILES.values()
         if profile.lane == "zai"
     }
-    assert resolved == {"glm-4.7", "glm-5.3"}
+    assert resolved == {"glm-4.7", "glm-5.3", "glm-5.3-flash"}
 
 
 def test_the_ruled_2026_08_19_additions_resolve_with_lane_model_and_effort() -> None:

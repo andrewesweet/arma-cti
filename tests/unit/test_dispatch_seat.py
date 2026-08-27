@@ -218,22 +218,36 @@ def test_a_seat_omitting_the_lands_column_refuses_rather_than_defaulting() -> No
             dispatch.refuse_undecided_lands({"new": seat})
 
 
-def test_the_implementer_list_is_the_adrs_order_head_first() -> None:
+def test_the_implementer_list_is_the_rulings_order_head_first() -> None:
     # Ordered, not a set: ADR-0071 ruling 2 gives the list head-first and resolution walks
-    # it in exactly that order, so the sequence is the claim.
+    # it in exactly that order, so the sequence is the claim. The human's ruling of
+    # 2026-08-27 replaced both tuples — GLM-5.3-Flash heads the preference, and the
+    # escalation entry gained a z.ai rung between its two ends.
     assert dispatch.SEATS["implementer"].preference == (
+        "zai-glm53flash-max",
         "codex-luna-max",
-        "zai-glm53-max",
         "opus-low",
     )
-    assert dispatch.SEATS["implementer"].escalation == ("codex-sol-high", "opus-high")
+    assert dispatch.SEATS["implementer"].escalation == (
+        "codex-sol-high",
+        "zai-glm53-max",
+        "opus-high",
+    )
 
 
-def test_the_review_seat_shares_the_implementers_list_and_its_escalation_head() -> None:
-    # "The implementer's list" is a fact about one list, not two lists that happen to agree
-    # today: shared rather than copied, so an edit to one cannot leave the other behind.
-    assert dispatch.SEATS["review"].preference == dispatch.SEATS["implementer"].preference
-    assert dispatch.SEATS["review"].escalation == dispatch.SEATS["implementer"].escalation[:1]
+def test_the_review_seat_carries_its_own_list_rather_than_the_implementers() -> None:
+    # ADR-0071 ruling 2 gave `review` the implementer's list and the implementer's
+    # escalation head, and the registry shared one object so the two could not drift. The
+    # human's ruling of 2026-08-27 separates them, so the claim inverts: the review seat's
+    # tuples are its own, and agreeing with the implementer's would now be the bug.
+    assert dispatch.SEATS["review"].preference == (
+        "codex-sol-xhigh",
+        "zai-glm53-max",
+        "opus-medium",
+    )
+    assert dispatch.SEATS["review"].escalation == ("codex-sol-max", "opus-xhigh")
+    assert dispatch.SEATS["review"].preference != dispatch.SEATS["implementer"].preference
+    assert dispatch.SEATS["review"].escalation != dispatch.SEATS["implementer"].escalation
 
 
 def test_the_retro_and_orchestrator_rows_carry_the_escalation_entries_the_adr_tables() -> None:
@@ -299,16 +313,19 @@ def test_the_retired_mechanical_seat_is_gone_from_every_roster() -> None:
 
 
 def test_naming_only_a_seat_resolves_a_profile_and_plans_the_dispatch(tmp_path: Path) -> None:
-    # The head, since #405 lifted the ceiling that held it: ADR-0071 ruling 2's table has
-    # always named `codex-luna-max` first, and this is the first arrangement in which
-    # naming the seat alone actually reaches it.
-    plan, _, refusal = plan_for(tmp_path)
+    # The human's ruling of 2026-08-27 puts GLM-5.3-Flash in front of Luna, and this
+    # arrangement carries no z.ai credential, so the head is walked past for the reason the
+    # module docstring prefers — absent key, not the hour — and Luna is what a bare `--seat`
+    # reaches. The instant is injected so the *reason* is the credential at any hour.
+    plan, _, refusal = plan_for(tmp_path, now=OFF_PEAK)
     assert refusal is None
     assert plan is not None
     assert plan.identity.profile == "codex-luna-max"
     assert plan.identity.lane == "codex"
     assert plan.route.named is False
-    assert walked_past(plan.route.passed_over) == []
+    assert walked_past(plan.route.passed_over) == [
+        ("zai-glm53flash-max", "credentials_missing"),
+    ]
 
 
 def test_the_dry_run_prints_the_resolved_profile_and_why_that_one(
@@ -332,7 +349,7 @@ def test_the_dry_run_prints_the_resolved_profile_and_why_that_one(
     assert "route_chosen=opus-low lane=claude-native" in printed
     # The reason is which entries were passed over and on what — not a bare "chosen".
     assert "route_passed_over=codex-luna-max refusal=lane_breaker_open" in printed
-    assert "route_passed_over=zai-glm53-max refusal=credentials_missing" in printed
+    assert "route_passed_over=zai-glm53flash-max refusal=credentials_missing" in printed
 
 
 def test_a_blocked_head_is_stepped_past_rather_than_dispatched(
@@ -354,12 +371,16 @@ def test_a_blocked_head_is_stepped_past_rather_than_dispatched(
 def test_a_seat_whose_head_is_live_resolves_to_it_and_passes_nothing_over(
     tmp_path: Path,
 ) -> None:
-    # Luna heads the `recon` list and nothing stands in front of it, so a seat's head is
-    # what a bare `--seat` resolves to when the world is not staged against it.
-    plan, _, refusal = plan_for(tmp_path, seat="recon")
+    # GLM-5.3-Flash heads the `recon` list since the human's ruling of 2026-08-27, so a
+    # seat's head is what a bare `--seat` resolves to when the world is not staged against
+    # it — which for a z.ai head means a key on disk and an hour outside the published peak
+    # band, both supplied here rather than left to the clock.
+    (tmp_path / "credentials.env").write_text(f"ZAI_API_KEY={FAKE_TOKEN}\n", encoding="utf-8")
+    (tmp_path / "credentials.env").chmod(0o600)
+    plan, _, refusal = plan_for(tmp_path, seat="recon", now=OFF_PEAK)
     assert refusal is None
     assert plan is not None
-    assert plan.identity.profile == "codex-luna-medium"
+    assert plan.identity.profile == "zai-glm53flash-high"
     assert walked_past(plan.route.passed_over) == []
 
 
@@ -374,11 +395,8 @@ def test_a_breaker_refused_head_resolves_to_the_next_entry_and_the_record_says_s
     plan, _, refusal = plan_for(tmp_path, seat="retro")
     assert refusal is None
     assert plan is not None
-    assert plan.identity.profile == "codex-sol-xhigh"
-    assert walked_past(plan.route.passed_over) == [
-        ("fable-high", "lane_breaker_open"),
-        ("opus-xhigh", "lane_breaker_open"),
-    ]
+    assert plan.identity.profile == "codex-sol-max"
+    assert walked_past(plan.route.passed_over) == [("fable-high", "lane_breaker_open")]
 
 
 def test_a_passed_over_entry_keeps_the_failure_class_its_own_refusal_carried(
@@ -390,10 +408,7 @@ def test_a_passed_over_entry_keeps_the_failure_class_its_own_refusal_carried(
     trip(tmp_path, "claude-native", breaker.GATE_FAILED, 3)
     plan, _, _ = plan_for(tmp_path, seat="retro")
     assert plan is not None
-    assert [entry.failure_class for entry in plan.route.passed_over] == [
-        "provider_refused",
-        "provider_refused",
-    ]
+    assert [entry.failure_class for entry in plan.route.passed_over] == ["provider_refused"]
 
 
 def test_the_off_peak_rule_walks_the_zai_entry_past_rather_than_overriding_it(
@@ -407,7 +422,7 @@ def test_the_off_peak_rule_walks_the_zai_entry_past_rather_than_overriding_it(
     assert refusal is None
     assert plan is not None
     assert plan.identity.profile == "opus-low", "the z.ai entry is skipped inside the peak band"
-    assert ("zai-glm53-max", "lane_peak_hours") in walked_past(plan.route.passed_over)
+    assert ("zai-glm53flash-max", "lane_peak_hours") in walked_past(plan.route.passed_over)
 
 
 # ------------------------------------------------------------- exhaustion, criterion 3
@@ -422,8 +437,8 @@ def test_a_seat_whose_whole_list_is_unavailable_refuses_by_name(tmp_path: Path) 
     assert refusal.kind == "seat_list_exhausted"
     found = " ".join(refusal.found)
     assert "seat=retro" in found
-    assert "preference=fable-high opus-xhigh codex-sol-xhigh" in found
-    for name in ("fable-high", "opus-xhigh", "codex-sol-xhigh"):
+    assert "preference=fable-high codex-sol-max opus-xhigh" in found
+    for name in ("fable-high", "codex-sol-max", "opus-xhigh"):
         assert f"refused={name} refusal=lane_breaker_open" in found
 
 
@@ -436,9 +451,9 @@ def test_exhaustion_never_falls_back_to_the_escalation_entry(tmp_path: Path) -> 
     assert plan is None
     assert refusal is not None
     assert refusal.kind == "seat_list_exhausted"
-    # `codex-sol-high` and `opus-high` are the implementer's escalation and are named in
-    # the refusal as something the reader may choose — never as something already chosen.
-    assert "escalation=codex-sol-high opus-high" in refusal.found
+    # The implementer's escalation entry is named in the refusal as something the reader
+    # may choose — never as something already chosen.
+    assert "escalation=codex-sol-high zai-glm53-max opus-high" in refusal.found
     assert all(not line.startswith("refused=codex-sol-high") for line in refusal.found)
 
 
@@ -485,7 +500,7 @@ def test_the_exhaustion_remedy_names_the_escalation_entry_beside_its_lane(
         trip(tmp_path, lane, breaker.GATE_FAILED, 3)
     _, _, refusal = plan_for(tmp_path)
     assert refusal is not None
-    assert "escalation entry is codex-sol-high opus-high" in refusal.action
+    assert "escalation entry is codex-sol-high zai-glm53-max opus-high" in refusal.action
     assert "--lane codex --profile codex-sol-high" in refusal.action
 
 
@@ -626,8 +641,8 @@ def test_the_record_names_the_chosen_profile_and_what_it_walked_past(tmp_path: P
     assert document["route"]["seat"] == "implementer"
     assert document["route"]["chosen"] == "opus-low"
     assert [entry["profile"] for entry in document["route"]["passed_over"]] == [
+        "zai-glm53flash-max",
         "codex-luna-max",
-        "zai-glm53-max",
     ]
 
 
@@ -717,12 +732,12 @@ def test_the_registry_listing_prints_each_seats_preference_and_marks_the_escalat
 ) -> None:
     assert dispatch.main(["--list"]) == 0
     printed = capsys.readouterr().out
-    assert "preference=codex-luna-max zai-glm53-max opus-low" in printed
+    assert "preference=zai-glm53flash-max codex-luna-max opus-low" in printed
     # The mark names *which* resolution passes the entry by (#361 review round 2, claim 3): a
     # flat "not resolved into" was false from the moment `tools/arbiter.py`'s walk landed at
     # `d351a3f`, since that walk starts at this very entry.
     mark = "(not a dispatch route; walked first by the arbiter)"
-    assert f"escalation=codex-sol-high opus-high {mark}" in printed
+    assert f"escalation=codex-sol-high zai-glm53-max opus-high {mark}" in printed
     # `fable` and `recon` are the rows that still register none; #361 filled `retro`'s and
     # `orchestrator`'s, and the listing is the surface that said `none` while the ADR named a
     # profile. Both halves are asserted so a future fill cannot quietly empty this claim. An

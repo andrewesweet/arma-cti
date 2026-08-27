@@ -422,7 +422,7 @@ LANES: Final[dict[str, Lane]] = {
         credential="ZAI_API_KEY",
         model_slots=(
             ("ANTHROPIC_DEFAULT_OPUS_MODEL", "glm-5.3"),
-            ("ANTHROPIC_DEFAULT_SONNET_MODEL", "glm-5.3"),
+            ("ANTHROPIC_DEFAULT_SONNET_MODEL", "glm-5.3-flash"),
             ("ANTHROPIC_DEFAULT_HAIKU_MODEL", "glm-4.7"),
         ),
         note=(
@@ -430,10 +430,14 @@ LANES: Final[dict[str, Lane]] = {
             "endpoint, which consumes no Anthropic quota, credential or traffic. The "
             "base URL and the three model-slot variables are z.ai's own published "
             "integration (docs.z.ai/devpack/tool/claude). Needs ZAI_API_KEY in "
-            "~/.arma-cti/credentials.env, which is #229's human item. Both slots that "
-            "resolve to glm-5.3 are deliberate: the endpoint's live model list carries "
-            "eight GLMs and only two of them are worth reaching from here, so the sonnet "
-            "slot is the opus slot's synonym rather than a third arm nothing distinguishes."
+            "~/.arma-cti/credentials.env, which is #229's human item. The three slots "
+            "now name three different models: the sonnet slot was the opus slot's "
+            "synonym until the human's ruling of 2026-08-27 seated glm-5.3-flash, so it "
+            "is a third arm rather than a spare name. The slug was read back from the "
+            "endpoint's own model list that day (GET /api/paas/v4/models returns ten "
+            "models, glm-5.3-flash among them); z.ai's Claude Code integration page does "
+            "not document a default mapping for it, and this lane sets its own slots "
+            "rather than taking the published defaults, so nothing here rests on one."
         ),
         # The human's hard rule, 2026-08-05 (#238): this lane is used only off-peak, as a
         # dispatch-time refusal rather than as guidance. Only the human amends it.
@@ -542,6 +546,15 @@ PROFILES: Final[dict[str, Profile]] = {
     "zai-glm53-max": Profile("zai-glm53-max", "zai", "opus", "max"),
     "zai-glm53-high": Profile("zai-glm53-high", "zai", "opus", "high"),
     "zai-glm47-max": Profile("zai-glm47-max", "zai", "haiku", "max"),
+    # The human's ruling of 2026-08-27 heads `implementer` and `recon` with GLM-5.3-Flash,
+    # which no profile named. It reaches the endpoint through the sonnet slot, which this
+    # lane had been pointing at glm-5.3 as a synonym for the opus slot — so seating Flash
+    # there costs no arm. What the two names are worth against each other is the same
+    # open question the comment above records for `zai-glm53-max` against `-high`:
+    # `output_config.effort` differs in the request body and z.ai's handling of it is
+    # unmeasured on this lane. They follow the ruling's table, not a measured distinction.
+    "zai-glm53flash-max": Profile("zai-glm53flash-max", "zai", "sonnet", "max"),
+    "zai-glm53flash-high": Profile("zai-glm53flash-high", "zai", "sonnet", "high"),
     # Four profiles on this lane, and the reason they are not one is the exact inverse of
     # z.ai's. There, the thinking budget made no difference: two budgets a factor of
     # thirty apart were indistinguishable, so names differing only in that budget would
@@ -753,15 +766,20 @@ class Seat(NamedTuple):
         return not self.judgement_only or self.disposable_worktree
 
 
-# Named once because two seats share it: ADR-0071 ruling 2 gives `review` "the
-# implementer's list" and the implementer's escalation *head*. Sharing the object is what
-# keeps that a fact rather than a copy that drifts. The rule that makes `review`'s
-# resolution differ — never the profile under review, preferring a different lane — is
-# #322's and lives in `review_candidates`, which reorders this list rather than holding a
-# second one: the seat still prefers exactly these profiles in exactly this order, and what
-# the reviewed profile changes is which of them are reachable and which goes first.
-IMPLEMENTER_PREFERENCE: Final = ("codex-luna-max", "zai-glm53-max", "opus-low")
-IMPLEMENTER_ESCALATION: Final = ("codex-sol-high", "opus-high")
+# The two seats no longer share a list. ADR-0071 ruling 2 gave `review` "the
+# implementer's list" and the implementer's escalation *head*, and one shared object was
+# how that stayed a fact rather than a copy that drifts. The human's ruling of 2026-08-27
+# gives `review` its own preference and its own escalation entry, so the sharing is gone
+# and four constants stand where two did. What did not change is where `review`'s
+# resolution differs — never the profile under review, preferring a different lane — which
+# is #322's and lives in `review_candidates`: it reorders whichever list the seat carries
+# rather than holding a second one, so the seat still prefers exactly these profiles in
+# exactly this order, and what the reviewed profile changes is which of them are reachable
+# and which goes first.
+IMPLEMENTER_PREFERENCE: Final = ("zai-glm53flash-max", "codex-luna-max", "opus-low")
+IMPLEMENTER_ESCALATION: Final = ("codex-sol-high", "zai-glm53-max", "opus-high")
+REVIEW_PREFERENCE: Final = ("codex-sol-xhigh", "zai-glm53-max", "opus-medium")
+REVIEW_ESCALATION: Final = ("codex-sol-max", "opus-xhigh")
 
 # ADR-0071 ruling 2's seat table, transcribed. `mechanical` is **retired** by that ruling
 # and is absent rather than kept for compatibility: it named a cheaper tier rather than a
@@ -803,7 +821,7 @@ SEATS: Final[dict[str, Seat]] = {
     "recon": Seat(
         "recon",
         claude_only=False,
-        preference=("codex-luna-medium", "haiku-medium"),
+        preference=("zai-glm53flash-high", "codex-luna-medium", "haiku-medium"),
         permission_mode="plan",
         lands=False,
         disposable_worktree=True,
@@ -838,8 +856,8 @@ SEATS: Final[dict[str, Seat]] = {
     "review": Seat(
         "review",
         claude_only=False,
-        preference=IMPLEMENTER_PREFERENCE,
-        escalation=IMPLEMENTER_ESCALATION[:1],
+        preference=REVIEW_PREFERENCE,
+        escalation=REVIEW_ESCALATION,
         reviews=True,
         permission_mode="plan",
         lands=False,
@@ -861,7 +879,7 @@ SEATS: Final[dict[str, Seat]] = {
     "retro": Seat(
         "retro",
         claude_only=False,
-        preference=("fable-high", "opus-xhigh", "codex-sol-xhigh"),
+        preference=("fable-high", "codex-sol-max", "opus-xhigh"),
         escalation=("opus-max", "fable-max"),
         lands=True,
     ),
