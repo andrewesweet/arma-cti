@@ -410,7 +410,7 @@ def plan_for(tmp_path: Path, **overrides: object) -> tuple[Any, str, Any]:
         "queue_root": str(tmp_path / "queue-root"),
         # Empty is what a non-review dispatch passes (#322), and it is also the fail-closed
         # value: a review seat reaching resolution with no declared subject refuses rather
-        # than resolving to the head the implementer would have taken. The review-seat
+        # than walking its own list with nothing excluded. The review-seat
         # arrangements below override it with `REVIEWED`.
         "reviewing": "",
         # This test's own declaration root, for `--dispatch-dir`'s reason (#402): the

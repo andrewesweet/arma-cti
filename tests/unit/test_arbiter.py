@@ -252,14 +252,14 @@ def test_a_retired_authors_successor_is_excluded_like_the_author() -> None:
 
 
 def test_an_exhausted_entry_walks_the_preference_list() -> None:
-    """The ruling's own #318 note: both tabled profiles conflicted, the walk goes on.
+    """Both tabled profiles conflicted, so the walk goes on into the preference list.
 
-    Entry (`fable-xhigh`, `opus-max`) both on the records, and the preference head
-    (`fable-high`) and middle rung (`opus-xhigh`) on them too — the walk answers the
-    preference's tail, which is the outcome the ruling recorded for exactly this
-    arrangement rather than the `opus-max` the orchestrator picked in the moment. Both
-    cells are the human's ruling of 2026-08-27 as re-ordered; the shape of the claim is
-    #318's unchanged.
+    The shape #318 exhibited, staged against the cells the registry carries today rather
+    than against #318's own profiles, which the human's ruling of 2026-08-27 replaced:
+    the entry (`fable-xhigh`, `opus-max`) both on the records, and the preference head
+    (`fable-high`) and middle rung (`opus-xhigh`) on them too, so the walk answers the
+    preference's tail. What is #318's is the situation — every tabled profile conflicted
+    and an arbiter was still owed — not these profile names.
     """
     resolution = arbiter.resolve(
         dispatch.SEATS["retro"],
@@ -389,11 +389,14 @@ def test_every_incomplete_read_leaves_the_resolution_unchecked() -> None:
 def test_the_production_read_sees_reviewers_and_excludes_them(tmp_path: Path) -> None:
     """#333 round 1, High 2: the reviewers are on the dispatch records, not in a parameter.
 
-    #318's arrangement, read the way production reads it: `fable-high` authored the issue,
-    `fable-xhigh` reviewed it — the review record is where the reviewer actually is, and it
-    holds the walk's head. The arbiter scan must see the reviewer, exclude it, and answer
-    `opus-max`; the authorship-only scan the review seat uses walks past the same record,
-    which would read `fable-xhigh` as free and hand the walk its own reviewer.
+    #318's shape, read the way production reads it, on the cells the registry carries today:
+        `fable-high` authored the issue and the reviewer holds the walk's head. On #318 itself
+        that reviewer was `opus-xhigh`, which the ruling of 2026-08-27 moved off the head, so
+        the arrangement stages `fable-xhigh` there instead — the point being that the reviewer
+        is whoever the walk would otherwise take. The arbiter scan must see the reviewer,
+        exclude it, and answer `opus-max`; the authorship-only scan the review seat uses walks
+        past the same record, which would read that reviewer as free and hand the walk its own
+        reviewer.
     """
     dispatch_dir = tmp_path / "dispatches"
     record(dispatch_dir, "d1", issue=318, profile="fable-high", seat="retro")

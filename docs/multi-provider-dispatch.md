@@ -572,7 +572,8 @@ commit where this project already performs unsandboxed git acts. It also ends th
 Claude-side finisher that #265 forced: the ceiling is lifted, `SEAT_PROFILE_BLOCKS` ships
 empty, and `codex-luna-max` sits in the implementer seat's preference list unblocked — at
 its head until the human's ruling of 2026-08-27 put `zai-glm53flash-max` in front of it,
-and the second rung a peak-hours dispatch reaches every time. What is
+and the rung a peak-hours dispatch reaches next — where Luna is itself dispatchable, since
+the same ladder judges it. What is
 *not* claimed: **landing is still the orchestrator's**, on this lane as on the day the
 sandbox was first widened — `just land` writes the git directory and the main checkout, and
 neither is reachable from inside the sandbox. And the end-to-end evidence #405 asks for —
