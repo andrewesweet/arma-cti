@@ -487,6 +487,13 @@ fast:
     rm -f "$CTI_GATE_CLOCK_COLLECTED_FILE"
     exit "$status"
 
+# Run one System-of-Work reconciliation cycle. The Python coordinator owns
+# capability injection, the rebuildable controller state, and the scheduling
+# lock; dry-run is deliberately a read-only plan over the same policy path.
+[positional-arguments]
+controller *args:
+    uv run python tools/controller.py "$@"
+
 # The worktree protocol as one call (#214, ADR-0049): fetch, create off
 # origin/main detached, and prove the tree is exclusively yours before you work
 # in it — CLAUDE.md's pre-flight, run the same way every time rather than

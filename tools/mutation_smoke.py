@@ -535,6 +535,11 @@ NO_TEST_MODULE: Final[dict[str, str]] = {}
 
 NO_MUTABLE_SUBJECT: Final[dict[str, str]] = {
     # --- reads a document rather than executing anything ---
+    "tests/unit/test_no_bare_enumeration.py": (
+        "its subject is the AST import policy in tools/controller_policy.py, read as a "
+        "document rather than executing product code; controller policy behaviour is "
+        "covered by tests/unit/test_controller_policy.py"
+    ),
     "tests/unit/test_playtest_observer_staging.py": (
         "it reads spike/run.sh and the probe headers as documents (#178) rather than "
         "running either, so no arm of this gate has a line of it to plant on"
