@@ -361,7 +361,7 @@ def test_a_human_record_declares_identity_in_a_separate_review_record(
     assert outcome.verdict.review_dispatch == ""
     assert outcome.verdict.reviewer_profile == "opus-high"
     assert outcome.verdict.reviewer_lane == "claude-native"
-    assert outcome.path == review_root / "332" / review_exchange.HUMAN_VERDICT_NAME
+    assert outcome.path == review_root / "332" / SHA / review_exchange.HUMAN_VERDICT_NAME
     recorded = json.loads(outcome.path.read_text(encoding="utf-8"))
     assert recorded["reviewer_kind"] == "declared"
     assert recorded["review_dispatch"] == ""
@@ -393,7 +393,7 @@ def test_a_declared_human_verdict_refuses_a_dispatched_session(
     assert isinstance(outcome, review_exchange.Refusal)
     assert outcome.kind == "human_verdict_from_dispatch"
     assert "mechanical floor" in outcome.action
-    assert not (review_root / "332" / review_exchange.HUMAN_VERDICT_NAME).exists()
+    assert not review_exchange.human_verdict_path(review_root, 332, SHA).exists()
 
 
 def test_a_human_verdict_refuses_the_human_author(tmp_path: Path) -> None:
@@ -445,6 +445,112 @@ def test_a_human_verdict_refuses_a_declared_human_author(tmp_path: Path) -> None
     assert isinstance(outcome, review_exchange.Refusal)
     assert outcome.kind == "review_same_profile"
     assert f"authored_by={author_record}" in outcome.found
+
+
+def test_a_human_can_record_two_verdicts_for_one_issue_and_each_sha_binds_its_own(
+    tmp_path: Path,
+) -> None:
+    """A fix round gets a new human slot, while the old SHA remains immutable."""
+    dispatch_root = tmp_path / "dispatches"
+    dispatch_dir(
+        dispatch_root,
+        "d-author",
+        seat="implementer",
+        profile="codex-luna-max",
+        lane="codex",
+    )
+    review_root = tmp_path / "review"
+
+    first = review_exchange.record_human_verdict(
+        332,
+        SHA,
+        json.dumps([{"id": "round-one", "severity": "high"}]),
+        dispatch_root,
+        review_root=review_root,
+        diff_id=DIFF_ID,
+        reviewer_profile="opus-high",
+        now="2026-08-15T12:00:00+00:00",
+    )
+    second = review_exchange.record_human_verdict(
+        332,
+        OTHER_SHA,
+        json.dumps([{"id": "round-two", "severity": "medium"}]),
+        dispatch_root,
+        review_root=review_root,
+        diff_id=OTHER_DIFF_ID,
+        reviewer_profile="codex-sol-max",
+        now="2026-08-16T12:00:00+00:00",
+    )
+
+    assert not isinstance(first, review_exchange.Refusal)
+    assert not isinstance(second, review_exchange.Refusal)
+    assert first.path == review_exchange.human_verdict_path(review_root, 332, SHA)
+    assert second.path == review_exchange.human_verdict_path(review_root, 332, OTHER_SHA)
+    assert first.path.is_file()
+    assert second.path.is_file()
+
+    first_bound = review_exchange.bound_verdict(
+        332, SHA, dispatch_root, DIFF_ID, review_root=review_root
+    )
+    second_bound = review_exchange.bound_verdict(
+        332, OTHER_SHA, dispatch_root, OTHER_DIFF_ID, review_root=review_root
+    )
+    assert isinstance(first_bound, review_exchange.BoundVerdict)
+    assert isinstance(second_bound, review_exchange.BoundVerdict)
+    assert first_bound.verdict.findings == (review_exchange.ReportedFinding("round-one", "high"),)
+    assert second_bound.verdict.findings == (
+        review_exchange.ReportedFinding("round-two", "medium"),
+    )
+    assert first_bound.binding.reviewer_kind == "declared"
+    assert second_bound.binding.reviewer_kind == "declared"
+
+    superseded = review_exchange.bound_verdict(
+        332, THIRD_SHA, dispatch_root, DIFF_ID, rebase_links=(), review_root=review_root
+    )
+    assert isinstance(superseded, review_exchange.Refusal)
+    assert superseded.kind == "rebase_unproven"
+
+
+def test_a_human_cannot_replace_a_verdict_for_the_same_sha(tmp_path: Path) -> None:
+    dispatch_root = tmp_path / "dispatches"
+    dispatch_dir(
+        dispatch_root,
+        "d-author",
+        seat="implementer",
+        profile="codex-luna-max",
+        lane="codex",
+    )
+    review_root = tmp_path / "review"
+    first = review_exchange.record_human_verdict(
+        332,
+        SHA,
+        json.dumps([{"id": "original", "severity": "low"}]),
+        dispatch_root,
+        review_root=review_root,
+        diff_id=DIFF_ID,
+        reviewer_profile="opus-high",
+        now="2026-08-15T12:00:00+00:00",
+    )
+
+    second = review_exchange.record_human_verdict(
+        332,
+        SHA,
+        json.dumps([{"id": "replacement", "severity": "high"}]),
+        dispatch_root,
+        review_root=review_root,
+        diff_id=DIFF_ID,
+        reviewer_profile="codex-sol-max",
+        now="2026-08-16T12:00:00+00:00",
+    )
+
+    assert not isinstance(first, review_exchange.Refusal)
+    assert isinstance(second, review_exchange.Refusal)
+    assert second.kind == "verdict_exists"
+    assert "different SHA" in second.action
+    assert "new dispatch" not in second.action
+    assert json.loads(first.path.read_text(encoding="utf-8"))["findings"] == [
+        {"id": "original", "severity": "low"}
+    ]
 
 
 def test_a_second_record_of_the_same_dispatch_refuses_and_swaps_nothing(
@@ -618,6 +724,21 @@ def verdict(**overrides: object) -> review_exchange.Verdict:
     return review_exchange.Verdict(**{**fields, **overrides})  # type: ignore[arg-type]
 
 
+def dispatch_side_declared_verdict(root: Path) -> Path:
+    """Write a declared-shaped verdict beside a dispatch to exercise consumer refusals."""
+    entry = dispatch_dir(root, "d-1")
+    path = entry / review_exchange.VERDICT_NAME
+    path.write_text(
+        json.dumps(
+            review_exchange.verdict_document(
+                verdict(review_dispatch="", reviewer_kind=review_exchange.DECLARED_REVIEWER)
+            )
+        ),
+        encoding="utf-8",
+    )
+    return path
+
+
 def test_verdict_document_roundtrips() -> None:
     again = review_exchange.parse_verdict(json.dumps(review_exchange.verdict_document(verdict())))
     assert again == verdict()
@@ -779,6 +900,119 @@ def test_verify_refuses_a_hand_edited_lane(tmp_path: Path) -> None:
     forged = verdict(reviewer_lane="zai")
     refusal = review_exchange.verify(forged, root)
     assert refusal.kind == "identity_mismatch"
+
+
+def test_verify_refuses_a_declared_kind_on_a_dispatch_side_verdict(tmp_path: Path) -> None:
+    dispatch_side_declared_verdict(tmp_path / "dispatches")
+
+    refusal = review_exchange.verify(
+        verdict(review_dispatch="", reviewer_kind=review_exchange.DECLARED_REVIEWER),
+        tmp_path / "dispatches",
+    )
+
+    assert refusal.kind == "verdict_unreadable"
+    assert "reviewer_kind=declared" in refusal.found
+
+
+def test_bound_verdict_refuses_a_declared_kind_on_a_dispatch_side_verdict(
+    tmp_path: Path,
+) -> None:
+    dispatch_side_declared_verdict(tmp_path / "dispatches")
+
+    refusal = review_exchange.bound_verdict(332, SHA, tmp_path / "dispatches", DIFF_ID)
+
+    assert isinstance(refusal, review_exchange.Refusal)
+    assert refusal.kind == "verdict_unreadable"
+    assert "reviewer_kind=declared" in refusal.found
+
+
+def test_show_refuses_a_declared_kind_on_a_dispatch_side_verdict(
+    tmp_path: Path,
+) -> None:
+    dispatch_side_declared_verdict(tmp_path / "dispatches")
+
+    report = review_exchange._show(  # noqa: SLF001 — pin the dispatch-side provenance guard
+        "d-1", tmp_path / "dispatches", tmp_path / "review", SHA, None
+    )
+
+    assert report.code == 1
+    assert report.lines[0] == "refusal=verdict_unreadable"
+    assert "reviewer_kind=declared" in report.lines
+
+
+def test_read_declared_verdict_refuses_a_record_for_another_issue(tmp_path: Path) -> None:
+    review_root = tmp_path / "review"
+    path = review_exchange.human_verdict_path(review_root, 332, SHA)
+    path.parent.mkdir(parents=True)
+    path.write_text(
+        json.dumps(
+            review_exchange.verdict_document(
+                verdict(
+                    issue=999, review_dispatch="", reviewer_kind=review_exchange.DECLARED_REVIEWER
+                )
+            )
+        ),
+        encoding="utf-8",
+    )
+
+    refusal = review_exchange._read_declared_verdict(  # noqa: SLF001 — pin issue binding
+        review_root, 332
+    )
+
+    assert isinstance(refusal, review_exchange.Refusal)
+    assert refusal.kind == "review_issue_mismatch"
+
+
+def test_declared_binding_refuses_a_different_record_identity(tmp_path: Path) -> None:
+    review_root = tmp_path / "review"
+    path = review_exchange.human_verdict_path(review_root, 332, SHA)
+    path.parent.mkdir(parents=True)
+    path.write_text(
+        json.dumps(
+            review_exchange.verdict_document(
+                verdict(review_dispatch="", reviewer_kind=review_exchange.DECLARED_REVIEWER)
+            )
+        ),
+        encoding="utf-8",
+    )
+    forged = verdict(
+        review_dispatch="",
+        reviewer_kind=review_exchange.DECLARED_REVIEWER,
+        reviewer_profile="codex-sol-max",
+        reviewer_lane="codex",
+    )
+
+    refusal = review_exchange._declared_binding(  # noqa: SLF001 — pin declared identity binding
+        forged, review_root
+    )
+
+    assert isinstance(refusal, review_exchange.Refusal)
+    assert refusal.kind == "identity_mismatch"
+
+
+def test_bound_verdict_returns_a_non_matching_human_verdict_when_no_agent_exists(
+    tmp_path: Path,
+) -> None:
+    dispatch_root = tmp_path / "dispatches"
+    dispatch_root.mkdir()
+    review_root = tmp_path / "review"
+    path = review_exchange.human_verdict_path(review_root, 332, SHA)
+    path.parent.mkdir(parents=True)
+    path.write_text(
+        json.dumps(
+            review_exchange.verdict_document(
+                verdict(review_dispatch="", reviewer_kind=review_exchange.DECLARED_REVIEWER)
+            )
+        ),
+        encoding="utf-8",
+    )
+
+    refusal = review_exchange.bound_verdict(
+        332, OTHER_SHA, dispatch_root, OTHER_DIFF_ID, rebase_links=(), review_root=review_root
+    )
+
+    assert isinstance(refusal, review_exchange.Refusal)
+    assert refusal.kind == "rebase_unproven"
 
 
 def test_bound_verdict_carries_a_review_across_a_moved_sha(tmp_path: Path) -> None:
@@ -1644,7 +1878,7 @@ def test_cli_records_a_declared_human_verdict_and_prints_its_kind(
     output = capsys.readouterr().out
     assert "reviewer_kind=declared" in output
     assert "dispatch=none" in output
-    assert (review_root / "332" / review_exchange.HUMAN_VERDICT_NAME).is_file()
+    assert review_exchange.human_verdict_path(review_root, 332, head).is_file()
 
 
 def test_cli_record_refuses_a_sha_that_names_no_commit(

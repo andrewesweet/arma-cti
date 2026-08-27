@@ -615,19 +615,20 @@ land *args:
 #                                  `just worktree restore <name> --ref <ref>`, so
 #                                  no two instances ever share a directory (#105)
 #   just review record --issue 332 --reviewed-sha <sha> --findings findings.json
-#                                  derive the reviewing dispatch from the records
-#                                  the dispatcher wrote (seat=review, this issue,
+#                                  without `--reviewer-profile`, derive the
+#                                  reviewing dispatch from the records the
+#                                  dispatcher wrote (seat=review, this issue,
 #                                  base_sha=this SHA, completed) and write
 #                                  verdict.json beside it, outside every worktree.
-#                                  The identity is derived, never declared — the
-#                                  #322 reasoning one layer over — and the caller
-#                                  supplies only the issue, the SHA, the findings;
-#                                  the exact diff identity of the reviewed diff
-#                                  (#417) is computed here, never typed — `--repo`
-#                                  names a git repository holding the reviewed
-#                                  commit and `origin` (default: this directory),
-#                                  fetched before the hash so a stale base cannot
-#                                  widen the diff it covers
+#                                  With `--reviewer-profile`, record the declared
+#                                  human reviewer in separate review state, keyed
+#                                  by the reviewed SHA. The exact diff identity of
+#                                  the reviewed diff (#417) is computed here,
+#                                  never typed — `--repo` names a git repository
+#                                  holding the reviewed commit and `origin`
+#                                  (default: this directory), fetched before the
+#                                  hash so a stale base cannot widen the diff it
+#                                  covers
 #   just review show <dispatch-id> [--satisfies <sha>] [--diff-id <id>]
 #                                  [--review-root <dir>]
 #                                  read one verdict, re-derive its identity from

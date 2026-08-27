@@ -30,8 +30,8 @@ remote does not hold hands the reviewer nothing.
 An agent verdict lives in `verdict.json` **beside the dispatch that produced it**, under
 `~/.arma-cti/dispatches/<id>/` — outside every worktree, because a record inside the
 tree changes the commit being reviewed. A declared human verdict is the separate
-`human-verdict.json` under the issue's review state; it is never made to look like a
-dispatch record, so its provenance stays visible to every reader.
+`human-verdict.json` under the issue's review state and reviewed SHA; it is never made
+to look like a dispatch record, so its provenance stays visible to every reader.
 
 **For an agent, the reviewing identity is derived, not declared** — #322's reasoning,
 one layer over. There, a declaration the caller controlled settled nothing, so the
@@ -1052,16 +1052,19 @@ def verdict_path(dispatch_root: Path, dispatch_id: str) -> Path:
     return dispatch_root.expanduser() / dispatch_id / VERDICT_NAME
 
 
-def human_verdict_path(review_root: Path, issue: int) -> Path:
+def human_verdict_path(review_root: Path, issue: int, reviewed_sha: str) -> Path:
     """Return the separate record path for one declared human review.
 
     A human verdict is not put beside a fake dispatch: doing so would make a declared
     identity look derived to every reader that treats `review_dispatch` as provenance.
-    Keeping its own name and root lets the landing say which trust class cleared it.
+    The reviewed SHA is part of the path, so a fix round gets a new write-once slot
+    while the old verdict remains available for a proven clean-rebase carry.
     """
     if issue <= 0:
         raise ReviewExchangeError(ISSUE_ERROR)
-    return review_root.expanduser() / str(issue) / HUMAN_VERDICT_NAME
+    if not isinstance(reviewed_sha, str) or not FULL_SHA.fullmatch(reviewed_sha):
+        raise ReviewExchangeError(SHA_ERROR)
+    return review_root.expanduser() / str(issue) / reviewed_sha / HUMAN_VERDICT_NAME
 
 
 class Recorded(NamedTuple):
@@ -1082,7 +1085,9 @@ def _unwritten(path: Path, failure: OSError) -> Refusal:
     )
 
 
-def _write_verdict_once(path: Path, document: dict[str, object]) -> Refusal | None:
+def _write_verdict_once(
+    path: Path, document: dict[str, object], *, duplicate_action: str
+) -> Refusal | None:
     """Publish the verdict's file atomically, so that writing is once under concurrency too.
 
     The record is written to a private staged file and then moved into place by
@@ -1096,10 +1101,9 @@ def _write_verdict_once(path: Path, document: dict[str, object]) -> Refusal | No
     record (`verdict_exists`), and one that does not is a corruption
     (`verdict_unreadable`), refused with its recovery named rather than as an
     unwritable slot. Nothing is ever overwritten; a write of this call's own
-    that fails anywhere — before the staging even opens, a dispatch directory
-    missing, unwritable or removed under the write, or anywhere short of the
-    link — is the same `verdict_unwritten`, and leaves at most its staged file,
-    removed.
+    that fails anywhere — before the staging even opens, a record parent missing,
+    unwritable or removed under the write, or anywhere short of the link — is the
+    same `verdict_unwritten`, and leaves at most its staged file, removed.
     """
     text = json.dumps(document, indent=2) + "\n"
     try:
@@ -1134,9 +1138,7 @@ def _write_verdict_once(path: Path, document: dict[str, object]) -> Refusal | No
             return Refusal(
                 "verdict_exists",
                 (f"verdict={path}", f"reviewed_sha={document['reviewed_sha']}"),
-                "A verdict already exists for this dispatch. A re-review of the same SHA"
-                " is a new dispatch with its own record; editing findings into an existing"
-                " verdict is the swap this refusal exists to prevent.",
+                duplicate_action,
             )
         except OSError as failure:
             return _unwritten(path, failure)
@@ -1207,7 +1209,15 @@ def record_verdict(  # noqa: PLR0911, PLR0913 — one refusal per way a record c
         alternates=binding.alternates,
     )
     path = verdict_path(dispatch_root, binding.dispatch_id)
-    written = _write_verdict_once(path, verdict_document(verdict))
+    written = _write_verdict_once(
+        path,
+        verdict_document(verdict),
+        duplicate_action=(
+            "A verdict already exists for this dispatch. A re-review of the same SHA is a"
+            " new dispatch with its own record; editing findings into an existing verdict"
+            " is the swap this refusal exists to prevent."
+        ),
+    )
     if written is not None:
         return written
     return Recorded(verdict, path)
@@ -1359,12 +1369,20 @@ def record_human_verdict(  # noqa: C901, PLR0911, PLR0913 — one explicit refus
         alternates=(),
         reviewer_kind=DECLARED_REVIEWER,
     )
-    path = human_verdict_path(review_root, issue)
+    path = human_verdict_path(review_root, issue, reviewed_sha)
     try:
         path.parent.mkdir(parents=True, exist_ok=True)
     except OSError as failure:
         return _unwritten(path, failure)
-    written = _write_verdict_once(path, verdict_document(verdict))
+    written = _write_verdict_once(
+        path,
+        verdict_document(verdict),
+        duplicate_action=(
+            "A human verdict already exists for this reviewed SHA. A re-review of a"
+            " different SHA has its own record; editing findings into an existing verdict"
+            " is the swap this refusal exists to prevent."
+        ),
+    )
     if written is not None:
         return written
     return Recorded(verdict, path)
@@ -1548,18 +1566,59 @@ def identity_mismatch(verdict: Verdict, binding: Bound) -> Refusal | None:
     )
 
 
-def _read_declared_verdict(  # noqa: PLR0911 — each unreadable or mismatched provenance fact gets its own refusal
-    review_root: Path | None, issue: int
-) -> tuple[Verdict, Path] | Refusal | None:
-    """Read and validate the separately stored declared-human record, if present."""
-    if review_root is None:
+def _human_verdict_paths(review_root: Path, issue: int) -> tuple[Path, ...] | Refusal:
+    """Find the keyed human verdict files for one issue, including the old slot."""
+    issue_root = review_root.expanduser() / str(issue)
+    try:
+        entries = tuple(issue_root.iterdir())
+    except FileNotFoundError:
+        return ()
+    except OSError as error:
         return Refusal(
             "verdict_unreadable",
-            ("review_root=<absent>", f"issue={issue}"),
-            "A declared human verdict needs its review-state record, but no review root"
-            " was supplied. Nothing is cleared until that record can be read (#41).",
+            (f"review_root={review_root.expanduser()}", f"issue={issue}", f"reason={error}"),
+            "The issue's human review-state directory could not be read. A check that"
+            " could not run is not a check that passed (#41).",
         )
-    path = human_verdict_path(review_root, issue)
+
+    paths: list[Path] = []
+    legacy = issue_root / HUMAN_VERDICT_NAME
+    try:
+        if legacy.exists():
+            if not legacy.is_file():
+                return Refusal(
+                    "verdict_unreadable",
+                    (f"verdict={legacy}",),
+                    "The legacy human verdict path is not a file. Repair or re-record"
+                    " the verdict; a check that could not run is not a check that passed.",
+                )
+            paths.append(legacy)
+        for entry in entries:
+            if not entry.is_dir() or FULL_SHA.fullmatch(entry.name) is None:
+                continue
+            path = entry / HUMAN_VERDICT_NAME
+            if not path.is_file():
+                return Refusal(
+                    "verdict_unreadable",
+                    (f"verdict={path}",),
+                    "A keyed human verdict directory has no complete verdict file. Repair"
+                    " or re-record it; a check that could not run is not a check that passed.",
+                )
+            paths.append(path)
+    except OSError as error:
+        return Refusal(
+            "verdict_unreadable",
+            (f"review_root={review_root.expanduser()}", f"issue={issue}", f"reason={error}"),
+            "The issue's human review-state directory could not be inspected. A check"
+            " that could not run is not a check that passed (#41).",
+        )
+    return tuple(sorted(paths, key=str))
+
+
+def _read_declared_verdict_file(  # noqa: PLR0911 — each unreadable or mismatched provenance fact gets its own refusal
+    path: Path, issue: int
+) -> tuple[Verdict, Path] | Refusal | None:
+    """Read and validate one separately stored declared-human record."""
     try:
         text = path.read_text(encoding="utf-8")
     except FileNotFoundError:
@@ -1579,6 +1638,18 @@ def _read_declared_verdict(  # noqa: PLR0911 — each unreadable or mismatched p
             (f"verdict={path}", f"reason={error}"),
             "The declared human verdict exists but will not parse. Repair or re-record"
             " it — a check that could not run is not a check that passed (#41).",
+        )
+    keyed_sha = path.parent.name
+    if FULL_SHA.fullmatch(keyed_sha) and verdict.reviewed_sha != keyed_sha:
+        return Refusal(
+            "verdict_unreadable",
+            (
+                f"verdict={path}",
+                f"path_reviewed_sha={keyed_sha}",
+                f"recorded_reviewed_sha={verdict.reviewed_sha}",
+            ),
+            "The keyed human verdict path and its reviewed SHA disagree. Repair or"
+            " re-record the verdict; a check that could not run is not a check that passed.",
         )
     if verdict.reviewer_kind != DECLARED_REVIEWER or verdict.review_dispatch:
         return Refusal(
@@ -1613,9 +1684,62 @@ def _read_declared_verdict(  # noqa: PLR0911 — each unreadable or mismatched p
     return verdict, path
 
 
+def _read_declared_verdicts(
+    review_root: Path, issue: int
+) -> tuple[tuple[Verdict, Path], ...] | Refusal:
+    """Read every human verdict for an issue, newest recorded time first."""
+    paths = _human_verdict_paths(review_root, issue)
+    if isinstance(paths, Refusal):
+        return paths
+    records: list[tuple[Verdict, Path]] = []
+    for path in paths:
+        record = _read_declared_verdict_file(path, issue)
+        if record is None:
+            return Refusal(
+                "verdict_unreadable",
+                (f"verdict={path}",),
+                "A human verdict disappeared while it was being read. A check that"
+                " could not run is not a check that passed (#41).",
+            )
+        if isinstance(record, Refusal):
+            return record
+        records.append(record)
+    return tuple(
+        sorted(records, key=lambda record: (record[0].recorded_at, str(record[1])), reverse=True)
+    )
+
+
+def _read_declared_verdict(
+    review_root: Path | None, issue: int, reviewed_sha: str | None = None
+) -> tuple[Verdict, Path] | Refusal | None:
+    """Read the latest declared record, or the one keyed by ``reviewed_sha``."""
+    if review_root is None:
+        return Refusal(
+            "verdict_unreadable",
+            ("review_root=<absent>", f"issue={issue}"),
+            "A declared human verdict needs its review-state record, but no review root"
+            " was supplied. Nothing is cleared until that record can be read (#41).",
+        )
+    if reviewed_sha is not None:
+        direct = _read_declared_verdict_file(
+            human_verdict_path(review_root, issue, reviewed_sha), issue
+        )
+        if direct is not None:
+            return direct
+    records = _read_declared_verdicts(review_root, issue)
+    if isinstance(records, Refusal):
+        return records
+    if reviewed_sha is None:
+        return records[0] if records else None
+    return next(
+        (record for record in records if record[0].reviewed_sha == reviewed_sha),
+        None,
+    )
+
+
 def _declared_binding(verdict: Verdict, review_root: Path | None) -> Bound | Refusal:
     """Bind a declared verdict only through its own separately stored record."""
-    stored = _read_declared_verdict(review_root, verdict.issue)
+    stored = _read_declared_verdict(review_root, verdict.issue, verdict.reviewed_sha)
     if isinstance(stored, Refusal):
         return stored
     if stored is None:
@@ -1725,11 +1849,10 @@ def bound_verdict(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — one bra
     """
     human_mismatch: Refusal | None = None
     if review_root is not None:
-        declared = _read_declared_verdict(review_root, issue)
+        declared = _read_declared_verdicts(review_root, issue)
         if isinstance(declared, Refusal):
             return declared
-        if declared is not None:
-            human_verdict, _human_path = declared
+        for human_verdict, _human_path in declared:
             human_provenance: bool | Refusal | None = None
             if isinstance(rebase_links, tuple):
                 human_provenance = carried_by_clean_rebase(
@@ -1737,8 +1860,10 @@ def bound_verdict(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — one bra
                 )
             else:
                 human_provenance = rebase_links
-            human_mismatch = satisfies(human_verdict, sha, diff_id, clean_rebase=human_provenance)
-            if human_mismatch is None:
+            candidate_mismatch = satisfies(
+                human_verdict, sha, diff_id, clean_rebase=human_provenance
+            )
+            if candidate_mismatch is None:
                 binding = _declared_binding(human_verdict, review_root)
                 if isinstance(binding, Refusal):
                     return binding
@@ -1747,6 +1872,8 @@ def bound_verdict(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — one bra
                     binding,
                     carried_by_diff=human_verdict.reviewed_sha != sha,
                 )
+            if human_mismatch is None:
+                human_mismatch = candidate_mismatch
     scanned = _completed_candidates(dispatch_root, issue, None)
     if isinstance(scanned, Refusal):
         return scanned
@@ -1838,8 +1965,6 @@ def bound_verdict(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — one bra
         # Unreachable in a walk that had candidates: every iteration either returns
         # or sets `mismatch`, and the empty-candidates case returned above. Stated as
         # a raise rather than an assert because this module runs outside pytest.
-        if human_mismatch is not None:
-            return human_mismatch
         raise ReviewExchangeError(WALK_WITHOUT_REFUSAL_ERROR)
     return mismatch
 
@@ -1988,11 +2113,7 @@ def _show(  # noqa: C901, PLR0911 — the read ladder has one explicit refusal p
         f"diff_id={verdict.diff_id}",
         f"findings={len(verdict.findings)}",
         f"alternates={' '.join(verdict.alternates) or 'none'}",
-        (
-            f"declared=yes identity_checked-not-verified record={path}"
-            if verdict.reviewer_kind == DECLARED_REVIEWER
-            else f"derived=yes identity_checked-not-verified records={binding.dispatch_id}"
-        ),
+        f"derived=yes identity_checked-not-verified records={binding.dispatch_id}",
         f"recorded_at={verdict.recorded_at}",
         f"verdict={path}",
         SHA_BINDING_NOTE,

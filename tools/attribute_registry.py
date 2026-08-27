@@ -1027,7 +1027,8 @@ OBJECT_TYPES: Final[dict[str, str]] = {
     " by the profile it declared — the record is `authorship.json`, and the profile"
     " is the id a never-alone check needs.",
     "human_reviewer": "A registered profile a human declared as the reviewer (#586);"
-    " the review-state record is `human-verdict.json`, and no dispatch id is implied.",
+    " each reviewed SHA has a review-state `human-verdict.json`, and no dispatch id"
+    " is implied.",
 }
 
 # The four gate-review causes (ADR-0073 Amendment A2, #426), stated once here so
