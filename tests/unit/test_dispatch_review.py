@@ -1132,8 +1132,10 @@ def test_the_subject_reaches_the_dispatcher_from_the_command_line(
     assert "route_reviewing=codex-luna-max (never resolved to)" in printed.out
     assert "route_permission_mode=plan forced_by_seat=review" in printed.out
     assert "route_chosen=opus-medium lane=claude-native" in printed.out
-    # The list the dispatch actually walked, the reviewed profile's lane last.
-    assert "route_preference=zai-glm53-max opus-medium" in printed.out
+    # The list the dispatch actually walked, whole rather than by prefix: the claim is that
+    # the reviewed profile's lane comes last, and a prefix assertion holds while the entry
+    # making that claim true is missing or misplaced (review round 4).
+    assert "route_preference=zai-glm53-max opus-medium codex-sol-xhigh" in printed.out
     assert "--permission-mode plan" in printed.out
 
 

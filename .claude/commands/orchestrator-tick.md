@@ -36,7 +36,7 @@ Preference chooses among admissible lanes; it never overrides a refusal (#217). 
 
 **The cross-lane rung is a preference, not a bar** (#426). On that rung specifically, lane coincidence no longer refuses; unknown lane or gate class still does — `review_lane_unknown`, `gate_class_undetermined`. Every other refusal in `tools/land.py:110-179` stands, including the absolute `review_same_profile`.
 
-**Codex may take the implementer seat**: `IMPLEMENTER_PREFERENCE` heads with `codex-luna-max` (`tools/dispatch.py:708`). This is not a general rule about seats — `orchestrator` is the sole `claude_only=True` row (`tools/dispatch.py:858`, ADR-0071 ruling 1).
+**Codex may take the implementer seat**: `IMPLEMENTER_PREFERENCE` places `codex-luna-max` after the off-peak z.ai head `zai-glm53flash-max` (`tools/dispatch.py`'s registry). Canonical seat resolution walks that order and records what it passes over. This is not a general rule about seats — `orchestrator` is the sole `claude_only=True` row (ADR-0071 ruling 1).
 
 **Read each issue's routing block.** Recent issues carry a `cti.dispatch-plan/1` comment naming seat, lane and profile per stage with escalation triggers. `just dispatch` does not read them yet. #463 records them as advisory and leaves the treatment open — honour the block, refuse a contradiction, or proceed with a printed departure are all live options on that issue. Honouring by hand is this file's convention pending that decision, and is not #463's ruling.
 

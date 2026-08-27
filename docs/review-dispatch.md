@@ -232,9 +232,10 @@ attributable text requires a fresh review.
 A review dispatch declares the profile whose work it reviews — `just dispatch --seat review
 --reviewing <profile> …` — and resolution removes that profile from the seat's preference list
 before walking it, preferring an entry on a different lane among what is left. Without the
-rule the seat walks its list with the exclusion switched off, so a profile the records place
-on the work can be selected — and where that list is the implementer's, as it was until
-ADR-0071 Amendment A10 gave `review` its own, a review can come back same-model, which
+rule there is nothing for the exclusion to remove, and a seat that resolved anyway would be
+choosing a reviewer nobody had checked against the work — where the list is the
+implementer's, as it was until ADR-0071 Amendment A10 gave `review` its own, that review can
+come back same-model, which
 makes ADR-0071 ruling 4's never-alone a ritual: the whole argument for a second instance rests
 on it being genuinely different.
 

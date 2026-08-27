@@ -186,8 +186,8 @@ still walked, because the invariant is about the instance producing the verdict 
 diversity is what is merely preferred. Where removal leaves nothing, `review_same_profile`
 refuses rather than proceeding same-model, and the same refusal meets a caller who names the
 reviewed profile with `--profile`. The absent declaration refuses too: without it nothing
-could resolve past anything, so the walk would run with its exclusion switched off and
-could select a profile the records place on the work.
+could resolve past anything, so it refuses before the walk rather than resolving a
+reviewer nobody has checked against the work.
 The second half is containment. `--permission-mode` defaults to `acceptEdits`, which is
 writable on both runner families, so a review dispatched at the default could edit the
 persistent tree; the seat now *forces* `plan` in `routed`. Claude receives that as a
@@ -880,8 +880,10 @@ SEATS: Final[dict[str, Seat]] = {
     # the escalation head to `fable-xhigh`. That still satisfies ruling 4 — `fable-xhigh`
     # and `fable-high` are different profiles, and `review_same_profile` is about the
     # instance producing the verdict — but it is a narrower separation than #361's cell
-    # had: the arbiter and the likely author now share a model, where they shared neither
-    # model nor lane before. Recorded rather than argued, because the cell is the human's.
+    # had: the arbiter and the likely author now share a model, where A1's pair did not.
+    # Both pairs are on `claude-native`, so no lane separation is lost and none existed;
+    # what A1's cell avoided was the exact likely-author profile. Recorded rather than
+    # argued, because the cell is the human's.
     "retro": Seat(
         "retro",
         claude_only=False,
@@ -2101,11 +2103,11 @@ def reviewed_profile_refusal(seat_name: str, reviewed: str) -> Refusal | None:
     `--profile` against the caller's `--reviewing` is satisfied by naming any two registered
     profiles and enforces nothing.
 
-    **The absent case refuses**, which is the whole point: a review seat with no declared
-    subject cannot be resolved past anything, so the walk runs with its exclusion switched
-    off and may hand the dispatch a profile the records place on the work. That is the
-    silent same-model review this ticket exists to make impossible, so it is a named
-    refusal rather than a default.
+    **The absent case refuses**, which is the whole point: with no declared subject there
+    is nothing for the exclusion to remove, so any resolution here would be choosing a
+    reviewer nobody has checked against the work. The refusal comes before the walk, so no
+    candidate is considered at all — the silent same-model review this ticket exists to
+    make impossible is prevented by never resolving, not by resolving carefully.
 
     The flag is refused on a seat that does not review, because an option that silently
     decides nothing is one a caller will believe did something.
@@ -2138,9 +2140,10 @@ def reviewed_profile_refusal(seat_name: str, reviewed: str) -> Refusal | None:
             (f"seat={seat_name}", "reviewing=<absent>"),
             (
                 "A review dispatch declares the profile whose work it is reviewing: "
-                "`--reviewing <profile>`. Without it nothing here can resolve past that "
-                "profile, so the walk would run with its exclusion switched off and could "
-                f"select a profile that did the work. {NEVER_ALONE} Nothing was dispatched."
+                "`--reviewing <profile>`. Without it there is nothing for the exclusion to "
+                "remove, so this refuses before any candidate is walked rather than "
+                f"resolving a reviewer nobody checked against the work. {NEVER_ALONE} "
+                "Nothing was dispatched."
             ),
         )
     if resolved_profile(reviewed) is None:
