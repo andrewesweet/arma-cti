@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Final, NoReturn, Self, cast
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
+    from collections.abc import Callable, Mapping
 
 # Keep this tooling module importable both through the CLI and as a standalone
 # test target, without making the policy depend on the filesystem.
@@ -48,10 +48,19 @@ PLAN_FIELDS: Final = frozenset(
 FACTS_FIELDS: Final = frozenset(
     {"configured_curator", "desired_outcomes", "initiatives", "work_items", "work_runs"}
 )
+FACTS_OPTIONAL_FIELDS: Final = frozenset(
+    {"worktree_debt", "wip_limit", "external_bars", "priority_order", "ready_transitions"}
+)
 DESIRED_OUTCOME_FIELDS: Final = frozenset({"key", "revision", "content_digest"})
 DESIRED_OUTCOME_OPTIONAL_FIELDS: Final = frozenset({"content", "parent_issue"})
 SHA256: Final = re.compile(r"[0-9a-f]{64}\Z")
 LIFECYCLE_FACT_FIELDS: Final = frozenset({"key", "state"})
+WORK_ITEM_OPTIONAL_FIELDS: Final = frozenset(
+    {"issue", "blocked_by", "priority", "exclusive_resources", "seat", "profile", "ready_at"}
+)
+WORK_RUN_OPTIONAL_FIELDS: Final = frozenset(
+    {"work_item_key", "dispatch_id", "failure_class", "worktree", "issue"}
+)
 VIEW_FIELDS: Final = frozenset({"schema", "journal_sha256", "last_cycle_id", "confirmed"})
 
 
@@ -88,11 +97,24 @@ class ControllerActionUnsupportedError(RuntimeError):
         super().__init__(f"refusal={self.code} action={action_kind}")
 
 
+class ControllerLaunchStaleError(RuntimeError):
+    """A Work Run launch plan no longer matches the freshly collected facts."""
+
+    code: Final = "controller_launch_stale"
+
+    def __init__(self, work_item_key: str) -> None:
+        """Refuse before any journal or external launch mutation."""
+        self.work_item_key = work_item_key
+        super().__init__(f"refusal={self.code} work_item={work_item_key}")
+
+
 # Keep the short refusal names available to callers while satisfying the
 # repository's exception naming convention.
 ControllerStateUnreadable = ControllerStateUnreadableError
 ControllerLockHeld = ControllerLockHeldError
 ControllerActionUnsupported = ControllerActionUnsupportedError
+ControllerLaunchStale = ControllerLaunchStaleError
+ControllerActionStale = ControllerLaunchStaleError
 
 
 @dataclass(frozen=True, slots=True)
@@ -543,21 +565,54 @@ def _facts_value(value: object) -> policy.ControlFacts:
         for item in cast("list[dict[str, object]]", initiatives_raw)
     )
     work_items = tuple(
-        policy.WorkItemFact(_string(item, "key"), _string(item, "state"))
-        for item in cast("list[dict[str, object]]", work_items_raw)
+        _work_item_value(item) for item in cast("list[dict[str, object]]", work_items_raw)
     )
     work_runs = tuple(
-        policy.WorkRunFact(_string(item, "key"), _string(item, "state"))
-        for item in cast("list[dict[str, object]]", work_runs_raw)
+        _work_run_value(item) for item in cast("list[dict[str, object]]", work_runs_raw)
     )
+    worktree_debt = tuple(
+        _worktree_debt_value(item)
+        for item in cast(
+            "list[dict[str, object]]", confirmed_list(confirmed=value, name="worktree_debt")
+        )
+    )
+    external_bars = tuple(
+        _external_bar_value(item)
+        for item in cast(
+            "list[dict[str, object]]", confirmed_list(confirmed=value, name="external_bars")
+        )
+    )
+    ready_transitions = tuple(
+        _ready_transition_value(item)
+        for item in cast(
+            "list[dict[str, object]]", confirmed_list(confirmed=value, name="ready_transitions")
+        )
+    )
+    priority_raw = confirmed_list(confirmed=value, name="priority_order")
+    if any(not isinstance(item, str) or not item for item in priority_raw):
+        _refuse("facts_priority_order_value")
+    wip_limit = value.get("wip_limit")
+    if wip_limit is not None and (
+        isinstance(wip_limit, bool) or not isinstance(wip_limit, int) or wip_limit < 0
+    ):
+        _refuse("facts_wip_limit")
     return policy.ControlFacts(
-        cast("str | None", curator), outcomes, initiatives, work_items, work_runs
+        cast("str | None", curator),
+        outcomes,
+        initiatives,
+        work_items,
+        work_runs,
+        worktree_debt,
+        cast("int | None", wip_limit),
+        external_bars,
+        tuple(cast("list[str]", priority_raw)),
+        ready_transitions,
     )
 
 
 def _facts_document(facts: Mapping[str, object]) -> None:
     """Validate the normalized Control Facts envelope."""
-    if set(facts) != FACTS_FIELDS:
+    if not (set(facts) >= FACTS_FIELDS and set(facts) <= FACTS_FIELDS | FACTS_OPTIONAL_FIELDS):
         _refuse("facts_fields")
     curator = facts.get("configured_curator")
     if curator is not None and (not isinstance(curator, str) or not curator):
@@ -568,24 +623,38 @@ def _facts_document(facts: Mapping[str, object]) -> None:
             _refuse(f"facts_{field_name}_not_list")
         for value in values:
             _fact_entry(field_name, value)
+    _optional_fact_collection(facts, "worktree_debt", _worktree_debt_entry)
+    _optional_fact_collection(facts, "external_bars", _external_bar_entry)
+    _optional_fact_collection(facts, "ready_transitions", _ready_transition_entry)
+    if "wip_limit" in facts:
+        value = facts["wip_limit"]
+        if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+            _refuse("facts_wip_limit")
+    if "priority_order" in facts:
+        value = facts["priority_order"]
+        if not isinstance(value, list) or any(
+            not isinstance(item, str) or not item for item in value
+        ):
+            _refuse("facts_priority_order")
 
 
 def _fact_entry(field_name: str, value: object) -> None:
     """Validate one typed entry inside a normalized fact collection."""
     if not isinstance(value, dict):
         _refuse(f"facts_{field_name}_entry_not_object")
-    expected = DESIRED_OUTCOME_FIELDS if field_name == "desired_outcomes" else LIFECYCLE_FACT_FIELDS
-    actual = set(value)
     if field_name == "desired_outcomes":
-        allowed = expected | DESIRED_OUTCOME_OPTIONAL_FIELDS
-        if not actual.issubset(allowed) or not expected.issubset(actual):
-            _refuse(f"facts_{field_name}_entry_fields")
-    elif actual != expected:
-        _refuse(f"facts_{field_name}_entry_fields")
-    _string(value, "key")
-    if field_name != "desired_outcomes":
-        _string(value, "state")
+        _outcome_entry(value)
         return
+    _lifecycle_entry(field_name, value)
+
+
+def _outcome_entry(value: Mapping[str, object]) -> None:
+    """Validate one Desired Outcome fact."""
+    if not set(value).issubset(DESIRED_OUTCOME_FIELDS | DESIRED_OUTCOME_OPTIONAL_FIELDS) or not (
+        set(value) >= DESIRED_OUTCOME_FIELDS
+    ):
+        _refuse("facts_desired_outcomes_entry_fields")
+    _string(value, "key")
     revision = value.get("revision")
     if isinstance(revision, bool) or not isinstance(revision, int) or revision < 1:
         _refuse("facts_desired_outcomes_revision")
@@ -594,6 +663,200 @@ def _fact_entry(field_name: str, value: object) -> None:
         _optional_text(value, "content")
     if "parent_issue" in value:
         _optional_issue(value, "parent_issue")
+
+
+def _lifecycle_entry(field_name: str, value: Mapping[str, object]) -> None:
+    """Validate one Initiative, Work Item, or Work Run fact."""
+    expected = LIFECYCLE_FACT_FIELDS
+    optional = (
+        WORK_ITEM_OPTIONAL_FIELDS
+        if field_name == "work_items"
+        else (WORK_RUN_OPTIONAL_FIELDS if field_name == "work_runs" else frozenset())
+    )
+    if not (
+        set(value) == expected or (set(value) <= expected | optional and expected <= set(value))
+    ):
+        _refuse(f"facts_{field_name}_entry_fields")
+    _string(value, "key")
+    _string(value, "state")
+    if field_name == "work_items":
+        _work_item_entry(value)
+    elif field_name == "work_runs":
+        _work_run_entry(value)
+
+
+def _optional_fact_collection(
+    facts: Mapping[str, object],
+    field_name: str,
+    validator: Callable[[object], None],
+) -> None:
+    """Validate an optional list of extended Control Facts."""
+    if field_name not in facts:
+        return
+    values = facts[field_name]
+    if not isinstance(values, list):
+        _refuse(f"facts_{field_name}_not_list")
+    for value in values:
+        validator(value)
+
+
+def _work_item_entry(value: Mapping[str, object]) -> None:
+    """Validate optional Work Item scheduling fields in journal state."""
+    _optional_positive_int(value, "issue", "facts_work_items_issue")
+    _optional_string_list(value, "blocked_by", "facts_work_items_blocked_by")
+    _optional_nonnegative_int(value, "priority", "facts_work_items_priority")
+    _optional_string_list(value, "exclusive_resources", "facts_work_items_exclusive_resources")
+    _optional_fact_text(value, "seat", "facts_work_items_seat")
+    _optional_fact_text(value, "profile", "facts_work_items_profile")
+    _optional_fact_text(value, "ready_at", "facts_work_items_ready_at")
+
+
+def _work_run_entry(value: Mapping[str, object]) -> None:
+    """Validate optional Work Run identity fields in journal state."""
+    _optional_fact_text(value, "work_item_key", "facts_work_runs_work_item_key")
+    _optional_fact_text(value, "dispatch_id", "facts_work_runs_dispatch_id")
+    _optional_fact_text(value, "failure_class", "facts_work_runs_failure_class")
+    _optional_fact_text(value, "worktree", "facts_work_runs_worktree")
+    _optional_positive_int(value, "issue", "facts_work_runs_issue")
+
+
+def _worktree_debt_entry(value: object) -> None:
+    """Validate one worktree debt fact."""
+    if not isinstance(value, dict) or not set(value) <= {"issue", "path", "work_item_key"}:
+        _refuse("facts_worktree_debt_entry_fields")
+    if not isinstance(value, dict) or not {"issue", "path"} <= set(value):
+        _refuse("facts_worktree_debt_entry_fields")
+    _positive_int(value, "issue", "facts_worktree_debt_issue")
+    _string(value, "path")
+    _optional_fact_text(value, "work_item_key", "facts_worktree_debt_work_item_key")
+
+
+def _external_bar_entry(value: object) -> None:
+    """Validate one external launch bar."""
+    if not isinstance(value, dict) or not set(value) <= {"key", "kind", "detail"}:
+        _refuse("facts_external_bars_entry_fields")
+    if not isinstance(value, dict) or not {"key", "kind"} <= set(value):
+        _refuse("facts_external_bars_entry_fields")
+    _string(value, "key")
+    _string(value, "kind")
+    _optional_fact_text(value, "detail", "facts_external_bars_detail", allow_empty=True)
+
+
+def _ready_transition_entry(value: object) -> None:
+    """Validate one recorded ready transition."""
+    if not isinstance(value, dict) or set(value) != {"key", "recorded_at"}:
+        _refuse("facts_ready_transitions_entry_fields")
+    _string(value, "key")
+    _string(value, "recorded_at")
+
+
+def _optional_positive_int(value: Mapping[str, object], name: str, reason: str) -> int | None:
+    """Validate an optional positive integer field."""
+    if name not in value:
+        return None
+    item = value[name]
+    if isinstance(item, bool) or not isinstance(item, int) or item < 1:
+        _refuse(reason)
+    return item
+
+
+def _positive_int(value: Mapping[str, object], name: str, reason: str) -> int:
+    """Validate a required positive integer field."""
+    item = value.get(name)
+    if isinstance(item, bool) or not isinstance(item, int) or item < 1:
+        _refuse(reason)
+    return item
+
+
+def _optional_nonnegative_int(value: Mapping[str, object], name: str, reason: str) -> int | None:
+    """Validate an optional non-negative integer field."""
+    if name not in value:
+        return None
+    item = value[name]
+    if isinstance(item, bool) or not isinstance(item, int) or item < 0:
+        _refuse(reason)
+    return item
+
+
+def _optional_string_list(value: Mapping[str, object], name: str, reason: str) -> tuple[str, ...]:
+    """Validate an optional non-empty-string list field."""
+    if name not in value:
+        return ()
+    item = value[name]
+    if not isinstance(item, list) or any(not isinstance(entry, str) or not entry for entry in item):
+        _refuse(reason)
+    return tuple(cast("list[str]", item))
+
+
+def _optional_fact_text(
+    value: Mapping[str, object], name: str, reason: str, *, allow_empty: bool = False
+) -> str | None:
+    """Validate an optional text field."""
+    if name not in value:
+        return None
+    item = value[name]
+    if not isinstance(item, str) or (not allow_empty and not item):
+        _refuse(reason)
+    return item
+
+
+def _work_item_value(value: dict[str, object]) -> policy.WorkItemFact:
+    """Decode a validated Work Item fact."""
+    return policy.WorkItemFact(
+        _string(value, "key"),
+        _string(value, "state"),
+        _optional_positive_int(value, "issue", "facts_work_items_issue"),
+        _optional_string_list(value, "blocked_by", "facts_work_items_blocked_by"),
+        _optional_nonnegative_int(value, "priority", "facts_work_items_priority"),
+        _optional_string_list(value, "exclusive_resources", "facts_work_items_exclusive_resources"),
+        _optional_fact_text(value, "seat", "facts_work_items_seat") or "implementer",
+        _optional_fact_text(value, "profile", "facts_work_items_profile"),
+        _optional_fact_text(value, "ready_at", "facts_work_items_ready_at"),
+    )
+
+
+def _work_run_value(value: dict[str, object]) -> policy.WorkRunFact:
+    """Decode a validated Work Run fact."""
+    return policy.WorkRunFact(
+        _string(value, "key"),
+        _string(value, "state"),
+        _optional_fact_text(value, "work_item_key", "facts_work_runs_work_item_key"),
+        _optional_fact_text(value, "dispatch_id", "facts_work_runs_dispatch_id"),
+        _optional_fact_text(value, "failure_class", "facts_work_runs_failure_class"),
+        _optional_fact_text(value, "worktree", "facts_work_runs_worktree"),
+        _optional_positive_int(value, "issue", "facts_work_runs_issue"),
+    )
+
+
+def _worktree_debt_value(value: dict[str, object]) -> policy.WorktreeDebtFact:
+    """Decode a validated worktree debt fact."""
+    return policy.WorktreeDebtFact(
+        _positive_int(value, "issue", "facts_worktree_debt_issue"),
+        _string(value, "path"),
+        _optional_fact_text(value, "work_item_key", "facts_worktree_debt_work_item_key"),
+    )
+
+
+def _external_bar_value(value: dict[str, object]) -> policy.ExternalBarFact:
+    """Decode a validated external launch bar."""
+    return policy.ExternalBarFact(
+        _string(value, "key"),
+        _string(value, "kind"),
+        _optional_fact_text(value, "detail", "facts_external_bars_detail", allow_empty=True) or "",
+    )
+
+
+def _ready_transition_value(value: dict[str, object]) -> policy.ReadyTransitionFact:
+    """Decode a validated ready transition."""
+    return policy.ReadyTransitionFact(_string(value, "key"), _string(value, "recorded_at"))
+
+
+def confirmed_list(confirmed: Mapping[str, object], name: str) -> list[object]:
+    """Read an optional list from a validated facts document."""
+    value = confirmed.get(name, [])
+    if not isinstance(value, list):
+        _refuse(f"facts_{name}_not_list")
+    return value
 
 
 def _positive_revision(value: Mapping[str, object]) -> int:

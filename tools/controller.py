@@ -35,6 +35,9 @@ class CycleReport:
     planning_status: str | None = None
     plan_revision: str | None = None
     product_question: dict[str, object] | None = None
+    selected_work_item: str | None = None
+    launch_snapshot: policy.CoordinationSnapshot | None = None
+    considered: tuple[tuple[str, str], ...] = ()
 
     def to_document(self) -> dict[str, object]:
         """Render the stable command result and its explicit empty collections."""
@@ -67,6 +70,12 @@ class CycleReport:
             planning_document["question"] = self.product_question
         if planning_document:
             document["planning"] = planning_document
+        if self.launch_snapshot is not None:
+            document["coordination"] = {
+                "selected_work_item": self.selected_work_item,
+                "considered": [{"key": key, "reason": reason} for key, reason in self.considered],
+                "launch_preconditions": policy.snapshot_document(self.launch_snapshot),
+            }
         return document
 
 
@@ -132,7 +141,12 @@ class Controller:
         """Run the policy and, for a real cycle, persist each transition phase."""
         if previous is not None and previous.phase != "confirmed":
             return self._resume(previous, dry_run=dry_run)
-        facts = self.fact_collector.collect()
+        facts = self._merge_local_facts(self.fact_collector.collect(), previous)
+        ready_keys = policy.newly_ready_keys(
+            previous.facts if previous is not None else None, facts
+        )
+        if ready_keys:
+            facts = policy.with_ready_transitions(facts, ready_keys, self.clock.now())
         prior_lifecycle = previous.lifecycle if previous is not None else None
         plan = policy.derive(facts, prior_lifecycle)
         planning_result = self._planning_result(facts, previous)
@@ -145,6 +159,15 @@ class Controller:
             question = None
             stored_plan = None
         cycle_id = self._cycle_id(previous, fresh_start=fresh_root)
+        if dry_run and plan.launch_snapshot is not None and plan.actions:
+            cycle_action = self._bind_launch_action(plan.actions[0], cycle_id)
+            plan = policy.Reconciliation(
+                lifecycle=plan.lifecycle,
+                actions=(cycle_action,),
+                selected_work_item=plan.selected_work_item,
+                launch_snapshot=plan.launch_snapshot,
+                considered=plan.considered,
+            )
         if dry_run:
             return CycleReport(
                 cycle_id=cycle_id,
@@ -157,6 +180,32 @@ class Controller:
                 planning_status=status,
                 plan_revision=revision,
                 product_question=question,
+                selected_work_item=(
+                    plan.selected_work_item.key if plan.selected_work_item is not None else None
+                ),
+                launch_snapshot=plan.launch_snapshot,
+                considered=plan.considered,
+            )
+
+        if plan.launch_snapshot is not None and plan.actions:
+            refreshed = self._merge_local_facts(self.fact_collector.collect(), previous)
+            if policy.coordination_snapshot(refreshed) != plan.launch_snapshot:
+                selected_key = plan.selected_work_item.key if plan.selected_work_item else "unknown"
+                raise store_module.ControllerLaunchStale(selected_key)
+            cycle_action = self._bind_launch_action(plan.actions[0], cycle_id)
+            plan = policy.Reconciliation(
+                lifecycle=plan.lifecycle,
+                actions=(cycle_action,),
+                selected_work_item=plan.selected_work_item,
+                launch_snapshot=plan.launch_snapshot,
+                considered=plan.considered,
+            )
+            run_key = str(dict(cycle_action.payload)["run_key"])
+            facts = policy.with_work_run(
+                facts,
+                cycle_action,
+                run_key=run_key,
+                dispatch_id=str(dict(cycle_action.payload)["dispatch_id"]),
             )
 
         payload = self._payload(facts, plan, stored_plan)
@@ -177,6 +226,11 @@ class Controller:
             planning_status=status,
             plan_revision=revision,
             product_question=question,
+            selected_work_item=(
+                plan.selected_work_item.key if plan.selected_work_item is not None else None
+            ),
+            launch_snapshot=plan.launch_snapshot,
+            considered=plan.considered,
         )
 
     def _resume(
@@ -208,7 +262,13 @@ class Controller:
         payload = previous.confirmed
         if previous.phase == "planned":
             for action in actions:
-                self._apply(action)
+                if self._is_launch_action(action):
+                    current = self.fact_collector.collect()
+                    if not self._has_live_run_for_action(current, action):
+                        self._assert_resume_fresh(current, action)
+                        self._apply(action)
+                else:
+                    self._apply(action)
             self._record(previous.last_cycle_id, "applied", payload)
         self._record(previous.last_cycle_id, "confirmed", payload)
         self.store.materialize_view()
@@ -224,6 +284,7 @@ class Controller:
             plan_revision=(
                 str(previous.plan["revision_id"]) if previous.plan is not None else None
             ),
+            selected_work_item=self._selected_from_actions(actions),
         )
 
     def _planning_result(  # noqa: C901, PLR0911, PLR0912 — typed stage outcomes form one ordered gate
@@ -377,7 +438,7 @@ class Controller:
             recorded_by=self.identity.identity(),
         )
 
-    def _apply(self, action: policy.ControlAction) -> None:
+    def _apply(self, action: policy.ControlAction) -> object | None:
         """Route a derived action to its narrow external port."""
         port_name = action.kind.split(".", 1)[0]
         try:
@@ -385,11 +446,91 @@ class Controller:
         except AttributeError as error:
             raise store_module.ControllerActionUnsupported(action.kind) from error
         try:
-            port.apply(action)
+            return port.apply(action)
         except planning.TrackerError as error:
             if error.code == "unsupported_action":
                 raise store_module.ControllerActionUnsupported(action.kind) from error
             raise
+
+    def _merge_local_facts(
+        self,
+        facts: policy.ControlFacts,
+        previous: store_module.LoadedControllerState | None,
+    ) -> policy.ControlFacts:
+        """Retain only confirmed local live-run/readiness facts until delivery observes them."""
+        if previous is None or previous.facts is None:
+            return facts
+        current_runs = list(facts.work_runs)
+        for prior in policy.live_work_runs(previous.facts):
+            if any(self._run_matches(prior, current) for current in current_runs):
+                continue
+            current_runs.append(prior)
+        current_transitions = list(facts.ready_transitions)
+        known_transitions = {transition.key for transition in current_transitions}
+        current_transitions.extend(
+            transition
+            for transition in previous.facts.ready_transitions
+            if transition.key not in known_transitions
+        )
+        return policy.ControlFacts(
+            facts.configured_curator,
+            facts.desired_outcomes,
+            facts.initiatives,
+            facts.work_items,
+            tuple(current_runs),
+            facts.worktree_debt,
+            facts.wip_limit,
+            facts.external_bars,
+            facts.priority_order,
+            tuple(current_transitions),
+        )
+
+    @staticmethod
+    def _run_matches(left: policy.WorkRunFact, right: policy.WorkRunFact) -> bool:
+        """Match a local run to a fresh delivery fact without assuming its run ID shape."""
+        return left.item_key == right.item_key or (
+            left.issue is not None and right.issue is not None and left.issue == right.issue
+        )
+
+    @staticmethod
+    def _is_launch_action(action: policy.ControlAction) -> bool:
+        """Identify the one action whose preconditions are checked at launch."""
+        return action.kind == "dispatch.start_work_run"
+
+    @staticmethod
+    def _has_live_run_for_action(facts: policy.ControlFacts, action: policy.ControlAction) -> bool:
+        """Avoid a duplicate after a crash between the real launch and journal confirmation."""
+        payload = dict(action.payload)
+        key = str(payload.get("work_item_key", action.logical_key))
+        issue = payload.get("issue")
+        return any(
+            run.item_key == key or (isinstance(issue, int) and run.issue == issue)
+            for run in policy.live_work_runs(facts)
+        )
+
+    @staticmethod
+    def _assert_resume_fresh(facts: policy.ControlFacts, action: policy.ControlAction) -> None:
+        """Apply the same launch snapshot guard when resuming a planned cycle."""
+        expected = dict(action.payload).get("preconditions")
+        actual = policy.snapshot_document(policy.coordination_snapshot(facts))
+        if expected != actual:
+            raise store_module.ControllerLaunchStale(action.logical_key)
+
+    def _bind_launch_action(
+        self, action: policy.ControlAction, cycle_id: str
+    ) -> policy.ControlAction:
+        """Bind one stable Work Run and dispatch identity after the cycle is named."""
+        run_key = f"{self.identity.identity()}:{cycle_id}:{action.logical_key}"
+        payload = dict(action.payload)
+        payload["run_key"] = run_key
+        payload["dispatch_id"] = run_key
+        return policy.ControlAction(action.kind, action.logical_key, tuple(payload.items()))
+
+    @staticmethod
+    def _selected_from_actions(actions: tuple[policy.ControlAction, ...]) -> str | None:
+        """Recover a selected Work Item key from a resumed launch action."""
+        action = next((item for item in actions if item.kind == "dispatch.start_work_run"), None)
+        return action.logical_key if action is not None else None
 
     def _cycle_id(
         self,
@@ -429,8 +570,15 @@ def default_controller(root: Path | None = None) -> Controller:
     state_root = root or Path(os.environ.get("CTI_CONTROLLER_DIR", DEFAULT_ROOT))
     repository = os.environ.get("CTI_GITHUB_REPOSITORY", "andrewesweet/arma-cti")
     tracker = planning.PlanPublisher(planning.GitHubTracker(repository))
+    queue_directory = os.environ.get("CTI_QUEUE_DIR")
+    facts: ports.FactCollector = ports.RuntimeFactCollector(
+        ports.DefaultFactCollector(),
+        Path.cwd(),
+        Path(os.environ.get("CTI_DISPATCH_DIR", str(Path.home() / ".arma-cti" / "dispatches"))),
+        Path(queue_directory) if queue_directory else None,
+    )
     return Controller(
-        fact_collector=ports.DefaultFactCollector(),
+        fact_collector=facts,
         clock=ports.SystemClock(),
         identity=ports.SystemIdentity(),
         store=store_module.ControllerStore(state_root),
@@ -465,8 +613,10 @@ def main(argv: list[str] | None = None) -> int:
         report = instance.run_cycle(dry_run=args.dry_run)
     except (
         store_module.ControllerActionUnsupported,
+        store_module.ControllerLaunchStale,
         store_module.ControllerLockHeld,
         store_module.ControllerStateUnreadable,
+        ports.FactCollectionError,
         planning.TrackerError,
     ) as error:
         print(str(error), file=sys.stderr)  # noqa: T201 — CLI refusal is the public interface

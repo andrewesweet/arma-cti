@@ -54,6 +54,64 @@ def make_controller(
     return instance, store, collector, mutation_ports
 
 
+class SequenceFactCollector:
+    """Return successive snapshots so tests can build a fact-change window."""
+
+    def __init__(
+        self,
+        *snapshots: Any,  # noqa: ANN401 — dynamic tool module values
+    ) -> None:
+        """Store the snapshots that the controller will collect in order."""
+        self.snapshots = snapshots
+        self.collect_calls = 0
+
+    def collect(self) -> Any:  # noqa: ANN401 — dynamic tool module values
+        """Return the next snapshot, retaining the last one for later cycles."""
+        index = min(self.collect_calls, len(self.snapshots) - 1)
+        self.collect_calls += 1
+        return self.snapshots[index]
+
+
+def coordination_facts(
+    items: tuple[Any, ...],
+    *,
+    runs: tuple[Any, ...] = (),
+    worktree_debt: tuple[Any, ...] = (),
+    wip_limit: int | None = 3,
+    external_bars: tuple[Any, ...] = (),
+) -> Any:  # noqa: ANN401 — dynamic tool module values
+    """Build one active Initiative graph for controller behaviour tests."""
+    return policy.ControlFacts(
+        configured_curator="curator-1",
+        desired_outcomes=(policy.DesiredOutcomeFact("outcome-1", 1, "digest-1"),),
+        initiatives=(policy.InitiativeFact("initiative-1", "active"),),
+        work_items=items,
+        work_runs=runs,
+        worktree_debt=worktree_debt,
+        wip_limit=wip_limit,
+        external_bars=external_bars,
+    )
+
+
+def make_controller_with_collector(
+    root: Path,
+    collector: Any,  # noqa: ANN401 — dynamic tool module values
+) -> tuple[Any, Any, tuple[Any, ...]]:
+    """Assemble a controller around a scripted collector and recording ports."""
+    clock = ports.FakeClock("2026-08-27T12:00:00+00:00")
+    identity = ports.FakeIdentity("test-controller")
+    store = store_module.ControllerStore(root)
+    mutation_ports = tuple(ports.RecordingActionPort() for _ in range(4))
+    instance = controller.Controller(
+        fact_collector=collector,
+        clock=clock,
+        identity=identity,
+        store=store,
+        action_ports=ports.ActionPorts(*mutation_ports),
+    )
+    return instance, store, mutation_ports
+
+
 def test_one_cycle_reports_facts_state_and_an_explicit_empty_action_list(tmp_path: Path) -> None:
     instance, _store, collector, _mutation_ports = make_controller(tmp_path / "controller")
 
@@ -466,3 +524,163 @@ def _record(cycle_id: str, phase: str) -> dict[str, object]:
             "actions": [],
         },
     }
+
+
+def test_coordination_launch_records_work_run_and_replays_without_duplication(
+    tmp_path: Path,
+) -> None:
+    item = policy.WorkItemFact("item-1", "open", issue=1, seat="implementer")
+    instance, store, collector, mutation_ports = make_controller(
+        tmp_path / "controller", facts=coordination_facts((item,))
+    )
+
+    first = instance.run_cycle(dry_run=False)
+    second = instance.run_cycle(dry_run=False)
+
+    assert collector.collect_calls == 3
+    assert first.selected_work_item == "item-1"
+    assert first.actions[0].kind == "dispatch.start_work_run"
+    payload = dict(first.actions[0].payload)
+    assert payload["dispatch_id"] == "test-controller:test-controller-cycle-1:item-1"
+    assert mutation_ports[2].applied == list(first.actions)
+    assert second.actions == ()
+    assert len(store.load().facts.work_runs) == 1  # type: ignore[union-attr]
+    assert store.load().facts.work_runs[0].dispatch_id == payload["dispatch_id"]  # type: ignore[union-attr]
+
+
+def test_launch_rechecks_facts_and_refuses_when_a_precondition_changes(
+    tmp_path: Path,
+) -> None:
+    item = policy.WorkItemFact("item-1", "open", issue=1)
+    planned = coordination_facts((item,))
+    changed = coordination_facts(
+        (item,), external_bars=(policy.ExternalBarFact("item-1", "quota_exhausted"),)
+    )
+    collector = SequenceFactCollector(planned, changed)
+    instance, store, mutation_ports = make_controller_with_collector(
+        tmp_path / "controller", collector
+    )
+
+    with pytest.raises(
+        controller.store_module.ControllerLaunchStale,
+        match=r"^refusal=controller_launch_stale work_item=item-1$",
+    ):
+        instance.run_cycle(dry_run=False)
+
+    assert collector.collect_calls == 2
+    assert all(port.applied == [] for port in mutation_ports)
+    assert not store.journal_path.exists()
+
+
+def test_dry_run_describes_the_same_bound_launch_without_mutating_any_port(
+    tmp_path: Path,
+) -> None:
+    item = policy.WorkItemFact("item-1", "open", issue=1, profile="opus-high")
+    instance, store, _collector, mutation_ports = make_controller(
+        tmp_path / "controller", facts=coordination_facts((item,))
+    )
+
+    dry = instance.run_cycle(dry_run=True)
+    assert not store.view_path.exists()
+    assert all(port.applied == [] for port in mutation_ports)
+
+    real = instance.run_cycle(dry_run=False)
+
+    assert dry.actions == real.actions
+    assert dict(dry.actions[0].payload)["worktree"] == "issue-1"
+    assert dict(dry.actions[0].payload)["seat"] == "implementer"
+    assert dict(dry.actions[0].payload)["profile"] == "opus-high"
+    assert (
+        dry.to_document()["coordination"]["launch_preconditions"]
+        == real.to_document()["coordination"]["launch_preconditions"]
+    )
+    assert all(port.applied == [] for port in mutation_ports[:2])
+    assert mutation_ports[2].applied == list(real.actions)
+
+
+def test_controller_records_the_ready_transition_when_blockers_clear(
+    tmp_path: Path,
+) -> None:
+    blocked = coordination_facts(
+        (
+            policy.WorkItemFact("blocker", "in_progress", issue=1),
+            policy.WorkItemFact("item", "open", issue=2, blocked_by=("blocker",)),
+        )
+    )
+    ready = coordination_facts(
+        (
+            policy.WorkItemFact("blocker", "complete", issue=1),
+            policy.WorkItemFact("item", "open", issue=2, blocked_by=("blocker",)),
+        )
+    )
+    collector = SequenceFactCollector(blocked, ready)
+    instance, store, mutation_ports = make_controller_with_collector(
+        tmp_path / "controller", collector
+    )
+
+    first = instance.run_cycle(dry_run=False)
+    second = instance.run_cycle(dry_run=False)
+
+    assert first.actions == ()
+    assert second.selected_work_item == "item"
+    assert second.facts.ready_transitions == (
+        controller.policy.ReadyTransitionFact("item", "2026-08-27T12:00:00+00:00"),
+    )
+    assert mutation_ports[2].applied == list(second.actions)
+    loaded = store.load().facts
+    assert loaded is not None
+    assert controller.policy.facts_document(loaded) == controller.policy.facts_document(
+        second.facts
+    )
+
+
+def test_external_launch_refusal_leaves_only_the_planned_non_result(
+    tmp_path: Path,
+) -> None:
+    class RefusingDispatchPort:
+        """Raise the existing typed provider refusal at the launch boundary."""
+
+        def apply(self, _action: Any) -> None:  # noqa: ANN401 — dynamic tool module values
+            code = "quota_exhausted"
+            detail = "provider window"
+            raise controller.planning.TrackerError(code, detail)
+
+    item = policy.WorkItemFact("item-1", "open", issue=1)
+    facts = coordination_facts((item,))
+    collector = ports.FakeFactCollector(facts)
+    store = store_module.ControllerStore(tmp_path / "controller")
+    mutation_ports = (
+        ports.RecordingActionPort(),
+        ports.RecordingActionPort(),
+        RefusingDispatchPort(),
+        ports.RecordingActionPort(),
+    )
+    instance = controller.Controller(
+        fact_collector=collector,
+        clock=ports.FakeClock("2026-08-27T12:00:00+00:00"),
+        identity=ports.FakeIdentity("test-controller"),
+        store=store,
+        action_ports=ports.ActionPorts(*mutation_ports),
+    )
+
+    with pytest.raises(controller.planning.TrackerError, match="quota_exhausted"):
+        instance.run_cycle(dry_run=False)
+
+    rows = [
+        json.loads(line) for line in store.journal_path.read_text(encoding="utf-8").splitlines()
+    ]
+    assert [row["phase"] for row in rows] == ["planned"]
+    assert item.state == "open"
+
+
+def test_cli_fact_source_failure_is_a_typed_refusal(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capfd: pytest.CaptureFixture[str]
+) -> None:
+    facts_path = tmp_path / "facts.json"
+    facts_path.write_text("not-json\n", encoding="utf-8")
+    monkeypatch.setenv("CTI_CONTROL_FACTS_FILE", str(facts_path))
+    monkeypatch.setenv("CTI_CONTROLLER_DIR", str(tmp_path / "controller"))
+
+    assert controller.main(["reconcile"]) == 2
+
+    assert "refusal=control_facts_unreadable" in capfd.readouterr().err
