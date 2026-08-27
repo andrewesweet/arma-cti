@@ -827,7 +827,19 @@ case where the escalation head sits outside the preference list — which is bot
 filled rows. Correcting the ruling's own claim is the human's; flagged rather
 than rewritten (review round 1, claim 5; the reachability half corrected against
 the landed walk on review round 2, where A1's second pass had it unreachable).*
-<!-- arbiter-rule: stated — a worked example: it spells one seat's walk out profile by profile to correct the ruling's own stated outcome, which a pointer cannot do. Its own text sends the reader to `tools/arbiter.py:120`. #390 -->
+<!-- arbiter-rule: stated — the note below is this worked example's other half: the example spells one seat's walk out profile by profile, and a pointer cannot say what that same walk answers once the cells change. #390 -->
+
+*(A10, 2026-08-27: the cells this example walks are not the registry's any more.
+`retro`'s entry is `fable-xhigh`, `opus-max` and its preference is `fable-high`,
+`opus-xhigh`, `codex-sol-max`, so the walk is those five in that order. Against
+#318's records — `fable-high` author, `opus-xhigh` reviewer — the head
+`fable-xhigh` is unconflicted and the walk answers **`fable-xhigh`**, where under
+A1's cells it answered `opus-max`. The paragraph above is left as the human's own
+words and this note carries the current arithmetic; the point it was making —
+that the choice stops being made in the moment — is unaffected by either set of
+cells.)*
+
+<!-- arbiter-rule: stated — a worked example: it spells one seat's walk out profile by profile to correct the ruling's own stated outcome, which a pointer cannot do. Its own text sends the reader to `tools/arbiter.py:120`, and the A10 note beside it carries the same walk on the current cells. #390 -->
 
 
 *With every dispatchable row filled, the sentence covered only cells marked
@@ -841,9 +853,9 @@ requires deciding its arbiter.)*
 **And the reviewer must not be the reviewed profile.** The `review` seat resolves
 down its own list — the implementer's as ruling 2 first wrote it, and its own since
 A10 — to the first profile that is not the one under review, preferring a different
-lane. Without that rule the seat walks its list with nothing excluded, so whichever
-entry is dispatchable answers, the profile under review included — and where the
-list is the implementer's, as it was until A10, every review is same-model — which would make never-alone a ritual, since the
+lane. Without that rule the seat walks its list with the exclusion switched off, so
+a profile the records place on the work can be selected — and where the list is the
+implementer's, as it was until A10, a review can come back same-model — which would make never-alone a ritual, since the
 whole argument for it, and every finding in this document's own four reviews,
 rests on the second instance being genuinely different. "Different model
 preferred" was a word nothing read.
@@ -1268,9 +1280,11 @@ question — the gates this row's path list does not name.)*
   2026-08-27: no lane heads four seats now. Of the seven rows in `SEATS`, `codex`
   heads two — `planner` and `review`; `zai` heads two — `implementer` and `recon`;
   and `claude-native` heads three — `retro`, `orchestrator` and `fable`. The cost
-  this line named is not the cost the registry carries, and the underlying point —
-  that a lane heading a seat cannot be consulted about that seat's own work — now
-  reaches all three lanes.)*
+  this line named is not the cost the registry carries. The cost itself is
+  unchanged in kind and reaches the four seats headed by `codex` and `zai`, the two
+  lanes with no Advisor equivalent; `claude-native`'s three are not affected,
+  because ruling 5 above allows self-declared consultation on the lane that has the
+  tool.)*
 - **The implementer head is blocked on #265's ceiling**, so ruling 2's headline
   allocation is not the one that runs on the day this lands. *(A6, #405: no longer
   a cost — the ceiling lifted on the human's instruction of 2026-08-18, and the
