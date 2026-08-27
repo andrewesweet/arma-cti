@@ -15,8 +15,8 @@ an internal test and none of the criteria.
 `--reviewing` takes any registered profile and not only an entry of the seat's own
 preference, so a subject from outside it leaves all three entries in the list and reorders
 them: reviewing `codex-sol-high` puts the two non-Codex entries first, and a box with no
-z.ai key therefore answers `opus-low` where the seat's unmodified order would have answered
-`codex-luna-max`. An earlier draft of this module asserted the opposite — that three
+z.ai key therefore answers `opus-medium` where the seat's unmodified order would have
+answered `codex-sol-xhigh`. An earlier draft of this module asserted the opposite — that three
 distinct lanes made the rule unobservable end to end — and that was simply wrong. The
 substituted-seat claims below are kept because they exercise the ordering *within* each
 half, which the real three-entry preference is too short to show; they are not a stand-in

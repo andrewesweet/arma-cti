@@ -186,7 +186,8 @@ still walked, because the invariant is about the instance producing the verdict 
 diversity is what is merely preferred. Where removal leaves nothing, `review_same_profile`
 refuses rather than proceeding same-model, and the same refusal meets a caller who names the
 reviewed profile with `--profile`. The absent declaration refuses too: without it nothing
-could resolve past anything, and resolving anyway would take the head the implementer took.
+could resolve past anything, and resolving anyway would take this seat's own head, which
+the records may place on the work.
 The second half is containment. `--permission-mode` defaults to `acceptEdits`, which is
 writable on both runner families, so a review dispatched at the default could edit the
 persistent tree; the seat now *forces* `plan` in `routed`. Claude receives that as a
@@ -2102,7 +2103,8 @@ def reviewed_profile_refusal(seat_name: str, reviewed: str) -> Refusal | None:
 
     **The absent case refuses**, which is the whole point: a review seat with no declared
     subject cannot be resolved past anything, and resolving it anyway would take the head of
-    the implementer's list — the same profile the implementer took — and call it a review.
+    this seat's own list — which the records may well place on the work — and call it a
+    review.
     That is the silent same-model review this ticket exists to make impossible, so it is a
     named refusal rather than a default.
 
@@ -2138,8 +2140,8 @@ def reviewed_profile_refusal(seat_name: str, reviewed: str) -> Refusal | None:
             (
                 "A review dispatch declares the profile whose work it is reviewing: "
                 "`--reviewing <profile>`. Without it nothing here can resolve past that "
-                f"profile, and resolving anyway would take the same head the implementer "
-                f"took. {NEVER_ALONE} Nothing was dispatched."
+                "profile, and resolving anyway would take this seat's own head, which the "
+                f"records may place on the work. {NEVER_ALONE} Nothing was dispatched."
             ),
         )
     if resolved_profile(reviewed) is None:
