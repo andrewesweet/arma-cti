@@ -6,7 +6,10 @@ import sys
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Protocol
+from typing import TYPE_CHECKING, Protocol
+
+if TYPE_CHECKING:
+    from controller_store import SchedulingLock
 
 sys.path.insert(0, str(Path(__file__).parent))
 
@@ -143,6 +146,7 @@ class RecordingActionPort:
 class FakeDetachedWorkRunPort:
     """Detached Work Run fake proving scheduling-lock scope stays narrow."""
 
+    scheduling_lock: SchedulingLock
     started: list[str] = field(default_factory=list)
 
     def start(self, run_key: str) -> None:

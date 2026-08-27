@@ -190,3 +190,28 @@ def test_scheduling_lock_is_nonblocking_and_releases_for_the_next_writer(tmp_pat
         second.acquire()
     with second:
         assert lock_path.exists()
+
+
+def test_started_marker_survives_missing_state_and_names_interrupted_bootstrap(
+    tmp_path: Path,
+) -> None:
+    controller_store = store.ControllerStore(tmp_path / "controller")
+    controller_store.mark_started()
+
+    assert controller_store.started_marker_path.exists()
+    with pytest.raises(store.ControllerStateUnreadable) as error:
+        controller_store.load()
+
+    assert error.value.reason == "controller_bootstrap_interrupted"
+
+
+def test_named_bootstrap_recovery_clears_only_empty_interrupted_state(tmp_path: Path) -> None:
+    controller_store = store.ControllerStore(tmp_path / "controller")
+    controller_store.mark_started()
+    controller_store.root.mkdir()
+    controller_store.lock_path.touch()
+
+    controller_store.recover_interrupted_bootstrap()
+
+    assert not controller_store.started_marker_path.exists()
+    assert controller_store.lock_path.exists()

@@ -29,6 +29,7 @@ VIEW_SCHEMA: Final = "controller-view/v1"
 JOURNAL_NAME: Final = "journal.jsonl"
 VIEW_NAME: Final = "view.json"
 LOCK_NAME: Final = "scheduling.lock"
+STARTED_MARKER_CONTENT: Final = "controller-state/v1\n"
 PHASES: Final = ("planned", "applied", "confirmed")
 JOURNAL_FIELDS: Final = frozenset(
     {"schema", "cycle_id", "phase", "recorded_at", "recorded_by", "payload"}
@@ -66,6 +67,13 @@ class ControllerLockHeldError(RuntimeError):
 
 class ControllerActionUnsupportedError(RuntimeError):
     """A future action has no registered external port."""
+
+    code: Final = "controller_action_unsupported"
+
+    def __init__(self, action_kind: str) -> None:
+        """Expose the unsupported action as a named refusal."""
+        self.action_kind = action_kind
+        super().__init__(f"refusal={self.code} action={action_kind}")
 
 
 # Keep the short refusal names available to callers while satisfying the
@@ -149,15 +157,69 @@ class ControllerStore:
         """Return the singleton scheduling lock path."""
         return self.root / LOCK_NAME
 
+    @property
+    def started_marker_path(self) -> Path:
+        """Return the durable marker kept outside removable controller state."""
+        return self.root.parent / f".{self.root.name}.started"
+
+    def is_fresh(self) -> bool:
+        """Distinguish never-started state from an interrupted controller."""
+        if self._started_marker_exists():
+            return False
+        return not self.journal_path.exists() and not self.view_path.exists()
+
+    def mark_started(self) -> None:
+        """Publish controller intent before taking the scheduling lock."""
+        if self._started_marker_exists():
+            return
+        marker = self.started_marker_path
+        try:
+            marker.parent.mkdir(parents=True, exist_ok=True)
+            with marker.open("x", encoding="utf-8") as handle:
+                handle.write(STARTED_MARKER_CONTENT)
+                handle.flush()
+                os.fsync(handle.fileno())
+        except FileExistsError:
+            self._started_marker_exists()
+            return
+        except (OSError, UnicodeError) as error:
+            _refuse(f"controller_bootstrap_marker_write_failed:{error}")
+        try:
+            _fsync_directory(marker.parent)
+        except OSError as error:
+            _refuse(f"controller_bootstrap_marker_write_failed:{error}")
+
+    def recover_interrupted_bootstrap(self) -> None:
+        """Clear an empty started marker after an explicit recovery request."""
+        with self.scheduling_lock():
+            if not self._started_marker_exists():
+                _refuse("controller_bootstrap_not_interrupted")
+            if self.journal_path.exists() or self.view_path.exists():
+                _refuse("controller_bootstrap_recovery_requires_state_review")
+            try:
+                self.started_marker_path.unlink()
+                _fsync_directory(self.started_marker_path.parent)
+            except (OSError, UnicodeError) as error:
+                _refuse(f"controller_bootstrap_recovery_failed:{error}")
+
     def scheduling_lock(self) -> SchedulingLock:
         """Return the lock for this Controller state root."""
         return SchedulingLock(self.lock_path)
 
-    def next_cycle_number(self) -> int:
+    def next_cycle_number(
+        self,
+        previous: LoadedControllerState | None = None,
+        *,
+        fresh_start: bool = False,
+    ) -> int:
         """Return the next cycle ordinal after validating existing state."""
-        if not self.root.exists():
+        if fresh_start and previous is None:
             return 1
-        state = self.load()
+        state = previous
+        if state is None:
+            if self.is_fresh():
+                return 1
+            state = self.load()
         return state.record_count // len(PHASES) + 1
 
     def append_phase(
@@ -272,9 +334,25 @@ class ControllerStore:
         """Read journal bytes without turning absence into an empty state."""
         try:
             raw = self.journal_path.read_bytes()
+        except FileNotFoundError as error:
+            if self._started_marker_exists():
+                _refuse("controller_bootstrap_interrupted")
+            _refuse(f"journal_unreadable:{error}")
         except (OSError, UnicodeError) as error:
             _refuse(f"journal_unreadable:{error}")
         return raw
+
+    def _started_marker_exists(self) -> bool:
+        """Validate the intent marker without treating its absence as damage."""
+        try:
+            content = self.started_marker_path.read_text(encoding="utf-8")
+        except FileNotFoundError:
+            return False
+        except (OSError, UnicodeError) as error:
+            _refuse(f"controller_bootstrap_marker_unreadable:{error}")
+        if content != STARTED_MARKER_CONTENT:
+            _refuse("controller_bootstrap_marker_invalid")
+        return True
 
     def _read_view(self) -> dict[str, object]:
         """Read and validate the materialized view envelope."""
@@ -408,17 +486,22 @@ def _atomic_write(path: Path, value: Mapping[str, object]) -> None:
             os.fsync(handle.fileno())
         Path(temporary).replace(path)
         temporary = None
-        directory = os.open(path.parent, os.O_RDONLY)
-        try:
-            os.fsync(directory)
-        finally:
-            os.close(directory)
+        _fsync_directory(path.parent)
     except (OSError, TypeError, ValueError) as error:
         if temporary is not None:
             with suppress(OSError):
                 Path(temporary).unlink()
         detail = f"view_write_failed:{error}"
         raise ControllerStateUnreadable(detail) from error
+
+
+def _fsync_directory(path: Path) -> None:
+    """Flush directory metadata after a durable marker or replacement."""
+    directory = os.open(path, os.O_RDONLY)
+    try:
+        os.fsync(directory)
+    finally:
+        os.close(directory)
 
 
 def _sha256(value: bytes) -> str:
@@ -467,17 +550,19 @@ def _parse_record(line: str, line_number: int) -> dict[str, object]:
 
 def _validate_record_sequence(records: list[dict[str, object]]) -> None:
     """Require complete, ordered, uniquely identified transition triples."""
-    if len(records) % len(PHASES) != 0:
-        _refuse("journal_incomplete_cycle")
     cycle_ids: list[object] = []
     for start in range(0, len(records), len(PHASES)):
         cycle = records[start : start + len(PHASES)]
-        if [row["phase"] for row in cycle] != list(PHASES):
+        if len(cycle) < len(PHASES):
+            break
+        if [row["phase"] for row in cycle[:2]] != list(PHASES[:2]):
             _refuse(f"journal_phase_sequence:{start + 1}")
         ids = {row["cycle_id"] for row in cycle}
         if len(ids) != 1:
             _refuse(f"journal_cycle_identity:{start + 1}")
         cycle_ids.append(cycle[0]["cycle_id"])
+    if len(records) % len(PHASES) != 0:
+        _refuse("journal_incomplete_cycle")
     if len(set(cycle_ids)) != len(cycle_ids):
         _refuse("journal_duplicate_cycle")
     if records[-1]["phase"] != "confirmed":

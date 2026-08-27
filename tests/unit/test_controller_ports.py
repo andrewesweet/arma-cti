@@ -12,6 +12,7 @@ if TYPE_CHECKING:
 
 ports = load_tool("controller_ports")
 policy = load_tool("controller_policy")
+store = load_tool("controller_store")
 
 
 def test_fake_clock_and_identity_are_deterministic() -> None:
@@ -59,9 +60,11 @@ def test_default_fact_collector_explicitly_reports_no_admissible_initiative() ->
 
 
 def test_detached_work_run_port_does_not_use_the_scheduling_lock(tmp_path: Path) -> None:
-    port = ports.FakeDetachedWorkRunPort()
+    lock = store.SchedulingLock(tmp_path / "scheduling.lock")
+    port = ports.FakeDetachedWorkRunPort(lock)
 
-    port.start("run-1")
+    with lock:
+        port.start("run-1")
 
     assert port.started == ["run-1"]
-    assert not (tmp_path / "scheduling.lock").exists()
+    assert port.scheduling_lock is lock

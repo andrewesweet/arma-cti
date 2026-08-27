@@ -55,6 +55,15 @@ class CycleReport:
         }
 
 
+@dataclass(frozen=True, slots=True)
+class UnsupportedActionPort:
+    """Conservative production adapter until an external action is implemented."""
+
+    def apply(self, action: policy.ControlAction) -> None:
+        """Refuse instead of pretending an external mutation happened."""
+        raise store_module.ControllerActionUnsupportedError(action.kind)
+
+
 class Controller:
     """Coordinate capability ports around the pure reconciliation policy."""
 
@@ -76,10 +85,11 @@ class Controller:
 
     def run_cycle(self, *, dry_run: bool) -> CycleReport:
         """Collect, reduce, and optionally execute exactly one cycle."""
-        fresh_root = not self.store.root.exists()
+        fresh_root = self.store.is_fresh()
         if dry_run:
             previous = None if fresh_root else self.store.load()
             return self._cycle(previous, dry_run=True, fresh_root=fresh_root)
+        self.store.mark_started()
         with self.store.scheduling_lock():
             previous = None if fresh_root else self.store.load()
             return self._cycle(previous, dry_run=False, fresh_root=fresh_root)
@@ -95,7 +105,7 @@ class Controller:
         facts = self.fact_collector.collect()
         prior_lifecycle = previous.lifecycle if previous is not None else None
         plan = policy.derive(facts, prior_lifecycle)
-        cycle_id = self._cycle_id(previous)
+        cycle_id = self._cycle_id(previous, fresh_start=fresh_root)
         if dry_run:
             return CycleReport(
                 cycle_id=cycle_id,
@@ -112,9 +122,7 @@ class Controller:
         for action in plan.actions:
             self._apply(action)
         self._record(cycle_id, "applied", payload)
-        confirmed_facts = self.fact_collector.collect()
-        confirmed_plan = policy.derive(confirmed_facts, plan.lifecycle)
-        self._record(cycle_id, "confirmed", self._payload(confirmed_facts, confirmed_plan))
+        self._record(cycle_id, "confirmed", payload)
         self.store.materialize_view()
         return CycleReport(
             cycle_id=cycle_id,
@@ -145,9 +153,14 @@ class Controller:
             raise store_module.ControllerActionUnsupported(action.kind) from error
         port.apply(action)
 
-    def _cycle_id(self, previous: store_module.LoadedControllerState | None) -> str:
+    def _cycle_id(
+        self,
+        previous: store_module.LoadedControllerState | None,
+        *,
+        fresh_start: bool,
+    ) -> str:
         """Build a unique cycle identity without a direct clock or random call."""
-        ordinal = previous.record_count // len(store_module.PHASES) + 1 if previous else 1
+        ordinal = self.store.next_cycle_number(previous, fresh_start=fresh_start)
         return f"{self.identity.identity()}-cycle-{ordinal}"
 
     @staticmethod
@@ -163,7 +176,7 @@ class Controller:
 def default_controller(root: Path | None = None) -> Controller:
     """Build the runnable first-slice controller with conservative adapters."""
     state_root = root or Path(os.environ.get("CTI_CONTROLLER_DIR", DEFAULT_ROOT))
-    mutation_ports = tuple(ports.RecordingActionPort() for _ in range(4))
+    mutation_ports = tuple(UnsupportedActionPort() for _ in range(4))
     return Controller(
         fact_collector=ports.DefaultFactCollector(),
         clock=ports.SystemClock(),
@@ -179,6 +192,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     commands = parser.add_subparsers(dest="command", required=True)
     reconcile = commands.add_parser("reconcile", help="run exactly one reconciliation cycle")
     reconcile.add_argument("--dry-run", action="store_true", help="perform no mutation")
+    commands.add_parser("recover", help="recover an empty interrupted bootstrap")
     return parser.parse_args(argv)
 
 
@@ -186,8 +200,17 @@ def main(argv: list[str] | None = None) -> int:
     """Run one requested Controller command and emit its typed result."""
     args = parse_args(argv)
     try:
-        report = default_controller().run_cycle(dry_run=args.dry_run)
-    except (store_module.ControllerLockHeld, store_module.ControllerStateUnreadable) as error:
+        instance = default_controller()
+        if args.command == "recover":
+            instance.store.recover_interrupted_bootstrap()
+            print(json.dumps({"recovered": "controller_bootstrap_interrupted"}))  # noqa: T201
+            return 0
+        report = instance.run_cycle(dry_run=args.dry_run)
+    except (
+        store_module.ControllerActionUnsupported,
+        store_module.ControllerLockHeld,
+        store_module.ControllerStateUnreadable,
+    ) as error:
         print(str(error), file=sys.stderr)  # noqa: T201 — CLI refusal is the public interface
         return 2
     print(json.dumps(report.to_document(), indent=2, sort_keys=True))  # noqa: T201
