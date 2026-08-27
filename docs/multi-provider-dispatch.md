@@ -66,7 +66,12 @@ are one configuration, and the registry carried one profile per model rather tha
 
 **A human ruling on 2026-08-19 (#433) overrode that conclusion, not the measurement.**
 #432's codex-absence substitution table names GLM 5.3 at High, so `zai-glm53-high` is
-registered beside `zai-glm53-max` and the lane no longer carries one profile per model.
+registered beside `zai-glm53-max` and the lane no longer carries one profile per model. The
+human's ruling of 2026-08-27 seats a third model on the lane the same way: GLM-5.3-Flash,
+registered at `max` and `high` and reached through the sonnet slot, which had been pointing
+at `glm-5.3` as the opus slot's synonym. The slug was read back from the endpoint's own
+model list that day rather than taken from the integration page, which documents no default
+Claude-name mapping for it.
 The reasoning above was right about what it measured — §2's requests were hand-sent
 `curl`s varying `thinking.budget_tokens` alone — but its step to "one configuration" also
 rested on the runner sending nothing else for effort, which was asserted from `--help`
@@ -565,7 +570,9 @@ the profile that did the work.
 This is not a workaround for the sandbox — it accepts the sandbox's policy and puts the
 commit where this project already performs unsandboxed git acts. It also ends the
 Claude-side finisher that #265 forced: the ceiling is lifted, `SEAT_PROFILE_BLOCKS` ships
-empty, and `codex-luna-max` heads the implementer seat's preference list for real. What is
+empty, and `codex-luna-max` sits in the implementer seat's preference list unblocked — at
+its head until the human's ruling of 2026-08-27 put `zai-glm53flash-max` in front of it,
+and the second rung a peak-hours dispatch reaches every time. What is
 *not* claimed: **landing is still the orchestrator's**, on this lane as on the day the
 sandbox was first widened — `just land` writes the git directory and the main checkout, and
 neither is reachable from inside the sandbox. And the end-to-end evidence #405 asks for —
@@ -606,8 +613,9 @@ behind a seat's ordered preference list (#320, #321), so the surfaces are writte
 list**, and that lane filter is the whole of the derivation. A `.claude/agents/` definition
 cannot pin a lane — it names a Claude-vocabulary model, and which provider that reaches is
 a property of the session that spawns the subagent — so a head on another lane has no
-expression here. `zai-glm53-max` is the trap rather than `codex-luna-max`: its Claude vocabulary is
-`opus`/`max`, which a native session would read as a native pair the registry never chose.
+expression here. The z.ai profiles are the trap rather than the Codex ones: `zai-glm53-max`'s Claude
+vocabulary is `opus`/`max` and `zai-glm53flash-max`'s is `sonnet`/`max`, either of which a
+native session would read as a native pair the registry never chose.
 
 **The check matters more here than for the schema export, because both declaration surfaces
 fail open** (ADR-0068). A misspelled key, an indented line, a value nobody regenerated —

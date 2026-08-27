@@ -238,13 +238,13 @@ def test_a_review_never_resolves_to_the_profile_whose_work_it_reviews(
 def test_removing_the_head_resolves_to_the_next_entry_rather_than_refusing(
     tmp_path: Path,
 ) -> None:
-    plan, _, refusal = plan_for(tmp_path, reviewing="codex-luna-max")
+    plan, _, refusal = plan_for(tmp_path, reviewing="codex-sol-xhigh")
     assert refusal is None
     assert plan is not None
     # The z.ai entry needs a key this arrangement withholds, so the native tail is what a
     # box with no z.ai credential resolves to once the Codex head is the subject.
-    assert plan.identity.profile == "opus-low"
-    assert plan.route.reviewed == "codex-luna-max"
+    assert plan.identity.profile == "opus-medium"
+    assert plan.route.reviewed == "codex-sol-xhigh"
 
 
 def test_the_removed_profile_is_not_recorded_as_passed_over(tmp_path: Path) -> None:
@@ -254,9 +254,9 @@ def test_the_removed_profile_is_not_recorded_as_passed_over(tmp_path: Path) -> N
     recording the subject as though a rung had refused it would attribute the exclusion to
     the breaker, the credential or the block, none of which said anything about it.
     """
-    plan, _, _ = plan_for(tmp_path, reviewing="codex-luna-max")
+    plan, _, _ = plan_for(tmp_path, reviewing="codex-sol-xhigh")
     assert plan is not None
-    assert "codex-luna-max" not in [entry.profile for entry in plan.route.passed_over]
+    assert "codex-sol-xhigh" not in [entry.profile for entry in plan.route.passed_over]
 
 
 # ------------------------------------------------- criterion 2: preferring a different lane
@@ -282,8 +282,8 @@ def test_a_different_lane_is_preferred_against_the_real_registry(tmp_path: Path)
 
     Reviewing `codex-sol-high` leaves all three preference entries in the list — the subject
     is not one of them — and only reorders them, putting the two non-Codex entries first.
-    This arrangement withholds the z.ai key, so the answer is `opus-low`. The seat's
-    unmodified order would have answered `codex-luna-max`: it is registered, it is not
+    This arrangement withholds the z.ai key, so the answer is `opus-medium`. The seat's
+    unmodified order would have answered `codex-sol-xhigh`: it is registered, it is not
     blocked for *this* seat, and the Codex lane needs no credential of ours, so it would have
     been dispatchable at the head. The two orders therefore disagree here, and the assertions
     below are the ordering rule and nothing else.
@@ -291,9 +291,9 @@ def test_a_different_lane_is_preferred_against_the_real_registry(tmp_path: Path)
     plan, _, refusal = plan_for(tmp_path, reviewing="codex-sol-high")
     assert refusal is None, refusal
     assert plan is not None
-    assert plan.identity.profile == "opus-low"
+    assert plan.identity.profile == "opus-medium"
     assert plan.identity.lane == "claude-native"
-    assert "route_preference=zai-glm53-max opus-low codex-luna-max" in plan.route.lines()
+    assert "route_preference=zai-glm53-max opus-medium codex-sol-xhigh" in plan.route.lines()
     # The Codex head was never reached, rather than reached and refused: only the z.ai entry
     # ahead of the answer was walked past, which is what the reordering did.
     assert [entry.profile for entry in plan.route.passed_over] == ["zai-glm53-max"]
@@ -681,19 +681,19 @@ def test_the_exclusion_reaches_the_real_registry_rather_than_a_substituted_seat(
 ) -> None:
     """The same claim with nothing substituted, where the exclusion costs the whole list.
 
-    The registered preference is `codex-luna-max zai-glm53-max opus-low`. With both Codex and
-    native entries on the issue's records, only the z.ai entry survives the exclusion, and
-    this arrangement withholds its key — so the honest answer is the exhaustion refusal, and
-    the refusal prints what was removed. Excluding the declared subject alone would have
-    resolved to `codex-luna-max` and dispatched.
+    The registered preference is `codex-sol-xhigh zai-glm53-max opus-medium`. With both
+    Codex and native entries on the issue's records, only the z.ai entry survives the
+    exclusion, and this arrangement withholds its key — so the honest answer is the
+    exhaustion refusal, and the refusal prints what was removed. Excluding the declared
+    subject alone would have resolved to `codex-sol-xhigh` and dispatched.
     """
-    dispatch_record(tmp_path, "d-20260812-000000-aaaaaa", profile="codex-luna-max")
-    dispatch_record(tmp_path, "d-20260812-000001-bbbbbb", profile="opus-low")
-    plan, _, refusal = plan_for(tmp_path, reviewing="opus-low")
+    dispatch_record(tmp_path, "d-20260812-000000-aaaaaa", profile="codex-sol-xhigh")
+    dispatch_record(tmp_path, "d-20260812-000001-bbbbbb", profile="opus-medium")
+    plan, _, refusal = plan_for(tmp_path, reviewing="opus-medium")
     assert plan is None
     assert refusal is not None
     assert refusal.kind == "seat_list_exhausted"
-    assert "excluded=codex-luna-max opus-low" in refusal.found
+    assert "excluded=codex-sol-xhigh opus-medium" in refusal.found
     assert "walked=zai-glm53-max" in refusal.found
 
 
@@ -1086,10 +1086,10 @@ def test_the_exhaustion_refusal_distinguishes_the_registered_list_from_the_walke
     """A reader counting refusals against `preference=` would otherwise find one missing."""
     for lane in ("claude-native", "codex", "zai"):
         trip(tmp_path, lane)
-    _, _, refusal = plan_for(tmp_path, reviewing="codex-luna-max")
+    _, _, refusal = plan_for(tmp_path, reviewing="codex-sol-xhigh")
     assert refusal is not None
-    assert "preference=codex-luna-max zai-glm53-max opus-low" in refusal.found
-    assert "walked=zai-glm53-max opus-low" in refusal.found
+    assert "preference=codex-sol-xhigh zai-glm53-max opus-medium" in refusal.found
+    assert "walked=zai-glm53-max opus-medium" in refusal.found
 
 
 # ------------------------------------------------ the command line, the record, the listing
@@ -1131,9 +1131,9 @@ def test_the_subject_reaches_the_dispatcher_from_the_command_line(
     assert code == 0, printed.err
     assert "route_reviewing=codex-luna-max (never resolved to)" in printed.out
     assert "route_permission_mode=plan forced_by_seat=review" in printed.out
-    assert "route_chosen=opus-low lane=claude-native" in printed.out
-    # The list the dispatch actually walked, with the subject gone from it.
-    assert "route_preference=zai-glm53-max opus-low" in printed.out
+    assert "route_chosen=opus-medium lane=claude-native" in printed.out
+    # The list the dispatch actually walked, the reviewed profile's lane last.
+    assert "route_preference=zai-glm53-max opus-medium" in printed.out
     assert "--permission-mode plan" in printed.out
 
 
@@ -1258,7 +1258,7 @@ def test_a_retired_name_is_a_subject_a_review_may_declare_and_not_a_route_it_may
     assert refusal is None, refusal
     assert plan is not None
     assert plan.route.reviewed == "zai-glm52-max"
-    assert plan.route.profile == "codex-luna-max"
+    assert plan.route.profile == "codex-sol-xhigh"
     # The old name never dispatches: on the ladder it is an unknown profile, not a retired
     # one, because the distinction between the two tables is the whole mechanism.
     _, _, named = plan_for(
@@ -1339,23 +1339,23 @@ def test_the_profile_the_walk_would_take_is_not_taken_once_it_is_declared(
 
     The #402 arrangement exactly: the issue's dispatched records place the subject
     (`opus-high`, honestly declared as `--reviewing`), and the interactive half of the same
-    branch is declared as `codex-luna-max` — the seat's head, and so the profile the walk
+    branch is declared as `codex-sol-xhigh` — the seat's head, and so the profile the walk
     takes on this subject. Before #402 the scan placed nobody else, the walk spent the
     dispatch on the author, and `review_same_profile` refused at the landing on the record
     the dispatcher never saw.
     """
     dispatch_record(tmp_path)
-    _declare(tmp_path, "codex-luna-max")
+    _declare(tmp_path, "codex-sol-xhigh")
 
     plan, _, refusal = plan_for(tmp_path)
 
     assert refusal is None, refusal
     assert plan is not None
-    assert plan.identity.profile != "codex-luna-max"
+    assert plan.identity.profile != "codex-sol-xhigh"
     # The walk continued down the seat's own list rather than refusing: the exclusion
     # costs a resolution step — past the z.ai entry this arrangement withholds a key for —
     # never the dispatch.
-    assert plan.identity.profile == "opus-low"
+    assert plan.identity.profile == "opus-medium"
 
 
 def test_a_declared_profile_the_walk_was_not_going_to_take_changes_nothing(
@@ -1375,7 +1375,7 @@ def test_a_declared_profile_the_walk_was_not_going_to_take_changes_nothing(
 
     assert refusal is None, refusal
     assert plan is not None
-    assert plan.identity.profile == "codex-luna-max"
+    assert plan.identity.profile == "codex-sol-xhigh"
 
 
 def test_the_route_records_the_merged_set_and_its_declared_record(

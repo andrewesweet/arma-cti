@@ -69,15 +69,16 @@ def test_every_seats_pair_is_the_first_native_profile_in_its_preference_list() -
 def test_the_non_native_head_of_a_preference_list_is_not_what_a_claude_seat_declares() -> None:
     """#324's one judgement call, pinned.
 
-    `implementer` prefers a Codex profile and then a z.ai one, and neither is a pair a
+    `implementer` prefers a z.ai profile and then a Codex one, and neither is a pair a
     `.claude/agents/` file can mean: the file declares a Claude-vocabulary model, and which
     provider that reaches belongs to the session that spawns the subagent. z.ai is the
-    trap — its profile's Claude vocabulary is `opus`/`max`, which a native session would
-    read as a native pair nobody chose.
+    trap — its profiles' Claude vocabulary is `sonnet`/`max` and `opus`/`max`, which a
+    native session would read as a native pair nobody chose. The lanes swapped places at
+    the head under the human's ruling of 2026-08-27; the judgement call did not move.
     """
     preference = dispatch.SEATS["implementer"].preference
-    assert dispatch.PROFILES[preference[0]].lane == "codex"
-    assert dispatch.PROFILES[preference[1]].lane == "zai"
+    assert dispatch.PROFILES[preference[0]].lane == "zai"
+    assert dispatch.PROFILES[preference[1]].lane == "codex"
     assert generate_seats.native_profile("implementer") == dispatch.PROFILES["opus-low"]
 
 

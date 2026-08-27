@@ -161,10 +161,12 @@ def test_the_walk_does_not_start_at_the_preference_list() -> None:
 def test_a_routing_refused_head_falls_through_to_the_entry_tail() -> None:
     """Fall through on #326's shape, derived rather than flagged since #391.
 
-    Class 6 refused the head on the branch's own files; `opus-high` took it. The policy
-    is planted back to refusing because the shipped one retires that row (ADR-0073) —
-    the rung still reads it as data, and the exclusion's detail names the class and the
-    matched path, the facts a caller's flag used to assert by hand.
+    Class 6 refused the head on the branch's own files; the first Claude entry took it.
+    The policy is planted back to refusing because the shipped one retires that row
+    (ADR-0073) — the rung still reads it as data, and the exclusion's detail names the
+    class and the matched path, the facts a caller's flag used to assert by hand. The
+    human's ruling of 2026-08-27 put a z.ai rung between the entry's two ends, so the
+    fall-through crosses two refused profiles rather than one.
     """
     resolution = arbiter.resolve(
         dispatch.SEATS["implementer"],
@@ -177,6 +179,11 @@ def test_a_routing_refused_head_falls_through_to_the_entry_tail() -> None:
     assert resolution.passed_over == (
         arbiter.Exclusion(
             "codex-sol-high",
+            arbiter.ROUTING_EXCLUSION,
+            "routing_class=6:gates_themselves path=tools/dispatch.py",
+        ),
+        arbiter.Exclusion(
+            "zai-glm53-max",
             arbiter.ROUTING_EXCLUSION,
             "routing_class=6:gates_themselves path=tools/dispatch.py",
         ),
@@ -209,7 +216,9 @@ def test_a_records_placed_head_falls_through_the_same_way() -> None:
         (),
     )
     assert resolution.kind == arbiter.RESOLVED
-    assert resolution.arbiter == "opus-high"
+    # The entry's second rung since the human's ruling of 2026-08-27, and the walk stops
+    # at the first thing nothing excludes rather than running to the Claude end.
+    assert resolution.arbiter == "zai-glm53-max"
     assert resolution.passed_over == (
         arbiter.Exclusion("codex-sol-high", arbiter.RECORDS_EXCLUSION, "records=d7"),
     )
@@ -240,10 +249,11 @@ def test_a_retired_authors_successor_is_excluded_like_the_author() -> None:
 def test_an_exhausted_entry_walks_the_preference_list() -> None:
     """The ruling's own #318 note: both tabled profiles conflicted, the walk goes on.
 
-    Entry (`opus-max`, `fable-max`) both on the records, preference (`fable-high`,
-    `opus-xhigh`) both on the records — the walk answers `codex-sol-xhigh`, which is the
-    outcome the ruling recorded for exactly this arrangement rather than the `opus-max`
-    the orchestrator picked in the moment.
+    Entry (`opus-max`, `fable-max`) both on the records, and the preference head
+    (`fable-high`) and tail (`opus-xhigh`) on them too — the walk answers the preference's
+    middle rung, which is the outcome the ruling recorded for exactly this arrangement
+    rather than the `opus-max` the orchestrator picked in the moment. The middle rung is
+    `codex-sol-max` since the human's ruling of 2026-08-27 re-ordered this seat.
     """
     resolution = arbiter.resolve(
         dispatch.SEATS["retro"],
@@ -255,12 +265,11 @@ def test_an_exhausted_entry_walks_the_preference_list() -> None:
         (),
     )
     assert resolution.kind == arbiter.RESOLVED
-    assert resolution.arbiter == "codex-sol-xhigh"
+    assert resolution.arbiter == "codex-sol-max"
     assert [exclusion.profile for exclusion in resolution.passed_over] == [
         "opus-max",
         "fable-max",
         "fable-high",
-        "opus-xhigh",
     ]
     assert all(e.reason == arbiter.RECORDS_EXCLUSION for e in resolution.passed_over)
 
@@ -298,12 +307,14 @@ def test_an_exhausted_walk_refuses_by_name_with_every_exclusion_attached() -> No
     assert resolution.arbiter == ""
     assert [e.profile for e in resolution.passed_over] == [
         "codex-sol-high",
-        "opus-high",
-        "codex-luna-max",
         "zai-glm53-max",
+        "opus-high",
+        "zai-glm53flash-max",
+        "codex-luna-max",
         "opus-low",
     ]
     assert [e.reason for e in resolution.passed_over] == [
+        arbiter.ROUTING_EXCLUSION,
         arbiter.ROUTING_EXCLUSION,
         arbiter.RECORDS_EXCLUSION,
         arbiter.ROUTING_EXCLUSION,
@@ -422,10 +433,11 @@ def test_the_production_read_walks_past_a_refused_review_record(tmp_path: Path) 
 def test_a_profile_the_ladder_would_refuse_is_excluded(tmp_path: Path) -> None:
     """#333 round 1, High 4: a table cannot say whether a profile is dispatchable now.
 
-    The implementer walk: `codex-sol-high` and `opus-high` on the records; then
-    `codex-luna-max`, whose lane's breaker is open on this box; then `zai-glm53-max`, whose
-    lane wants a key this credentials file does not carry. Each refusal the ladder would
-    give is the exclusion's reason, and the walk lands on `opus-low`.
+    The implementer walk: `codex-sol-high` and `opus-high` on the records; the two z.ai
+    rungs — `zai-glm53-max` in the entry and `zai-glm53flash-max` in the preference —
+    wanting a key this credentials file does not carry; and `codex-luna-max`, whose lane's
+    breaker is open on this box. Each refusal the ladder would give is the exclusion's
+    reason, and the walk lands on `opus-low`.
 
     Both live exclusions are facts of *this box* since #405 lifted the ceiling that used to
     hold `codex-luna-max` below the seat from the registry — which suits the claim better
@@ -452,12 +464,20 @@ def test_a_profile_the_ladder_would_refuse_is_excluded(tmp_path: Path) -> None:
     assert resolution.arbiter == "opus-low"
     assert resolution.unchecked is False
     by_profile = {e.profile: e for e in resolution.passed_over}
-    assert set(by_profile) == {"codex-sol-high", "opus-high", "codex-luna-max", "zai-glm53-max"}
+    assert set(by_profile) == {
+        "codex-sol-high",
+        "opus-high",
+        "codex-luna-max",
+        "zai-glm53-max",
+        "zai-glm53flash-max",
+    }
     assert by_profile["codex-sol-high"].reason == arbiter.RECORDS_EXCLUSION
     assert by_profile["opus-high"].reason == arbiter.RECORDS_EXCLUSION
     assert by_profile["codex-luna-max"].reason == arbiter.DISPATCH_EXCLUSION
     assert by_profile["zai-glm53-max"].reason == arbiter.DISPATCH_EXCLUSION
+    assert by_profile["zai-glm53flash-max"].reason == arbiter.DISPATCH_EXCLUSION
     assert "credential_absent" in by_profile["zai-glm53-max"].detail
+    assert "credential_absent" in by_profile["zai-glm53flash-max"].detail
 
 
 def test_a_dispatchable_profile_is_answered_not_excluded(tmp_path: Path) -> None:
@@ -481,13 +501,9 @@ def test_a_dispatchable_profile_is_answered_not_excluded(tmp_path: Path) -> None
     )
     assert resolution.kind == arbiter.RESOLVED
     assert resolution.arbiter == "zai-glm53-max"
-    # `codex-luna-max` stays excluded on its open breaker, and `opus-low` behind z.ai is
-    # never reached.
-    assert [e.profile for e in resolution.passed_over] == [
-        "codex-sol-high",
-        "opus-high",
-        "codex-luna-max",
-    ]
+    # The entry's z.ai rung answers, so `opus-high` and everything in the preference list
+    # behind it — `codex-luna-max` on its open breaker included — is never reached.
+    assert [e.profile for e in resolution.passed_over] == ["codex-sol-high"]
 
 
 def test_an_unregistered_candidate_is_excluded_and_the_walk_continues() -> None:
