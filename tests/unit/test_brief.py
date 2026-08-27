@@ -701,11 +701,11 @@ def test_the_arbiter_is_resolved_from_the_briefed_seat_not_the_implementer_row(
     """#361, review round 1 claim 3: this emitted the implementer's head for every seat.
 
     ADR-0071 ruling 4 as amendment A1 leaves it takes the head of the *implementing* seat's
-    escalation entry. A retro brief's arbiter is `opus-max`, and reading
+    escalation entry. A retro brief's arbiter is `fable-xhigh`, and reading
     `IMPLEMENTER_ESCALATION[0]` gave it `codex-sol-high` — a profile the retro row's entry
     deliberately does not name, chosen by a constant rather than by the work.
     """
-    assert _arbiter_supplied_for("retro", monkeypatch) == "opus-max"
+    assert _arbiter_supplied_for("retro", monkeypatch) == "fable-xhigh"
     assert _arbiter_supplied_for("implementer", monkeypatch) == "codex-sol-high"
     assert _arbiter_supplied_for("orchestrator", monkeypatch) == "opus-max"
 

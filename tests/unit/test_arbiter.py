@@ -121,7 +121,7 @@ SUNDAY = datetime(2026, 8, 9, 12, 0, tzinfo=UTC)
 
 def test_the_ruled_cells_are_transcribed_head_first() -> None:
     """The human ruling on #361 (2026-08-14) filled exactly these — data, not derivation."""
-    assert dispatch.SEATS["retro"].escalation == ("opus-max", "fable-max")
+    assert dispatch.SEATS["retro"].escalation == ("fable-xhigh", "opus-max")
     assert dispatch.SEATS["orchestrator"].escalation == ("opus-max", "fable-xhigh")
     # The two not-applicable rows stay empty, and so does the fable seat #329/#330 own.
     assert dispatch.SEATS["recon"].escalation == ()
@@ -136,7 +136,7 @@ def test_the_entry_head_answers_when_nothing_excludes_it() -> None:
         dispatch.SEATS["retro"], complete_read("zai-glm53-max"), shipped_policy(), ()
     )
     assert resolution.kind == arbiter.RESOLVED
-    assert resolution.arbiter == "opus-max"
+    assert resolution.arbiter == "fable-xhigh"
     assert resolution.unchecked is False
     assert resolution.passed_over == ()
 
@@ -154,7 +154,7 @@ def test_the_walk_does_not_start_at_the_preference_list() -> None:
         (),
     )
     assert resolution.kind == arbiter.RESOLVED
-    assert resolution.arbiter == "opus-max"
+    assert resolution.arbiter == "fable-xhigh"
     assert resolution.passed_over == ()
 
 
@@ -249,16 +249,17 @@ def test_a_retired_authors_successor_is_excluded_like_the_author() -> None:
 def test_an_exhausted_entry_walks_the_preference_list() -> None:
     """The ruling's own #318 note: both tabled profiles conflicted, the walk goes on.
 
-    Entry (`opus-max`, `fable-max`) both on the records, and the preference head
-    (`fable-high`) and tail (`opus-xhigh`) on them too — the walk answers the preference's
-    middle rung, which is the outcome the ruling recorded for exactly this arrangement
-    rather than the `opus-max` the orchestrator picked in the moment. The middle rung is
-    `codex-sol-max` since the human's ruling of 2026-08-27 re-ordered this seat.
+    Entry (`fable-xhigh`, `opus-max`) both on the records, and the preference head
+    (`fable-high`) and middle rung (`opus-xhigh`) on them too — the walk answers the
+    preference's tail, which is the outcome the ruling recorded for exactly this
+    arrangement rather than the `opus-max` the orchestrator picked in the moment. Both
+    cells are the human's ruling of 2026-08-27 as re-ordered; the shape of the claim is
+    #318's unchanged.
     """
     resolution = arbiter.resolve(
         dispatch.SEATS["retro"],
         authorship(
-            ("opus-max", "fable-max", "fable-high", "opus-xhigh"),
+            ("fable-xhigh", "opus-max", "fable-high", "opus-xhigh"),
             ("d1", "d2", "d3", "d4"),
         ),
         shipped_policy(),
@@ -267,9 +268,10 @@ def test_an_exhausted_entry_walks_the_preference_list() -> None:
     assert resolution.kind == arbiter.RESOLVED
     assert resolution.arbiter == "codex-sol-max"
     assert [exclusion.profile for exclusion in resolution.passed_over] == [
+        "fable-xhigh",
         "opus-max",
-        "fable-max",
         "fable-high",
+        "opus-xhigh",
     ]
     assert all(e.reason == arbiter.RECORDS_EXCLUSION for e in resolution.passed_over)
 
@@ -348,14 +350,14 @@ def test_an_unreadable_record_leaves_the_resolution_unchecked_but_taken() -> Non
     """
     resolution = arbiter.resolve(
         dispatch.SEATS["retro"],
-        authorship(("opus-max",), ("d1",), why=arbiter.RECORDS_UNREADABLE),
+        authorship(("fable-xhigh",), ("d1",), why=arbiter.RECORDS_UNREADABLE),
         shipped_policy(),
         (),
     )
     assert resolution.kind == arbiter.RESOLVED
-    assert resolution.arbiter == "fable-max"
+    assert resolution.arbiter == "opus-max"
     assert resolution.unchecked is True
-    assert [e.profile for e in resolution.passed_over] == ["opus-max"]
+    assert [e.profile for e in resolution.passed_over] == ["fable-xhigh"]
 
 
 def test_every_incomplete_read_leaves_the_resolution_unchecked() -> None:
@@ -383,22 +385,22 @@ def test_the_production_read_sees_reviewers_and_excludes_them(tmp_path: Path) ->
     """#333 round 1, High 2: the reviewers are on the dispatch records, not in a parameter.
 
     #318's arrangement, read the way production reads it: `fable-high` authored the issue,
-    `opus-max` reviewed it — the review record is where the reviewer actually is, and it
+    `fable-xhigh` reviewed it — the review record is where the reviewer actually is, and it
     holds the walk's head. The arbiter scan must see the reviewer, exclude it, and answer
-    `fable-max`; the authorship-only scan the review seat uses walks past the same record,
-    which would read `opus-max` as free and hand the walk its own reviewer.
+    `opus-max`; the authorship-only scan the review seat uses walks past the same record,
+    which would read `fable-xhigh` as free and hand the walk its own reviewer.
     """
     dispatch_dir = tmp_path / "dispatches"
     record(dispatch_dir, "d1", issue=318, profile="fable-high", seat="retro")
-    record(dispatch_dir, "d2", issue=318, profile="opus-max", seat="review")
+    record(dispatch_dir, "d2", issue=318, profile="fable-xhigh", seat="review")
     resolution = arbiter.resolve_for_issue(
         dispatch.SEATS["retro"], 318, dispatch_dir, shipped_policy(), ()
     )
     assert resolution.kind == arbiter.RESOLVED
-    assert resolution.arbiter == "fable-max"
+    assert resolution.arbiter == "opus-max"
     assert resolution.unchecked is False
     assert [(e.profile, e.reason) for e in resolution.passed_over] == [
-        ("opus-max", arbiter.RECORDS_EXCLUSION)
+        ("fable-xhigh", arbiter.RECORDS_EXCLUSION)
     ]
     # The contrast: the author scan the review seat uses still walks past the review
     # record, because a reviewer is not an author (#322 vs #361 — two questions, two scans).
@@ -408,7 +410,7 @@ def test_the_production_read_sees_reviewers_and_excludes_them(tmp_path: Path) ->
 def test_the_production_read_walks_past_a_refused_review_record(tmp_path: Path) -> None:
     """A review dispatch that ended in refusal authored nothing, whichever scan reads it.
 
-    The refusal walked the reviewer's record past both scans, so `opus-max` is free to
+    The refusal walked the reviewer's record past both scans, so `fable-xhigh` is free to
     arbitrate — the retro walk's head, taken with nothing excluded.
     """
     dispatch_dir = tmp_path / "dispatches"
@@ -416,14 +418,14 @@ def test_the_production_read_walks_past_a_refused_review_record(tmp_path: Path) 
     refused = dispatch_dir / "d2"
     refused.mkdir()
     (refused / "dispatch.json").write_text(
-        json.dumps({"issue": 318, "profile": "opus-max", "seat": "review"}),
+        json.dumps({"issue": 318, "profile": "fable-xhigh", "seat": "review"}),
         encoding="utf-8",
     )
     (refused / "result.json").write_text(json.dumps({"refusal": "lane_off_peak"}), encoding="utf-8")
     resolution = arbiter.resolve_for_issue(
         dispatch.SEATS["retro"], 318, dispatch_dir, shipped_policy(), ()
     )
-    assert resolution.arbiter == "opus-max"
+    assert resolution.arbiter == "fable-xhigh"
     assert resolution.passed_over == ()
 
 
@@ -529,7 +531,7 @@ def test_an_unregistered_candidate_is_excluded_and_the_walk_continues() -> None:
 
 def test_a_resolution_renders_the_invocation_observable() -> None:
     seat = dispatch.SEATS["retro"]
-    resolution = arbiter.resolve(seat, authorship(("opus-max",), ("d1",)), shipped_policy(), ())
+    resolution = arbiter.resolve(seat, authorship(("fable-xhigh",), ("d1",)), shipped_policy(), ())
     event = arbiter.resolution_event(resolution, seat, "#318", at=1.5)
     document = arbiter.otel_event.log_record(event)
     body = document["resourceLogs"][0]["scopeLogs"][0]["logRecords"][0]
@@ -537,10 +539,10 @@ def test_a_resolution_renders_the_invocation_observable() -> None:
     rendered = {a["key"]: a["value"] for a in body["attributes"]}
     assert rendered["event.name"] == {"stringValue": arbiter.RESOLUTION_EVENT}
     assert rendered["cti.issue"] == {"stringValue": "#318"}
-    assert rendered["cti.review.arbiter"] == {"stringValue": "fable-max"}
+    assert rendered["cti.review.arbiter"] == {"stringValue": "opus-max"}
     # Identities, not a count (#333 round 1, Medium 6): which profile, and why.
     assert rendered["cti.review.arbiter.excluded"] == {
-        "stringValue": "opus-max:records_place_on_work"
+        "stringValue": "fable-xhigh:records_place_on_work"
     }
     assert rendered["cti.review.arbiter.unchecked"] == {"boolValue": False}
 

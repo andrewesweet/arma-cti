@@ -258,7 +258,7 @@ def test_the_retro_and_orchestrator_rows_carry_the_escalation_entries_the_adr_ta
     `fable-high` and `orchestrator`'s is not `opus-xhigh` — each seat's own preference head,
     and the profile most likely to have authored what the arbiter would adjudicate.
     """
-    assert dispatch.SEATS["retro"].escalation == ("opus-max", "fable-max")
+    assert dispatch.SEATS["retro"].escalation == ("fable-xhigh", "opus-max")
     assert dispatch.SEATS["orchestrator"].escalation == ("opus-max", "fable-xhigh")
     assert dispatch.SEATS["retro"].escalation[0] != dispatch.SEATS["retro"].preference[0]
     assert (
@@ -280,7 +280,7 @@ def test_the_arbiter_is_the_implementing_seats_head_and_never_the_implementers_f
     The reading A1 reversed answered every seat with `codex-sol-high`, which is what
     `tools/brief.py` emitted for a retro brief until #361.
     """
-    assert dispatch.escalation_head("retro") == "opus-max"
+    assert dispatch.escalation_head("retro") == "fable-xhigh"
     assert dispatch.escalation_head("orchestrator") == "opus-max"
     assert dispatch.escalation_head("implementer") == "codex-sol-high"
     assert dispatch.escalation_head("planner") == "fable-high"
@@ -396,7 +396,10 @@ def test_a_breaker_refused_head_resolves_to_the_next_entry_and_the_record_says_s
     assert refusal is None
     assert plan is not None
     assert plan.identity.profile == "codex-sol-max"
-    assert walked_past(plan.route.passed_over) == [("fable-high", "lane_breaker_open")]
+    assert walked_past(plan.route.passed_over) == [
+        ("fable-high", "lane_breaker_open"),
+        ("opus-xhigh", "lane_breaker_open"),
+    ]
 
 
 def test_a_passed_over_entry_keeps_the_failure_class_its_own_refusal_carried(
@@ -408,7 +411,10 @@ def test_a_passed_over_entry_keeps_the_failure_class_its_own_refusal_carried(
     trip(tmp_path, "claude-native", breaker.GATE_FAILED, 3)
     plan, _, _ = plan_for(tmp_path, seat="retro")
     assert plan is not None
-    assert [entry.failure_class for entry in plan.route.passed_over] == ["provider_refused"]
+    assert [entry.failure_class for entry in plan.route.passed_over] == [
+        "provider_refused",
+        "provider_refused",
+    ]
 
 
 def test_the_off_peak_rule_walks_the_zai_entry_past_rather_than_overriding_it(
@@ -437,8 +443,8 @@ def test_a_seat_whose_whole_list_is_unavailable_refuses_by_name(tmp_path: Path) 
     assert refusal.kind == "seat_list_exhausted"
     found = " ".join(refusal.found)
     assert "seat=retro" in found
-    assert "preference=fable-high codex-sol-max opus-xhigh" in found
-    for name in ("fable-high", "codex-sol-max", "opus-xhigh"):
+    assert "preference=fable-high opus-xhigh codex-sol-max" in found
+    for name in ("fable-high", "opus-xhigh", "codex-sol-max"):
         assert f"refused={name} refusal=lane_breaker_open" in found
 
 
@@ -745,7 +751,7 @@ def test_the_registry_listing_prints_each_seats_preference_and_marks_the_escalat
     # row that says so would be asserting a walk it does not get (#361, round 4).
     assert "escalation=none (no arbiter; escalation refuses by name)" in printed
     assert f"escalation=none {mark}" not in printed
-    assert f"escalation=opus-max fable-max {mark}" in printed
+    assert f"escalation=fable-xhigh opus-max {mark}" in printed
     assert f"escalation=opus-max fable-xhigh {mark}" in printed
     assert "not resolved into" not in printed
 

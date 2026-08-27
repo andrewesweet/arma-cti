@@ -871,16 +871,21 @@ SEATS: Final[dict[str, Seat]] = {
     # opaque tokens and no cross-provider ordering exists, so a profile joins by being
     # named, never "or above".
     #
-    # The escalation cell is the human ruling on #361 (2026-08-14), amending ruling 2:
+    # The escalation cell was the human ruling on #361 (2026-08-14), amending ruling 2:
     # arbitration is retro work, so the arbiter is drawn from #300's approved nine — and
     # deliberately not `fable-high`, the seat's own preference head and therefore the
     # profile most likely to have authored the rounds the arbiter would judge (#318: it
-    # authored every one).
+    # authored every one). The human's ruling of 2026-08-27 re-orders both cells and moves
+    # the escalation head to `fable-xhigh`. That still satisfies ruling 4 — `fable-xhigh`
+    # and `fable-high` are different profiles, and `review_same_profile` is about the
+    # instance producing the verdict — but it is a narrower separation than #361's cell
+    # had: the arbiter and the likely author now share a model, where they shared neither
+    # model nor lane before. Recorded rather than argued, because the cell is the human's.
     "retro": Seat(
         "retro",
         claude_only=False,
-        preference=("fable-high", "codex-sol-max", "opus-xhigh"),
-        escalation=("opus-max", "fable-max"),
+        preference=("fable-high", "opus-xhigh", "codex-sol-max"),
+        escalation=("fable-xhigh", "opus-max"),
         lands=True,
     ),
     # Absent from ADR-0071 ruling 2's table and therefore carrying no escalation entry, which
