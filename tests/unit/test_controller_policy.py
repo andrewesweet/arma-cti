@@ -582,6 +582,41 @@ def test_non_result_cannot_be_replaced_by_later_completion() -> None:
     assert not policy.completion_ready(merged[0])
 
 
+def test_a_result_non_result_keeps_the_binding_of_the_run_it_observes() -> None:
+    """A controller-recorded run merged with the dispatcher's stripped result stays bound.
+
+    `_read_result_non_result` carries only the dispatch identity, so the merge
+    direction that production produces — bound prior, stripped observation —
+    must keep the prior's Work Item binding rather than orphaning the slot.
+    """
+    recorded = policy.WorkRunFact(
+        "test-controller:test-controller-cycle-1:item-1",
+        policy.RECORDED_LAUNCH_STATE,
+        work_item_key="item-1",
+        dispatch_id="test-controller:test-controller-cycle-1:item-1",
+        worktree="issue-1",
+        issue=1,
+    )
+    stripped = policy.WorkRunFact(
+        "test-controller:test-controller-cycle-1:item-1",
+        policy.NON_RESULT,
+        dispatch_id="test-controller:test-controller-cycle-1:item-1",
+        failure_class="quota_exhausted",
+    )
+
+    merged = policy.merge_work_run_observation(recorded, stripped)
+
+    assert merged.state == policy.NON_RESULT
+    assert merged.failure_class == "quota_exhausted"
+    assert merged.work_item_key == "item-1"
+    assert merged.issue == 1
+    assert merged.worktree == "issue-1"
+    item = policy.WorkItemFact("item-1", "open", issue=1)
+    facts = coordination_facts((item,), runs=(merged,), limit=1)
+
+    assert policy.eligible_work_items(facts) == ()
+
+
 def test_failure_evidence_blocks_completion_even_with_landing_fields() -> None:
     assert not policy.completion_ready(_delivery_run(failure_class="provider_refused"))
 
