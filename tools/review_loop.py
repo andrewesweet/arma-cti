@@ -1554,25 +1554,13 @@ def _parse_self_review_gate_fixes(raw: object, covered: set[str]) -> tuple[GateF
     return tuple(fixes)
 
 
-def _parse_self_review(raw: object) -> SelfReview:
-    """Rebuild the block from its stored form, refusing a shape no writer would have produced.
-
-    The parser validates what the constructors above validate — categories, origins,
-    unique ids, round stamps — plus the facts only storage adds: the rounds arrive in
-    order counting from one, a finding's stamp is its own round's number, a record never
-    carries both a convergence and a failure, and the closed states stay consistent with
-    the rounds that must have produced them. The last is the read half of the writers'
-    own preconditions (#589 round two): a stored document that asserts a state no writer
-    permits is refused, not trusted, so the next act meets a typed refusal rather than
-    acting on a record the writers could never have written.
-    """
-    if not isinstance(raw, dict) or not isinstance(raw.get("rounds"), list):
-        raise ReviewLoopError(SELF_REVIEW_SHAPE_ERROR)
-    if len(raw["rounds"]) > SELF_REVIEW_ROUND_BUDGET:
+def _parse_self_review_rounds(raw: object) -> tuple[SelfReviewRound, ...]:
+    """Rebuild the rounds list, refusing a shape no round-writing act could have produced."""
+    if not isinstance(raw, list) or len(raw) > SELF_REVIEW_ROUND_BUDGET:
         raise ReviewLoopError(SELF_REVIEW_SHAPE_ERROR)
     rounds: list[SelfReviewRound] = []
     seen: set[str] = set()
-    for expected, stored in enumerate(raw["rounds"], start=1):
+    for expected, stored in enumerate(raw, start=1):
         if not isinstance(stored, dict) or stored.get("number") != expected:
             raise ReviewLoopError(SELF_REVIEW_SHAPE_ERROR)
         for kind in ("findings", "refutations"):
@@ -1587,6 +1575,40 @@ def _parse_self_review(raw: object) -> SelfReview:
             for entry in stored.get("refutations", [])
         )
         rounds.append(SelfReviewRound(expected, findings, refutations))
+    return tuple(rounds)
+
+
+def _check_self_review_closed_states(
+    rounds: tuple[SelfReviewRound, ...], converged_on: str, failure: str
+) -> None:
+    """Enforce the read half of the writers' preconditions: a closed record stays consistent.
+
+    `self_review_fail` runs only at the full budget with no clean round anywhere, and
+    `self_review_converge` only off an observed clean last round. A stored document
+    asserting either closed state without the rounds that produce it is refused, not
+    trusted (#589 round two).
+    """
+    if failure and (
+        len(rounds) != SELF_REVIEW_ROUND_BUDGET
+        or any(self_review_clean(attempt) for attempt in rounds)
+    ):
+        raise ReviewLoopError(SELF_REVIEW_SHAPE_ERROR)
+    if converged_on and (not rounds or not self_review_clean(rounds[-1])):
+        raise ReviewLoopError(SELF_REVIEW_SHAPE_ERROR)
+
+
+def _parse_self_review(raw: object) -> SelfReview:
+    """Rebuild the block from its stored form, refusing a shape no writer would have produced.
+
+    The parser validates what the constructors above validate — categories, origins,
+    unique ids, round stamps — plus the facts only storage adds: the rounds arrive in
+    order counting from one, a finding's stamp is its own round's number, a record never
+    carries both a convergence and a failure, and the closed states stay consistent with
+    the rounds that must have produced them (`_check_self_review_closed_states`).
+    """
+    if not isinstance(raw, dict):
+        raise ReviewLoopError(SELF_REVIEW_SHAPE_ERROR)
+    rounds = _parse_self_review_rounds(raw.get("rounds"))
     converged_on = raw.get("converged_on", "")
     failure = raw.get("failure", "")
     if not isinstance(converged_on, str) or not isinstance(failure, str):
@@ -1595,16 +1617,7 @@ def _parse_self_review(raw: object) -> SelfReview:
         raise ReviewLoopError(SELF_REVIEW_SHAPE_ERROR)
     if failure and failure not in SELF_REVIEW_FAILURE_TYPES:
         raise ReviewLoopError(SELF_REVIEW_SHAPE_ERROR)
-    # The closed states must be the ones the writers above can produce: `self_review_fail`
-    # runs only at the full budget with no clean round anywhere, and `self_review_converge`
-    # only off an observed clean last round.
-    if failure and (
-        len(rounds) != SELF_REVIEW_ROUND_BUDGET
-        or any(self_review_clean(attempt) for attempt in rounds)
-    ):
-        raise ReviewLoopError(SELF_REVIEW_SHAPE_ERROR)
-    if converged_on and (not rounds or not self_review_clean(rounds[-1])):
-        raise ReviewLoopError(SELF_REVIEW_SHAPE_ERROR)
+    _check_self_review_closed_states(rounds, converged_on, failure)
     covered = {converged_on} if converged_on else set()
     gate_fixes = _parse_self_review_gate_fixes(raw.get("gate_fixes", []), covered)
     # A gate-fix commit joins a converged record only — the writer's own precondition
@@ -2176,8 +2189,8 @@ def _self_review_commands(commands: argparse._SubParsersAction) -> None:
     recorded.set_defaults(handler=_cmd_self_round)
 
     def _review_state(parser: argparse.ArgumentParser) -> None:
-        """The `--issue`/`--root` pair every self-review verb carries (`_loop_arguments`
-        adds a `--journal` these verbs do not take, so they own the pair here)."""
+        # The `--issue`/`--root` pair every self-review verb carries. `_loop_arguments`
+        # adds a `--journal` these verbs do not take, so the pair is owned once here.
         parser.add_argument("--issue", required=True, type=_issue_number)
         parser.add_argument("--root", default=str(REVIEW_ROOT), help="the review state directory")
 

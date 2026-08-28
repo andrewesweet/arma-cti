@@ -3091,7 +3091,8 @@ def test_sync_treats_a_self_review_only_file_as_an_unopened_loop(tmp_path: Path)
     assert loop.independent_opened is True
     assert loop.review_rounds == 0
     assert [(f.id, f.round_raised) for f in loop.findings] == [("R1", 0)]
-    assert loop.self_review is not None and loop.self_review.rounds[0].number == 1
+    assert loop.self_review is not None
+    assert loop.self_review.rounds[0].number == 1
 
 
 def test_sync_opens_round_zero_for_a_clean_verdict_on_a_self_review_only_file(
@@ -3158,7 +3159,7 @@ def test_stored_self_review_states_no_writer_produces_are_refused() -> None:
 
     def refused_block(**overrides: object) -> str:
         stored = {
-            "rounds": [{**{"number": 1, "findings": [finding], "refutations": []}}],
+            "rounds": [{"number": 1, "findings": [finding], "refutations": []}],
             **overrides,
         }
         return refused(lambda: review_loop.parse_loop({**document, "self_review": stored}))
