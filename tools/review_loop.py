@@ -522,7 +522,7 @@ def next_round(loop: Loop, raised: tuple[Finding, ...]) -> Loop:
     for finding in raised:
         if finding.round_raised != rounds:
             raise ReviewLoopError(ROUND_STAMP_ERROR)
-    return Loop(review_rounds=rounds, findings=(*loop.findings, *raised))
+    return Loop(rounds, (*loop.findings, *raised), loop.self_review)
 
 
 def escalation_fires_on(loop: Loop, finding: Finding) -> bool:
@@ -596,7 +596,7 @@ def adjudicate(loop: Loop, finding_id: str, adjudication: Adjudication) -> Loop:
         found = True
     if not found:
         raise ReviewLoopError(UNKNOWN_FINDING_ERROR)
-    return Loop(loop.review_rounds, tuple(updated))
+    return Loop(loop.review_rounds, tuple(updated), loop.self_review)
 
 
 def stored_route_violations(loop: Loop) -> tuple[str, ...]:
@@ -2147,8 +2147,24 @@ def _cmd_open(
 ) -> int:
     root = Path(args.root)
     if loop_path(root, args.issue).exists():
-        raise ReviewLoopError(LOOP_EXISTS_ERROR.format(issue=args.issue, root=root))
-    loop = first_review(tuple(Finding(i, s, 0) for i, s in args.finding))
+        existing = _read_loop(root, args.issue)
+        # A file holding nothing but a self-review record is the Work Run's half only
+        # (#589): the independent loop adopts it rather than refusing — the opposite
+        # arrangement would let the block the reviewer's round zero, which is the block
+        # disturbing the loop by another door. A file carrying loop state already is a
+        # second open, and still refuses.
+        if (
+            existing.review_rounds == 0
+            and not existing.findings
+            and existing.self_review is not None
+        ):
+            loop = first_review(tuple(Finding(i, s, 0) for i, s in args.finding))._replace(
+                self_review=existing.self_review
+            )
+        else:
+            raise ReviewLoopError(LOOP_EXISTS_ERROR.format(issue=args.issue, root=root))
+    else:
+        loop = first_review(tuple(Finding(i, s, 0) for i, s in args.finding))
     store_loop(root, args.issue, loop)
     emit_round(loop, str(args.issue), clock(), Path(args.journal))
     print(f"[review-loop] #{args.issue} round 0 opened with {len(loop.findings)} finding(s)")  # noqa: T201 — a CLI's output channel
@@ -2565,11 +2581,27 @@ def _cmd_author(
     return OK
 
 
+def _self_review_existing(root: Path, issue: int) -> Loop:
+    """Read the issue's loop, or answer the empty loop where no file exists yet.
+
+    The Work Run's pass runs **before** any independent review exists, so its verbs start
+    the file where none is there rather than demanding one (#589): a record that demanded
+    a loop would refuse the very sequence the protocol describes. Only the block is
+    touched; the loop's own fields stay at their initial state.
+    """
+    try:
+        return _read_loop(root, issue)
+    except ReviewLoopError as none_yet:
+        if loop_path(root, issue).exists():
+            raise none_yet
+        return Loop(0, (), None)
+
+
 def _cmd_self_round(
     args: argparse.Namespace, _clock: Callable[[], float], _create: object, _post: object
 ) -> int:
     root = Path(args.root)
-    loop = _read_loop(root, args.issue)
+    loop = _self_review_existing(root, args.issue)
     record = loop.self_review or SelfReview()
     number = len(record.rounds) + 1
     findings = tuple(finding._replace(round_raised=number) for finding in args.finding)
@@ -2589,7 +2621,7 @@ def _cmd_self_converge(
     args: argparse.Namespace, _clock: Callable[[], float], _create: object, _post: object
 ) -> int:
     root = Path(args.root)
-    loop = _read_loop(root, args.issue)
+    loop = _self_review_existing(root, args.issue)
     record = self_review_converge(loop.self_review or SelfReview(), args.sha)
     store_loop(root, args.issue, Loop(loop.review_rounds, loop.findings, record))
     print(  # noqa: T201 — a CLI's output channel
@@ -2603,7 +2635,7 @@ def _cmd_self_gate_fix(
     args: argparse.Namespace, _clock: Callable[[], float], _create: object, _post: object
 ) -> int:
     root = Path(args.root)
-    loop = _read_loop(root, args.issue)
+    loop = _self_review_existing(root, args.issue)
     record = self_review_add_gate_fix(loop.self_review or SelfReview(), args.sha, args.reason)
     store_loop(root, args.issue, Loop(loop.review_rounds, loop.findings, record))
     print(  # noqa: T201 — a CLI's output channel
@@ -2617,7 +2649,7 @@ def _cmd_self_fail(
     args: argparse.Namespace, _clock: Callable[[], float], _create: object, _post: object
 ) -> int:
     root = Path(args.root)
-    loop = _read_loop(root, args.issue)
+    loop = _self_review_existing(root, args.issue)
     record = self_review_fail(loop.self_review or SelfReview())
     store_loop(root, args.issue, Loop(loop.review_rounds, loop.findings, record))
     print(  # noqa: T201 — a CLI's output channel

@@ -2988,3 +2988,61 @@ def test_self_fail_types_from_the_fifth_round_through_the_cli(tmp_path: Path) ->
         )
         == review_loop.REFUSED
     )
+
+
+def test_open_adopts_a_file_holding_only_a_self_review_record(tmp_path: Path) -> None:
+    """The reviewer's round zero adopts the Work Run's block rather than refusing it."""
+    root = str(tmp_path / "review")
+    journal = str(tmp_path / "journal.jsonl")
+    assert review_loop.main(["self-round", "--issue", "589", "--root", root]) == review_loop.OK
+    assert (
+        review_loop.main(["self-converge", "--issue", "589", "--root", root, "--sha", "a" * 40])
+        == review_loop.OK
+    )
+    assert (
+        review_loop.main(
+            [
+                "open",
+                "--issue",
+                "589",
+                "--root",
+                root,
+                "--journal",
+                journal,
+                "--finding",
+                "F1=high",
+            ]
+        )
+        == review_loop.OK
+    )
+    loop = review_loop.load_loop(tmp_path / "review", 589)
+    assert loop.review_rounds == 0
+    assert [item.id for item in loop.findings] == ["F1"]
+    assert loop.self_review is not None
+    assert loop.self_review.converged_on == "a" * 40
+
+
+def test_open_still_refuses_a_second_open_of_a_loop_with_state(tmp_path: Path) -> None:
+    """A file carrying the independent loop's own state is a second open, still refused."""
+    root = str(tmp_path / "review")
+    journal = str(tmp_path / "journal.jsonl")
+    assert (
+        review_loop.main(
+            [
+                "open",
+                "--issue",
+                "589",
+                "--root",
+                root,
+                "--journal",
+                journal,
+                "--finding",
+                "F1=high",
+            ]
+        )
+        == review_loop.OK
+    )
+    assert (
+        review_loop.main(["open", "--issue", "589", "--root", root, "--journal", journal])
+        == review_loop.REFUSED
+    )
