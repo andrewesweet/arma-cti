@@ -267,9 +267,39 @@ def test_new_work_run_keeps_terminal_history_but_replaces_a_live_duplicate() -> 
     )
 
 
+def test_new_work_run_replaces_a_live_issue_keyed_duplicate() -> None:
+    item = policy.WorkItemFact("new-item", "open", issue=7)
+    old_live = policy.WorkRunFact("old-live", "running", work_item_key="legacy-item", issue=7)
+    current = coordination_facts((item,), runs=(old_live,), limit=3)
+
+    updated = policy.with_work_run(
+        current,
+        policy.launch_action(current, item),
+        run_key="new-run",
+        dispatch_id="dispatch-1",
+    )
+
+    assert updated.work_runs == (
+        policy.WorkRunFact(
+            "new-run",
+            "launching",
+            work_item_key="new-item",
+            dispatch_id="dispatch-1",
+            worktree="issue-7",
+            issue=7,
+        ),
+    )
+
+
 @pytest.mark.parametrize(
     "failure_class",
-    ["infra_unavailable", "quota_exhausted", "provider_refused", "interrupted"],
+    [
+        "infra_unavailable",
+        "quota_exhausted",
+        "provider_refused",
+        "untyped_harness_failure",
+        "interrupted",
+    ],
 )
 def test_external_bars_and_non_results_leave_work_item_open(
     failure_class: str,
@@ -320,3 +350,306 @@ def test_ready_transition_records_when_the_last_blocker_completes() -> None:
     assert with_transition.ready_transitions == (
         policy.ReadyTransitionFact("item", "2026-08-27T12:00:00+00:00"),
     )
+
+
+def _delivery_run(**overrides: object) -> object:
+    """Build one fully evidenced candidate-bound Work Run for delivery cases."""
+    values = {
+        "key": "run-1",
+        "state": "landed",
+        "work_item_key": "item",
+        "dispatch_id": "dispatch-1",
+        "issue": 1,
+        "candidate_sha": "a" * 40,
+        "reviewed_sha": "a" * 40,
+        "review_status": "cleared",
+        "review_dispatch_id": "review-dispatch-1",
+        "adjudication_sha": "a" * 40,
+        "adjudication_status": "cleared",
+        "gate_sha": "a" * 40,
+        "gate_status": "passed",
+        "landed_sha": "a" * 40,
+        "close_evidence_sha": "a" * 40,
+    }
+    values.update(overrides)
+    return policy.WorkRunFact(**values)
+
+
+def test_exact_delivery_advances_one_item_and_frees_wip_for_the_next() -> None:
+    completed = policy.WorkItemFact("item", "open", issue=1)
+    next_item = policy.WorkItemFact("next", "open", issue=2, blocked_by=("item",))
+    current = coordination_facts((completed, next_item), runs=(_delivery_run(),), limit=1)
+
+    advanced = policy.advance_completed_work_items(current)
+
+    assert advanced.work_items[0].state == "complete"
+    assert policy.live_work_runs(advanced) == ()
+    assert policy.derive(advanced).selected_work_item == advanced.work_items[1]
+
+
+def test_incomplete_landing_evidence_keeps_the_work_run_slot() -> None:
+    item = policy.WorkItemFact("item", "open", issue=1)
+    facts = coordination_facts((item,), runs=(_delivery_run(close_evidence_sha=None),), limit=1)
+
+    advanced = policy.advance_completed_work_items(facts)
+
+    assert advanced.work_items[0].state == "open"
+    assert policy.live_work_runs(advanced) == (advanced.work_runs[0],)
+    assert policy.derive(advanced).selected_work_item is None
+
+
+def test_a_candidate_arriving_after_a_live_observation_is_not_a_conflict() -> None:
+    live = policy.WorkRunFact(
+        "run-1",
+        "running",
+        work_item_key="item",
+        dispatch_id="dispatch-1",
+        issue=1,
+    )
+
+    merged = policy.merge_work_run_observations((live,), (_delivery_run(),))
+
+    assert merged[0].candidate_sha == "a" * 40
+    assert merged[0].delivery_conflict is False
+    assert policy.completion_ready(merged[0]) is True
+
+
+def test_considered_reason_reports_wip_at_exact_capacity() -> None:
+    item = policy.WorkItemFact("item", "open", issue=1)
+    debt = policy.WorktreeDebtFact(99, "/trees/issue-99")
+
+    result = policy.derive(coordination_facts((item,), debt=(debt,), limit=1))
+
+    assert result.considered == (("item", "wip_reached_by_live_runs_or_worktree_debt"),)
+
+
+def test_issue_keyed_bar_does_not_match_a_work_item_without_an_issue() -> None:
+    item = policy.WorkItemFact("item", "open")
+    bar = policy.ExternalBarFact("None", "quota_exhausted")
+
+    assert policy.eligible_work_items(coordination_facts((item,), bars=(bar,))) == (item,)
+
+
+def test_issue_keyed_bar_matches_a_work_item_with_that_issue() -> None:
+    item = policy.WorkItemFact("item", "open", issue=1)
+    bar = policy.ExternalBarFact("1", "quota_exhausted")
+
+    assert policy.eligible_work_items(coordination_facts((item,), bars=(bar,))) == ()
+
+
+@pytest.mark.parametrize("overrides", [{"review_dispatch_id": "dispatch-1"}, {"dispatch_id": None}])
+def test_controller_clearance_requires_a_distinct_independent_review_dispatch(
+    overrides: dict[str, object],
+) -> None:
+    run = _delivery_run(**overrides)
+
+    assert policy.candidate_cleared(run) is False
+    assert (
+        policy.advance_completed_work_items(
+            coordination_facts((policy.WorkItemFact("item", "open", issue=1),), runs=(run,))
+        )
+        .work_items[0]
+        .state
+        == "open"
+    )
+
+
+def test_work_run_matching_requires_both_observations_to_share_dispatch_identity() -> None:
+    left = policy.WorkRunFact("run-1", "running", dispatch_id="dispatch-1")
+    same = policy.WorkRunFact("different-key", "landed", dispatch_id="dispatch-1")
+    missing = policy.WorkRunFact("run-1", "running")
+
+    assert policy.same_work_run(left, same) is True
+    assert policy.same_work_run(left, missing) is False
+    assert policy.same_work_run(missing, left) is False
+
+
+def test_completion_requires_the_work_item_identity_not_only_a_shared_issue() -> None:
+    wrong_key = _delivery_run(work_item_key="other")
+    wrong_key_facts = coordination_facts(
+        (policy.WorkItemFact("item", "open", issue=1),), runs=(wrong_key,)
+    )
+    assert policy.advance_completed_work_items(wrong_key_facts).work_items[0].state == "open"
+
+    no_identity = _delivery_run(key="other", work_item_key=None, issue=1)
+    no_identity_facts = coordination_facts(
+        (policy.WorkItemFact("item", "open"),), runs=(no_identity,)
+    )
+    assert policy.advance_completed_work_items(no_identity_facts).work_items[0].state == "open"
+
+    no_identity_without_issue = _delivery_run(key="other", work_item_key=None, issue=None)
+    no_identity_without_issue_facts = coordination_facts(
+        (policy.WorkItemFact("item", "open"),), runs=(no_identity_without_issue,)
+    )
+    assert (
+        policy.advance_completed_work_items(no_identity_without_issue_facts).work_items[0].state
+        == "open"
+    )
+
+    keyless_same_issue = _delivery_run(key="other", work_item_key=None, issue=1)
+    keyless_same_issue_facts = coordination_facts(
+        (policy.WorkItemFact("item", "open", issue=1),), runs=(keyless_same_issue,)
+    )
+    assert (
+        policy.advance_completed_work_items(keyless_same_issue_facts).work_items[0].state
+        == "complete"
+    )
+
+    same_key_wrong_issue = _delivery_run(issue=2)
+    same_key_wrong_issue_facts = coordination_facts(
+        (policy.WorkItemFact("item", "open", issue=1),), runs=(same_key_wrong_issue,)
+    )
+    assert (
+        policy.advance_completed_work_items(same_key_wrong_issue_facts).work_items[0].state
+        == "open"
+    )
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("reviewed_sha", "b" * 40),
+        ("adjudication_sha", None),
+        ("adjudication_status", "pending"),
+        ("gate_sha", "b" * 40),
+        ("gate_status", "failed"),
+        ("landed_sha", "b" * 40),
+        ("close_evidence_sha", None),
+    ],
+)
+def test_incomplete_or_mismatched_delivery_evidence_leaves_item_unresolved(
+    field: str, value: object
+) -> None:
+    run = _delivery_run(**{field: value})
+    facts = coordination_facts(
+        (policy.WorkItemFact("item", "open", issue=1),), runs=(run,), limit=1
+    )
+
+    advanced = policy.advance_completed_work_items(facts)
+
+    assert advanced.work_items[0].state == "open"
+
+
+@pytest.mark.parametrize(
+    "failure_class",
+    [
+        "infra_unavailable",
+        "quota_exhausted",
+        "provider_refused",
+        "untyped_harness_failure",
+        "interrupted",
+    ],
+)
+def test_every_typed_non_result_stays_unresolved(failure_class: str) -> None:
+    run = policy.WorkRunFact(
+        "run-1",
+        "non_result",
+        work_item_key="item",
+        dispatch_id="dispatch-1",
+        issue=1,
+        failure_class=failure_class,
+        recovery_kind="lost_work",
+    )
+    facts = coordination_facts(
+        (policy.WorkItemFact("item", "open", issue=1),), runs=(run,), limit=1
+    )
+
+    advanced = policy.advance_completed_work_items(facts)
+
+    assert advanced.work_items[0].state == "open"
+    assert policy.live_work_runs(advanced) == ()
+
+
+def test_non_result_cannot_be_replaced_by_later_completion() -> None:
+    non_result = _delivery_run(
+        state="non_result",
+        failure_class="quota_exhausted",
+        candidate_sha=None,
+        reviewed_sha=None,
+        review_status=None,
+        review_dispatch_id=None,
+        adjudication_sha=None,
+        adjudication_status=None,
+        gate_sha=None,
+        gate_status=None,
+        landed_sha=None,
+        close_evidence_sha=None,
+    )
+    merged = policy.merge_work_run_observations((non_result,), (_delivery_run(),))
+
+    assert merged[0].failure_class == "quota_exhausted"
+    assert merged[0].delivery_conflict
+    assert not policy.completion_ready(merged[0])
+
+
+def test_failure_evidence_blocks_completion_even_with_landing_fields() -> None:
+    assert not policy.completion_ready(_delivery_run(failure_class="provider_refused"))
+
+
+def test_delayed_landing_without_a_repeated_candidate_still_conflicts() -> None:
+    delayed = _delivery_run(
+        candidate_sha=None,
+        reviewed_sha=None,
+        review_status=None,
+        review_dispatch_id=None,
+        adjudication_sha=None,
+        adjudication_status=None,
+        gate_sha=None,
+        gate_status=None,
+        landed_sha="b" * 40,
+        close_evidence_sha="b" * 40,
+    )
+
+    merged = policy.merge_work_run_observations((_delivery_run(),), (delayed,))
+
+    assert merged[0].landed_sha == "a" * 40
+    assert merged[0].delivery_conflict
+    assert not policy.completion_ready(merged[0])
+
+
+def test_delayed_conflict_after_completion_does_not_reoccupy_wip() -> None:
+    run = _delivery_run(delivery_conflict=True)
+    facts = coordination_facts(
+        (
+            policy.WorkItemFact("item", "complete", issue=1),
+            policy.WorkItemFact("next", "open", issue=2),
+        ),
+        runs=(run,),
+        limit=1,
+    )
+
+    assert policy.live_work_runs(facts) == ()
+    assert policy.derive(facts).selected_work_item == facts.work_items[1]
+
+
+def test_delayed_different_landing_cannot_rebind_a_completed_work_run() -> None:
+    first = _delivery_run()
+    delayed = _delivery_run(landed_sha="b" * 40, close_evidence_sha="b" * 40)
+    merged = policy.merge_work_run_observations((first,), (delayed,))
+
+    assert len(merged) == 1
+    assert merged[0].landed_sha == "a" * 40
+    assert merged[0].delivery_conflict is True
+    assert policy.completion_ready(merged[0]) is False
+
+    already_complete = coordination_facts(
+        (policy.WorkItemFact("item", "complete", issue=1),), runs=merged, limit=1
+    )
+    assert policy.advance_completed_work_items(already_complete).work_items[0].state == "complete"
+
+
+def test_delayed_candidate_change_cannot_rebind_a_work_run() -> None:
+    delayed = _delivery_run(
+        candidate_sha="b" * 40,
+        reviewed_sha="b" * 40,
+        adjudication_sha="b" * 40,
+        gate_sha="b" * 40,
+        landed_sha="b" * 40,
+        close_evidence_sha="b" * 40,
+    )
+
+    merged = policy.merge_work_run_observations((_delivery_run(),), (delayed,))
+
+    assert merged[0].candidate_sha == "a" * 40
+    assert merged[0].delivery_conflict is True
+    assert policy.completion_ready(merged[0]) is False

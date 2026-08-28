@@ -141,7 +141,8 @@ class Controller:
         """Run the policy and, for a real cycle, persist each transition phase."""
         if previous is not None and previous.phase != "confirmed":
             return self._resume(previous, dry_run=dry_run)
-        facts = self._merge_local_facts(self.fact_collector.collect(), previous)
+        facts = self._merge_local_facts(self._collect_facts(previous), previous)
+        facts = policy.advance_completed_work_items(facts)
         ready_keys = policy.newly_ready_keys(
             previous.facts if previous is not None else None, facts
         )
@@ -188,7 +189,8 @@ class Controller:
             )
 
         if plan.launch_snapshot is not None and plan.actions:
-            refreshed = self._merge_local_facts(self.fact_collector.collect(), previous)
+            refreshed = self._merge_local_facts(self._collect_facts(previous), previous)
+            refreshed = policy.advance_completed_work_items(refreshed)
             if policy.coordination_snapshot(refreshed) != plan.launch_snapshot:
                 selected_key = plan.selected_work_item.key if plan.selected_work_item else "unknown"
                 raise store_module.ControllerLaunchStale(selected_key)
@@ -263,7 +265,7 @@ class Controller:
         if previous.phase == "planned":
             for action in actions:
                 if self._is_launch_action(action):
-                    current = self.fact_collector.collect()
+                    current = self._collect_facts(previous)
                     if not self._has_live_run_for_action(current, action):
                         self._assert_resume_fresh(current, action)
                         self._apply(action)
@@ -286,6 +288,16 @@ class Controller:
             ),
             selected_work_item=self._selected_from_actions(actions),
         )
+
+    def _collect_facts(
+        self, previous: store_module.LoadedControllerState | None
+    ) -> policy.ControlFacts:
+        """Collect delivery facts with recovery history before planning or relaunching."""
+        if previous is not None and previous.facts is not None:
+            collector = self.fact_collector
+            if isinstance(collector, ports.HistoricalFactCollector):
+                return collector.collect_with_previous(previous.facts.work_runs)
+        return self.fact_collector.collect()
 
     def _planning_result(  # noqa: C901, PLR0911, PLR0912 — typed stage outcomes form one ordered gate
         self,
@@ -461,10 +473,19 @@ class Controller:
         if previous is None or previous.facts is None:
             return facts
         current_runs = list(facts.work_runs)
-        for prior in policy.live_work_runs(previous.facts):
-            if any(self._run_matches(prior, current) for current in current_runs):
-                continue
-            current_runs.append(prior)
+        for prior in previous.facts.work_runs:
+            match = next(
+                (
+                    index
+                    for index, current in enumerate(current_runs)
+                    if self._run_matches(prior, current)
+                ),
+                None,
+            )
+            if match is None:
+                current_runs.append(prior)
+            else:
+                current_runs[match] = policy.merge_work_run_observation(prior, current_runs[match])
         current_transitions = list(facts.ready_transitions)
         known_transitions = {transition.key for transition in current_transitions}
         current_transitions.extend(
@@ -472,7 +493,7 @@ class Controller:
             for transition in previous.facts.ready_transitions
             if transition.key not in known_transitions
         )
-        return policy.ControlFacts(
+        merged = policy.ControlFacts(
             facts.configured_curator,
             facts.desired_outcomes,
             facts.initiatives,
@@ -484,13 +505,12 @@ class Controller:
             facts.priority_order,
             tuple(current_transitions),
         )
+        return policy.retain_completed_work_items(previous.facts, merged)
 
     @staticmethod
     def _run_matches(left: policy.WorkRunFact, right: policy.WorkRunFact) -> bool:
-        """Match a local run to a fresh delivery fact without assuming its run ID shape."""
-        return left.item_key == right.item_key or (
-            left.issue is not None and right.issue is not None and left.issue == right.issue
-        )
+        """Match a local run to a fresh delivery fact by exact dispatch identity."""
+        return policy.same_work_run(left, right)
 
     @staticmethod
     def _is_launch_action(action: policy.ControlAction) -> bool:
@@ -571,11 +591,23 @@ def default_controller(root: Path | None = None) -> Controller:
     repository = os.environ.get("CTI_GITHUB_REPOSITORY", "andrewesweet/arma-cti")
     tracker = planning.PlanPublisher(planning.GitHubTracker(repository))
     queue_directory = os.environ.get("CTI_QUEUE_DIR", str(ports.queue_policy.DEFAULT_QUEUE_DIR))
+    dispatch_directory = Path(
+        os.environ.get("CTI_DISPATCH_DIR", str(Path.home() / ".arma-cti" / "dispatches"))
+    )
+    delivery = ports.DispatchDeliveryFactCollector(
+        dispatch_directory,
+        recovery=ports.ExistingRecoveryClassifier(
+            Path.cwd(),
+            Path.home() / ".arma-cti" / "watch",
+            dispatch_directory,
+        ),
+    )
     facts: ports.FactCollector = ports.RuntimeFactCollector(
         ports.DefaultFactCollector(),
         Path.cwd(),
-        Path(os.environ.get("CTI_DISPATCH_DIR", str(Path.home() / ".arma-cti" / "dispatches"))),
+        dispatch_directory,
         Path(queue_directory) if queue_directory else None,
+        delivery,
     )
     return Controller(
         fact_collector=facts,

@@ -235,9 +235,10 @@ def test_default_controller_reads_default_queue_policy_when_environment_is_unset
         ),
     )
     monkeypatch.delenv("CTI_QUEUE_DIR", raising=False)
+    monkeypatch.delenv("CTI_DISPATCH_DIR", raising=False)
     monkeypatch.setattr(ports.queue_policy, "DEFAULT_QUEUE_DIR", queue_path)
+    monkeypatch.setattr(Path, "home", lambda: tmp_path)
     monkeypatch.setenv("CTI_CONTROL_FACTS_FILE", str(facts_path))
-    monkeypatch.setenv("CTI_DISPATCH_DIR", str(tmp_path / "dispatches"))
     monkeypatch.chdir(tmp_path)
 
     report = controller.default_controller(tmp_path / "controller").run_cycle(dry_run=True)
@@ -761,3 +762,129 @@ def test_cli_fact_source_failure_is_a_typed_refusal(
     assert controller.main(["reconcile"]) == 2
 
     assert "refusal=control_facts_unreadable" in capfd.readouterr().err
+
+
+def _landed_run(**overrides: object) -> Any:  # noqa: ANN401 — dynamically loaded policy module
+    """Arrange a fully typed, independently cleared landing observation."""
+    values = {
+        "key": "run-1",
+        "state": "landed",
+        "work_item_key": "finished",
+        "dispatch_id": "dispatch-1",
+        "issue": 1,
+        "candidate_sha": "a" * 40,
+        "reviewed_sha": "a" * 40,
+        "review_status": "cleared",
+        "review_dispatch_id": "review-1",
+        "adjudication_sha": "a" * 40,
+        "adjudication_status": "cleared",
+        "gate_sha": "a" * 40,
+        "gate_status": "passed",
+        "landed_sha": "a" * 40,
+        "close_evidence_sha": "a" * 40,
+    }
+    values.update(overrides)
+    return policy.WorkRunFact(**values)
+
+
+def test_delivery_completion_retires_run_and_exposes_newly_unblocked_item(
+    tmp_path: Path,
+) -> None:
+    finished = policy.WorkItemFact("finished", "open", issue=1)
+    unblocked = policy.WorkItemFact("next", "open", issue=2, blocked_by=("finished",))
+    instance, store, _collector, mutation_ports = make_controller(
+        tmp_path / "controller",
+        facts=coordination_facts((finished, unblocked), runs=(_landed_run(),), wip_limit=1),
+    )
+
+    report = instance.run_cycle(dry_run=False)
+
+    assert report.facts.work_items[0].state == "complete"
+    assert report.facts.work_runs[0].state == "landed"
+    assert tuple(run.key for run in policy.live_work_runs(report.facts)) == (
+        "test-controller:test-controller-cycle-1:next",
+    )
+    assert report.selected_work_item == "next"
+    assert mutation_ports[2].applied == list(report.actions)
+    assert store.load().facts is not None
+    assert store.load().facts.work_items[0].state == "complete"  # type: ignore[union-attr]
+
+
+def test_delayed_conflicting_completion_signal_cannot_reopen_or_rebind_item(
+    tmp_path: Path,
+) -> None:
+    first = coordination_facts(
+        (policy.WorkItemFact("finished", "open", issue=1),),
+        runs=(_landed_run(),),
+        wip_limit=1,
+    )
+    delayed = coordination_facts(
+        (policy.WorkItemFact("finished", "open", issue=1),),
+        runs=(_landed_run(landed_sha="b" * 40, close_evidence_sha="b" * 40),),
+        wip_limit=1,
+    )
+    instance, store, _ports = make_controller_with_collector(
+        tmp_path / "controller", SequenceFactCollector(first, delayed)
+    )
+
+    instance.run_cycle(dry_run=False)
+    second = instance.run_cycle(dry_run=False)
+
+    assert second.facts.work_items[0].state == "complete"
+    assert second.facts.work_runs[0].landed_sha == "a" * 40
+    assert second.facts.work_runs[0].delivery_conflict is True
+    assert store.load().facts is not None
+    assert store.load().facts.work_items[0].state == "complete"  # type: ignore[union-attr]
+
+
+def test_recovery_is_classified_before_the_next_work_run_launch(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    item = policy.WorkItemFact("item", "open", issue=1)
+    base = coordination_facts((item,), wip_limit=1)
+    monkeypatch.setattr(
+        ports.queue_policy,
+        "gather",
+        lambda _root, _dispatch: ports.queue_policy.InFlight((), (), "read"),
+    )
+    events: list[str] = []
+
+    class Recovery:
+        def classify(self, _run: Any) -> str:  # noqa: ANN401 — dynamic policy module
+            events.append("recovery")
+            return "lost_work"
+
+    class OrderedDispatchPort(ports.RecordingActionPort):
+        def apply(self, action: Any) -> Any:  # noqa: ANN401 — dynamic policy module
+            events.append("launch")
+            return super().apply(action)
+
+    collector = ports.RuntimeFactCollector(
+        ports.FakeFactCollector(base),
+        tmp_path,
+        tmp_path / "dispatches",
+        delivery=ports.DispatchDeliveryFactCollector(tmp_path / "dispatches", recovery=Recovery()),
+    )
+    store = store_module.ControllerStore(tmp_path / "controller")
+    mutation_ports = (
+        ports.RecordingActionPort(),
+        ports.RecordingActionPort(),
+        OrderedDispatchPort(),
+        ports.RecordingActionPort(),
+    )
+    instance = controller.Controller(
+        fact_collector=collector,
+        clock=ports.FakeClock("2026-08-27T12:00:00+00:00"),
+        identity=ports.FakeIdentity("test-controller"),
+        store=store,
+        action_ports=ports.ActionPorts(*mutation_ports),
+    )
+
+    instance.run_cycle(dry_run=False)
+    events.clear()
+    second = instance.run_cycle(dry_run=False)
+
+    assert events[-1] == "launch"
+    assert events[:-1]
+    assert all(event == "recovery" for event in events[:-1])
+    assert second.selected_work_item == "item"
