@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import Any
 
+import pytest
 from conftest import load_tool
-
-if TYPE_CHECKING:
-    import pytest
 
 ports = load_tool("controller_ports")
 policy = load_tool("controller_policy")
@@ -172,4 +171,270 @@ def test_runtime_collector_does_not_let_terminal_history_hide_a_live_holder(
     assert collected.work_runs == (
         terminal,
         ports.policy.WorkRunFact("d-7", "running", "item-7", "d-7", None, None, 7),
+    )
+
+
+def test_dispatch_delivery_collector_reads_typed_candidate_evidence(tmp_path: Path) -> None:
+    record = tmp_path / "dispatches" / "d-1"
+    record.mkdir(parents=True)
+    delivery = {
+        "schema": ports.DELIVERY_SCHEMA,
+        "work_run": {
+            "key": "run-1",
+            "state": "gated",
+            "work_item_key": "item-1",
+            "dispatch_id": "d-1",
+            "issue": 1,
+            "candidate_sha": "a" * 40,
+            "reviewed_sha": "a" * 40,
+            "review_status": "cleared",
+            "review_dispatch_id": "review-1",
+            "adjudication_status": "cleared",
+            "gate_sha": "a" * 40,
+            "gate_status": "passed",
+        },
+    }
+    (record / "delivery.json").write_text(json.dumps(delivery) + "\n", encoding="utf-8")
+
+    observed = ports.DispatchDeliveryFactCollector(tmp_path / "dispatches").collect(())
+
+    assert observed[0].state == "gated"
+    assert observed[0].candidate_sha == "a" * 40
+    assert observed[0].issue == 1
+    assert observed[0].reviewed_sha == observed[0].gate_sha
+    assert observed[0].delivery_conflict is False
+
+
+def test_dispatch_delivery_collector_rejects_delivery_bound_to_another_dispatch(
+    tmp_path: Path,
+) -> None:
+    record = tmp_path / "dispatches" / "d-1"
+    record.mkdir(parents=True)
+    delivery = {
+        "schema": ports.DELIVERY_SCHEMA,
+        "work_run": {"key": "run-1", "state": "running", "dispatch_id": "d-2"},
+    }
+    (record / "delivery.json").write_text(json.dumps(delivery) + "\n", encoding="utf-8")
+
+    with pytest.raises(ports.FactCollectionError, match="delivery dispatch_id"):
+        ports.DispatchDeliveryFactCollector(tmp_path / "dispatches").collect(())
+
+
+def test_dispatch_delivery_collector_ignores_human_output_without_typed_delivery(
+    tmp_path: Path,
+) -> None:
+    record = tmp_path / "dispatches" / "d-1"
+    record.mkdir(parents=True)
+    (record / "result.json").write_text(
+        json.dumps({"stdout": "issue_closed=yes issue=1 sha=" + "a" * 40}) + "\n",
+        encoding="utf-8",
+    )
+    run = policy.WorkRunFact("run-1", "running", "item-1", "d-1", issue=1)
+
+    observed = ports.DispatchDeliveryFactCollector(tmp_path / "dispatches").collect((run,))
+
+    assert observed == (run,)
+    assert observed[0].landed_sha is None
+
+
+@pytest.mark.parametrize(
+    ("result", "failure_class"),
+    [
+        ({"dispatch_id": "d-1", "status": "child_not_launched"}, "infra_unavailable"),
+        (
+            {
+                "dispatch_id": "d-1",
+                "status": "harness_failed_after_child",
+                "failure_class": "infra_unavailable",
+            },
+            "untyped_harness_failure",
+        ),
+        ({"dispatch_id": "d-1", "status": "child_state_unknown"}, "untyped_harness_failure"),
+        (
+            {"dispatch_id": "d-1", "status": "harness_failed_after_child"},
+            "untyped_harness_failure",
+        ),
+        (
+            {"dispatch_id": "d-1", "status": "child_finished", "outcome": "quota_exhausted"},
+            "quota_exhausted",
+        ),
+        (
+            {"dispatch_id": "d-1", "status": "child_finished", "outcome": "provider_error"},
+            "infra_unavailable",
+        ),
+        (
+            {"dispatch_id": "d-1", "status": "child_finished", "outcome": "provider_refused"},
+            "provider_refused",
+        ),
+        (
+            {"dispatch_id": "d-1", "terminal_state": {"state": "stopped"}},
+            "interrupted",
+        ),
+    ],
+)
+def test_dispatch_delivery_collector_normalizes_typed_result_non_results(
+    tmp_path: Path, result: dict[str, object], failure_class: str
+) -> None:
+    record = tmp_path / "dispatches" / "d-1"
+    record.mkdir(parents=True)
+    (record / "result.json").write_text(json.dumps(result) + "\n", encoding="utf-8")
+    run = policy.WorkRunFact("run-1", "running", "item-1", "d-1", issue=1)
+
+    observed = ports.DispatchDeliveryFactCollector(tmp_path / "dispatches").collect((run,))
+
+    assert observed[0].state == "non_result"
+    assert observed[0].failure_class == failure_class
+
+
+def test_dispatch_delivery_collector_rejects_malformed_typed_result_fields(tmp_path: Path) -> None:
+    record = tmp_path / "dispatches" / "d-1"
+    record.mkdir(parents=True)
+    (record / "result.json").write_text(
+        json.dumps({"dispatch_id": "d-1", "status": 1}) + "\n", encoding="utf-8"
+    )
+
+    with pytest.raises(ports.FactCollectionError, match="result status"):
+        ports.DispatchDeliveryFactCollector(tmp_path / "dispatches").collect(())
+
+
+def test_dispatch_delivery_collector_rejects_a_result_bound_to_another_dispatch(
+    tmp_path: Path,
+) -> None:
+    record = tmp_path / "dispatches" / "d-1"
+    record.mkdir(parents=True)
+    (record / "result.json").write_text(
+        json.dumps({"dispatch_id": "d-2", "status": "child_not_launched"}) + "\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ports.FactCollectionError, match="result dispatch_id"):
+        ports.DispatchDeliveryFactCollector(tmp_path / "dispatches").collect(())
+
+
+def test_dispatch_delivery_collector_does_not_treat_another_terminal_state_as_stop(
+    tmp_path: Path,
+) -> None:
+    record = tmp_path / "dispatches" / "d-1"
+    record.mkdir(parents=True)
+    (record / "result.json").write_text(
+        json.dumps({"dispatch_id": "d-1", "terminal_state": {"state": "running"}}) + "\n",
+        encoding="utf-8",
+    )
+    run = policy.WorkRunFact("run-1", "running", "item-1", "d-1", issue=1)
+
+    assert ports.DispatchDeliveryFactCollector(tmp_path / "dispatches").collect((run,)) == (run,)
+
+
+def test_dispatch_delivery_collector_rejects_nested_delivery_bound_to_another_dispatch(
+    tmp_path: Path,
+) -> None:
+    record = tmp_path / "dispatches" / "d-1"
+    record.mkdir(parents=True)
+    (record / "result.json").write_text(
+        json.dumps(
+            {
+                "dispatch_id": "d-1",
+                "delivery": {"key": "run-1", "state": "running", "dispatch_id": "d-2"},
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ports.FactCollectionError, match="delivery dispatch_id"):
+        ports.DispatchDeliveryFactCollector(tmp_path / "dispatches").collect(())
+
+
+def test_dispatch_delivery_collector_rejects_nested_delivery_with_result_identity_mismatch(
+    tmp_path: Path,
+) -> None:
+    record = tmp_path / "dispatches" / "d-1"
+    record.mkdir(parents=True)
+    (record / "result.json").write_text(
+        json.dumps(
+            {
+                "dispatch_id": "d-2",
+                "delivery": {"key": "run-1", "state": "running", "dispatch_id": "d-1"},
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ports.FactCollectionError, match="result dispatch_id"):
+        ports.DispatchDeliveryFactCollector(tmp_path / "dispatches").collect(())
+
+
+def test_dispatch_delivery_collector_rejects_unknown_fact_fields(tmp_path: Path) -> None:
+    record = tmp_path / "dispatches" / "d-1"
+    record.mkdir(parents=True)
+    delivery = {
+        "schema": ports.DELIVERY_SCHEMA,
+        "work_run": {"key": "run-1", "state": "running", "dispatch_id": "d-1", "extra": True},
+    }
+    (record / "delivery.json").write_text(json.dumps(delivery) + "\n", encoding="utf-8")
+
+    with pytest.raises(ports.FactCollectionError, match="work_runs entry"):
+        ports.DispatchDeliveryFactCollector(tmp_path / "dispatches").collect(())
+
+
+@pytest.mark.parametrize(
+    "field_value", [{"key": 1, "state": "running"}, {"key": "run-1", "state": 1}]
+)
+def test_dispatch_delivery_collector_rejects_non_text_fact_identity(
+    tmp_path: Path, field_value: dict[str, object]
+) -> None:
+    record = tmp_path / "dispatches" / "d-1"
+    record.mkdir(parents=True)
+    delivery = {
+        "schema": ports.DELIVERY_SCHEMA,
+        "work_run": {**field_value, "dispatch_id": "d-1"},
+    }
+    (record / "delivery.json").write_text(json.dumps(delivery) + "\n", encoding="utf-8")
+
+    with pytest.raises(ports.FactCollectionError, match="work_runs value"):
+        ports.DispatchDeliveryFactCollector(tmp_path / "dispatches").collect(())
+
+
+def test_dispatch_delivery_collector_uses_stop_closeout_shape_for_legacy_records(
+    tmp_path: Path,
+) -> None:
+    record = tmp_path / "dispatches" / "d-1"
+    record.mkdir(parents=True)
+    (record / "result.json").write_text(
+        json.dumps({"dispatch_id": "d-1", "stopped_by": "just dispatch --stop"}) + "\n",
+        encoding="utf-8",
+    )
+
+    observed = ports.DispatchDeliveryFactCollector(tmp_path / "dispatches").collect(())
+
+    assert observed[0].state == "non_result"
+    assert observed[0].failure_class == "interrupted"
+
+
+def test_dispatch_delivery_collector_composes_recovery_before_relaunch(
+    tmp_path: Path,
+) -> None:
+    record = tmp_path / "dispatches" / "d-1"
+    record.mkdir(parents=True)
+    (record / "dispatch.json").write_text('{"dispatch_id":"d-1","issue":1}\n', encoding="utf-8")
+    calls: list[str] = []
+
+    class Recovery:
+        def classify(self, run: Any) -> str:  # noqa: ANN401 — dynamic policy module
+            calls.append(run.dispatch_id)
+            return "lost_work"
+
+    run = policy.WorkRunFact("run-1", "running", "item-1", "d-1", issue=1)
+    observed = ports.DispatchDeliveryFactCollector(
+        tmp_path / "dispatches", recovery=Recovery()
+    ).collect((run,))
+
+    assert calls == ["d-1"]
+    assert observed[0].state == "non_result"
+    assert observed[0].failure_class == "interrupted"
+    assert observed[0].recovery_kind == "lost_work"
+    assert (
+        ports.policy.live_work_runs(policy.ControlFacts(None, (), (), (), observed, wip_limit=1))
+        == ()
     )

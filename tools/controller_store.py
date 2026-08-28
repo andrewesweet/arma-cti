@@ -59,7 +59,25 @@ WORK_ITEM_OPTIONAL_FIELDS: Final = frozenset(
     {"issue", "blocked_by", "priority", "exclusive_resources", "seat", "profile", "ready_at"}
 )
 WORK_RUN_OPTIONAL_FIELDS: Final = frozenset(
-    {"work_item_key", "dispatch_id", "failure_class", "worktree", "issue"}
+    {
+        "work_item_key",
+        "dispatch_id",
+        "failure_class",
+        "worktree",
+        "issue",
+        "candidate_sha",
+        "reviewed_sha",
+        "review_status",
+        "review_dispatch_id",
+        "adjudication_sha",
+        "adjudication_status",
+        "gate_sha",
+        "gate_status",
+        "landed_sha",
+        "close_evidence_sha",
+        "recovery_kind",
+        "delivery_conflict",
+    }
 )
 VIEW_FIELDS: Final = frozenset({"schema", "journal_sha256", "last_cycle_id", "confirmed"})
 
@@ -718,6 +736,21 @@ def _work_run_entry(value: Mapping[str, object]) -> None:
     _optional_fact_text(value, "failure_class", "facts_work_runs_failure_class")
     _optional_fact_text(value, "worktree", "facts_work_runs_worktree")
     _optional_positive_int(value, "issue", "facts_work_runs_issue")
+    for field_name in (
+        "candidate_sha",
+        "reviewed_sha",
+        "review_status",
+        "review_dispatch_id",
+        "adjudication_sha",
+        "adjudication_status",
+        "gate_sha",
+        "gate_status",
+        "landed_sha",
+        "close_evidence_sha",
+        "recovery_kind",
+    ):
+        _optional_fact_text(value, field_name, f"facts_work_runs_{field_name}")
+    _optional_fact_bool(value, "delivery_conflict", "facts_work_runs_delivery_conflict")
 
 
 def _worktree_debt_entry(value: object) -> None:
@@ -800,6 +833,16 @@ def _optional_fact_text(
     return item
 
 
+def _optional_fact_bool(value: Mapping[str, object], name: str, reason: str) -> bool:
+    """Read an optional boolean fact without accepting integer coercion."""
+    if name not in value:
+        return False
+    item = value[name]
+    if not isinstance(item, bool):
+        _refuse(reason)
+    return item
+
+
 def _work_item_value(value: dict[str, object]) -> policy.WorkItemFact:
     """Decode a validated Work Item fact."""
     return policy.WorkItemFact(
@@ -825,6 +868,18 @@ def _work_run_value(value: dict[str, object]) -> policy.WorkRunFact:
         _optional_fact_text(value, "failure_class", "facts_work_runs_failure_class"),
         _optional_fact_text(value, "worktree", "facts_work_runs_worktree"),
         _optional_positive_int(value, "issue", "facts_work_runs_issue"),
+        _optional_fact_text(value, "candidate_sha", "facts_work_runs_candidate_sha"),
+        _optional_fact_text(value, "reviewed_sha", "facts_work_runs_reviewed_sha"),
+        _optional_fact_text(value, "review_status", "facts_work_runs_review_status"),
+        _optional_fact_text(value, "review_dispatch_id", "facts_work_runs_review_dispatch_id"),
+        _optional_fact_text(value, "adjudication_sha", "facts_work_runs_adjudication_sha"),
+        _optional_fact_text(value, "adjudication_status", "facts_work_runs_adjudication_status"),
+        _optional_fact_text(value, "gate_sha", "facts_work_runs_gate_sha"),
+        _optional_fact_text(value, "gate_status", "facts_work_runs_gate_status"),
+        _optional_fact_text(value, "landed_sha", "facts_work_runs_landed_sha"),
+        _optional_fact_text(value, "close_evidence_sha", "facts_work_runs_close_evidence_sha"),
+        _optional_fact_text(value, "recovery_kind", "facts_work_runs_recovery_kind"),
+        _optional_fact_bool(value, "delivery_conflict", "facts_work_runs_delivery_conflict"),
     )
 
 

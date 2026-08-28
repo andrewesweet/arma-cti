@@ -8,15 +8,19 @@ import sys
 from dataclasses import dataclass, field, replace
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import TYPE_CHECKING, Final, NoReturn, Protocol, cast
+from typing import TYPE_CHECKING, Final, NoReturn, Protocol, cast, runtime_checkable
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from controller_store import SchedulingLock
 
 sys.path.insert(0, str(Path(__file__).parent))
 
 import controller_policy as policy
+import dispatch_stop
 import queue_policy
+import recovery
 
 CONTROL_FACTS_SCHEMA: Final = "control-facts/v1"
 CONTROL_FACTS_FIELDS: Final = frozenset(
@@ -25,12 +29,42 @@ CONTROL_FACTS_FIELDS: Final = frozenset(
 CONTROL_FACTS_OPTIONAL_FIELDS: Final = frozenset(
     {"worktree_debt", "wip_limit", "external_bars", "priority_order", "ready_transitions"}
 )
+DELIVERY_SCHEMA: Final = "work-run-delivery/v1"
+DELIVERY_FIELDS: Final = frozenset({"schema", "work_run"})
+RESULT_HARNESS_FAILURE_STATUSES: Final = frozenset(
+    {"harness_failed_after_child", "child_state_unknown"}
+)
+RESULT_NON_RESULT_STATUS: Final = "child_not_launched"
+RESULT_STOPPED_STATE: Final = "stopped"
+RESULT_OUTCOME_CLASSES: Final[dict[str, str]] = {
+    "quota_exhausted": "quota_exhausted",
+    "provider_error": "infra_unavailable",
+    "provider_refused": "provider_refused",
+}
 FACT_FIELDS: Final = frozenset({"key", "state"})
 WORK_ITEM_OPTIONAL_FIELDS: Final = frozenset(
     {"issue", "blocked_by", "priority", "exclusive_resources", "seat", "profile", "ready_at"}
 )
 WORK_RUN_OPTIONAL_FIELDS: Final = frozenset(
-    {"work_item_key", "dispatch_id", "failure_class", "worktree", "issue"}
+    {
+        "work_item_key",
+        "dispatch_id",
+        "failure_class",
+        "worktree",
+        "issue",
+        "candidate_sha",
+        "reviewed_sha",
+        "review_status",
+        "review_dispatch_id",
+        "adjudication_sha",
+        "adjudication_status",
+        "gate_sha",
+        "gate_status",
+        "landed_sha",
+        "close_evidence_sha",
+        "recovery_kind",
+        "delivery_conflict",
+    }
 )
 DEBT_FIELDS: Final = frozenset({"issue", "path"})
 DEBT_OPTIONAL_FIELDS: Final = frozenset({"work_item_key"})
@@ -76,6 +110,30 @@ class FactCollector(Protocol):
 
     def collect(self) -> policy.ControlFacts:
         """Collect one point-in-time fact set."""
+
+
+@runtime_checkable
+class HistoricalFactCollector(Protocol):
+    """Read current facts while giving delivery recovery the prior run set."""
+
+    def collect_with_previous(
+        self, previous_work_runs: tuple[policy.WorkRunFact, ...]
+    ) -> policy.ControlFacts:
+        """Collect facts after classifying prior runs that ended without a result."""
+
+
+class DeliveryFactSource(Protocol):
+    """Read structured delivery evidence for the current Work Runs."""
+
+    def collect(self, existing: tuple[policy.WorkRunFact, ...]) -> tuple[policy.WorkRunFact, ...]:
+        """Return current runs, replacing only matching dispatch identities."""
+
+
+class RecoveryClassifier(Protocol):
+    """Use the existing recovery procedure to classify a no-result run."""
+
+    def classify(self, run: policy.WorkRunFact) -> str | None:
+        """Return the recovery verdict kind, or no computable verdict."""
 
 
 class ActionPort(Protocol):
@@ -188,9 +246,16 @@ class RuntimeFactCollector:
     root: Path
     dispatch_dir: Path
     queue_dir: Path | None = None
+    delivery: DeliveryFactSource | None = None
 
     def collect(self) -> policy.ControlFacts:
         """Collect graph facts, then add live runs and owed worktree debt."""
+        return self.collect_with_previous(())
+
+    def collect_with_previous(
+        self, previous_work_runs: tuple[policy.WorkRunFact, ...]
+    ) -> policy.ControlFacts:
+        """Collect facts and classify prior runs before the controller plans a launch."""
         facts = self.base.collect()
         in_flight = queue_policy.gather(self.root, self.dispatch_dir)
         limit = facts.wip_limit
@@ -213,7 +278,9 @@ class RuntimeFactCollector:
             for holder in in_flight.owed
             if holder.worktree is not None
         )
-        runs = list(facts.work_runs)
+        runs = list(policy.merge_work_run_observations(previous_work_runs, facts.work_runs))
+        if self.delivery is not None:
+            runs = list(self.delivery.collect(tuple(runs)))
         bars = list(facts.external_bars)
         if in_flight.github.startswith("unreadable"):
             bars.extend(
@@ -227,15 +294,6 @@ class RuntimeFactCollector:
                 (item.key for item in facts.work_items if item.issue == holder.issue),
                 str(holder.issue),
             )
-            if any(
-                (run.item_key == item_key or run.issue == holder.issue)
-                and (
-                    run.state in policy.LIVE_WORK_RUN_STATES
-                    or run.failure_class in policy.NON_RESULT_CLASSES
-                )
-                for run in runs
-            ):
-                continue
             dispatch_id = next(
                 (
                     source.removeprefix("dispatch:")
@@ -244,6 +302,8 @@ class RuntimeFactCollector:
                 ),
                 None,
             )
+            if any(_run_matches_holder(run, item_key, holder.issue, dispatch_id) for run in runs):
+                continue
             runs.append(
                 policy.WorkRunFact(
                     key=dispatch_id or f"issue-{holder.issue}",
@@ -261,6 +321,240 @@ class RuntimeFactCollector:
             wip_limit=limit,
             external_bars=tuple(bars),
         )
+
+
+def _run_matches_holder(
+    run: policy.WorkRunFact,
+    item_key: str,
+    issue: int,
+    dispatch_id: str | None,
+) -> bool:
+    """Avoid duplicating a queue holder while retaining distinct terminal history."""
+    same_item = run.item_key == item_key or run.issue == issue
+    if dispatch_id is not None:
+        if run.dispatch_id == dispatch_id:
+            return True
+        return (
+            run.dispatch_id is None
+            and same_item
+            and (
+                run.state in policy.LIVE_WORK_RUN_STATES
+                or run.failure_class in policy.NON_RESULT_CLASSES
+            )
+        )
+    return same_item and (
+        run.state in policy.LIVE_WORK_RUN_STATES or run.failure_class in policy.NON_RESULT_CLASSES
+    )
+
+
+@dataclass(frozen=True)
+class ExistingRecoveryClassifier:
+    """Adapter around ``tools/recovery.py``'s existing read-only classification."""
+
+    repository: Path
+    watch_dir: Path
+    dispatch_dir: Path
+    now: Callable[[], int] | None = None
+
+    def classify(self, run: policy.WorkRunFact) -> str | None:
+        """Ask recovery only for a dispatch with no published result."""
+        if not run.dispatch_id:
+            return None
+        record = self.dispatch_dir / run.dispatch_id
+        if not record.is_dir() or (record / "result.json").is_file():
+            return None
+        try:
+            evidence = recovery.gather_check(
+                run.dispatch_id,
+                repo=self.repository,
+                watch_dir=self.watch_dir,
+                dispatch_dir=self.dispatch_dir,
+                now=(self.now or (lambda: int(datetime.now(UTC).timestamp())))(),
+            )
+        except Exception:  # noqa: BLE001 — an unavailable recovery read is not a result
+            return None
+        if evidence is None:
+            return None
+        return recovery.decide(evidence).kind
+
+
+@dataclass(frozen=True)
+class DispatchDeliveryFactCollector:
+    """Read structured Work Run delivery records beside dispatch records.
+
+    ``delivery.json`` is the adapter's typed boundary.  Dispatch logs and
+    command output are deliberately never read here; a human-oriented line
+    cannot clear a candidate or close a Work Item.
+    """
+
+    dispatch_dir: Path
+    recovery: RecoveryClassifier | None = None
+
+    def collect(self, existing: tuple[policy.WorkRunFact, ...]) -> tuple[policy.WorkRunFact, ...]:
+        """Merge delivery records, then classify no-result runs before scheduling."""
+        runs = list(existing)
+        if self.dispatch_dir.is_dir():
+            for record in sorted(self.dispatch_dir.iterdir(), key=lambda path: path.name):
+                delivery = record / "delivery.json"
+                if delivery.is_file():
+                    self._merge(runs, _read_delivery(delivery))
+                result_delivery = _read_result_delivery(record / "result.json")
+                if result_delivery is not None:
+                    self._merge(runs, result_delivery)
+        if self.recovery is not None:
+            runs = [self._with_recovery(run) for run in runs]
+        return tuple(runs)
+
+    def _merge(self, runs: list[policy.WorkRunFact], observed: policy.WorkRunFact) -> None:
+        """Replace one exact dispatch observation without appending a duplicate."""
+        match = next(
+            (
+                index
+                for index, current in enumerate(runs)
+                if policy.same_work_run(current, observed)
+            ),
+            None,
+        )
+        if match is None:
+            runs.append(observed)
+        else:
+            runs[match] = policy.merge_work_run_observation(runs[match], observed)
+
+    def _with_recovery(self, run: policy.WorkRunFact) -> policy.WorkRunFact:
+        """Attach an existing recovery verdict while preserving non-result semantics."""
+        if (
+            run.landed_sha is not None
+            or run.recovery_kind is not None
+            or run.state == policy.NON_RESULT
+        ):
+            return run
+        kind = self.recovery.classify(run) if self.recovery is not None else None
+        if kind is None:
+            return run
+        if kind == "still_live":
+            return replace(run, state="running", recovery_kind=kind)
+        return replace(
+            run,
+            state=policy.NON_RESULT,
+            failure_class=run.failure_class or "interrupted",
+            recovery_kind=kind,
+        )
+
+
+def _read_delivery(path: Path) -> policy.WorkRunFact:
+    """Read one strict typed delivery envelope."""
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as error:
+        _fact_fail(f"source={path}: {error}")
+    if (
+        not isinstance(raw, dict)
+        or set(raw) != DELIVERY_FIELDS
+        or raw.get("schema") != DELIVERY_SCHEMA
+    ):
+        _fact_fail(f"source={path}: delivery envelope")
+    value = raw.get("work_run")
+    if not isinstance(value, dict):
+        _fact_fail(f"source={path}: delivery work_run")
+    run = _fact(value, "work_runs", path)
+    if run.dispatch_id is None or run.dispatch_id != path.parent.name:
+        _fact_fail(f"source={path}: delivery dispatch_id")
+    return replace(
+        run,
+        state=policy.derived_work_run_state(run),
+        delivery_conflict=run.delivery_conflict or policy.delivery_identity_conflict(run),
+    )
+
+
+def _read_result_delivery(path: Path) -> policy.WorkRunFact | None:
+    """Read structured delivery or typed non-result evidence from a result."""
+    if not path.is_file():
+        return None
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as error:
+        _fact_fail(f"source={path}: {error}")
+    if not isinstance(raw, dict):
+        return None
+    result_dispatch_id = _result_dispatch_id(raw, path)
+    if "delivery" not in raw:
+        return _read_result_non_result(raw, path)
+    value = raw["delivery"]
+    if not isinstance(value, dict):
+        _fact_fail(f"source={path}: delivery")
+    run = _fact(value, "work_runs", path)
+    if run.dispatch_id is None or run.dispatch_id != result_dispatch_id:
+        _fact_fail(f"source={path}: delivery dispatch_id")
+    return replace(
+        run,
+        state=policy.derived_work_run_state(run),
+        delivery_conflict=run.delivery_conflict or policy.delivery_identity_conflict(run),
+    )
+
+
+def _read_result_non_result(raw: dict[str, object], path: Path) -> policy.WorkRunFact | None:
+    """Translate only the dispatcher's typed terminal fields, never its prose."""
+    status = _result_text(raw, "status", path)
+    outcome = _result_text(raw, "outcome", path)
+    failure_class = _result_text(raw, "failure_class", path)
+    refusal = _result_text(raw, "refusal", path)
+    typed_class = _result_non_result_class(
+        status,
+        outcome,
+        failure_class,
+        refusal,
+        {"state": RESULT_STOPPED_STATE}
+        if dispatch_stop.is_stop_closeout(raw)
+        else raw.get("terminal_state"),
+    )
+    if typed_class is None:
+        return None
+    dispatch_id = _result_dispatch_id(raw, path)
+    return policy.WorkRunFact(
+        key=dispatch_id,
+        state=policy.NON_RESULT,
+        dispatch_id=dispatch_id,
+        failure_class=typed_class,
+    )
+
+
+def _result_dispatch_id(raw: dict[str, object], path: Path) -> str:
+    """Require a result's optional top-level identity to match its directory."""
+    dispatch_id = raw.get("dispatch_id", path.parent.name)
+    if not isinstance(dispatch_id, str) or not dispatch_id or dispatch_id != path.parent.name:
+        _fact_fail(f"source={path}: result dispatch_id")
+    return dispatch_id
+
+
+def _result_text(raw: dict[str, object], name: str, path: Path) -> str | None:
+    """Read one optional typed result field without accepting coercion."""
+    if name not in raw:
+        return None
+    value = raw[name]
+    if not isinstance(value, str) or not value:
+        _fact_fail(f"source={path}: result {name}")
+    return value
+
+
+def _result_non_result_class(
+    status: str | None,
+    outcome: str | None,
+    failure_class: str | None,
+    refusal: str | None,
+    terminal: object,
+) -> str | None:
+    """Map the dispatcher's closed result vocabulary to controller non-results."""
+    if refusal is not None:
+        return failure_class if failure_class in policy.NON_RESULT_CLASSES else "infra_unavailable"
+    if isinstance(terminal, dict) and terminal == {"state": RESULT_STOPPED_STATE}:
+        return "interrupted"
+    if status in RESULT_HARNESS_FAILURE_STATUSES:
+        return "untyped_harness_failure"
+    if status == RESULT_NON_RESULT_STATUS:
+        return "infra_unavailable"
+    if failure_class in policy.NON_RESULT_CLASSES:
+        return failure_class
+    return RESULT_OUTCOME_CLASSES.get(outcome) if outcome is not None else None
 
 
 @dataclass(frozen=True)
@@ -364,7 +658,7 @@ def _fact(
             _optional_nonempty_text(value, "profile", source, name),
             _optional_nonempty_text(value, "ready_at", source, name),
         )
-    return policy.WorkRunFact(
+    run = policy.WorkRunFact(
         key,
         state,
         _optional_nonempty_text(value, "work_item_key", source, name),
@@ -372,7 +666,20 @@ def _fact(
         _optional_nonempty_text(value, "failure_class", source, name),
         _optional_nonempty_text(value, "worktree", source, name),
         _optional_positive_int(value, "issue", source, name),
+        _optional_nonempty_text(value, "candidate_sha", source, name),
+        _optional_nonempty_text(value, "reviewed_sha", source, name),
+        _optional_nonempty_text(value, "review_status", source, name),
+        _optional_nonempty_text(value, "review_dispatch_id", source, name),
+        _optional_nonempty_text(value, "adjudication_sha", source, name),
+        _optional_nonempty_text(value, "adjudication_status", source, name),
+        _optional_nonempty_text(value, "gate_sha", source, name),
+        _optional_nonempty_text(value, "gate_status", source, name),
+        _optional_nonempty_text(value, "landed_sha", source, name),
+        _optional_nonempty_text(value, "close_evidence_sha", source, name),
+        _optional_nonempty_text(value, "recovery_kind", source, name),
+        _optional_bool(value, "delivery_conflict", source, name),
     )
+    return replace(run, state=policy.derived_work_run_state(run))
 
 
 def _optional_nonempty_text(
@@ -407,6 +714,18 @@ def _optional_nonnegative_int(
         return None
     item = value[field_name]
     if isinstance(item, bool) or not isinstance(item, int) or item < 0:
+        _fact_fail(f"source={source}: {collection} {field_name}")
+    return item
+
+
+def _optional_bool(
+    value: dict[str, object], field_name: str, source: Path, collection: str
+) -> bool:
+    """Read an optional boolean marker without accepting integer coercion."""
+    if field_name not in value:
+        return False
+    item = value[field_name]
+    if not isinstance(item, bool):
         _fact_fail(f"source={source}: {collection} {field_name}")
     return item
 
