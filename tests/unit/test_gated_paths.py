@@ -157,7 +157,12 @@ def test_a_branch_sharing_no_history_with_main_is_refused_not_passed(tmp_path: P
 def test_a_gated_edit_matching_main_s_tip_is_refused_not_waved_through(
     tmp_path: Path,
 ) -> None:
-    """A branch-side edit whose result equals main's tip still changed the path."""
+    """A branch-side edit whose result equals main's tip still changed the path.
+
+    The refusal names the branch's own delta — merge-base to worktree — so the
+    human has a route out; the round-one tip-bound binding refused this shape
+    as unreadable because the tip diff was empty (#623).
+    """
     repo = repository(tmp_path)
     advance_main(repo, payload="main's wording\n")
     (repo / "AGENTS.md").write_text("main's wording\n", encoding="utf-8")
@@ -167,7 +172,61 @@ def test_a_gated_edit_matching_main_s_tip_is_refused_not_waved_through(
     report = gated_paths.check(repo, tmp_path / "approvals", issue=ISSUE)
 
     assert report.exit_code == 1
-    assert "refusal=gated_content_unreadable" in report.lines
+    assert "refusal=approval_missing" in report.lines
+
+
+def test_an_approval_recorded_while_behind_survives_the_landing_rebase(
+    tmp_path: Path,
+) -> None:
+    """The approve-before-rebase construction, pinned end to end (#623).
+
+    A human approves while the branch is behind on the same gated path, and
+    ``just land`` rebases before gating.  The approval names the branch's own
+    delta — measured from the merge-base — so the replay carries it, where a
+    tip-bound record would demand a second approval for a diff that had grown
+    a reversion of main's edit.
+    """
+    repo = repository(tmp_path)
+    store = tmp_path / "approvals"
+    # The middle line keeps main's edit and the branch's edit from touching, so
+    # the landing rebase merges cleanly the way `just land` needs it to.
+    (repo / "AGENTS.md").write_text(
+        "alpha instructions\nmiddle instructions\nbeta instructions\n", encoding="utf-8"
+    )
+    git(repo, "add", "AGENTS.md")
+    git(repo, "commit", "-q", "-m", "two gated lines")
+    git(repo, "update-ref", "refs/remotes/origin/main", "HEAD")
+
+    git(repo, "checkout", "-q", "-b", "main-ahead", "origin/main")
+    (repo / "AGENTS.md").write_text(
+        "alpha moved by main\nmiddle instructions\nbeta instructions\n", encoding="utf-8"
+    )
+    git(repo, "add", "AGENTS.md")
+    git(repo, "commit", "-q", "-m", "main moves the first line")
+    git(repo, "update-ref", "refs/remotes/origin/main", "HEAD")
+    git(repo, "checkout", "-q", "work")
+
+    (repo / "AGENTS.md").write_text(
+        "alpha instructions\nmiddle instructions\nbeta moved by branch\n", encoding="utf-8"
+    )
+    content_id = approve(repo, store)
+    git(repo, "add", "AGENTS.md")
+    git(repo, "commit", "-q", "-m", "branch moves the third line")
+
+    before = gated_paths.check(repo, store, issue=ISSUE)
+
+    assert before.exit_code == 0
+    assert any(f"content_id={content_id}" in line for line in before.lines)
+
+    git(repo, "rebase", "origin/main")
+
+    report = gated_paths.check(repo, store, issue=ISSUE)
+
+    assert report.exit_code == 0
+    assert any(
+        "approval=carried" in line and "proof=exact_three_way_replay" in line
+        for line in report.lines
+    )
 
 
 def test_a_codex_shaped_agents_edit_is_caught_without_running_the_hook(tmp_path: Path) -> None:
@@ -252,7 +311,7 @@ def test_a_change_id_approval_survives_an_unrelated_commit_before_approval(
     assert added
     assert target == gated_paths.approval_path(store, ISSUE, approval.content_id)
     assert approval.change_id == before.change_id
-    assert approval.content_id != before.content_id
+    assert approval.content_id == before.content_id
     report = gated_paths.check(repo, store, issue=ISSUE)
 
     assert report.exit_code == 0
@@ -461,7 +520,8 @@ def test_an_approval_survives_a_clean_rebase_over_an_unrelated_same_path_edit(
     )
 
 
-def test_an_approval_does_not_survive_a_changed_hunk_preimage(tmp_path: Path) -> None:
+def test_an_approval_does_not_cover_a_change_main_s_edit_displaced(tmp_path: Path) -> None:
+    """Adopting main's competing resolution of the same hunk orphans the approval."""
     repo = repository(tmp_path)
     store = tmp_path / "approvals"
     (repo / "AGENTS.md").write_text("heading\nbefore\nfooter\n", encoding="utf-8")
@@ -480,11 +540,13 @@ def test_an_approval_does_not_survive_a_changed_hunk_preimage(tmp_path: Path) ->
     git(repo, "commit", "-q", "-m", "upstream changes approved hunk")
     git(repo, "update-ref", "refs/remotes/origin/main", "HEAD")
     git(repo, "checkout", "-q", "work")
+    (repo / "AGENTS.md").write_text("heading\nupstream\nfooter\n", encoding="utf-8")
 
     report = gated_paths.check(repo, store, issue=ISSUE)
 
     assert report.exit_code == 1
     assert "refusal=approval_missing" in report.lines
+    assert any("not_carried=change_id_mismatch" in line for line in report.lines)
     assert any(line.startswith("content_id=") and earlier not in line for line in report.lines)
 
 
@@ -531,6 +593,7 @@ def test_a_later_unrelated_edit_to_the_same_path_needs_another_approval(tmp_path
 
     assert report.exit_code == 1
     assert "refusal=approval_missing" in report.lines
+    assert any("not_carried=change_id_mismatch" in line for line in report.lines)
     assert any(line.startswith("content_id=") and earlier not in line for line in report.lines)
 
 
@@ -572,16 +635,25 @@ def test_an_identical_hunk_moved_elsewhere_does_not_reuse_the_approval(tmp_path:
 def test_an_approval_does_not_cross_to_a_non_descendant_baseline(tmp_path: Path) -> None:
     repo = repository(tmp_path)
     store = tmp_path / "approvals"
-    # Two sibling baselines off one root keep HEAD and main readable to each other
-    # while the approved baseline stays off the moved main's ancestry: the carry
-    # rung must reject it, not the merge-base read refusing first (#623).
-    approved_base = git(repo, "commit-tree", "HEAD^{tree}", "-p", "HEAD", "-m", "approved base")
-    git(repo, "update-ref", "refs/remotes/origin/main", approved_base)
+    # A two-deep branch history keeps a sibling rebased main's merge-base below
+    # the approved baseline: the carry rung must reject it, not the merge-base
+    # read refusing first (#623).
+    (repo / "ordinary.txt").write_text("one\n", encoding="utf-8")
+    git(repo, "add", "ordinary.txt")
+    git(repo, "commit", "-q", "-m", "first branch commit")
+    (repo / "ordinary.txt").write_text("two\n", encoding="utf-8")
+    git(repo, "add", "ordinary.txt")
+    git(repo, "commit", "-q", "-m", "second branch commit")
+    git(repo, "update-ref", "refs/remotes/origin/main", "HEAD")
+
+    advance_main(repo)
     (repo / "AGENTS.md").write_text("approved instructions\n", encoding="utf-8")
     approve(repo, store)
 
-    divergent_base = git(repo, "commit-tree", "HEAD^{tree}", "-p", "HEAD", "-m", "divergent main")
-    git(repo, "update-ref", "refs/remotes/origin/main", divergent_base)
+    sibling = git(
+        repo, "commit-tree", "HEAD^{tree}", "-p", "HEAD~1", "-m", "sibling of the branch tip"
+    )
+    git(repo, "update-ref", "refs/remotes/origin/main", sibling)
     report = gated_paths.check(repo, store, issue=ISSUE)
 
     assert report.exit_code == 1

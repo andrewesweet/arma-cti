@@ -421,14 +421,19 @@ def _normalised_diff(diff: bytes) -> bytes:
             pending_index = None
         if INDEX_LINE.match(line):
             pending_index = line
+        elif HUNK_RANGES.match(line):
+            # The funcname guess trailing the closing ``@@`` is derived from
+            # surrounding baseline lines, so it moves when main moves another
+            # hunk of the same file; the change an approval names must not.
+            lines.append(b"@@\n")
         else:
-            lines.append(HUNK_RANGES.sub(b"@@", line))
+            lines.append(line)
     if pending_index is not None:
         lines.append(b"index\n")
     return b"".join(lines)
 
 
-def _path_diff(root: Path, path: str) -> bytes:
+def _path_diff(root: Path, path: str, base: str) -> bytes:
     """Return deterministic full-index diff bytes for one current path."""
     return _git_bytes(
         "diff",
@@ -442,7 +447,7 @@ def _path_diff(root: Path, path: str) -> bytes:
         "--binary",
         "--diff-algorithm=myers",
         "--no-indent-heuristic",
-        BASE,
+        base,
         "--",
         path,
         cwd=root,
@@ -469,7 +474,7 @@ def _change_id(path: str, baseline: bytes, current: bytes, diff: bytes) -> str:
         change = b"deletion\0" + baseline
     else:
         if not diff:
-            raise GitError(("diff", BASE, "--", path), "path has no diff to bind")
+            raise GitError(("diff", "merge-base", "--", path), "path has no diff to bind")
         change = b"diff\0" + _normalised_diff(diff)
     payload = b"gated-path-change-v2\0" + path.encode("utf-8") + b"\0" + change
     return hashlib.sha256(payload).hexdigest()
@@ -483,17 +488,24 @@ def _approval_id(path: str, baseline: bytes, current: bytes) -> str:
 
 
 def binding_of(root: Path, path: str) -> ChangeBinding:
-    """Compute exact state and both base-independent change identities."""
-    baseline = _git_bytes("ls-tree", "-z", BASE, "--", path, cwd=root)
+    """Compute exact state and both base-independent change identities.
+
+    The baseline is the merge-base of ``HEAD`` and ``origin/main``, the same
+    commit ``changed_paths`` measures from: an approval names the branch's own
+    delta, so a tip-bound record would swallow ``main``'s edit as a reversion
+    and could never survive the rebase ``just land`` performs before gating.
+    """
+    base = merge_base(root)
+    baseline = _git_bytes("ls-tree", "-z", base, "--", path, cwd=root)
     current = _current_payload(root, path)
-    diff = b"" if not baseline or current == b"absent\0" else _path_diff(root, path)
-    base_sha = _git_bytes("rev-parse", "--verify", f"{BASE}^{{commit}}", cwd=root)
+    diff = b"" if not baseline or current == b"absent\0" else _path_diff(root, path, base)
+    base_sha = _git_bytes("rev-parse", "--verify", f"{base}^{{commit}}", cwd=root)
     try:
         decoded_base = base_sha.decode("ascii").strip()
     except UnicodeDecodeError as unreadable:
-        raise GitError(("rev-parse", BASE), f"non-ASCII commit id: {unreadable}") from unreadable
+        raise GitError(("rev-parse", base), f"non-ASCII commit id: {unreadable}") from unreadable
     if not COMMIT_SHA.fullmatch(decoded_base):
-        raise GitError(("rev-parse", BASE), f"invalid commit id: {decoded_base!r}")
+        raise GitError(("rev-parse", base), f"invalid commit id: {decoded_base!r}")
     binary = any(line.startswith(BINARY_FOLLOWS) for line in diff.splitlines())
     return ChangeBinding(
         _state_id(path, decoded_base, baseline, current),
@@ -1069,7 +1081,13 @@ def check(  # noqa: C901, PLR0911, PLR0912, PLR0915 — one report per fail-clos
         except ApprovalError as refusal:
             return refused(refusal.kind, (f"path={path}", refusal.detail), refusal.action)
         for prior_path, prior in stored:
-            if prior.issue != issue or prior.path != path or prior.change_id != binding.change_id:
+            if prior.issue != issue or prior.path != path:
+                continue
+            if prior.change_id != binding.change_id:
+                # A record bound to a baseline this binding no longer computes
+                # (tip-bound records written while behind, or a stale preimage)
+                # is named here rather than silently skipped (#623).
+                not_carried.append(f"prior_approval={prior_path} not_carried=change_id_mismatch")
                 continue
             try:
                 carries, reason = _approval_carries(root, path, prior, binding)
