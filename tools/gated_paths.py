@@ -333,15 +333,44 @@ def _git_bytes(*args: str, cwd: Path) -> bytes:
     return done.stdout
 
 
+def merge_base(root: Path) -> str:
+    """Return the merge-base of ``HEAD`` and ``origin/main``.
+
+    The branch's own change is measured from here.  A diff from ``BASE``'s tip
+    also lists every path the branch is merely behind on, which refused #381's
+    work for a gated edit it never made; unreadable ends or unrelated history
+    are typed refusals, because a change set that cannot be known is not an
+    empty one.
+    """
+    args_run = ("merge-base", "HEAD", BASE)
+    try:
+        raw = _git_bytes(*args_run, cwd=root)
+    except GitError as failure:
+        raise GitError(
+            failure.args_run, failure.stderr or f"no merge-base with {BASE}"
+        ) from failure
+    decoded = raw.decode("ascii", errors="replace").strip()
+    if not COMMIT_SHA.fullmatch(decoded):
+        raise GitError(args_run, f"invalid merge-base commit id: {decoded!r}")
+    return decoded
+
+
 def changed_paths(root: Path) -> tuple[str, ...]:
-    """Return committed, staged, unstaged and untracked paths against ``origin/main``."""
+    """Return committed, staged, unstaged and untracked paths this branch changes.
+
+    The committed leg diffs from the merge-base with ``origin/main``, not from
+    its tip, so a path only ``main`` has moved ahead on is not this branch's
+    change.  Staged, unstaged and untracked legs are the working tree's own and
+    are unaffected by the base.
+    """
+    base = merge_base(root)
     changed = _git_bytes(
         "diff",
         "--name-only",
         "--no-renames",
         "--no-ext-diff",
         "-z",
-        BASE,
+        base,
         "--",
         cwd=root,
     )
@@ -356,7 +385,7 @@ def changed_paths(root: Path) -> tuple[str, ...]:
         decoded = [item.decode("utf-8") for item in (changed + untracked).split(b"\0") if item]
     except UnicodeDecodeError as unreadable:
         raise GitError(
-            ("diff", "--name-only", BASE), f"non-UTF-8 path: {unreadable}"
+            ("diff", "--name-only", base), f"non-UTF-8 path: {unreadable}"
         ) from unreadable
     return tuple(dict.fromkeys(decoded))
 

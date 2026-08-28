@@ -87,6 +87,89 @@ def approve(repo: Path, store: Path, path: str = "AGENTS.md") -> str:
     return content_id
 
 
+def advance_main(repo: Path, path: str = "AGENTS.md", payload: str = "main moved it\n") -> None:
+    """Move ``origin/main`` ahead on a gated path while ``work`` stays behind."""
+    git(repo, "checkout", "-q", "-b", "main-ahead", "origin/main")
+    (repo / path).write_text(payload, encoding="utf-8")
+    git(repo, "add", path)
+    git(repo, "commit", "-q", "-m", "main edits a gated path")
+    git(repo, "update-ref", "refs/remotes/origin/main", "HEAD")
+    git(repo, "checkout", "-q", "work")
+
+
+def test_a_branch_behind_on_a_gated_path_is_not_refused_for_main_s_edit(tmp_path: Path) -> None:
+    """The check asks what the branch changed, not how main differs from it (#623)."""
+    repo = repository(tmp_path)
+    advance_main(repo)
+    (repo / "ordinary.txt").write_text("branch work\n", encoding="utf-8")
+    git(repo, "add", "ordinary.txt")
+    git(repo, "commit", "-q", "-m", "branch touches no gated path")
+
+    report = gated_paths.check(repo, tmp_path / "approvals", issue=ISSUE)
+
+    assert report.exit_code == 0
+    assert report.lines[0] == "gated_paths=ok changed=0"
+
+
+def test_a_branch_that_edits_a_gated_path_main_also_moved_is_still_refused(
+    tmp_path: Path,
+) -> None:
+    """Being behind does not wave through a gated edit the branch itself made."""
+    repo = repository(tmp_path)
+    advance_main(repo)
+    (repo / "AGENTS.md").write_text("branch edits it too\n", encoding="utf-8")
+    git(repo, "add", "AGENTS.md")
+    git(repo, "commit", "-q", "-m", "branch edits the gated path")
+
+    report = gated_paths.check(repo, tmp_path / "approvals", issue=ISSUE)
+
+    assert report.exit_code == 1
+    assert "refusal=approval_missing" in report.lines
+    assert "path=AGENTS.md" in report.lines
+
+
+def test_a_staged_gated_edit_is_refused_even_while_main_is_ahead_on_it(tmp_path: Path) -> None:
+    """The working-tree legs are the branch's own change and ignore the base."""
+    repo = repository(tmp_path)
+    advance_main(repo)
+    (repo / "AGENTS.md").write_text("staged branch edit\n", encoding="utf-8")
+    git(repo, "add", "AGENTS.md")
+
+    report = gated_paths.check(repo, tmp_path / "approvals", issue=ISSUE)
+
+    assert report.exit_code == 1
+    assert "refusal=approval_missing" in report.lines
+
+
+def test_a_branch_sharing_no_history_with_main_is_refused_not_passed(tmp_path: Path) -> None:
+    """An unknowable change set is a typed refusal, never an empty one (#623)."""
+    repo = repository(tmp_path)
+    git(repo, "checkout", "-q", "--orphan", "island")
+    git(repo, "commit", "-q", "-m", "orphan history", "--allow-empty")
+
+    report = gated_paths.check(repo, tmp_path / "approvals", issue=ISSUE)
+
+    assert report.exit_code == 1
+    assert "refusal=gated_paths_unreadable" in report.lines
+    assert "command=git merge-base HEAD origin/main" in report.lines
+
+
+def test_a_gated_edit_matching_main_s_tip_is_refused_not_waved_through(
+    tmp_path: Path,
+) -> None:
+    """A branch-side edit whose result equals main's tip still changed the path."""
+    repo = repository(tmp_path)
+    advance_main(repo, payload="main's wording\n")
+    (repo / "AGENTS.md").write_text("main's wording\n", encoding="utf-8")
+    git(repo, "add", "AGENTS.md")
+    git(repo, "commit", "-q", "-m", "branch lands main's exact content")
+
+    report = gated_paths.check(repo, tmp_path / "approvals", issue=ISSUE)
+
+    assert report.exit_code == 1
+    assert "refusal=gated_content_unreadable" in report.lines
+
+
 def test_a_codex_shaped_agents_edit_is_caught_without_running_the_hook(tmp_path: Path) -> None:
     repo = repository(tmp_path)
     (repo / "AGENTS.md").write_text("unauthorised codex edit\n", encoding="utf-8")
@@ -489,12 +572,16 @@ def test_an_identical_hunk_moved_elsewhere_does_not_reuse_the_approval(tmp_path:
 def test_an_approval_does_not_cross_to_a_non_descendant_baseline(tmp_path: Path) -> None:
     repo = repository(tmp_path)
     store = tmp_path / "approvals"
-    baseline_tree = git(repo, "rev-parse", "origin/main^{tree}")
+    # Two sibling baselines off one root keep HEAD and main readable to each other
+    # while the approved baseline stays off the moved main's ancestry: the carry
+    # rung must reject it, not the merge-base read refusing first (#623).
+    approved_base = git(repo, "commit-tree", "HEAD^{tree}", "-p", "HEAD", "-m", "approved base")
+    git(repo, "update-ref", "refs/remotes/origin/main", approved_base)
     (repo / "AGENTS.md").write_text("approved instructions\n", encoding="utf-8")
     approve(repo, store)
 
-    unrelated_base = git(repo, "commit-tree", baseline_tree, "-m", "unrelated root")
-    git(repo, "update-ref", "refs/remotes/origin/main", unrelated_base)
+    divergent_base = git(repo, "commit-tree", "HEAD^{tree}", "-p", "HEAD", "-m", "divergent main")
+    git(repo, "update-ref", "refs/remotes/origin/main", divergent_base)
     report = gated_paths.check(repo, store, issue=ISSUE)
 
     assert report.exit_code == 1
