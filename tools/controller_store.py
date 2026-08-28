@@ -126,6 +126,18 @@ class ControllerLaunchStaleError(RuntimeError):
         super().__init__(f"refusal={self.code} work_item={work_item_key}")
 
 
+class ControllerResumeIndeterminateError(RuntimeError):
+    """A journaled cycle was interrupted between the planned record and its apply."""
+
+    code: Final = "controller_resume_indeterminate"
+
+    def __init__(self, cycle_id: str, action_kind: str) -> None:
+        """Refuse rather than infer whether the interrupted apply ran."""
+        self.cycle_id = cycle_id
+        self.action_kind = action_kind
+        super().__init__(f"refusal={self.code} cycle={cycle_id} action={action_kind}")
+
+
 # Keep the short refusal names available to callers while satisfying the
 # repository's exception naming convention.
 ControllerStateUnreadable = ControllerStateUnreadableError
@@ -133,6 +145,7 @@ ControllerLockHeld = ControllerLockHeldError
 ControllerActionUnsupported = ControllerActionUnsupportedError
 ControllerLaunchStale = ControllerLaunchStaleError
 ControllerActionStale = ControllerLaunchStaleError
+ControllerResumeIndeterminate = ControllerResumeIndeterminateError
 
 
 @dataclass(frozen=True, slots=True)

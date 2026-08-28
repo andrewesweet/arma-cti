@@ -764,15 +764,6 @@ def test_cli_fact_source_failure_is_a_typed_refusal(
     assert "refusal=control_facts_unreadable" in capfd.readouterr().err
 
 
-def _empty_gather(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Keep the runtime collector off the network with an empty in-flight set."""
-    monkeypatch.setattr(
-        ports.queue_policy,
-        "gather",
-        lambda _root, _dispatch: ports.queue_policy.InFlight((), (), "read"),
-    )
-
-
 class RefusingDispatchPort:
     """Raise the existing typed provider refusal at the launch boundary, counted."""
 
@@ -787,18 +778,10 @@ class RefusingDispatchPort:
         raise error
 
 
-def test_resume_from_planned_re_attempts_a_launch_nothing_has_observed(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    """The planned-phase launch record is intent, never evidence that the apply ran."""
-    _empty_gather(monkeypatch)
+def _planned_launch_journal(tmp_path: Path, dispatch_port: RefusingDispatchPort) -> Any:  # noqa: ANN401 — tools are loaded dynamically by the test harness
+    """Run one launch cycle whose apply refuses, leaving the journal at ``planned``."""
     item = policy.WorkItemFact("item-1", "open", issue=1)
-    collector = ports.RuntimeFactCollector(
-        ports.FakeFactCollector(coordination_facts((item,))),
-        tmp_path,
-        tmp_path / "dispatches",
-    )
-    dispatch_port = RefusingDispatchPort()
+    collector = ports.FakeFactCollector(coordination_facts((item,)))
     store = store_module.ControllerStore(tmp_path / "controller")
     instance = controller.Controller(
         fact_collector=collector,
@@ -812,60 +795,68 @@ def test_resume_from_planned_re_attempts_a_launch_nothing_has_observed(
             ports.RecordingActionPort(),
         ),
     )
-
     with pytest.raises(controller.planning.TrackerError, match="quota_exhausted"):
         instance.run_cycle(dry_run=False)
-    with pytest.raises(controller.planning.TrackerError, match="quota_exhausted"):
+    return instance, store
+
+
+def test_resume_from_planned_refuses_a_launch_rather_than_inferring(tmp_path: Path) -> None:
+    """Nothing observed means the apply's fate is unknowable, so resume refuses."""
+    dispatch_port = RefusingDispatchPort()
+    instance, store = _planned_launch_journal(tmp_path, dispatch_port)
+
+    with pytest.raises(
+        controller.store_module.ControllerResumeIndeterminate,
+        match=r"^refusal=controller_resume_indeterminate",
+    ):
         instance.run_cycle(dry_run=False)
 
-    assert dispatch_port.attempts == 2
+    assert dispatch_port.attempts == 1
     rows = [
         json.loads(line) for line in store.journal_path.read_text(encoding="utf-8").splitlines()
     ]
     assert [row["phase"] for row in rows] == ["planned"]
 
 
-def test_resume_from_planned_does_not_duplicate_a_launch_the_world_shows(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+def test_resume_from_planned_refuses_rather_than_confirming_a_world_seen_launch(
+    tmp_path: Path,
 ) -> None:
-    """A crash between apply and journal still sees the run the world reports."""
-    _empty_gather(monkeypatch)
+    """A live run in the world proves nothing about the interrupted apply."""
     item = policy.WorkItemFact("item-1", "open", issue=1)
     planned = coordination_facts((item,))
     observed = coordination_facts(
         (item,),
         runs=(policy.WorkRunFact("dispatch-x", "running", work_item_key="item-1", issue=1),),
     )
-    collector = ports.RuntimeFactCollector(
-        SequenceFactCollector(planned, planned, observed),
-        tmp_path,
-        tmp_path / "dispatches",
+    dispatch_port = RefusingDispatchPort()
+    # The fresh cycle collects twice — once to plan, once to recheck the
+    # launch snapshot — so the observed picture must wait behind two planned
+    # reads and only reach a resume.
+    collector = SequenceFactCollector(planned, planned, observed)
+    store = store_module.ControllerStore(tmp_path / "controller")
+    instance = controller.Controller(
+        fact_collector=collector,
+        clock=ports.FakeClock("2026-08-27T12:00:00+00:00"),
+        identity=ports.FakeIdentity("test-controller"),
+        store=store,
+        action_ports=ports.ActionPorts(
+            ports.RecordingActionPort(),
+            ports.RecordingActionPort(),
+            dispatch_port,
+            ports.RecordingActionPort(),
+        ),
     )
-    instance, store, mutation_ports = make_controller_with_collector(
-        tmp_path / "controller", collector
-    )
+    with pytest.raises(controller.planning.TrackerError, match="quota_exhausted"):
+        instance.run_cycle(dry_run=False)
 
-    instance.run_cycle(dry_run=False)
-    assert len(mutation_ports[2].applied) == 1
+    with pytest.raises(controller.store_module.ControllerResumeIndeterminate):
+        instance.run_cycle(dry_run=False)
 
-    # Replay the exact crash window: the launch applied, the journal kept only
-    # the planned phase.
+    assert dispatch_port.attempts == 1
     rows = [
         json.loads(line) for line in store.journal_path.read_text(encoding="utf-8").splitlines()
     ]
-    store.journal_path.write_text(
-        "".join(json.dumps(row) + "\n" for row in rows if row["phase"] == "planned"),
-        encoding="utf-8",
-    )
-    store.view_path.unlink()
-
-    instance.run_cycle(dry_run=False)
-
-    assert len(mutation_ports[2].applied) == 1
-    rows = [
-        json.loads(line) for line in store.journal_path.read_text(encoding="utf-8").splitlines()
-    ]
-    assert [row["phase"] for row in rows] == ["planned", "applied", "confirmed"]
+    assert [row["phase"] for row in rows] == ["planned"]
 
 
 def _landed_run(**overrides: object) -> Any:  # noqa: ANN401 — dynamically loaded policy module
