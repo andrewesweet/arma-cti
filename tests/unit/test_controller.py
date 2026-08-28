@@ -818,6 +818,24 @@ def test_resume_from_planned_refuses_a_launch_rather_than_inferring(tmp_path: Pa
     assert [row["phase"] for row in rows] == ["planned"]
 
 
+def test_resume_from_planned_refuses_a_launch_on_dry_run_too(tmp_path: Path) -> None:
+    """The preview decides over the same policy path, so an indeterminate launch refuses."""
+    dispatch_port = RefusingDispatchPort()
+    instance, store = _planned_launch_journal(tmp_path, dispatch_port)
+
+    with pytest.raises(
+        controller.store_module.ControllerResumeIndeterminate,
+        match=r"^refusal=controller_resume_indeterminate",
+    ):
+        instance.run_cycle(dry_run=True)
+
+    assert dispatch_port.attempts == 1
+    rows = [
+        json.loads(line) for line in store.journal_path.read_text(encoding="utf-8").splitlines()
+    ]
+    assert [row["phase"] for row in rows] == ["planned"]
+
+
 def test_resume_from_planned_refuses_rather_than_confirming_a_world_seen_launch(
     tmp_path: Path,
 ) -> None:

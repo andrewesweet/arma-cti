@@ -247,6 +247,19 @@ class Controller:
             reason = "resume_facts_missing"
             raise store_module.ControllerStateUnreadable(reason)
         actions = previous.actions
+        if previous.phase == "planned":
+            for action in actions:
+                if self._is_launch_action(action):
+                    # The planned record cannot distinguish crash-before-apply
+                    # from crash-after-apply, so whether this launch ran is
+                    # unknowable from the journal.  The controller refuses
+                    # rather than infers, and stays stopped until the cycle is
+                    # resolved by hand; #631 carries that resolution work.
+                    # The refusal is a decision, so the dry-run preview makes
+                    # it too — same policy path, only the writes differ.
+                    raise store_module.ControllerResumeIndeterminate(
+                        previous.last_cycle_id, action.kind
+                    )
         if dry_run:
             return CycleReport(
                 cycle_id=previous.last_cycle_id,
@@ -264,15 +277,6 @@ class Controller:
         payload = previous.confirmed
         if previous.phase == "planned":
             for action in actions:
-                if self._is_launch_action(action):
-                    # The planned record cannot distinguish crash-before-apply
-                    # from crash-after-apply, so whether this launch ran is
-                    # unknowable from the journal.  The controller refuses
-                    # rather than infers, and stays stopped until the cycle is
-                    # resolved by hand; #631 carries that resolution work.
-                    raise store_module.ControllerResumeIndeterminate(
-                        previous.last_cycle_id, action.kind
-                    )
                 self._apply(action)
             self._record(previous.last_cycle_id, "applied", payload)
         self._record(previous.last_cycle_id, "confirmed", payload)
