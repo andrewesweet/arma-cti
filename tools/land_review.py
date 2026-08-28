@@ -1129,7 +1129,8 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
             Refusal(
                 "review_loop_unreadable",
                 (f"loop={loop_file}", f"reason={error}"),
-                "The loop state for this issue cannot be read as a version 1 loop."
+                "The loop state for this issue cannot be read as a loop document this"
+                " reader knows (versions 1 or 2)."
                 " Repair the record at the path above — a check that could not run"
                 " is not a check that passed (#41). Nothing was pushed.",
             ),

@@ -2591,9 +2591,10 @@ def _self_review_existing(root: Path, issue: int) -> Loop:
     """
     try:
         return _read_loop(root, issue)
-    except ReviewLoopError as none_yet:
+    except ReviewLoopError:
+        # A file exists but will not parse: re-raise, it is a record that cannot govern.
         if loop_path(root, issue).exists():
-            raise none_yet
+            raise
         return Loop(0, (), None)
 
 
