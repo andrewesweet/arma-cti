@@ -668,6 +668,34 @@ def test_the_protocol_states_round_one_and_the_in_session_rule() -> None:
     assert "never substitutes for" in brief.review_loop.SELF_REVIEW_PROTOCOL
 
 
+def test_the_protocol_carries_the_pipeline_and_usable_commands() -> None:
+    """Criterion 2 whole: #588's pipeline, its exits, the failure retrospective, `--issue`."""
+    protocol = brief.review_loop.SELF_REVIEW_PROTOCOL
+    for stage in (
+        "**Plan**",
+        "**Plan review**",
+        "**Implementation**",
+        "**Implementation review**",
+        "**Exchange**",
+    ):
+        assert stage in protocol
+    for bound in (
+        "verification question answered from outside the plan",
+        "restated as a risk, never carried as a fact",
+        "not** an exit criterion here",
+        "**corrective**",
+        "**generative**",
+        "**unready**",
+        "**wrong** and escalates to the human",
+        "post a self-retrospective",
+        "--issue <N>",
+        "self-converge --issue <N> --sha",
+        "self-gate-fix --issue <N> --sha",
+        "self-fail --issue <N>",
+    ):
+        assert bound in protocol
+
+
 def test_the_protocol_is_scoped_by_seat_name_never_by_a_flag() -> None:
     """`retro` lands and `recon` is read-only, yet neither is asked to self-review."""
     assert "## Self-review" not in composed(seat=brief.derive_seat("retro"))

@@ -2806,13 +2806,14 @@ def test_the_self_review_block_never_disturbs_the_independent_loop() -> None:
     loop = review_loop.first_review((finding_value,))
     record = review_loop.self_review_round(review_loop.SelfReview(), ())
     record = review_loop.self_review_converge(record, "a" * 40)
-    carried = review_loop.Loop(loop.review_rounds, loop.findings, record)
+    carried = loop._replace(self_review=record)
     stored = json.loads(json.dumps(review_loop.render_loop(589, carried)))
     parsed = review_loop.parse_loop(stored)
     assert parsed.review_rounds == 0
     assert parsed.findings == (review_loop.Finding("F1", review_loop.HIGH, 0),)
     assert parsed.self_review is not None
     assert parsed.self_review.converged_on == "a" * 40
+    assert parsed.independent_opened is True
 
 
 def test_the_independent_loop_advances_without_disturbing_the_block() -> None:
@@ -2821,10 +2822,7 @@ def test_the_independent_loop_advances_without_disturbing_the_block() -> None:
     record = review_loop.self_review_converge(record, "a" * 40)
     loop = review_loop.first_review((review_loop.Finding("F1", review_loop.HIGH, 0),))
     loop = review_loop.next_round(loop, (review_loop.Finding("F2", review_loop.HIGH, 1),))
-    carried = review_loop.Loop(
-        review_rounds=1, findings=loop.findings, self_review=review_loop.SelfReview()
-    )
-    carried = carried._replace(self_review=record)
+    carried = loop._replace(self_review=record)
     stored = json.loads(json.dumps(review_loop.render_loop(589, carried)))
     parsed = review_loop.parse_loop(stored)
     assert parsed.review_rounds == 1
@@ -2835,6 +2833,7 @@ def test_the_independent_loop_advances_without_disturbing_the_block() -> None:
     assert parsed.self_review is not None
     assert parsed.self_review.converged_on == "a" * 40
     assert parsed.self_review.rounds[0].number == 1
+    assert parsed.independent_opened is True
 
 
 def test_the_schema_version_is_incremented_and_v1_reads_as_no_record() -> None:
@@ -3025,7 +3024,7 @@ def test_open_adopts_a_file_holding_only_a_self_review_record(tmp_path: Path) ->
 def test_open_still_refuses_a_second_open_of_a_loop_with_state(tmp_path: Path) -> None:
     """A file carrying the independent loop's own state is a second open, still refused."""
     root = str(tmp_path / "review")
-    journal = str(tmp_path / "journal.jsonl")
+    journal = str(tmp_path / "review" / "journal.jsonl")
     assert (
         review_loop.main(
             [
@@ -3046,3 +3045,217 @@ def test_open_still_refuses_a_second_open_of_a_loop_with_state(tmp_path: Path) -
         review_loop.main(["open", "--issue", "589", "--root", root, "--journal", journal])
         == review_loop.REFUSED
     )
+
+
+def test_open_refuses_after_an_opened_clean_round_zero(tmp_path: Path) -> None:
+    """The opened fact is carried, never inferred: opened clean at round zero still refuses.
+
+    Round two's Critical: `open` on a self-review-only file adopts it, and the adopted
+    file is then indistinguishable from an independent round zero opened clean — so a
+    second `open` succeeded, silently re-opening the reviewer's loop. `independent_opened`
+    is the fact that separates the two, so the second one refuses.
+    """
+    root = str(tmp_path / "review")
+    journal = str(tmp_path / "review" / "journal.jsonl")
+    # Self-review first, then the reviewer's clean round zero adopts the block.
+    assert review_loop.main(["self-round", "--issue", "589", "--root", root]) == review_loop.OK
+    assert (
+        review_loop.main(["open", "--issue", "589", "--root", root, "--journal", journal])
+        == review_loop.OK
+    )
+    assert (
+        review_loop.main(["open", "--issue", "589", "--root", root, "--journal", journal])
+        == review_loop.REFUSED
+    )
+
+
+def test_sync_treats_a_self_review_only_file_as_an_unopened_loop(tmp_path: Path) -> None:
+    """A self-review-only file is round zero to `sync`, never a phantom round one.
+
+    The first independent findings land at round zero because the independent loop has
+    not been opened — the file's `independent_opened` says so — even though a `loop.json`
+    exists and `review_rounds` is already 0.
+    """
+    root = tmp_path / "review"
+    dispatch_root = stage_verdict(tmp_path, findings=(("R1", "high"),))
+    assert review_loop.main(["self-round", "--issue", "334", "--root", str(root)]) == (
+        review_loop.OK
+    )
+
+    assert (
+        review_loop.main(sync_args(root, tmp_path / "journal.jsonl", dispatch_root))
+        == review_loop.OK
+    )
+
+    loop = review_loop.load_loop(root, 334)
+    assert loop.independent_opened is True
+    assert loop.review_rounds == 0
+    assert [(f.id, f.round_raised) for f in loop.findings] == [("R1", 0)]
+    assert loop.self_review is not None and loop.self_review.rounds[0].number == 1
+
+
+def test_sync_opens_round_zero_for_a_clean_verdict_on_a_self_review_only_file(
+    tmp_path: Path,
+) -> None:
+    """A clean first verdict over a self-review-only file is still an observed round zero."""
+    root = tmp_path / "review"
+    dispatch_root = stage_verdict(tmp_path, findings=())
+    assert review_loop.main(["self-round", "--issue", "334", "--root", str(root)]) == (
+        review_loop.OK
+    )
+
+    assert (
+        review_loop.main(sync_args(root, tmp_path / "journal.jsonl", dispatch_root))
+        == review_loop.OK
+    )
+
+    loop = review_loop.load_loop(root, 334)
+    assert loop.independent_opened is True
+    assert loop.review_rounds == 0
+    assert loop.findings == ()
+
+
+def test_sync_still_advances_a_loop_that_is_opened(tmp_path: Path) -> None:
+    """Once opened, the fold is the next round exactly as before."""
+    root = tmp_path / "review"
+    journal = tmp_path / "journal.jsonl"
+    dispatch_root = stage_verdict(tmp_path, findings=(("F1", "high"),))
+    assert review_loop.main(sync_args(root, journal, dispatch_root)) == review_loop.OK
+    stage_verdict(tmp_path, findings=(("F1", "high"), ("F2", "medium")))
+
+    assert review_loop.main(sync_args(root, journal, dispatch_root)) == review_loop.OK
+
+    loop = review_loop.load_loop(root, 334)
+    assert loop.independent_opened is True
+    assert loop.review_rounds == 1
+    assert [(f.id, f.round_raised) for f in loop.findings] == [("F1", 0), ("F2", 1)]
+
+
+def test_a_round_refuses_an_id_shared_across_finding_and_refutation() -> None:
+    """The whole-record identity contract holds at the write, not only at the next read."""
+    assert refused(
+        lambda: review_loop.self_review_round(
+            review_loop.SelfReview(),
+            (self_finding("S1"),),
+            (review_loop.SelfReviewRefutation("S1", "the evidence", 1),),
+        )
+    ) == review_loop.SELF_REVIEW_DUPLICATE_ERROR.format(id="S1")
+
+
+def test_stored_self_review_states_no_writer_produces_are_refused() -> None:
+    """The read half of the writers' preconditions: closed states stay consistent."""
+    finding = {
+        "id": "S1",
+        "category": review_loop.WORTH_ADDRESSING,
+        "origin": review_loop.PRE_EXISTING,
+        "reason": "a reason",
+        "round_raised": 1,
+    }
+    document = review_loop.render_loop(
+        589,
+        review_loop.Loop(review_rounds=0, findings=(), self_review=review_loop.SelfReview()),
+    )
+
+    def refused_block(**overrides: object) -> str:
+        stored = {
+            "rounds": [{**{"number": 1, "findings": [finding], "refutations": []}}],
+            **overrides,
+        }
+        return refused(lambda: review_loop.parse_loop({**document, "self_review": stored}))
+
+    # A sixth round: the budget is five, and the exit is self-fail, never another pass.
+    six = [
+        {
+            "number": number,
+            "findings": [{**finding, "round_raised": number}],
+            "refutations": [],
+        }
+        for number in range(1, 7)
+    ]
+    assert (
+        refused(lambda: review_loop.parse_loop({**document, "self_review": {"rounds": six}}))
+        == review_loop.SELF_REVIEW_SHAPE_ERROR
+    )
+    # A failure short of the budget.
+    assert refused_block(failure=review_loop.DISCOVERY_DOMINATED) == (
+        review_loop.SELF_REVIEW_SHAPE_ERROR
+    )
+    assert (
+        refused_block(
+            failure=review_loop.DISCOVERY_DOMINATED,
+            rounds=[
+                {
+                    "number": number,
+                    "findings": [{**finding, "round_raised": number}],
+                    "refutations": [],
+                }
+                for number in range(1, 6)
+            ]
+            + [{"number": 6, "findings": [], "refutations": []}],
+        )
+        == review_loop.SELF_REVIEW_SHAPE_ERROR
+    )
+    # Convergence without an observed clean last round.
+    assert refused_block(converged_on="a" * 40) == review_loop.SELF_REVIEW_SHAPE_ERROR
+    # Gate fixes without convergence.
+    assert (
+        refused_block(
+            rounds=[],
+            gate_fixes=[{"sha": "b" * 40, "reason": "confined to the gate"}],
+        )
+        == review_loop.SELF_REVIEW_SHAPE_ERROR
+    )
+    # Non-list findings or refutations: an uncaught TypeError before, typed now.
+    assert (
+        refused_block(rounds=[{"number": 1, "findings": "S1", "refutations": []}])
+        == review_loop.SELF_REVIEW_SHAPE_ERROR
+    )
+    assert (
+        refused_block(rounds=[{"number": 1, "findings": [], "refutations": 7}])
+        == review_loop.SELF_REVIEW_SHAPE_ERROR
+    )
+    assert (
+        refused(
+            lambda: review_loop.parse_loop(
+                {**document, "self_review": {"rounds": [], "converged_on": 3}}
+            )
+        )
+        == review_loop.SELF_REVIEW_SHAPE_ERROR
+    )
+    # An empty block still reads: present, carrying nothing, refusing nothing.
+    assert review_loop.parse_loop({**document, "self_review": {"rounds": []}}).self_review == (
+        review_loop.SelfReview()
+    )
+
+
+def test_an_opened_loop_round_trips_its_opened_fact() -> None:
+    """`independent_opened` renders, reads back, and derives where a legacy document omits it."""
+    opened = review_loop.first_review(())
+    stored = json.loads(json.dumps(review_loop.render_loop(589, opened)))
+    assert stored["independent_opened"] is True
+    assert review_loop.parse_loop(stored).independent_opened is True
+    closed = stored | {"independent_opened": False}
+    assert review_loop.parse_loop(closed).independent_opened is False
+    assert (
+        refused(lambda: review_loop.parse_loop({**stored, "independent_opened": "yes"}))
+        == review_loop.LOOP_OPENED_ERROR
+    )
+    # A legacy document without the key: real loop state derives opened, an empty loop
+    # with a self-review block derives unopened.
+    legacy_opened = json.loads(
+        json.dumps(
+            review_loop.render_loop(
+                589, review_loop.first_review((review_loop.Finding("F1", "high", 0),))
+            )
+        )
+    )
+    del legacy_opened["independent_opened"]
+    assert review_loop.parse_loop(legacy_opened).independent_opened is True
+    self_only = {
+        "version": 2,
+        "issue": 589,
+        "review_rounds": 0,
+        "findings": [],
+        "self_review": {"rounds": []},
+    }
+    assert review_loop.parse_loop(self_only).independent_opened is False
