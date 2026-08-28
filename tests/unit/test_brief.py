@@ -632,6 +632,57 @@ def test_no_prior_work_adds_no_permanently_empty_section() -> None:
     assert brief.PRIOR_WORK_RULE not in rendered
 
 
+# --------------------------------------------------- the self-review section (#589, ADR-0079)
+
+
+def test_the_self_review_protocol_renders_for_the_implementer() -> None:
+    """The protocol renders with its bound values, imported from its one home (#588)."""
+    rendered = composed()
+    assert "## Self-review" in rendered
+    for bound in (
+        "ADR-0079 ruling 1",
+        "budgeted at five",
+        "worth_addressing",
+        "not_worth_addressing",
+        "refuted",
+        "pre_existing",
+        "introduced",
+        "discovery-dominated",
+        "injection-dominated",
+        "no dispatch, no subagent",
+        "The gate runs once, before the exchange",
+    ):
+        assert bound in rendered
+
+
+def test_the_protocol_states_round_one_and_the_in_session_rule() -> None:
+    """Round one verifies; the gate runs once before the exchange; no dispatch, no subagent."""
+    assert "round one is the verification round" in brief.review_loop.SELF_REVIEW_PROTOCOL
+    assert (
+        "The gate runs once, before the exchange — not once per round"
+        in brief.review_loop.SELF_REVIEW_PROTOCOL
+    )
+    assert "no dispatch, no subagent" in brief.review_loop.SELF_REVIEW_PROTOCOL
+    # The protocol cites the governing rule; it does not copy the governing paragraph.
+    assert "third named exception" in brief.review_loop.SELF_REVIEW_PROTOCOL
+    assert "never substitutes for" in brief.review_loop.SELF_REVIEW_PROTOCOL
+
+
+def test_the_protocol_is_scoped_by_seat_name_never_by_a_flag() -> None:
+    """`retro` lands and `recon` is read-only, yet neither is asked to self-review."""
+    assert "## Self-review" not in composed(seat=brief.derive_seat("retro"))
+    assert "## Self-review" not in composed(seat=brief.derive_seat("recon"))
+    assert "## Self-review" not in composed(seat=brief.derive_seat("review"))
+    # The trap named in #589: `lands` is also true for retro, so the flag would pass here.
+    assert brief.derive_seat("retro").lands is True
+
+
+def test_the_protocol_reaches_the_nonlander_implementer_arm() -> None:
+    """The section is seat-scoped, not landing-scoped: it must not follow `lands`."""
+    assert brief.derive_seat("implementer").lands is True
+    assert "## Self-review" in composed()
+
+
 # ----------------------------------------------- the escalation (#325, ADR-0071 ruling 5)
 
 # A transferring-escalation condition reaches the agent only when one has fired; a brief about an

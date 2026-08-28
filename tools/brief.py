@@ -1195,6 +1195,13 @@ def compose(briefing: Briefing) -> str:
             if seat.reviewing
             else _placeholder(REVIEW_SUBJECT_PLACEHOLDER)
         )
+    # ADR-0079 ruling 1's bounded pass (#589). Scoped by seat **name**, never by a
+    # capability flag: `lands` is also true for `retro`, which lands only its own reviewed
+    # self-report and is not asked to converge a self-review of itself. The text is
+    # imported from its one home in `review_loop` — the module that owns per-issue review
+    # state and the state this must never be confused with — rather than restated here.
+    if seat.name == review_loop.SELF_REVIEW_SEAT:
+        lines += ["", "## Self-review", review_loop.SELF_REVIEW_PROTOCOL]
     # The single-shot contract, verbatim from `dispatch.SINGLE_SHOT_CONTRACT` — one home,
     # shared with `default_brief`, so the composed brief and the default brief cannot
     # disagree. A detached session has no second turn, which is the one fact a briefing

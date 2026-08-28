@@ -467,10 +467,18 @@ class Loop(NamedTuple):
     `review_rounds` is completed fix-and-re-review cycles; the first review is round zero.
     `findings` carries every finding every round raised, open and closed, because the
     landing record and the post-landing seat read the closed ones too.
+
+    `self_review` is **not** this loop's state. It is the Work Run's own bounded pass
+    (#589, ADR-0079 ruling 1), carried on the same file so an issue's review history is one
+    directory, and it reads and writes neither `review_rounds` nor `findings` — they are
+    the independent never-alone loop's alone, and a name shared with the block below would
+    sum two different loops' counters. Everything the block does lives in the self-review
+    section, which never takes a `Loop` apart to reach them.
     """
 
     review_rounds: int
     findings: tuple[Finding, ...]
+    self_review: SelfReview | None = None
 
 
 def _check_ids(existing: tuple[Finding, ...], raised: Iterable[Finding]) -> None:
@@ -1011,7 +1019,14 @@ def review_root() -> Path:
     return Path(os.environ.get("CTI_REVIEW_DIR", str(REVIEW_ROOT)))
 
 
-LOOP_VERSION: Final = 1
+LOOP_VERSION: Final = 2
+# The versions `parse_loop` reads. 1 predates the self-review block (#589): the version
+# field is what makes a record written before that change distinguishable from one written
+# after, which is the whole reason it moved, so the older documents stay readable and are
+# parsed as carrying no self-review at all — distinguishable, never repudiated. A version-1
+# document that nevertheless carries a `self_review` key is read as though it did not,
+# because nothing at that version could have written one.
+LOOP_VERSIONS_READ: Final = (1, 2)
 LOOP_FILE: Final = "loop.json"
 ESCALATION_FILE: Final = "escalation.json"
 LANDING_FILE: Final = "landing.json"
@@ -1028,7 +1043,10 @@ LANDING_FILE: Final = "landing.json"
 # any instant leaves the marker alone, which is the refusing answer.
 PENDING_FILE: Final = "terminus.pending"
 
-LOOP_VERSION_ERROR: Final = "a stored loop must be a version 1 object"
+LOOP_VERSION_ERROR: Final = (
+    "a stored loop must be a version 1 or version 2 object — 2 may carry the self-review"
+    " block (#589)"
+)
 LOOP_ISSUE_ERROR: Final = "a stored loop must name its issue as a positive integer"
 LOOP_ROUNDS_ERROR: Final = "a stored loop's review_rounds must be a non-negative integer"
 LOOP_FINDINGS_ERROR: Final = "a stored loop's findings must be a list of finding objects"
@@ -1061,6 +1079,479 @@ LOOP_UNREADABLE_ERROR: Final = (
     "the stored loop for #{issue} under {root} will not read — {reason}. A loop that cannot"
     " be read cannot govern an act: repair or re-record it before driving this loop"
 )
+
+
+# --------------------------------------------------------------------------- the self-review block
+#
+# ADR-0079 ruling 1, carried out by #588 and landed here by #589: before a Work Run hands
+# its candidate to the independent reviewer, the implementer re-reads its own diff in
+# bounded rounds inside its own session. This section is the rule's one home — the
+# protocol the briefing composer renders and the record the round leaves — and it sits
+# beside the per-issue review state deliberately, because the state it must never be
+# confused with lives above. `Loop.review_rounds` and the severity-tagged `Finding`s are
+# the **independent** never-alone loop's; nothing here reads them, writes them, or shares
+# a field name with them, and the shapes below number their rounds from one, never zero,
+# so the two loops' round numbers cannot be read as one sequence by accident. The file's
+# schema version carries the rest: a document at version 1 predates the block, one at
+# version 2 may carry it.
+#
+# The ticket deliberately does not make the pass mechanical — #590 owns the handover rung,
+# #602 the reader over these records. What lands here is the instruction and the place to
+# record what each round found.
+
+SELF_REVIEW_SEAT: Final = "implementer"
+# Scoped by seat name, never by a capability flag: `lands` is also true for `retro`, which
+# lands only its own reviewed self-report (ADR-0071 ruling 3 as amended by A4) and is not
+# asked to converge a self-review of itself. `recon` is read-only and `fable` lands
+# nothing; neither is asked either.
+SELF_REVIEW_ROUND_BUDGET: Final = 5
+WORTH_ADDRESSING: Final = "worth_addressing"
+NOT_WORTH_ADDRESSING: Final = "not_worth_addressing"
+SELF_REVIEW_CATEGORIES: Final = (WORTH_ADDRESSING, NOT_WORTH_ADDRESSING)
+PRE_EXISTING: Final = "pre_existing"
+INTRODUCED: Final = "introduced"
+SELF_REVIEW_ORIGINS: Final = (PRE_EXISTING, INTRODUCED)
+DISCOVERY_DOMINATED: Final = "discovery-dominated"
+INJECTION_DOMINATED: Final = "injection-dominated"
+SELF_REVIEW_FAILURE_TYPES: Final = (DISCOVERY_DOMINATED, INJECTION_DOMINATED)
+
+SELF_REVIEW_CATEGORY_ERROR: Final = (
+    f"a self-review finding's category is {WORTH_ADDRESSING} or {NOT_WORTH_ADDRESSING},"
+    " with its reason — severity may sharpen the call and gates nothing (#588)"
+)
+SELF_REVIEW_ORIGIN_ERROR: Final = (
+    f"a self-review finding's origin is {PRE_EXISTING} or {INTRODUCED} — the tag is what"
+    " distinguishes a loop closing findings from one trading them (#588)"
+)
+SELF_REVIEW_ID_ERROR: Final = "a self-review finding or refutation carries a non-empty id"
+SELF_REVIEW_DUPLICATE_ERROR: Final = (
+    "a self-review id is stable across the whole record — '{id}' is already carried, and a"
+    " re-raise is a new finding with a new id, as in the independent loop above"
+)
+SELF_REVIEW_ROUND_ERROR: Final = (
+    "a self-review finding or refutation is stamped with the round recording it — the"
+    " stamp is validated, never rewritten, as in the independent loop"
+)
+SELF_REVIEW_BUDGET_ERROR: Final = (
+    "the self-review budget is {budget} rounds — a sixth round is out of process, and the"
+    " exit is `self-fail`, not another pass"
+)
+SELF_REVIEW_CLOSED_ERROR: Final = (
+    "this self-review record has ended — converged or failed — and takes no further"
+    " rounds; a new Work Run opens a new one"
+)
+SELF_REVIEW_NOT_CLEAN_ERROR: Final = (
+    "convergence needs an observed clean round — the last recorded round raised a finding"
+    " worth addressing, and a clean round asserted but never recorded is not one (#588)"
+)
+SELF_REVIEW_NOT_CONVERGED_ERROR: Final = (
+    "a gate-fix commit joins a converged record only — there is nothing to extend before"
+    " `self-converge` has named the commit the record covers"
+)
+SELF_REVIEW_COMMIT_ERROR: Final = (
+    "a self-review record names the commit it covers — the SHA is not optional"
+)
+SELF_REVIEW_COMMIT_DUPLICATE_ERROR: Final = (
+    "the self-review record already covers {sha} — coverage is the exact commits named,"
+    " never a list grown by re-adding one"
+)
+SELF_REVIEW_REASON_ERROR: Final = (
+    "a self-review finding, refutation and gate-fix commit each carry a reason — the"
+    " evidence and the ground are the record's content, not commentary"
+)
+SELF_REVIEW_REFUTATION_ERROR: Final = (
+    "a refutation carries the evidence that refuted it — a candidate disproved on no"
+    " recorded evidence is one a later round cannot distinguish from a guess (#588)"
+)
+SELF_REVIEW_FAILURE_BUDGET_ERROR: Final = (
+    "a self-review failure is five rounds with no clean round among them — fewer rounds"
+    " have budget left, and a clean round anywhere means the record converges instead"
+)
+SELF_REVIEW_SHAPE_ERROR: Final = (
+    "a stored self-review block must be an object carrying a rounds list, with string ids,"
+    " categories, origins and reasons, and at most one of converged_on and failure"
+)
+
+SELF_REVIEW_PROTOCOL: Final = (
+    "Self-review: ADR-0079 ruling 1's bounded pass, the third named exception in this"
+    " repository's verification rules, admitted on the measured ground that work reached"
+    " review after one build pass and two thirds of it came back. It never substitutes for"
+    " the independent review it precedes — the reviewer still answers the question this"
+    " pass never asks, whether the work satisfies the Work Item. The pass runs inside your"
+    " own session: no dispatch, no subagent. A round is one complete adversarial pass over"
+    " the whole diff, budgeted at five; round one is the verification round, checking"
+    " every claim against the world before any design reading — run the computations,"
+    " open the citations, compare the diff against the plan. Each finding is recorded with"
+    f" its category, `{WORTH_ADDRESSING}` or `{NOT_WORTH_ADDRESSING}`, its reason, and its"
+    f" origin, `{PRE_EXISTING}` or `{INTRODUCED}` by one of your own fixes. A candidate you"
+    " investigated and disproved is recorded as refuted with the evidence that refuted it"
+    " and is never counted as a finding. A round raising no"
+    f" `{WORTH_ADDRESSING}` finding is clean; a round raising only dismissals is clean"
+    " too, because dismissals never block. Convergence needs an observed clean round:"
+    " `just review-loop self-converge --sha <commit>` names the commit the record covers,"
+    " and a later commit that only satisfies the gate joins it with"
+    " `just review-loop self-gate-fix --sha <commit> --reason <why>` — coverage is the"
+    " exact commits named, never an inference. Record each round with `just review-loop"
+    " self-round --finding <id>=<category>=<origin>=<reason>` (repeatable) and"
+    " `--refuted <id>=<evidence>`. Five rounds with no clean round is a failure, not a"
+    " handover: `just review-loop self-fail` types it"
+    f" `{DISCOVERY_DOMINATED}` or `{INJECTION_DOMINATED}` from what the fifth round"
+    " raised. The gate runs once, before the exchange — not once per round; run it"
+    " mid-loop only to check a fix."
+)
+
+
+class SelfReviewFinding(NamedTuple):
+    """One self-review finding: the independent loop's `Finding` identity shape, judged here.
+
+    `id` is stable across the whole record and is what later matches a finding dismissed
+    here as `not_worth_addressing` against an independent finding raised on the same diff —
+    the only check there is on this loop's one self-granted judgement, which is why the
+    field exists from the block's first version rather than being migrated in (#589's last
+    criterion). There is no severity: the spec's severity subcategories may sharpen the
+    worth-addressing call and gate nothing, so a field that gates nothing has no place in
+    the record's shape.
+    """
+
+    id: str
+    category: str
+    origin: str
+    reason: str
+    round_raised: int
+
+
+class SelfReviewRefutation(NamedTuple):
+    """A candidate the round investigated and disproved. Recorded, never counted as a finding.
+
+    `reason` is the evidence that refuted it — the part that stops a later round re-raising
+    the same candidate on no new ground.
+    """
+
+    id: str
+    reason: str
+    round_raised: int
+
+
+class SelfReviewRound(NamedTuple):
+    """One round: what it raised, what it disproved, and its number counting from one."""
+
+    number: int
+    findings: tuple[SelfReviewFinding, ...]
+    refutations: tuple[SelfReviewRefutation, ...]
+
+
+class GateFix(NamedTuple):
+    """A commit joined to the record after convergence, with the reason it joins."""
+
+    sha: str
+    reason: str
+
+
+class SelfReview(NamedTuple):
+    """One Work Run's self-review — a different loop from `Loop` above, never merged with it.
+
+    `converged_on` is the commit the record covers and `gate_fixes` the commits explicitly
+    added afterwards; `failure` is set only where the budget ran out with no clean round.
+    At most one of those two is set, and a record with either is closed to further rounds.
+    """
+
+    rounds: tuple[SelfReviewRound, ...] = ()
+    converged_on: str = ""
+    gate_fixes: tuple[GateFix, ...] = ()
+    failure: str = ""
+
+
+def self_review_clean(attempt: SelfReviewRound) -> bool:
+    """Whether the round raises no finding worth addressing. Dismissals never block.
+
+    A round raising only `not_worth_addressing` findings is clean: nothing is done about a
+    dismissal, and a loop a dismissal could block would grind on trivia until its budget
+    ran out (#588).
+    """
+    return not any(finding.category == WORTH_ADDRESSING for finding in attempt.findings)
+
+
+def self_review_origin_counts(record: SelfReview) -> tuple[dict[str, int], ...]:
+    """Per-round finding counts by origin — the retro's signal, no finding re-read.
+
+    Counts every finding the round raised, both categories: the injection rate compares
+    what a round's own fix introduced against what it found, and a dismissal is still a
+    finding the loop spent a judgement on even though it never blocked convergence.
+    """
+    counts: list[dict[str, int]] = []
+    for attempt in record.rounds:
+        tally = dict.fromkeys(SELF_REVIEW_ORIGINS, 0)
+        for finding in attempt.findings:
+            tally[finding.origin] += 1
+        counts.append(tally)
+    return tuple(counts)
+
+
+def _self_review_check_ids(record: SelfReview, identifiers: Iterable[str]) -> None:
+    """Refuse an id the record already carries, in any round, as either kind."""
+    seen = {finding.id for attempt in record.rounds for finding in attempt.findings} | {
+        refutation.id for attempt in record.rounds for refutation in attempt.refutations
+    }
+    for identifier in identifiers:
+        if not identifier:
+            raise ReviewLoopError(SELF_REVIEW_ID_ERROR)
+        if identifier in seen:
+            raise ReviewLoopError(SELF_REVIEW_DUPLICATE_ERROR.format(id=identifier))
+        seen.add(identifier)
+
+
+def _self_review_check_finding(finding: SelfReviewFinding, number: int) -> None:
+    """Refuse a finding whose stamp, category, origin or reason a writer could not have meant."""
+    if finding.round_raised != number:
+        raise ReviewLoopError(SELF_REVIEW_ROUND_ERROR)
+    if finding.category not in SELF_REVIEW_CATEGORIES:
+        raise ReviewLoopError(SELF_REVIEW_CATEGORY_ERROR + f": {finding.category}")
+    if finding.origin not in SELF_REVIEW_ORIGINS:
+        raise ReviewLoopError(SELF_REVIEW_ORIGIN_ERROR + f": {finding.origin}")
+    if not finding.reason:
+        raise ReviewLoopError(SELF_REVIEW_REASON_ERROR)
+
+
+def _self_review_check_refutation(refutation: SelfReviewRefutation, number: int) -> None:
+    """Refuse a refutation whose stamp or evidence a writer could not have meant."""
+    if refutation.round_raised != number:
+        raise ReviewLoopError(SELF_REVIEW_ROUND_ERROR)
+    if not refutation.reason:
+        raise ReviewLoopError(SELF_REVIEW_REFUTATION_ERROR)
+
+
+def self_review_round(
+    record: SelfReview,
+    findings: tuple[SelfReviewFinding, ...],
+    refutations: tuple[SelfReviewRefutation, ...] = (),
+) -> SelfReview:
+    """Record one round of the Work Run's pass, appending it to the block.
+
+    The round number is derived — the count so far, plus one, over a budget of five — and
+    every finding and refutation must already carry it, validated rather than rewritten
+    exactly as `first_review` and `next_round` treat the independent loop's stamp. An
+    ended record takes no further rounds.
+    """
+    if record.converged_on or record.failure:
+        raise ReviewLoopError(SELF_REVIEW_CLOSED_ERROR)
+    number = len(record.rounds) + 1
+    if number > SELF_REVIEW_ROUND_BUDGET:
+        raise ReviewLoopError(SELF_REVIEW_BUDGET_ERROR.format(budget=SELF_REVIEW_ROUND_BUDGET))
+    _self_review_check_ids(record, [finding.id for finding in findings])
+    _self_review_check_ids(record, [refutation.id for refutation in refutations])
+    for finding in findings:
+        _self_review_check_finding(finding, number)
+    for refutation in refutations:
+        _self_review_check_refutation(refutation, number)
+    return record._replace(rounds=(*record.rounds, SelfReviewRound(number, findings, refutations)))
+
+
+def self_review_converge(record: SelfReview, sha: str) -> SelfReview:
+    """Name the commit the record covers, where its last recorded round came back clean.
+
+    A clean round observed, never asserted: convergence reads the record, and a caller
+    claiming a clean round it never recorded meets the refusal rather than a pass.
+    """
+    if record.converged_on or record.failure:
+        raise ReviewLoopError(SELF_REVIEW_CLOSED_ERROR)
+    if not sha:
+        raise ReviewLoopError(SELF_REVIEW_COMMIT_ERROR)
+    if not record.rounds or not self_review_clean(record.rounds[-1]):
+        raise ReviewLoopError(SELF_REVIEW_NOT_CLEAN_ERROR)
+    return record._replace(converged_on=sha)
+
+
+def self_review_covers(record: SelfReview, sha: str) -> bool:
+    """Whether the record's named commits cover this SHA — the comparison a rung makes.
+
+    Coverage is the exact commits named and nothing wider: `converged_on` plus every
+    explicitly added gate fix. A rule whose coverage was a judgement is a rule a rung
+    could not enforce (#588), which is why amending is an act with its own refusal.
+    """
+    return sha in (record.converged_on, *(fix.sha for fix in record.gate_fixes))
+
+
+def self_review_add_gate_fix(record: SelfReview, sha: str, reason: str) -> SelfReview:
+    """Add one post-convergence commit the record also covers, with its reason.
+
+    The ground is that the change was confined to satisfying the gate: a gate-red fix does
+    not force a fresh convergence and a regress. The reason is required, because a commit
+    that widened past the gate is exactly what the field exists to surface later.
+    """
+    if not record.converged_on:
+        raise ReviewLoopError(SELF_REVIEW_NOT_CONVERGED_ERROR)
+    if not sha:
+        raise ReviewLoopError(SELF_REVIEW_COMMIT_ERROR)
+    if not reason:
+        raise ReviewLoopError(SELF_REVIEW_REASON_ERROR)
+    if self_review_covers(record, sha):
+        raise ReviewLoopError(SELF_REVIEW_COMMIT_DUPLICATE_ERROR.format(sha=sha))
+    return record._replace(gate_fixes=(*record.gate_fixes, GateFix(sha, reason)))
+
+
+def self_review_fail(record: SelfReview) -> SelfReview:
+    """Close a record that exhausted its budget without an observed clean round.
+
+    The type is derived from what the fifth round raised, never declared by the caller:
+    `discovery-dominated` where that round raised a pre-existing finding worth addressing,
+    `injection-dominated` where every such finding was introduced. The fifth round cannot
+    have raised neither — a round with no worth-addressing finding is clean, and the
+    budget refusal above is reached first. The disposition stays the orchestrator's; the
+    type is a fact for it to read (#588).
+    """
+    if record.converged_on or record.failure:
+        raise ReviewLoopError(SELF_REVIEW_CLOSED_ERROR)
+    if len(record.rounds) != SELF_REVIEW_ROUND_BUDGET or any(
+        self_review_clean(attempt) for attempt in record.rounds
+    ):
+        raise ReviewLoopError(SELF_REVIEW_FAILURE_BUDGET_ERROR)
+    worth = [
+        finding for finding in record.rounds[-1].findings if finding.category == WORTH_ADDRESSING
+    ]
+    failure = (
+        DISCOVERY_DOMINATED
+        if any(finding.origin == PRE_EXISTING for finding in worth)
+        else INJECTION_DOMINATED
+    )
+    return record._replace(failure=failure)
+
+
+def _render_self_review(record: SelfReview) -> dict[str, object]:
+    rendered: dict[str, object] = {
+        "rounds": [
+            {
+                "number": attempt.number,
+                "findings": [
+                    {
+                        "id": finding.id,
+                        "category": finding.category,
+                        "origin": finding.origin,
+                        "reason": finding.reason,
+                        "round_raised": finding.round_raised,
+                    }
+                    for finding in attempt.findings
+                ],
+                "refutations": [
+                    {
+                        "id": refutation.id,
+                        "reason": refutation.reason,
+                        "round_raised": refutation.round_raised,
+                    }
+                    for refutation in attempt.refutations
+                ],
+            }
+            for attempt in record.rounds
+        ],
+    }
+    if record.converged_on:
+        rendered["converged_on"] = record.converged_on
+    if record.gate_fixes:
+        rendered["gate_fixes"] = [
+            {"sha": fix.sha, "reason": fix.reason} for fix in record.gate_fixes
+        ]
+    if record.failure:
+        rendered["failure"] = record.failure
+    return rendered
+
+
+def _self_review_text_fields(entry: object, keys: tuple[str, ...]) -> dict[str, str]:
+    """Read an entry's string fields, refusing an absent, non-string or empty one."""
+    if not isinstance(entry, dict):
+        raise ReviewLoopError(SELF_REVIEW_SHAPE_ERROR)
+    values: dict[str, str] = {}
+    for key in keys:
+        value = entry.get(key)
+        if not isinstance(value, str) or not value:
+            raise ReviewLoopError(SELF_REVIEW_SHAPE_ERROR)
+        values[key] = value
+    return values
+
+
+def _self_review_stamp(entry: dict[str, object], expected: int) -> int:
+    """Read an entry's round stamp, refusing one that is not the round being read."""
+    stamp = entry.get("round_raised")
+    if not isinstance(stamp, int) or isinstance(stamp, bool) or stamp != expected:
+        raise ReviewLoopError(SELF_REVIEW_SHAPE_ERROR)
+    return stamp
+
+
+def _parse_self_review_finding(entry: object, expected: int, seen: set[str]) -> SelfReviewFinding:
+    """Rebuild one stored finding, refusing an unknown category, origin or duplicate id."""
+    fields = _self_review_text_fields(entry, ("id", "category", "origin", "reason"))
+    stamp = _self_review_stamp(entry, expected)
+    if fields["category"] not in SELF_REVIEW_CATEGORIES:
+        raise ReviewLoopError(SELF_REVIEW_SHAPE_ERROR)
+    if fields["origin"] not in SELF_REVIEW_ORIGINS:
+        raise ReviewLoopError(SELF_REVIEW_SHAPE_ERROR)
+    if fields["id"] in seen:
+        raise ReviewLoopError(SELF_REVIEW_SHAPE_ERROR)
+    seen.add(fields["id"])
+    return SelfReviewFinding(
+        fields["id"], fields["category"], fields["origin"], fields["reason"], stamp
+    )
+
+
+def _parse_self_review_refutation(
+    entry: object, expected: int, seen: set[str]
+) -> SelfReviewRefutation:
+    """Rebuild one stored refutation, refusing a duplicate id."""
+    fields = _self_review_text_fields(entry, ("id", "reason"))
+    stamp = _self_review_stamp(entry, expected)
+    if fields["id"] in seen:
+        raise ReviewLoopError(SELF_REVIEW_SHAPE_ERROR)
+    seen.add(fields["id"])
+    return SelfReviewRefutation(fields["id"], fields["reason"], stamp)
+
+
+def _parse_self_review_gate_fixes(raw: object, covered: set[str]) -> tuple[GateFix, ...]:
+    """Rebuild the gate-fix commits, refusing one the record already covers."""
+    if not isinstance(raw, list):
+        raise ReviewLoopError(SELF_REVIEW_SHAPE_ERROR)
+    fixes: list[GateFix] = []
+    for entry in raw:
+        fields = _self_review_text_fields(entry, ("sha", "reason"))
+        if fields["sha"] in covered:
+            raise ReviewLoopError(SELF_REVIEW_SHAPE_ERROR)
+        covered.add(fields["sha"])
+        fixes.append(GateFix(fields["sha"], fields["reason"]))
+    return tuple(fixes)
+
+
+def _parse_self_review(raw: object) -> SelfReview:
+    """Rebuild the block from its stored form, refusing a shape no writer would have produced.
+
+    The parser validates what the constructors above validate — categories, origins,
+    unique ids, round stamps — plus the facts only storage adds: the rounds arrive in
+    order counting from one, a finding's stamp is its own round's number, and a record
+    never carries both a convergence and a failure.
+    """
+    if not isinstance(raw, dict) or not isinstance(raw.get("rounds"), list):
+        raise ReviewLoopError(SELF_REVIEW_SHAPE_ERROR)
+    rounds: list[SelfReviewRound] = []
+    seen: set[str] = set()
+    for expected, stored in enumerate(raw["rounds"], start=1):
+        if not isinstance(stored, dict) or stored.get("number") != expected:
+            raise ReviewLoopError(SELF_REVIEW_SHAPE_ERROR)
+        findings = tuple(
+            _parse_self_review_finding(entry, expected, seen)
+            for entry in stored.get("findings", [])
+        )
+        refutations = tuple(
+            _parse_self_review_refutation(entry, expected, seen)
+            for entry in stored.get("refutations", [])
+        )
+        rounds.append(SelfReviewRound(expected, findings, refutations))
+    converged_on = raw.get("converged_on", "")
+    failure = raw.get("failure", "")
+    if not isinstance(converged_on, str) or not isinstance(failure, str):
+        raise ReviewLoopError(SELF_REVIEW_SHAPE_ERROR)
+    if converged_on and failure:
+        raise ReviewLoopError(SELF_REVIEW_SHAPE_ERROR)
+    if failure and failure not in SELF_REVIEW_FAILURE_TYPES:
+        raise ReviewLoopError(SELF_REVIEW_SHAPE_ERROR)
+    covered = {converged_on} if converged_on else set()
+    gate_fixes = _parse_self_review_gate_fixes(raw.get("gate_fixes", []), covered)
+    return SelfReview(tuple(rounds), converged_on, gate_fixes, failure)
 
 
 def _render_adjudication(adjudication: Adjudication) -> dict[str, object]:
@@ -1097,6 +1588,11 @@ def render_loop(issue: int, loop: Loop) -> dict[str, object]:
             }
             for finding in loop.findings
         ],
+        **(
+            {"self_review": _render_self_review(loop.self_review)}
+            if loop.self_review is not None
+            else {}
+        ),
     }
 
 
@@ -1130,13 +1626,15 @@ def parse_loop(document: object) -> Loop:
     Validates everything the constructors validate — severities, route names, unique ids —
     plus the facts only storage adds: the round count is a non-negative integer, the round
     a finding was raised lies within the rounds the loop has recorded, and the
-    adjudication shape round-trips. The arbiter
+    adjudication shape round-trips. A document at the current version may also carry the
+    self-review block, parsed by `_parse_self_review` and never merged with this loop's
+    own counters. The arbiter
     precondition is deliberately **not** re-derived here: it governs the act of
     adjudicating, and a loop that carries a verdict written before this precondition
     existed must still be readable — the precondition refuses new acts, it does not
     repudiate recorded ones.
     """
-    if not isinstance(document, dict) or document.get("version") != LOOP_VERSION:
+    if not isinstance(document, dict) or document.get("version") not in LOOP_VERSIONS_READ:
         raise ReviewLoopError(LOOP_VERSION_ERROR)
     review_rounds = document.get("review_rounds")
     if not isinstance(review_rounds, int) or isinstance(review_rounds, bool) or review_rounds < 0:
@@ -1168,7 +1666,15 @@ def parse_loop(document: object) -> Loop:
         )
     _check_severities(tuple(findings))
     _check_ids((), tuple(findings))
-    return Loop(review_rounds=review_rounds, findings=tuple(findings))
+    # A version-1 document predates the block and is parsed as carrying none, whatever key
+    # it happens to hold — the version is the distinction (#589).
+    raw_self_review = document.get("self_review")
+    self_review = (
+        _parse_self_review(raw_self_review)
+        if document.get("version") == LOOP_VERSION and raw_self_review is not None
+        else None
+    )
+    return Loop(review_rounds=review_rounds, findings=tuple(findings), self_review=self_review)
 
 
 def loop_path(root: Path, issue: int) -> Path:
@@ -1446,6 +1952,35 @@ def _finding_spec(raw: str) -> tuple[str, str]:
     return identifier, severity
 
 
+def _self_finding_spec(raw: str) -> SelfReviewFinding:
+    """Parse one repeatable `ID=CATEGORY=ORIGIN=REASON` spec, unstamped.
+
+    The round stamp is the CLI's to derive — the round being recorded — so the parser
+    hands back a zero the handler replaces, exactly as `open`/`round` stamp round zero
+    and the count-so-far in their handlers.
+    """
+    identifier, first, rest = raw.partition("=")
+    category, second, rest = rest.partition("=")
+    origin, third, reason = rest.partition("=")
+    if not (first and second and third and identifier and category and origin and reason):
+        message = (
+            "expected ID=CATEGORY=ORIGIN=REASON"
+            f" with category one of {', '.join(SELF_REVIEW_CATEGORIES)}"
+            f" and origin one of {', '.join(SELF_REVIEW_ORIGINS)}"
+        )
+        raise argparse.ArgumentTypeError(message)
+    return SelfReviewFinding(identifier, category, origin, reason, 0)
+
+
+def _self_refutation_spec(raw: str) -> SelfReviewRefutation:
+    """Parse one repeatable `ID=EVIDENCE` spec, unstamped like the finding spec above."""
+    identifier, separator, evidence = raw.partition("=")
+    if not (separator and identifier and evidence):
+        message = "expected ID=EVIDENCE"
+        raise argparse.ArgumentTypeError(message)
+    return SelfReviewRefutation(identifier, evidence, 0)
+
+
 def parse_args(argv: list[str] | None) -> argparse.Namespace:
     """One door: the loop act to perform, the issue it belongs to."""
     parser = argparse.ArgumentParser(
@@ -1531,7 +2066,65 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     shown.add_argument("--root", default=str(REVIEW_ROOT))
     shown.set_defaults(handler=_cmd_show)
 
+    # The Work Run's own bounded pass (#589, ADR-0079 ruling 1): a record beside the
+    # independent loop's, never merged with it. These verbs write the block only; the
+    # handover rung that will read it is #590's, and is deliberately not here yet.
+    _self_review_commands(commands)
     return parser.parse_args(argv)
+
+
+def _self_review_commands(commands: argparse._SubParsersAction) -> None:
+    """Register the self-review verbs, split out of `parse_args` for the statement lint."""
+    self_turned = commands.add_parser(
+        "self-round", help="record one round of the implementer's self-review (#589)"
+    )
+    self_turned.add_argument("--issue", required=True, type=_issue_number)
+    self_turned.add_argument("--root", default=str(REVIEW_ROOT), help="the review state directory")
+    self_turned.add_argument(
+        "--finding",
+        action="append",
+        default=[],
+        type=_self_finding_spec,
+        metavar="ID=CATEGORY=ORIGIN=REASON",
+        help="one raised finding; repeatable",
+    )
+    self_turned.add_argument(
+        "--refuted",
+        action="append",
+        default=[],
+        type=_self_refutation_spec,
+        metavar="ID=EVIDENCE",
+        help="one candidate investigated and disproved, with its evidence; repeatable",
+    )
+    self_turned.set_defaults(handler=_cmd_self_round)
+
+    self_settled = commands.add_parser(
+        "self-converge", help="name the commit a clean self-review covers (#589)"
+    )
+    self_settled.add_argument("--issue", required=True, type=_issue_number)
+    self_settled.add_argument("--root", default=str(REVIEW_ROOT), help="the review state directory")
+    self_settled.add_argument("--sha", required=True, help="the commit the record covers")
+    self_settled.set_defaults(handler=_cmd_self_converge)
+
+    self_mended = commands.add_parser(
+        "self-gate-fix", help="add a post-convergence gate-only commit to the record (#589)"
+    )
+    self_mended.add_argument("--issue", required=True, type=_issue_number)
+    self_mended.add_argument("--root", default=str(REVIEW_ROOT), help="the review state directory")
+    self_mended.add_argument("--sha", required=True, help="the gate-only commit")
+    self_mended.add_argument(
+        "--reason", required=True, help="the ground: the change was confined to satisfying the gate"
+    )
+    self_mended.set_defaults(handler=_cmd_self_gate_fix)
+
+    self_exhausted = commands.add_parser(
+        "self-fail", help="close a five-round self-review with no clean round (#589)"
+    )
+    self_exhausted.add_argument("--issue", required=True, type=_issue_number)
+    self_exhausted.add_argument(
+        "--root", default=str(REVIEW_ROOT), help="the review state directory"
+    )
+    self_exhausted.set_defaults(handler=_cmd_self_fail)
 
 
 def _loop_arguments(command: argparse.ArgumentParser, *, findings: bool = False) -> None:
@@ -1968,6 +2561,68 @@ def _cmd_author(
         f"[review-loop] #{args.issue} authorship {'recorded' if added else 'already recorded'}"
         f" profile={args.profile} source={DECLARED}"
         f" record={authorship_path(Path(args.root), args.issue)}"
+    )
+    return OK
+
+
+def _cmd_self_round(
+    args: argparse.Namespace, _clock: Callable[[], float], _create: object, _post: object
+) -> int:
+    root = Path(args.root)
+    loop = _read_loop(root, args.issue)
+    record = loop.self_review or SelfReview()
+    number = len(record.rounds) + 1
+    findings = tuple(finding._replace(round_raised=number) for finding in args.finding)
+    refutations = tuple(refutation._replace(round_raised=number) for refutation in args.refuted)
+    record = self_review_round(record, findings, refutations)
+    store_loop(root, args.issue, Loop(loop.review_rounds, loop.findings, record))
+    clean = self_review_clean(record.rounds[-1])
+    print(  # noqa: T201 — a CLI's output channel
+        f"[review-loop] #{args.issue} self-review round {number} recorded:"
+        f" {len(findings)} finding(s), {len(refutations)} refuted,"
+        f" clean={'yes' if clean else 'no'}"
+    )
+    return OK
+
+
+def _cmd_self_converge(
+    args: argparse.Namespace, _clock: Callable[[], float], _create: object, _post: object
+) -> int:
+    root = Path(args.root)
+    loop = _read_loop(root, args.issue)
+    record = self_review_converge(loop.self_review or SelfReview(), args.sha)
+    store_loop(root, args.issue, Loop(loop.review_rounds, loop.findings, record))
+    print(  # noqa: T201 — a CLI's output channel
+        f"[review-loop] #{args.issue} self-review converged on {record.converged_on},"
+        f" covering {len(record.gate_fixes) + 1} commit(s)"
+    )
+    return OK
+
+
+def _cmd_self_gate_fix(
+    args: argparse.Namespace, _clock: Callable[[], float], _create: object, _post: object
+) -> int:
+    root = Path(args.root)
+    loop = _read_loop(root, args.issue)
+    record = self_review_add_gate_fix(loop.self_review or SelfReview(), args.sha, args.reason)
+    store_loop(root, args.issue, Loop(loop.review_rounds, loop.findings, record))
+    print(  # noqa: T201 — a CLI's output channel
+        f"[review-loop] #{args.issue} self-review covers {record.converged_on}"
+        f" + {len(record.gate_fixes)} gate-fix commit(s)"
+    )
+    return OK
+
+
+def _cmd_self_fail(
+    args: argparse.Namespace, _clock: Callable[[], float], _create: object, _post: object
+) -> int:
+    root = Path(args.root)
+    loop = _read_loop(root, args.issue)
+    record = self_review_fail(loop.self_review or SelfReview())
+    store_loop(root, args.issue, Loop(loop.review_rounds, loop.findings, record))
+    print(  # noqa: T201 — a CLI's output channel
+        f"[review-loop] #{args.issue} self-review failed: {record.failure}."
+        " Commit the work, preserve the worktree, hand over nothing."
     )
     return OK
 

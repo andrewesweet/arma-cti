@@ -953,9 +953,18 @@ def test_a_stored_loop_round_trips_through_its_document() -> None:
 def test_a_document_that_could_not_govern_silently_is_refused_on_read() -> None:
     document = review_loop.render_loop(326, review_loop.first_review((finding("F1"),)))
     assert (
-        refused(lambda: review_loop.parse_loop({**document, "version": 2}))
+        refused(lambda: review_loop.parse_loop({**document, "version": 3}))
         == review_loop.LOOP_VERSION_ERROR
     )
+    # A version-1 document predates the self-review block (#589) and stays readable: the
+    # version is the distinction, never a repudiation of state that could not govern. A
+    # stray key at that version is read as absent, because nothing at v1 could write one.
+    legacy = {
+        **document,
+        "version": 1,
+        "self_review": {"rounds": []},
+    }
+    assert review_loop.parse_loop(legacy).self_review is None
     assert (
         refused(lambda: review_loop.parse_loop({**document, "review_rounds": "three"}))
         == review_loop.LOOP_ROUNDS_ERROR
@@ -2655,3 +2664,327 @@ def test_a_failed_store_leaves_the_loop_as_it_stood(tmp_path: Path) -> None:
 
     assert review_loop.loop_path(root, 334).read_text(encoding="utf-8") == before
     assert list((root / "334").iterdir()) == [review_loop.loop_path(root, 334)]
+
+
+# ------------------------------------------------- the self-review record (#589, ADR-0079)
+
+
+def self_finding(
+    identifier: str,
+    category: str = review_loop.WORTH_ADDRESSING,
+    origin: str = review_loop.PRE_EXISTING,
+    round_raised: int = 1,
+) -> review_loop.SelfReviewFinding:
+    return review_loop.SelfReviewFinding(identifier, category, origin, "a reason", round_raised)
+
+
+def test_a_round_is_recorded_and_reads_back() -> None:
+    """Category, reason and origin ride the finding; the round reads back what was written."""
+    record = review_loop.self_review_round(review_loop.SelfReview(), (self_finding("S1"),))
+    attempt = record.rounds[0]
+    assert attempt.number == 1
+    assert attempt.findings[0].category == review_loop.WORTH_ADDRESSING
+    assert attempt.findings[0].origin == review_loop.PRE_EXISTING
+    assert attempt.findings[0].reason == "a reason"
+    assert attempt.refutations == ()
+
+
+def test_a_refutation_is_recorded_with_evidence_and_is_not_a_finding() -> None:
+    """A disproved candidate carries its evidence and is never counted as a finding."""
+    record = review_loop.self_review_round(
+        review_loop.SelfReview(),
+        (),
+        (review_loop.SelfReviewRefutation("R1", "the evidence that refuted it", 1),),
+    )
+    attempt = record.rounds[0]
+    assert attempt.findings == ()
+    assert attempt.refutations[0].reason == "the evidence that refuted it"
+    assert review_loop.self_review_clean(attempt) is True
+
+
+def test_a_round_of_only_dismissals_is_clean() -> None:
+    """A round raising no worth-addressing finding is clean; dismissals never block."""
+    record = review_loop.self_review_round(
+        review_loop.SelfReview(), (self_finding("D1", review_loop.NOT_WORTH_ADDRESSING),)
+    )
+    assert review_loop.self_review_clean(record.rounds[0]) is True
+    worth = review_loop.self_review_round(review_loop.SelfReview(), (self_finding("W1"),))
+    assert review_loop.self_review_clean(worth.rounds[0]) is False
+
+
+def test_convergence_names_its_commit_and_adds_a_gate_fix_with_reason() -> None:
+    """The record covers the commit it converged on, plus a gate-only commit with a reason."""
+    record = review_loop.self_review_round(review_loop.SelfReview(), ())
+    record = review_loop.self_review_converge(record, "a" * 40)
+    assert record.converged_on == "a" * 40
+    record = review_loop.self_review_add_gate_fix(record, "b" * 40, "confined to the gate")
+    assert review_loop.self_review_covers(record, "a" * 40)
+    assert review_loop.self_review_covers(record, "b" * 40) is True
+    assert review_loop.self_review_covers(record, "c" * 40) is False
+
+
+def test_gate_fix_refusals_are_typed() -> None:
+    """A gate-fix commit joins a converged record only, and always with sha and reason."""
+    record = review_loop.SelfReview()
+    assert (
+        refused(lambda: review_loop.self_review_add_gate_fix(record, "b" * 40, "gate fix"))
+        == review_loop.SELF_REVIEW_NOT_CONVERGED_ERROR
+    )
+    converged = review_loop.self_review_converge(
+        review_loop.self_review_round(review_loop.SelfReview(), ()), "a" * 40
+    )
+    assert (
+        refused(lambda: review_loop.self_review_add_gate_fix(converged, "b" * 40, ""))
+        == review_loop.SELF_REVIEW_REASON_ERROR
+    )
+    assert (
+        refused(lambda: review_loop.self_review_add_gate_fix(converged, "", "reason"))
+        == review_loop.SELF_REVIEW_COMMIT_ERROR
+    )
+
+
+def test_five_cleanless_rounds_fail_typed_from_the_fifth_round() -> None:
+    """Five rounds, none clean, is a failure typed from what the fifth round raised."""
+
+    def typed_from(fifth: tuple[review_loop.SelfReviewFinding, ...]) -> str:
+        record = review_loop.SelfReview()
+        for number in range(1, 6):
+            findings = (
+                fifth
+                if number == 5
+                else (
+                    self_finding(
+                        f"F{number}", review_loop.WORTH_ADDRESSING, review_loop.INTRODUCED, number
+                    ),
+                )
+            )
+            record = review_loop.self_review_round(record, findings)
+        return review_loop.self_review_fail(record).failure
+
+    assert (
+        typed_from((self_finding("P5", review_loop.WORTH_ADDRESSING, review_loop.PRE_EXISTING, 5),))
+        == review_loop.DISCOVERY_DOMINATED
+    )
+    assert (
+        typed_from((self_finding("I5", review_loop.WORTH_ADDRESSING, review_loop.INTRODUCED, 5),))
+        == review_loop.INJECTION_DOMINATED
+    )
+
+
+def test_failure_needs_the_budget_and_no_clean_round() -> None:
+    """`self_review_fail` is refused short of the budget or where a clean round exists."""
+    empty = review_loop.SelfReview()
+    assert (
+        refused(lambda: review_loop.self_review_fail(empty))
+        == review_loop.SELF_REVIEW_FAILURE_BUDGET_ERROR
+    )
+    clean = review_loop.self_review_round(review_loop.SelfReview(), ())
+    assert (
+        refused(lambda: review_loop.self_review_fail(clean))
+        == review_loop.SELF_REVIEW_FAILURE_BUDGET_ERROR
+    )
+
+
+def test_per_round_counts_by_origin_are_derivable() -> None:
+    """The retro's per-round origin split reads off the record as counts, no re-read."""
+    record = review_loop.SelfReview()
+    first = (
+        self_finding("P1", review_loop.WORTH_ADDRESSING, review_loop.PRE_EXISTING),
+        self_finding("I1", review_loop.WORTH_ADDRESSING, review_loop.INTRODUCED),
+    )
+    second = (self_finding("P2", review_loop.WORTH_ADDRESSING, review_loop.PRE_EXISTING, 2),)
+    record = review_loop.self_review_round(record, first)
+    record = review_loop.self_review_round(record, second)
+    counts = review_loop.self_review_origin_counts(record)
+    assert counts[0] == {"pre_existing": 1, "introduced": 1}
+    assert counts[1] == {"pre_existing": 1, "introduced": 0}
+
+
+def test_the_self_review_block_never_disturbs_the_independent_loop() -> None:
+    """The trap: two loops, one file — the block reads, writes and disturbs neither field."""
+    finding_value = review_loop.Finding("F1", review_loop.HIGH, 0)
+    loop = review_loop.first_review((finding_value,))
+    record = review_loop.self_review_round(review_loop.SelfReview(), ())
+    record = review_loop.self_review_converge(record, "a" * 40)
+    carried = review_loop.Loop(loop.review_rounds, loop.findings, record)
+    stored = json.loads(json.dumps(review_loop.render_loop(589, carried)))
+    parsed = review_loop.parse_loop(stored)
+    assert parsed.review_rounds == 0
+    assert parsed.findings == (review_loop.Finding("F1", review_loop.HIGH, 0),)
+    assert parsed.self_review is not None
+    assert parsed.self_review.converged_on == "a" * 40
+
+
+def test_the_independent_loop_advances_without_disturbing_the_block() -> None:
+    """`next_round` on a loop carrying a record leaves the record exactly as it stood."""
+    record = review_loop.self_review_round(review_loop.SelfReview(), ())
+    record = review_loop.self_review_converge(record, "a" * 40)
+    loop = review_loop.first_review((review_loop.Finding("F1", review_loop.HIGH, 0),))
+    loop = review_loop.next_round(loop, (review_loop.Finding("F2", review_loop.HIGH, 1),))
+    carried = review_loop.Loop(
+        review_rounds=1, findings=loop.findings, self_review=review_loop.SelfReview()
+    )
+    carried = carried._replace(self_review=record)
+    stored = json.loads(json.dumps(review_loop.render_loop(589, carried)))
+    parsed = review_loop.parse_loop(stored)
+    assert parsed.review_rounds == 1
+    assert parsed.findings == (
+        review_loop.Finding("F1", review_loop.HIGH, 0),
+        review_loop.Finding("F2", review_loop.HIGH, 1),
+    )
+    assert parsed.self_review is not None
+    assert parsed.self_review.converged_on == "a" * 40
+    assert parsed.self_review.rounds[0].number == 1
+
+
+def test_the_schema_version_is_incremented_and_v1_reads_as_no_record() -> None:
+    """A v1 document parses as carrying no record; v2 may carry one (#589's version rule)."""
+    v1 = {
+        "version": 1,
+        "issue": 1,
+        "review_rounds": 0,
+        "findings": [],
+        "self_review": {"rounds": []},
+    }
+    assert review_loop.parse_loop(v1).self_review is None
+
+
+def test_self_review_verbs_write_through_the_cli(tmp_path: Path) -> None:
+    """The four verbs drive the block through `main`, refusing typed and non-zero."""
+    root = str(tmp_path / "review")
+    journal = str(tmp_path / "journal.jsonl")
+    assert (
+        review_loop.main(["open", "--issue", "589", "--root", root, "--journal", journal])
+        == review_loop.OK
+    )
+    assert (
+        review_loop.main(
+            [
+                "self-round",
+                "--issue",
+                "589",
+                "--root",
+                root,
+                "--finding",
+                "S1=worth_addressing=pre_existing=the reason",
+                "--refuted",
+                "R1=the evidence",
+            ]
+        )
+        == review_loop.OK
+    )
+    assert (
+        review_loop.main(
+            [
+                "self-round",
+                "--issue",
+                "589",
+                "--root",
+                root,
+                "--finding",
+                "D1=not_worth_addressing=pre_existing=a dismissal",
+            ]
+        )
+        == review_loop.OK
+    )
+    assert (
+        review_loop.main(["self-converge", "--issue", "589", "--root", root, "--sha", "a" * 40])
+        == review_loop.OK
+    )
+    assert (
+        review_loop.main(
+            [
+                "self-gate-fix",
+                "--issue",
+                "589",
+                "--root",
+                root,
+                "--sha",
+                "b" * 40,
+                "--reason",
+                "confined to the gate",
+            ]
+        )
+        == review_loop.OK
+    )
+    stored = json.loads(
+        (tmp_path / "review" / "589" / review_loop.LOOP_FILE).read_text(encoding="utf-8")
+    )
+    assert stored["self_review"]["gate_fixes"] == [
+        {"sha": "b" * 40, "reason": "confined to the gate"}
+    ]
+    # A record that has ended takes no further rounds: typed, exit 1.
+    assert review_loop.main(["self-round", "--issue", "589", "--root", root]) == review_loop.REFUSED
+    assert (
+        review_loop.main(["self-converge", "--issue", "589", "--root", root, "--sha", "c" * 40])
+        == review_loop.REFUSED
+    )
+
+
+def test_self_round_refuses_a_malformed_or_unknown_finding_spec() -> None:
+    """A malformed spec is a parser exit; an unknown category or origin is a typed refusal."""
+    for spec in (
+        "S1=worth_addressing=pre_existing",
+        "S1=worth_addressing=pre_existing=",
+    ):
+        with pytest.raises(SystemExit) as exit_code:
+            review_loop.parse_args(["self-round", "--issue", "589", "--finding", spec])
+        assert exit_code.value.code == 2
+    assert (
+        refused(
+            lambda: review_loop.self_review_round(
+                review_loop.SelfReview(),
+                (review_loop.SelfReviewFinding("S1", "not_a_category", "pre_existing", "r", 1),),
+            )
+        )
+        == review_loop.SELF_REVIEW_CATEGORY_ERROR + ": not_a_category"
+    )
+    assert (
+        refused(
+            lambda: review_loop.self_review_round(
+                review_loop.SelfReview(),
+                (review_loop.SelfReviewFinding("S1", "worth_addressing", "not_an_origin", "r", 1),),
+            )
+        )
+        == review_loop.SELF_REVIEW_ORIGIN_ERROR + ": not_an_origin"
+    )
+
+
+def test_self_fail_types_from_the_fifth_round_through_the_cli(tmp_path: Path) -> None:
+    """Five cleanless rounds then `self-fail` records the type the fifth round decides."""
+    root = str(tmp_path / "review")
+    journal = str(tmp_path / "journal.jsonl")
+    review_loop.main(["open", "--issue", "589", "--root", root, "--journal", journal])
+    for number in range(1, 6):
+        assert (
+            review_loop.main(
+                [
+                    "self-round",
+                    "--issue",
+                    "589",
+                    "--root",
+                    root,
+                    "--finding",
+                    f"S{number}=worth_addressing=pre_existing=round {number} reason",
+                ]
+            )
+            == review_loop.OK
+        )
+    assert review_loop.main(["self-fail", "--issue", "589", "--root", root]) == review_loop.OK
+    loop = review_loop.load_loop(tmp_path / "review", 589)
+    assert loop.self_review.failure == review_loop.DISCOVERY_DOMINATED
+    # The budget exhausted, a further round refuses and the close states the type.
+    assert (
+        review_loop.main(
+            [
+                "self-round",
+                "--issue",
+                "589",
+                "--root",
+                root,
+                "--finding",
+                "S6=worth_addressing=pre_existing=one more",
+            ]
+        )
+        == review_loop.REFUSED
+    )

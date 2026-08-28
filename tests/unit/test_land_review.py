@@ -651,7 +651,7 @@ def test_an_unparseable_loop_state_refuses_by_name(tmp_path: Path) -> None:
 
 def test_a_loop_of_a_later_version_refuses_rather_than_governs(tmp_path: Path) -> None:
     """A version this reader does not know is a shape it cannot safely read."""
-    later = json.dumps({"version": 2, "issue": ISSUE, "review_rounds": 1, "findings": []})
+    later = json.dumps({"version": 3, "issue": ISSUE, "review_rounds": 1, "findings": []})
     outcome = _rung(_stage(tmp_path, verdict=_verdict(findings=(("f1", "high"),)), loop=later))
 
     refusal = outcome.refusal
