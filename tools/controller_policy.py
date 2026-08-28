@@ -43,8 +43,9 @@ NON_RESULT: Final = "non_result"
 # external observation has yet corroborated.  It is inside the live set: the
 # record itself occupies the item's slot until a delivery or recovery fact
 # resolves it, because the journal cannot distinguish crash-before-apply from
-# crash-after-apply.  Resume reads the exact recorded shape as intent rather
-# than evidence; see `Controller._unobserved_launch_run_keys`.
+# crash-after-apply.  Resume therefore refuses a planned cycle holding a launch
+# (`controller_resume_indeterminate`) instead of judging the record; #631
+# carries making such a cycle resolvable.
 RECORDED_LAUNCH_STATE: Final = "launching"
 SAME_RUN_ERROR: Final = "work run identity mismatch"
 DELIVERY_IDENTITY_FIELDS: Final = (

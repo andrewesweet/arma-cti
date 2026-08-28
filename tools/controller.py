@@ -263,15 +263,17 @@ class Controller:
             )
         payload = previous.confirmed
         if previous.phase == "planned":
-            unobserved = self._unobserved_launch_run_keys(previous, actions)
             for action in actions:
                 if self._is_launch_action(action):
-                    current = self._collect_facts(previous, unobserved_run_keys=unobserved)
-                    if not self._has_live_run_for_action(current, action):
-                        self._assert_resume_fresh(current, action)
-                        self._apply(action)
-                else:
-                    self._apply(action)
+                    # The planned record cannot distinguish crash-before-apply
+                    # from crash-after-apply, so whether this launch ran is
+                    # unknowable from the journal.  The controller refuses
+                    # rather than infers, and stays stopped until the cycle is
+                    # resolved by hand; #631 carries that resolution work.
+                    raise store_module.ControllerResumeIndeterminate(
+                        previous.last_cycle_id, action.kind
+                    )
+                self._apply(action)
             self._record(previous.last_cycle_id, "applied", payload)
         self._record(previous.last_cycle_id, "confirmed", payload)
         self.store.materialize_view()
@@ -293,17 +295,12 @@ class Controller:
     def _collect_facts(
         self,
         previous: store_module.LoadedControllerState | None,
-        *,
-        unobserved_run_keys: frozenset[str] = frozenset(),
     ) -> policy.ControlFacts:
         """Collect delivery facts with recovery history before planning or relaunching."""
         if previous is not None and previous.facts is not None:
             collector = self.fact_collector
             if isinstance(collector, ports.HistoricalFactCollector):
-                runs = previous.facts.work_runs
-                if unobserved_run_keys:
-                    runs = tuple(run for run in runs if run.key not in unobserved_run_keys)
-                return collector.collect_with_previous(runs)
+                return collector.collect_with_previous(previous.facts.work_runs)
         return self.fact_collector.collect()
 
     def _planning_result(  # noqa: C901, PLR0911, PLR0912 — typed stage outcomes form one ordered gate
@@ -524,62 +521,6 @@ class Controller:
         """Identify the one action whose preconditions are checked at launch."""
         return action.kind == "dispatch.start_work_run"
 
-    @staticmethod
-    def _has_live_run_for_action(facts: policy.ControlFacts, action: policy.ControlAction) -> bool:
-        """Avoid a duplicate after a crash between the real launch and journal confirmation."""
-        payload = dict(action.payload)
-        key = str(payload.get("work_item_key", action.logical_key))
-        issue = payload.get("issue")
-        return any(
-            run.item_key == key or (isinstance(issue, int) and run.issue == issue)
-            for run in policy.live_work_runs(facts)
-        )
-
-    @staticmethod
-    def _is_unobserved_recorded_run(run: policy.WorkRunFact) -> bool:
-        """Return whether a run is still exactly the launch record ``with_work_run`` wrote.
-
-        A planned-phase journal cannot distinguish crash-before-apply from
-        crash-after-apply, so its own launch record is intent and never
-        evidence.  Any field an external observation writes — the dispatcher's
-        own running state, a recovery verdict, or a delivery identity — turns
-        the run into evidence that the apply did happen.
-        """
-        return (
-            run.state == policy.RECORDED_LAUNCH_STATE
-            and run.recovery_kind is None
-            and not run.delivery_conflict
-            and not any(getattr(run, name) for name in policy.DELIVERY_IDENTITY_FIELDS)
-        )
-
-    @classmethod
-    def _unobserved_launch_run_keys(
-        cls,
-        previous: store_module.LoadedControllerState,
-        actions: tuple[policy.ControlAction, ...],
-    ) -> frozenset[str]:
-        """Return the run keys this planned phase recorded and nothing has observed."""
-        if previous.facts is None:
-            return frozenset()
-        recorded = {run.key: run for run in previous.facts.work_runs}
-        keys = set()
-        for action in actions:
-            if not cls._is_launch_action(action):
-                continue
-            run_key = dict(action.payload).get("run_key")
-            run = recorded.get(str(run_key)) if run_key is not None else None
-            if run is not None and cls._is_unobserved_recorded_run(run):
-                keys.add(run.key)
-        return frozenset(keys)
-
-    @staticmethod
-    def _assert_resume_fresh(facts: policy.ControlFacts, action: policy.ControlAction) -> None:
-        """Apply the same launch snapshot guard when resuming a planned cycle."""
-        expected = dict(action.payload).get("preconditions")
-        actual = policy.snapshot_document(policy.coordination_snapshot(facts))
-        if expected != actual:
-            raise store_module.ControllerLaunchStale(action.logical_key)
-
     def _bind_launch_action(
         self, action: policy.ControlAction, cycle_id: str
     ) -> policy.ControlAction:
@@ -690,6 +631,7 @@ def main(argv: list[str] | None = None) -> int:
     except (
         store_module.ControllerActionUnsupported,
         store_module.ControllerLaunchStale,
+        store_module.ControllerResumeIndeterminate,
         store_module.ControllerLockHeld,
         store_module.ControllerStateUnreadable,
         ports.FactCollectionError,
