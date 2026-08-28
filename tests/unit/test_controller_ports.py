@@ -297,6 +297,32 @@ def test_dispatch_delivery_collector_rejects_malformed_typed_result_fields(tmp_p
         ports.DispatchDeliveryFactCollector(tmp_path / "dispatches").collect(())
 
 
+def test_dispatch_delivery_collector_reads_the_dispatcher_s_empty_failure_class(
+    tmp_path: Path,
+) -> None:
+    """`Refusal.failure_class` defaults to "" for a dirty-tree style refusal."""
+    record = tmp_path / "dispatches" / "d-1"
+    record.mkdir(parents=True)
+    (record / "result.json").write_text(
+        json.dumps(
+            {
+                "dispatch_id": "d-1",
+                "status": "child_not_launched",
+                "refusal": "dirty_tree",
+                "failure_class": "",
+                "ended_at": "2026-08-28T12:00:00+00:00",
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    observed = ports.DispatchDeliveryFactCollector(tmp_path / "dispatches").collect(())
+
+    assert observed[0].state == policy.NON_RESULT
+    assert observed[0].failure_class == "infra_unavailable"
+
+
 def test_dispatch_delivery_collector_rejects_a_result_bound_to_another_dispatch(
     tmp_path: Path,
 ) -> None:

@@ -527,13 +527,19 @@ def _result_dispatch_id(raw: dict[str, object], path: Path) -> str:
 
 
 def _result_text(raw: dict[str, object], name: str, path: Path) -> str | None:
-    """Read one optional typed result field without accepting coercion."""
+    """Read one optional typed result field without accepting coercion.
+
+    The dispatcher writes an optional field it has no value for as an empty
+    string (``Refusal.failure_class`` defaults to ``""``), so an empty string
+    reads as absent rather than malformed: a record the dispatcher itself
+    writes must stay readable.
+    """
     if name not in raw:
         return None
     value = raw[name]
-    if not isinstance(value, str) or not value:
+    if not isinstance(value, str):
         _fact_fail(f"source={path}: result {name}")
-    return value
+    return value or None
 
 
 def _result_non_result_class(

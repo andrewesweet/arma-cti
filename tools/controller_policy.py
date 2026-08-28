@@ -39,6 +39,13 @@ REVIEW_CLEARED: Final = "cleared"
 GATE_PASSED: Final = "passed"
 LANDED: Final = "landed"
 NON_RESULT: Final = "non_result"
+# The state `with_work_run` records for a launch the controller has bound but no
+# external observation has yet corroborated.  It is inside the live set: the
+# record itself occupies the item's slot until a delivery or recovery fact
+# resolves it, because the journal cannot distinguish crash-before-apply from
+# crash-after-apply.  Resume reads the exact recorded shape as intent rather
+# than evidence; see `Controller._unobserved_launch_run_keys`.
+RECORDED_LAUNCH_STATE: Final = "launching"
 SAME_RUN_ERROR: Final = "work run identity mismatch"
 DELIVERY_IDENTITY_FIELDS: Final = (
     "candidate_sha",
@@ -321,7 +328,7 @@ def with_work_run(
     *,
     run_key: str,
     dispatch_id: str,
-    state: str = "launching",
+    state: str = RECORDED_LAUNCH_STATE,
 ) -> ControlFacts:
     """Return facts with the one controller-owned live run recorded."""
     payload = dict(action.payload)
@@ -413,8 +420,16 @@ def merge_work_run_observation(previous: WorkRunFact, current: WorkRunFact) -> W
         # A later delivery record cannot turn a typed non-result into success.
         return replace(previous, delivery_conflict=True)
     if current_non_result:
+        # The typed non-result is terminal for the run's outcome, but a result
+        # record carries no Work Item binding: keep the prior observation's
+        # structural fields so the run stays bound to the item, issue and
+        # worktree whose slot it holds rather than orphaning them.
         return replace(
-            current, delivery_conflict=previous.delivery_conflict or current.delivery_conflict
+            current,
+            work_item_key=current.work_item_key or previous.work_item_key,
+            issue=current.issue or previous.issue,
+            worktree=current.worktree or previous.worktree,
+            delivery_conflict=previous.delivery_conflict or current.delivery_conflict,
         )
     if previous.landed_sha is not None:
         return replace(
