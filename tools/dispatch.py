@@ -3913,10 +3913,11 @@ def harness_finish(  # noqa: PLR0911 — one return per end state, so no refusal
       as the session left it. The alternative is a commit with a message the harness made
       up, which is unreviewable and unattributable; a named refusal over an untouched tree
       can be finished by hand from the transcript, which nothing else can. The edits are
-      first attributed (#632): where the teardown record shows the differences are a
-      removal's own partial deletion, the refusal names the recovery instead of `never
-      reset`, and where a record exists but the tree does not match what that removal
-      alone could have left, `teardown_ambiguous` refuses without assuming either.
+      first read against the teardown record (#632): a record refuses `teardown_ambiguous`,
+      because it proves a removal began here and cannot prove whose the differences are,
+      and no record leaves the two readings stated — the session's work to commit by hand
+      under `never reset`, or possible removal debris to stop and report — rather than
+      asserting either.
     - **git refusing** is `git_failed` with git's own words, which is where a message that
       is not Conventional Commits arrives. The add and the commit are asked separately
       (review round three's Medium), so each refusal is true of the command that refused:
@@ -3967,7 +3968,7 @@ def harness_finish(  # noqa: PLR0911 — one return per end state, so no refusal
         return (("harness_commit=nothing_to_commit", f"worktree={tree}"), 0)
     if not message.strip():
         found = (f"worktree={tree}", f"expected={message_path}", *_harness_found(status))
-        return _message_absent_refusal(tree, status, found, record)
+        return _message_absent_refusal(tree, status, found)
     try:
         worktree_tool.git("add", "--all", cwd=tree)
     except worktree_tool.GitError as failure:
@@ -4085,37 +4086,42 @@ def _harness_refusal(kind: str, found: tuple[str, ...], action: str) -> tuple[tu
 
 
 def _message_absent_refusal(
-    tree: Path, status: worktree_tool.Preflight, found: tuple[str, ...], record: Path
+    tree: Path, status: worktree_tool.Preflight, found: tuple[str, ...]
 ) -> tuple[tuple[str, ...], int]:
-    """Refuse `commit_message_absent` with the dirt attributed first (#632).
+    """Refuse `commit_message_absent` with the dirt's two readings, never one (#632).
 
-    The text has three possible shapes, and the difference decides whether a reader
-    is safe: where the teardown record shows the differences are a removal's own
-    partial deletion, the recovery is named instead of `never reset` — the session
-    text would send that reader to commit the removal's debris; where a record exists
-    but the tree does not match what that removal alone could have left, the refusal
-    is `teardown_ambiguous` rather than an assumption; and where no record exists the
-    `never reset` text stands unchanged.
+    A teardown record proves a removal of this tree began and never proves the dirt
+    is that removal's — a removal's partial deletion and a session's deletion read
+    the same in `git status` — so a record refuses `teardown_ambiguous` and names the
+    reader-owned recovery. Without a record the `never reset` text stands, but it no
+    longer asserts whose the edits are: a removal that ran before records existed
+    would leave none either.
     """
-    try:
-        attribution = worktree_tool.attribute_teardown_at(tree, status)
-    except worktree_tool.GitError as failure:
-        return _harness_git_failed(tree, failure, record)
-    if attribution == worktree_tool.TEARDOWN:
-        # The recovery wording has one home, in the worktree tool.
-        return _harness_refusal("commit_message_absent", found, worktree_tool.TEARDOWN_RECOVERY)
+    attribution = worktree_tool.attribute_teardown_at(tree, status)
     if attribution == worktree_tool.AMBIGUOUS:
+        torn = worktree_tool.read_teardown_record(tree)
+        assert torn is not None  # noqa: S101 — AMBIGUOUS means the record read back
         return _harness_refusal(
-            "teardown_ambiguous", found, worktree_tool.TEARDOWN_AMBIGUOUS_ACTION
+            "teardown_ambiguous",
+            found,
+            worktree_tool.teardown_ambiguous_action(torn.operation, torn.ref),
         )
-    return _harness_refusal(
-        "commit_message_absent",
-        found,
-        "The session edited this tree and left no commit message at the path above, so "
-        "the harness has nothing to commit with and has committed nothing. The edits "
-        "are untouched. Read the run's log for what it did, write the message, and "
-        "commit by hand — never reset the tree (#105).",
-    )
+    return _harness_refusal("commit_message_absent", found, _UNATTRIBUTED_DIRT_ACTION)
+
+
+# Where no record exists, both readings of the dirt stay live: the session's edits,
+# or a removal that ran before records existed and left no record of itself. The text
+# states both rather than asserting the first — the review's High on the round-one
+# text, which told a reader to commit possible debris as confident fact.
+_UNATTRIBUTED_DIRT_ACTION: Final = (
+    "No commit message is at the path above, so the harness has committed nothing and "
+    "the differences are untouched. This tool cannot prove whose they are from the "
+    "listing: a session's edits and an unrecorded removal's debris read the same. Read "
+    "the run's log for what the session did, and read the list above. If they are the "
+    "session's work, write the message and commit by hand — never reset the tree "
+    "(#105); if they read as a removal's debris — nothing but deletions of files the "
+    "session did not author — stop and report rather than commit them."
+)
 
 
 def _review_delivery_detail(detail: str) -> str:

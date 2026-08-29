@@ -501,8 +501,15 @@ def _worktree_tree(tmp_path: Path) -> Path:
     return tree
 
 
-def test_a_recorded_partial_removal_is_not_misattributed_to_the_session(tmp_path: Path) -> None:
-    """#632's criterion 2 and 3: the recovery named, `never reset` gone, nothing committed."""
+def test_a_recorded_partial_removal_refuses_harness_finish_without_assuming(
+    tmp_path: Path,
+) -> None:
+    """A record proves a removal began, never whose the dirt is — so it refuses (#632 review).
+
+    Deletion-shaped dirt under a record is the state the round-one shape answered
+    `teardown` and restored; the refusal now states both readings and names the
+    reader-owned recovery instead of running it.
+    """
     tree = _worktree_tree(tmp_path)
     (tree / "CLAUDE.md").write_text("gated\n", encoding="utf-8")
     _git("add", "-A", cwd=tree)
@@ -514,10 +521,10 @@ def test_a_recorded_partial_removal_is_not_misattributed_to_the_session(tmp_path
     lines, code = dispatch.harness_finish(tree, 405, _record(tmp_path))
 
     assert code == dispatch.EXIT_REFUSED
-    assert "refusal=commit_message_absent" in lines
-    assert any("teardown record" in line for line in lines)
+    assert "refusal=teardown_ambiguous" in lines
+    assert any("cannot prove whose the differences are" in line for line in lines)
     assert any("`git checkout -- .`" in line for line in lines)
-    assert not any("never reset" in line for line in lines)
+    assert not any("commit by hand" in line for line in lines)
     # The refusal is true of the tree: nothing committed, nothing restored.
     assert _git("rev-parse", "HEAD", cwd=tree) == head
     assert not (tree / "CLAUDE.md").exists()
@@ -544,7 +551,7 @@ def test_an_ambiguous_teardown_state_refuses_harness_finish_without_assuming(
 
 
 def test_the_sessions_own_deletions_still_carry_never_reset(tmp_path: Path) -> None:
-    """No record, and the deletion-shaped dirt is answered as the session's (#632)."""
+    """No record, and both readings of the dirt are stated, never one (#632 review)."""
     tree = _worktree_tree(tmp_path)
     (tree / "CLAUDE.md").write_text("gated\n", encoding="utf-8")
     _git("add", "-A", cwd=tree)
@@ -555,5 +562,7 @@ def test_the_sessions_own_deletions_still_carry_never_reset(tmp_path: Path) -> N
 
     assert code == dispatch.EXIT_REFUSED
     assert "refusal=commit_message_absent" in lines
+    assert any("cannot prove whose they are" in line for line in lines)
     assert any("never reset" in line for line in lines)
+    assert any("stop and report rather than commit" in line for line in lines)
     assert not any("teardown record" in line for line in lines)
