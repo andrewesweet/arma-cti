@@ -668,9 +668,9 @@ def test_a_present_binding_cannot_be_rebound_by_a_fresh_observation(
     """Where both observations carry a binding, the recorded one stays.
 
     A binding is a fact the controller recorded at launch, so a later
-    observation of the same dispatch that disagrees with it is a conflict on
-    the recorded value — never a silent rebind (#630), and never silently
-    retained either: the disagreement is information.
+    observation of the same dispatch that disagrees with it surfaces the
+    disagreement as a conflict on the recorded value — never a silent rebind
+    (#630).
     """
     merged = policy.merge_work_run_observation(
         _delivery_run(worktree="issue-1"),
