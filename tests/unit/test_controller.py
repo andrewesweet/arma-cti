@@ -836,45 +836,53 @@ def test_resume_from_planned_refuses_a_launch_on_dry_run_too(tmp_path: Path) -> 
     assert [row["phase"] for row in rows] == ["planned"]
 
 
-def test_resume_from_planned_refuses_rather_than_confirming_a_world_seen_launch(
+def test_external_live_evidence_cannot_rebind_a_recorded_run_or_relaunch_its_item(
     tmp_path: Path,
 ) -> None:
-    """A live run in the world proves nothing about the interrupted apply."""
+    """A same-dispatch observation cannot rebind a recorded run or duplicate its launch.
+
+    The round-two safety test this replaced supplied an identity-less run that
+    `same_work_run` never matched, so the merge it was written to protect never
+    ran and the test was green before its fix (#630).  This arrangement runs
+    the real sequence — a cycle that launched, then a same-dispatch live
+    observation whose binding disagrees with the recorded one — a state
+    constructed rather than observed, since nothing writes the typed delivery
+    boundary yet (#629).
+    """
     item = policy.WorkItemFact("item-1", "open", issue=1)
-    planned = coordination_facts((item,))
+    collector = SequenceFactCollector(coordination_facts((item,)))
+    instance, _store, mutation_ports = make_controller_with_collector(
+        tmp_path / "controller", collector
+    )
+    first = instance.run_cycle(dry_run=False)
+
+    recorded = first.facts.work_runs[0]
     observed = coordination_facts(
         (item,),
-        runs=(policy.WorkRunFact("dispatch-x", "running", work_item_key="item-1", issue=1),),
-    )
-    dispatch_port = RefusingDispatchPort()
-    # The fresh cycle collects twice — once to plan, once to recheck the
-    # launch snapshot — so the observed picture must wait behind two planned
-    # reads and only reach a resume.
-    collector = SequenceFactCollector(planned, planned, observed)
-    store = store_module.ControllerStore(tmp_path / "controller")
-    instance = controller.Controller(
-        fact_collector=collector,
-        clock=ports.FakeClock("2026-08-27T12:00:00+00:00"),
-        identity=ports.FakeIdentity("test-controller"),
-        store=store,
-        action_ports=ports.ActionPorts(
-            ports.RecordingActionPort(),
-            ports.RecordingActionPort(),
-            dispatch_port,
-            ports.RecordingActionPort(),
+        runs=(
+            policy.WorkRunFact(
+                recorded.dispatch_id,
+                "running",
+                dispatch_id=recorded.dispatch_id,
+                work_item_key="item-2",
+                issue=2,
+                worktree="issue-2",
+            ),
         ),
     )
-    with pytest.raises(controller.planning.TrackerError, match="quota_exhausted"):
-        instance.run_cycle(dry_run=False)
+    collector.snapshots = (*collector.snapshots, observed)
 
-    with pytest.raises(controller.store_module.ControllerResumeIndeterminate):
-        instance.run_cycle(dry_run=False)
+    second = instance.run_cycle(dry_run=False)
 
-    assert dispatch_port.attempts == 1
-    rows = [
-        json.loads(line) for line in store.journal_path.read_text(encoding="utf-8").splitlines()
-    ]
-    assert [row["phase"] for row in rows] == ["planned"]
+    merged = second.facts.work_runs[0]
+    assert merged.work_item_key == "item-1"
+    assert merged.issue == 1
+    assert merged.worktree == "issue-1"
+    assert merged.delivery_conflict is True
+    assert merged.state == "running"
+    assert policy.eligible_work_items(second.facts) == ()
+    assert second.actions == ()
+    assert len(mutation_ports[2].applied) == 1
 
 
 def _landed_run(**overrides: object) -> Any:  # noqa: ANN401 — dynamically loaded policy module
