@@ -1,1 +1,9 @@
-**Changed:** The System-of-Work controller's Work Run merge no longer lets a later observation of the same dispatch rebind the run's Work Item, issue or worktree. The controller's recorded binding is retained, an observation fills only a field the record left empty, and a present-and-differing value is recorded as a delivery conflict rather than silently adopted.
+### Changed
+
+- **A same-dispatch observation can no longer rebind a recorded Work Run's Work Item,
+  issue or worktree in the System-of-Work controller (#630).** The merge previously
+  preferred the fresh observation's binding whenever it was present, so delivery
+  evidence could silently re-point a run at another item. The controller's recorded
+  binding is now authoritative: the prior value is retained, an observation fills only
+  a field the record left empty, and a present-and-differing value is recorded as a
+  delivery conflict rather than adopted.
