@@ -3912,7 +3912,11 @@ def harness_finish(  # noqa: PLR0911 — one return per end state, so no refusal
     - **Edits with no message** is `commit_message_absent`, and it leaves the tree exactly
       as the session left it. The alternative is a commit with a message the harness made
       up, which is unreviewable and unattributable; a named refusal over an untouched tree
-      can be finished by hand from the transcript, which nothing else can.
+      can be finished by hand from the transcript, which nothing else can. The edits are
+      first attributed (#632): where the teardown record shows the differences are a
+      removal's own partial deletion, the refusal names the recovery instead of `never
+      reset`, and where a record exists but the tree does not match what that removal
+      alone could have left, `teardown_ambiguous` refuses without assuming either.
     - **git refusing** is `git_failed` with git's own words, which is where a message that
       is not Conventional Commits arrives. The add and the commit are asked separately
       (review round three's Medium), so each refusal is true of the command that refused:
@@ -3962,14 +3966,8 @@ def harness_finish(  # noqa: PLR0911 — one return per end state, so no refusal
     if status.clean:
         return (("harness_commit=nothing_to_commit", f"worktree={tree}"), 0)
     if not message.strip():
-        return _harness_refusal(
-            "commit_message_absent",
-            (f"worktree={tree}", f"expected={message_path}", *_harness_found(status)),
-            "The session edited this tree and left no commit message at the path above, so "
-            "the harness has nothing to commit with and has committed nothing. The edits "
-            "are untouched. Read the run's log for what it did, write the message, and "
-            "commit by hand — never reset the tree (#105).",
-        )
+        found = (f"worktree={tree}", f"expected={message_path}", *_harness_found(status))
+        return _message_absent_refusal(tree, status, found, record)
     try:
         worktree_tool.git("add", "--all", cwd=tree)
     except worktree_tool.GitError as failure:
@@ -4084,6 +4082,40 @@ def _harness_publish(tree: Path, issue: int) -> tuple[tuple[str, ...], int]:
 def _harness_refusal(kind: str, found: tuple[str, ...], action: str) -> tuple[tuple[str, ...], int]:
     """Render one post-child harness refusal in the dispatcher's own shape."""
     return (Refusal(kind, found, action).lines(), EXIT_REFUSED)
+
+
+def _message_absent_refusal(
+    tree: Path, status: worktree_tool.Preflight, found: tuple[str, ...], record: Path
+) -> tuple[tuple[str, ...], int]:
+    """Refuse `commit_message_absent` with the dirt attributed first (#632).
+
+    The text has three possible shapes, and the difference decides whether a reader
+    is safe: where the teardown record shows the differences are a removal's own
+    partial deletion, the recovery is named instead of `never reset` — the session
+    text would send that reader to commit the removal's debris; where a record exists
+    but the tree does not match what that removal alone could have left, the refusal
+    is `teardown_ambiguous` rather than an assumption; and where no record exists the
+    `never reset` text stands unchanged.
+    """
+    try:
+        attribution = worktree_tool.attribute_teardown_at(tree, status)
+    except worktree_tool.GitError as failure:
+        return _harness_git_failed(tree, failure, record)
+    if attribution == worktree_tool.TEARDOWN:
+        # The recovery wording has one home, in the worktree tool.
+        return _harness_refusal("commit_message_absent", found, worktree_tool.TEARDOWN_RECOVERY)
+    if attribution == worktree_tool.AMBIGUOUS:
+        return _harness_refusal(
+            "teardown_ambiguous", found, worktree_tool.TEARDOWN_AMBIGUOUS_ACTION
+        )
+    return _harness_refusal(
+        "commit_message_absent",
+        found,
+        "The session edited this tree and left no commit message at the path above, so "
+        "the harness has nothing to commit with and has committed nothing. The edits "
+        "are untouched. Read the run's log for what it did, write the message, and "
+        "commit by hand — never reset the tree (#105).",
+    )
 
 
 def _review_delivery_detail(detail: str) -> str:

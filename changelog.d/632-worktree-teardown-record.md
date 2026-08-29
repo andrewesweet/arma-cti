@@ -1,0 +1,4 @@
+# Fixed
+
+- `just worktree done` (and `archive`) write a teardown record into the worktree's git admin directory before `git worktree remove` runs, so a removal that fails part-way is recognised on the retry: the recorded deletions are restored with `git checkout -- .` and the removal is completed, instead of every retry refusing `dirty_tree` behind the tool's own debris (#632). `just worktree done`'s removal failures are now the typed refusal `worktree_remove_failed` naming git's own error and the re-run that completes the removal.
+- The record also decides what `harness_finish`'s `commit_message_absent` refusal tells a reader: a recorded partial removal is answered with the recovery (`git checkout -- .`, then re-run `just worktree done`) instead of `never reset`, and a record that does not match the tree refuses as `teardown_ambiguous` rather than assuming whose the differences are. Where no record exists the `never reset` text stands unchanged.

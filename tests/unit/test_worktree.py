@@ -294,6 +294,79 @@ def test_an_unreadable_check_fails_closed() -> None:
         assert "Nothing was removed." in refusal.action
 
 
+# ------------------------------------------------------- teardown record (#632)
+
+
+def test_a_record_for_this_head_with_only_deletions_is_the_removals() -> None:
+    status = worktree.Preflight((" D CLAUDE.md", " D config/routing.json"), ())
+    assert (
+        worktree.attribute_teardown(
+            worktree.TeardownRecord(head="2222222", began="2026-08-28T23:11:15+00:00"),
+            "2222222",
+            status,
+        )
+        == worktree.TEARDOWN
+    )
+
+
+def test_no_record_means_the_session_and_the_never_reset_refusal() -> None:
+    """The safe direction: no record, no recovery path, however the deletions look."""
+    deletions = worktree.Preflight((" D CLAUDE.md",), ())
+    assert worktree.attribute_teardown(None, "2222222", deletions) == worktree.UNRECORDED
+    refusal = worktree.classify_done(Path("/w"), holder(status=deletions), record=None)
+    assert refusal.kind == "dirty_tree"
+    assert "never reset" in refusal.action
+
+
+def test_a_record_with_anything_beyond_deletions_is_ambiguous() -> None:
+    """A guess either way re-creates defect 2 or discards work; refusing is the third answer."""
+    head = "2222222"
+    record = worktree.TeardownRecord(head=head, began="2026-08-28T23:11:15+00:00")
+    for status in (
+        worktree.Preflight((" M CLAUDE.md",), ()),
+        worktree.Preflight((), ("?? theirs.txt",)),
+        worktree.Preflight(("D  staged-only.txt",), ()),
+    ):
+        assert worktree.attribute_teardown(record, head, status) == worktree.AMBIGUOUS
+
+
+def test_a_record_at_another_head_is_ambiguous() -> None:
+    """The head is part of the record: a moved head admits someone else's work."""
+    record = worktree.TeardownRecord(head="2222222", began="2026-08-28T23:11:15+00:00")
+    status = worktree.Preflight((" D CLAUDE.md",), ())
+    assert worktree.attribute_teardown(record, "3333333", status) == worktree.AMBIGUOUS
+
+
+def test_a_recorded_teardown_dirt_passes_the_done_ladder() -> None:
+    refusal = worktree.classify_done(
+        Path("/w"),
+        holder(status=worktree.Preflight((" D CLAUDE.md",), ())),
+        record=worktree.TeardownRecord(head="2222222", began=""),
+    )
+    assert refusal is None
+
+
+def test_an_ambiguous_teardown_refuses_done_without_assuming() -> None:
+    refusal = worktree.classify_done(
+        Path("/w"),
+        holder(status=worktree.Preflight((" M CLAUDE.md",), ())),
+        record=worktree.TeardownRecord(head="2222222", began=""),
+    )
+    assert refusal.kind == "teardown_ambiguous"
+    assert "refuses rather than assume" in refusal.action
+    assert "Nothing was restored" in refusal.action
+
+
+def test_an_unreadable_record_never_unlocks_the_recovery_path(tmp_path: Path) -> None:
+    """A record that answers None costs the deadlock back, never work (#632)."""
+    (tmp_path / "teardown-record").write_text("head=x\nbegan=y\n", encoding="utf-8")
+    (tmp_path / "teardown-record").chmod(0o000)
+    try:
+        assert worktree.read_teardown_record(tmp_path) is None
+    finally:
+        (tmp_path / "teardown-record").chmod(0o600)
+
+
 # ------------------------------------------------------- against the real thing
 
 
@@ -757,6 +830,135 @@ def test_done_refuses_a_dirty_tree_and_keeps_the_files(
     assert code == 1
     assert printed[0] == "refusal=dirty_tree"
     assert theirs.exists()
+
+
+def test_done_refuses_the_sessions_own_deletions_with_never_reset(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """#632's criterion 5, the session half: deletions without a record are the session's.
+
+    This is also the answer a half-deleted tree from a *pre-#632* removal meets — no
+    record exists to attribute it, so the conservative refusal stands, and a reader
+    told to `never reset` who instead reads the list sees only unstaged deletions and
+    may judge for themselves.
+    """
+    repo = a_repo(tmp_path)
+    run(monkeypatch, repo, "add", "issue-1")
+    capsys.readouterr()
+    created = repo / ".claude" / "worktrees" / "issue-1"
+    (created / "README.md").unlink()
+
+    code = run(monkeypatch, repo, "done", "issue-1")
+    printed = lines_of(capsys)
+    assert code == 1
+    assert printed[0] == "refusal=dirty_tree"
+    assert any("never reset" in line for line in printed)
+    assert not (created / "README.md").exists()
+    assert "issue-1" in git("worktree", "list", "--porcelain", cwd=repo)
+
+
+def test_done_completes_a_removal_it_recorded_but_could_not_finish(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The #632 state, built exactly: unstaged deletions behind a recorded removal."""
+    repo = a_repo(tmp_path)
+    run(monkeypatch, repo, "add", "issue-1")
+    capsys.readouterr()
+    created = repo / ".claude" / "worktrees" / "issue-1"
+    (created / "README.md").unlink()
+    worktree.write_teardown_record(created, git("rev-parse", "HEAD", cwd=created).strip())
+
+    code = run(monkeypatch, repo, "done", "issue-1")
+    printed = lines_of(capsys)
+    assert code == 0
+    assert printed[0] == "ok=worktree_removed"
+    assert any(line.startswith("restored=1 ") for line in printed)
+    assert not created.exists()
+    assert "issue-1" not in git("worktree", "list", "--porcelain", cwd=repo)
+
+
+def test_done_refuses_ambiguous_debris_end_to_end(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Record present, but the tree holds a modification the removal could not have made."""
+    repo = a_repo(tmp_path)
+    run(monkeypatch, repo, "add", "issue-1")
+    capsys.readouterr()
+    created = repo / ".claude" / "worktrees" / "issue-1"
+    (created / "README.md").write_text("whose is this?\n", encoding="utf-8")
+    worktree.write_teardown_record(created, git("rev-parse", "HEAD", cwd=created).strip())
+
+    code = run(monkeypatch, repo, "done", "issue-1")
+    printed = lines_of(capsys)
+    assert code == 1
+    assert printed[0] == "refusal=teardown_ambiguous"
+    assert any("never reset" not in line for line in printed)
+    assert (created / "README.md").read_text(encoding="utf-8") == "whose is this?\n"
+    assert "issue-1" in git("worktree", "list", "--porcelain", cwd=repo)
+
+
+def test_a_removal_that_fails_part_way_leaves_a_recognisable_state(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The removal records its start, then fails; the retry recognises the state.
+
+    The failure is injected at the git seam rather than staged in the filesystem,
+    because git defeats a read-only directory itself (measured: `chmod 500` on a
+    tracked directory did not stop `git worktree remove` finishing). What the host
+    actually tripped on in #632 stays unestablished; what the recipe owes is that a
+    failure at this seam is refused with the state intact and the record down.
+    """
+    repo = a_repo(tmp_path)
+    run(monkeypatch, repo, "add", "issue-1")
+    capsys.readouterr()
+    created = repo / ".claude" / "worktrees" / "issue-1"
+
+    real_git = worktree.git
+
+    def failing_remove(*args: str, **kwargs: object) -> str:
+        if args[:2] == ("worktree", "remove"):
+            raise worktree.GitError(args, "simulated mid-removal failure")
+        return real_git(*args, **kwargs)  # type: ignore[arg-type]
+
+    monkeypatch.setattr(worktree, "git", failing_remove)
+    code = run(monkeypatch, repo, "done", "issue-1")
+    printed = lines_of(capsys)
+    assert code == 1
+    assert printed[0] == "refusal=worktree_remove_failed"
+    assert any("teardown record is in place" in line for line in printed)
+    assert "issue-1" in git("worktree", "list", "--porcelain", cwd=repo)
+    assert created.exists()
+    record = worktree.read_teardown_record(created)
+    assert record is not None
+    assert record.head == git("rev-parse", "HEAD", cwd=created).strip()
+
+    monkeypatch.undo()
+    code = run(monkeypatch, repo, "done", "issue-1")
+    printed = lines_of(capsys)
+    assert code == 0
+    assert printed[0] == "ok=worktree_removed"
+    assert not created.exists()
+
+
+def test_archive_completes_a_recorded_partial_removal(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Archive makes the same `git worktree remove` call and carries the same exposure."""
+    repo = a_repo(tmp_path)
+    run(monkeypatch, repo, "add", "issue-1")
+    capsys.readouterr()
+    created = repo / ".claude" / "worktrees" / "issue-1"
+    (created / "README.md").unlink()
+    head = git("rev-parse", "HEAD", cwd=created).strip()
+    git("push", "-q", "origin", "HEAD:refs/heads/issue-1-parked", cwd=created)
+    worktree.write_teardown_record(created, head)
+
+    code = run(monkeypatch, repo, "archive", "issue-1", "--ref", "refs/heads/issue-1-parked")
+    printed = lines_of(capsys)
+    assert code == 0
+    assert printed[0] == "ok=worktree_archived"
+    assert any(line.startswith("restored=1 ") for line in printed)
+    assert not created.exists()
 
 
 def test_outside_a_repository_the_tool_fails_closed(

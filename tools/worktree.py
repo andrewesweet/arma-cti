@@ -40,6 +40,17 @@ Six actions, one refusal vocabulary:
   exact remote ref and run the same exclusivity pre-flight as ``add``, so
   recovery stays in the protocol rather than a remembered bare-git recipe.
 
+`done` and `archive` write a **teardown record** into the worktree's own git
+admin directory before `git worktree remove` runs (#632). Git deletes the
+working copy before the administrative entry, so a removal that fails part-way
+leaves unstaged deletions behind a still-registered tree — which every later
+clean-check reads as a dirty tree and refuses, deadlocking the sanctioned
+teardown behind its own failure. The record is what a retry reads to recognise
+that state, and what `tools/dispatch.py` reads to keep its advice from telling
+a reader to commit a removal's own deletions. It is a recorded fact, written
+where only this registration's removal can put it — never an inference from
+the shape of the dirt.
+
 **Nothing here resets, cleans, prunes or removes on a refusal path.** CLAUDE.md
 is explicit that foreign files mean stop and report, and a recipe that tidies is
 a recipe that destroys the work of whoever else is in that tree. `add` does not
@@ -50,8 +61,9 @@ Refusals are named, and each says what was found and what to do:
 ``worktree_occupied`` (naming the other holder — #105's damage came from not
 knowing), ``dirty_tree``, ``unverified``, ``stale_registration``,
 ``unlanded_work``, ``no_such_worktree``, ``invalid_name``, ``invalid_ref``,
-``not_on_remote``, ``ref_mismatch``, ``git_failed``. Exit 0 is proceed, 1 is a
-refusal; the class is the first line, in the tier's ``key=value`` form.
+``not_on_remote``, ``ref_mismatch``, ``git_failed``, ``teardown_ambiguous``,
+``worktree_remove_failed``. Exit 0 is proceed, 1 is a refusal; the class is the
+first line, in the tier's ``key=value`` form.
 """
 
 from __future__ import annotations
@@ -61,6 +73,7 @@ import contextlib
 import re
 import subprocess
 import sys
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Final, NamedTuple
 
@@ -89,6 +102,32 @@ FOREIGN_FILES: Final = (
 UNCOMMITTED_ON_TEARDOWN: Final = (
     "Nothing was removed. If the work is yours, commit and land it first; if you did not "
     "write these files, another agent is in this tree — stop and report, never reset (#105)."
+)
+# #632: the two answers a recorded teardown makes possible, beside the refusal that
+# keeps standing where no record does. The recovery names the one reset-shaped command
+# that is safe here, because the record proves the differences were made by a removal
+# this recipe started — `git checkout -- .` from a clean index restores exactly those
+# deletions and nothing else.
+TEARDOWN_RECOVERY: Final = (
+    "This tree is in the middle of its own removal: the teardown record says `just worktree "
+    "done` (or `archive`) began removing it and git aborted part-way through the working "
+    "copy. Every difference above is that removal's — the head has not moved since it "
+    "started — so never commit them. Run `git checkout -- .` in the worktree, which "
+    "restores exactly these deletions and nothing else, then run `just worktree done "
+    "<name>` again: it recognises this state and completes the removal."
+)
+TEARDOWN_AMBIGUOUS_ACTION: Final = (
+    "A teardown record exists, but the tree does not match what that removal alone could "
+    "have left: only unstaged deletions, at the head the record names. Something else has "
+    "written here since the removal began, so this tool refuses rather than assume whose "
+    "the differences are. Nothing was restored and nothing was removed — read the tree "
+    "before acting (#105)."
+)
+REMOVE_FAILED_ACTION: Final = (
+    "git aborted the removal after it had begun, so the working copy may be partly deleted. "
+    "The teardown record is in place, so the state is recognisable. Fix what git names "
+    "above, then run `just worktree done <name>` again: it completes the removal. Never "
+    "commit the deletions the removal left."
 )
 NOT_ON_REMOTE: Final = (
     "Push the ref to the remote first (`git push origin HEAD:<ref>`), or point --ref at the one "
@@ -160,6 +199,26 @@ class Holder(NamedTuple):
     entries: tuple[str, ...]
 
 
+class TeardownRecord(NamedTuple):
+    """The fact a removal records before it starts: which HEAD it was removing, and when."""
+
+    head: str
+    began: str
+
+
+# The four answers `attribute_teardown` gives, each a distinct instruction downstream:
+# proceed, recover the removal, refuse `never reset`, or refuse without assuming.
+CLEAN: Final = "clean"
+TEARDOWN: Final = "teardown"
+UNRECORDED: Final = "unrecorded"
+AMBIGUOUS: Final = "ambiguous"
+
+# Lives in the worktree's own git admin directory, so it follows the registration
+# rather than the tree's path, and git deletes it exactly when a removal succeeds —
+# which is what retires it.
+TEARDOWN_RECORD: Final = "teardown-record"
+
+
 # --------------------------------------------------------------------- parsing
 
 
@@ -208,6 +267,90 @@ def read_status(porcelain: str) -> Preflight:
             continue
         (untracked if line.startswith("??") else tracked).append(line.rstrip())
     return Preflight(tuple(tracked), tuple(untracked))
+
+
+# ------------------------------------------------------------- teardown record
+
+
+def teardown_record_path(tree: Path) -> Path:
+    """Return the record's path inside the tree's own git admin directory.
+
+    `git rev-parse --git-path` is git's own answer for where per-worktree state lives,
+    so the record follows the registration and can never be confused between a tree
+    that was removed and one later recreated under the same name.
+    """
+    answered = Path(git("rev-parse", "--git-path", TEARDOWN_RECORD, cwd=tree).strip())
+    return answered if answered.is_absolute() else tree / answered
+
+
+def write_teardown_record(tree: Path, head: str) -> None:
+    """Record that this recipe's removal is about to start on `tree`, at this HEAD."""
+    began = datetime.now(UTC).isoformat(timespec="seconds")
+    teardown_record_path(tree).write_text(f"head={head}\nbegan={began}\n", encoding="utf-8")
+
+
+def read_teardown_record(tree: Path) -> TeardownRecord | None:
+    """Read the record back, or `None` where no removal of this tree ever started.
+
+    A record that cannot be read answers `None` too, and that is the safe direction:
+    `None` attributes every difference to the session, whose answer is the `never
+    reset` refusal — a refusal, never a discard. What `None` can never do is unlock
+    the recovery path, so a record this tool wrote but cannot read back costs the
+    deadlock back, not work. The same holds where git itself will not answer — a
+    broken gitdir is refused as `git_failed` upstream, at the status rung.
+    """
+    try:
+        text = teardown_record_path(tree).read_text(encoding="utf-8")
+    except (OSError, GitError, UnicodeDecodeError):
+        return None
+    fields = dict(line.split("=", 1) for line in text.splitlines() if "=" in line)
+    return TeardownRecord(fields.get("head", ""), fields.get("began", ""))
+
+
+def _unstaged_deletions_only(status: Preflight) -> bool:
+    """Whether `git status` holds nothing but ` D` lines — what a part-finished deletion leaves."""
+    return not status.untracked and all(line.startswith(" D") for line in status.tracked)
+
+
+def attribute_teardown(record: TeardownRecord | None, head: str, status: Preflight) -> str:
+    """Answer whose the uncommitted differences in a tree are: the removal's, or the session's.
+
+    Four answers, each derived from a record rather than guessed from the dirt (#632):
+
+    - ``clean`` — nothing to attribute.
+    - ``teardown`` — a record exists for this exact HEAD and the tree holds nothing
+      but unstaged deletions. The tree was clean when the removal started, which is
+      the rung the removal passed, so every deletion was made by that removal; and the
+      head has not moved since to admit anyone else's work.
+    - ``unrecorded`` — no record, so this recipe never began removing this tree and
+      the differences are the session's: the `never reset` refusal stands. A removal
+      that failed before #632 left no record, and this answer cannot tell that case
+      from a session's deletions — it refuses either way, which loses no work and
+      costs only the reading of the list.
+    - ``ambiguous`` — a record exists and the tree does not match what that removal
+      alone could have left: a different HEAD, or anything beyond unstaged deletions.
+      Something else has written since the removal began, so the caller refuses
+      rather than assume either answer.
+    """
+    if status.clean:
+        return CLEAN
+    if record is None:
+        return UNRECORDED
+    if head != record.head or not _unstaged_deletions_only(status):
+        return AMBIGUOUS
+    return TEARDOWN
+
+
+def attribute_teardown_at(tree: Path, status: Preflight) -> str:
+    """`attribute_teardown` for a caller holding only the tree and a status read.
+
+    Raises `GitError` where the head could not be read, which the callers' existing
+    fail-closed handling turns into `git_failed` — an unread tree never becomes a
+    clean one (#375's shape).
+    """
+    return attribute_teardown(
+        read_teardown_record(tree), git("rev-parse", "HEAD", cwd=tree).strip(), status
+    )
 
 
 # --------------------------------------------------------------------- ladders
@@ -338,7 +481,9 @@ def _found(path: Path, status: Preflight) -> tuple[str, ...]:
     return tuple(found)
 
 
-def classify_done(path: Path, holder: Holder) -> Refusal | None:
+def classify_done(
+    path: Path, holder: Holder, record: TeardownRecord | None = None
+) -> Refusal | None:
     """Decide whether a worktree is registered, clean, and safe to remove.
 
     After the presence and clean-status proofs, ``holder.unlanded`` carries
@@ -348,14 +493,19 @@ def classify_done(path: Path, holder: Holder) -> Refusal | None:
     merge cannot be nominated and always refuses. A dirty tree is somebody's
     uncommitted work; an unproven commit is somebody's committed work; both
     vanish with the directory, and ``git worktree remove`` only refuses the first.
+
+    The dirty rung asks the teardown record first (#632): dirt a recorded removal
+    left behind proceeds to the landed proof rather than refusing, because the
+    next step restores exactly that dirt and removes the tree.
     """
     missing = _classify_present(path, holder)
     if missing is not None:
         return missing
+    assert holder.registration is not None  # noqa: S101 — _classify_present proved it
     status = holder.status
     if status is None:
         return _could_not_run(path, "status=unreadable")
-    dirty = classify_preflight(path, status, UNCOMMITTED_ON_TEARDOWN)
+    dirty = _teardown_dirt_refusal(path, holder, status, record)
     if dirty is not None:
         return dirty
     return _classify_landed(path, holder.unlanded)
@@ -406,8 +556,30 @@ def _could_not_run(path: Path, detail: str) -> Refusal:
     )
 
 
+def _teardown_dirt_refusal(
+    path: Path, holder: Holder, status: Preflight, record: TeardownRecord | None
+) -> Refusal | None:
+    """Return the dirty rung `classify_done` and `classify_archive` share (#632).
+
+    Asks the teardown record before refusing: dirt a recorded removal left behind
+    passes the rung, because the next step restores exactly that dirt and removes
+    the tree; an unrecorded tree keeps the plain `dirty_tree` refusal; and a record
+    the tree does not match refuses `teardown_ambiguous` without assuming either.
+    """
+    attribution = attribute_teardown(record, holder.registration.head, status)
+    if attribution == AMBIGUOUS:
+        return Refusal("teardown_ambiguous", _found(path, status), TEARDOWN_AMBIGUOUS_ACTION)
+    if attribution == UNRECORDED:
+        return classify_preflight(path, status, UNCOMMITTED_ON_TEARDOWN)
+    return None
+
+
 def classify_archive(
-    path: Path, holder: Holder, ref: str, remote_sha: str | None
+    path: Path,
+    holder: Holder,
+    ref: str,
+    remote_sha: str | None,
+    record: TeardownRecord | None = None,
 ) -> Refusal | None:
     """Decide whether a worktree may be removed against a preservation ref.
 
@@ -418,14 +590,19 @@ def classify_archive(
     `ref` (#170, #272). Not "a ref exists", not "the branch name looks right":
     the SHA, confirmed against the remote. The ref is read, never created or
     moved, so a refusal leaves both untouched.
+
+    The dirty rung asks the teardown record first, exactly as `classify_done`'s
+    does (#632): archive makes the same `git worktree remove` call and carries
+    the same exposure.
     """
     present = _classify_present(path, holder)
     if present is not None:
         return present
+    assert holder.registration is not None  # noqa: S101 — _classify_present proved it
     status = holder.status
     if status is None:
         return _could_not_run(path, "status=unreadable")
-    dirty = classify_preflight(path, status, UNCOMMITTED_ON_TEARDOWN)
+    dirty = _teardown_dirt_refusal(path, holder, status, record)
     if dirty is not None:
         return dirty
     head = holder.registration.head
@@ -807,6 +984,61 @@ def sweep(root: Path) -> Report:
     return Report(tuple(lines), 0)
 
 
+def _finish_removal(
+    root: Path,
+    path: Path,
+    holder: Holder,
+    ok: tuple[str, ...],
+    tail: tuple[str, ...],
+) -> Report:
+    """Record the removal's start, restore what an interrupted removal deleted, then remove.
+
+    A dirty status reaching here is the teardown-attributed rung — every other dirty
+    shape was refused above — so `git checkout -- .` discards nothing but the deletions
+    the failed removal itself made: the index is untouched (the shape check admits only
+    unstaged deletions), so it restores the recorded HEAD's files and nothing else. The
+    record goes down before `git worktree remove`, so a removal that fails part-way is
+    recognisable on the retry; and git retires it with the admin directory when the
+    removal succeeds.
+    """
+    status = holder.status
+    restored = 0
+    if status is not None and not status.clean:
+        restored = len(status.tracked)
+        git("checkout", "--", ".", cwd=path)
+        after = read_preflight(path)
+        if after is None or not after.clean:
+            return Report.refused(
+                _could_not_run(
+                    path, "status=dirty after restoring the interrupted removal's deletions"
+                )
+            )
+    if holder.registration is not None:
+        with contextlib.suppress(OSError):
+            # Best effort: without the record, a later part-failure answers `unrecorded`
+            # — the pre-#632 answer, whose refusal discards nothing and never unlocks
+            # the recovery path.
+            write_teardown_record(path, holder.registration.head)
+    try:
+        git("worktree", "remove", str(path), cwd=root)
+    except GitError as failure:
+        return Report.refused(
+            Refusal(
+                "worktree_remove_failed",
+                (
+                    f"worktree={path}",
+                    f"command=git {' '.join(failure.args_run)}",
+                    f"stderr={failure.stderr}",
+                ),
+                REMOVE_FAILED_ACTION,
+            )
+        )
+    lines = (*ok, f"worktree={path}")
+    if restored:
+        lines += (f"restored={restored} deletions left by the interrupted removal",)
+    return Report((*lines, *tail), 0)
+
+
 def done(root: Path, name: str) -> Report:
     """Verify clean and the upstream proof for every commit, then remove."""
     bad_name = classify_name(name)
@@ -821,11 +1053,14 @@ def done(root: Path, name: str) -> Report:
         git("fetch", "origin", cwd=root, check=False, timeout=REMOTE_READ_TIMEOUT_S)
     registrations = parse_registrations(git("worktree", "list", "--porcelain", cwd=root))
     holder = gather(root, path, registrations)
-    refusal = classify_done(path, holder)
+    present = _classify_present(path, holder)
+    if present is not None:
+        return Report.refused(present)
+    record = read_teardown_record(path)
+    refusal = classify_done(path, holder, record)
     if refusal is not None:
         return Report.refused(refusal)
-    git("worktree", "remove", str(path), cwd=root)
-    return Report(("ok=worktree_removed", f"worktree={path}", "unlanded=0"), 0)
+    return _finish_removal(root, path, holder, ok=("ok=worktree_removed",), tail=("unlanded=0",))
 
 
 def archive(root: Path, name: str, ref: str) -> Report:
@@ -846,20 +1081,24 @@ def archive(root: Path, name: str, ref: str) -> Report:
     registrations = parse_registrations(git("worktree", "list", "--porcelain", cwd=root))
     holder = gather(root, path, registrations)
     remote_sha = remote_ref_sha(root, ref)
-    refusal = classify_archive(path, holder, ref, remote_sha)
+    present = _classify_present(path, holder)
+    if present is not None:
+        return Report.refused(present)
+    record = read_teardown_record(path)
+    refusal = classify_archive(path, holder, ref, remote_sha, record)
     if refusal is not None:
         return Report.refused(refusal)
-    git("worktree", "remove", str(path), cwd=root)
     head = holder.registration.head
-    return Report(
-        (
-            "ok=worktree_archived",
-            f"worktree={path}",
+    return _finish_removal(
+        root,
+        path,
+        holder,
+        ok=("ok=worktree_archived",),
+        tail=(
             f"head={head}",
             f"ref={ref} resolved={remote_sha}",
             "preserved=yes (remote ref, not origin/main)",
         ),
-        0,
     )
 
 

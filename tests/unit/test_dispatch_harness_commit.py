@@ -478,3 +478,82 @@ def test_a_push_that_does_not_land_is_the_exchanges_refusal_and_not_a_silent_suc
     assert "refusal=git_failed" in lines
     assert _git("log", "-1", "--pretty=%B", cwd=tree).strip() == MESSAGE.strip()
     assert _git("branch", "--list", cwd=remote) == ""
+
+
+# ------------------------------------------------------------------ teardown (#632)
+
+
+def _worktree_tree(tmp_path: Path) -> Path:
+    """Build a *linked worktree* with an origin, so a teardown record can live in it.
+
+    The teardown record follows a worktree registration, so the #632 rungs are only
+    reachable through a tree that is really registered — `git worktree add`, not a
+    standalone clone.
+    """
+    remote = _repository(tmp_path / "remote.git", bare=True)
+    main = _repository(tmp_path / "main")
+    (main / "README.md").write_text("t\n", encoding="utf-8")
+    _git("add", "-A", cwd=main)
+    _git("commit", "-qm", "chore: base", cwd=main)
+    _git("remote", "add", "origin", str(remote), cwd=main)
+    tree = tmp_path / "tree"
+    _git("worktree", "add", str(tree), "--detach", cwd=main)
+    return tree
+
+
+def test_a_recorded_partial_removal_is_not_misattributed_to_the_session(tmp_path: Path) -> None:
+    """#632's criterion 2 and 3: the recovery named, `never reset` gone, nothing committed."""
+    tree = _worktree_tree(tmp_path)
+    (tree / "CLAUDE.md").write_text("gated\n", encoding="utf-8")
+    _git("add", "-A", cwd=tree)
+    _git("commit", "-qm", "chore: carry a tracked file to delete", cwd=tree)
+    (tree / "CLAUDE.md").unlink()
+    head = _git("rev-parse", "HEAD", cwd=tree)
+    dispatch.worktree_tool.write_teardown_record(tree, head)
+
+    lines, code = dispatch.harness_finish(tree, 405, _record(tmp_path))
+
+    assert code == dispatch.EXIT_REFUSED
+    assert "refusal=commit_message_absent" in lines
+    assert any("teardown record" in line for line in lines)
+    assert any("`git checkout -- .`" in line for line in lines)
+    assert not any("never reset" in line for line in lines)
+    # The refusal is true of the tree: nothing committed, nothing restored.
+    assert _git("rev-parse", "HEAD", cwd=tree) == head
+    assert not (tree / "CLAUDE.md").exists()
+
+
+def test_an_ambiguous_teardown_state_refuses_harness_finish_without_assuming(
+    tmp_path: Path,
+) -> None:
+    """A record and a tree the removal alone cannot explain: refuse, name both facts."""
+    tree = _worktree_tree(tmp_path)
+    (tree / "CLAUDE.md").write_text("gated\n", encoding="utf-8")
+    _git("add", "-A", cwd=tree)
+    _git("commit", "-qm", "chore: carry a tracked file to modify", cwd=tree)
+    (tree / "CLAUDE.md").write_text("whose is this?\n", encoding="utf-8")
+    head = _git("rev-parse", "HEAD", cwd=tree)
+    dispatch.worktree_tool.write_teardown_record(tree, head)
+
+    lines, code = dispatch.harness_finish(tree, 405, _record(tmp_path))
+
+    assert code == dispatch.EXIT_REFUSED
+    assert "refusal=teardown_ambiguous" in lines
+    assert _git("rev-parse", "HEAD", cwd=tree) == head
+    assert (tree / "CLAUDE.md").read_text(encoding="utf-8") == "whose is this?\n"
+
+
+def test_the_sessions_own_deletions_still_carry_never_reset(tmp_path: Path) -> None:
+    """No record, and the deletion-shaped dirt is answered as the session's (#632)."""
+    tree = _worktree_tree(tmp_path)
+    (tree / "CLAUDE.md").write_text("gated\n", encoding="utf-8")
+    _git("add", "-A", cwd=tree)
+    _git("commit", "-qm", "chore: carry a tracked file to delete", cwd=tree)
+    (tree / "CLAUDE.md").unlink()
+
+    lines, code = dispatch.harness_finish(tree, 405, _record(tmp_path))
+
+    assert code == dispatch.EXIT_REFUSED
+    assert "refusal=commit_message_absent" in lines
+    assert any("never reset" in line for line in lines)
+    assert not any("teardown record" in line for line in lines)
