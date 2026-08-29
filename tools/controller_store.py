@@ -76,6 +76,7 @@ WORK_RUN_OPTIONAL_FIELDS: Final = frozenset(
         "landed_sha",
         "close_evidence_sha",
         "recovery_kind",
+        "result_published",
         "delivery_conflict",
     }
 )
@@ -763,6 +764,7 @@ def _work_run_entry(value: Mapping[str, object]) -> None:
         "recovery_kind",
     ):
         _optional_fact_text(value, field_name, f"facts_work_runs_{field_name}")
+    _optional_fact_bool(value, "result_published", "facts_work_runs_result_published")
     _optional_fact_bool(value, "delivery_conflict", "facts_work_runs_delivery_conflict")
 
 
@@ -892,6 +894,7 @@ def _work_run_value(value: dict[str, object]) -> policy.WorkRunFact:
         _optional_fact_text(value, "landed_sha", "facts_work_runs_landed_sha"),
         _optional_fact_text(value, "close_evidence_sha", "facts_work_runs_close_evidence_sha"),
         _optional_fact_text(value, "recovery_kind", "facts_work_runs_recovery_kind"),
+        _optional_fact_bool(value, "result_published", "facts_work_runs_result_published"),
         _optional_fact_bool(value, "delivery_conflict", "facts_work_runs_delivery_conflict"),
     )
 
