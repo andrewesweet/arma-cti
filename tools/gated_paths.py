@@ -12,9 +12,10 @@ bound to the exact change at that path.  The base-independent ``approval_id``
 used for the human handoff hashes the path, baseline tree entry and current
 payload exactly, without the base commit ID.  The separate normalised
 ``change_id`` only nominates an earlier record for carry: textual hunk bytes,
-section anchors, paths and modes remain exact, while hunk line ranges and
-textual whole-file blob IDs are discarded because they name a moved baseline
-rather than the change.  Carrying that nomination also requires the recorded
+paths and modes remain exact, while hunk line ranges, the section anchor (Git's
+funcname guess) each hunk header carries, and textual whole-file blob IDs are
+discarded because they name the baseline's context rather than the change.
+Carrying that nomination also requires the recorded
 baseline to be an ancestor and a clean three-way replay of the recorded
 approved result onto the current baseline to equal the current bytes.  This
 keeps an unrelated textual baseline edit without letting an identical hunk
@@ -1063,19 +1064,24 @@ def check(  # noqa: C901, PLR0911, PLR0912, PLR0915 — one report per fail-clos
             )
         content_id = binding.content_id
         record = approval_path(approvals, issue, content_id)
-        expected = _approval_for(issue, path, binding, "expected", "expected")
+        not_carried: list[str] = []
         if record.exists():
             try:
-                read_approval(record, expected)
+                prior = read_approval(record)
             except ApprovalError as refusal:
                 return refused(refusal.kind, (f"path={path}", refusal.detail), refusal.action)
-            approved.append(
-                f"approval=recorded issue={issue} path={path} content_id={content_id}"
-                f" record={record}"
-            )
-            continue
+            if prior.change_id == binding.change_id:
+                approved.append(
+                    f"approval=recorded issue={issue} path={path} content_id={content_id}"
+                    f" record={record}"
+                )
+                continue
+            # The record's identity moved under it without its content moving —
+            # the funcname strip re-keyed 20 of the 23 on-box records (#623).
+            # Name that here and still walk the carry rungs, where re-running
+            # the printed `approve` command is the route out.
+            not_carried.append(f"prior_approval={record} not_carried=change_id_mismatch")
 
-        not_carried: list[str] = []
         try:
             stored = _stored_approvals(approvals, issue)
         except ApprovalError as refusal:
@@ -1182,7 +1188,7 @@ def _write_record(target: Path, document: str) -> None:
         temporary.unlink(missing_ok=True)
 
 
-def record_approval(  # noqa: C901, PLR0912, PLR0913 — validation ladder; one input per recorded fact
+def record_approval(  # noqa: C901, PLR0912, PLR0913, PLR0915 — validation ladder; one input per recorded fact
     root: Path,
     approvals: Path,
     *,
@@ -1286,27 +1292,48 @@ def record_approval(  # noqa: C901, PLR0912, PLR0913 — validation ladder; one 
 
     approval = _approval_for(issue, normalised, binding, approved_at, approved_by)
     target = approval_path(approvals, issue, binding.content_id)
+    document = {
+        "version": APPROVAL_VERSION,
+        "issue": issue,
+        "path": normalised,
+        "content_id": binding.content_id,
+        "change_id": binding.change_id,
+        "base_sha": binding.base_sha,
+        "result_payload": base64.b64encode(binding.result_payload).decode("ascii"),
+        "binary": binding.binary,
+        "base": BASE,
+        "approved_at": approved_at,
+        "approved_by": approved_by,
+        "approved_by_source": APPROVER_SOURCE,
+        "source": APPROVAL_SOURCE,
+    }
+    encoded = json.dumps(document, indent=2, sort_keys=True) + "\n"
     with _approval_lock(approvals, issue):
         if target.exists():
-            read_approval(target, approval)
-            return approval, target, False
-        document = {
-            "version": APPROVAL_VERSION,
-            "issue": issue,
-            "path": normalised,
-            "content_id": binding.content_id,
-            "change_id": binding.change_id,
-            "base_sha": binding.base_sha,
-            "result_payload": base64.b64encode(binding.result_payload).decode("ascii"),
-            "binary": binding.binary,
-            "base": BASE,
-            "approved_at": approved_at,
-            "approved_by": approved_by,
-            "approved_by_source": APPROVER_SOURCE,
-            "source": APPROVAL_SOURCE,
-        }
+            previous = read_approval(target)
+            # A record at this content-addressed name differs only where the
+            # change identity moved under it (the funcname strip re-keyed the
+            # change_id of 20 of the 23 on-box records without moving any
+            # approved bytes, #623). Re-recording through the sanctioned
+            # surface re-keys it; anything else at this name is unreadable.
+            moved = [
+                field
+                for field in ("issue", "path", "content_id", "base_sha", "result_payload", "binary")
+                if getattr(previous, field) != getattr(approval, field)
+            ]
+            if not moved and previous.change_id == approval.change_id:
+                return approval, target, False
+            if moved:
+                raise ApprovalError(
+                    APPROVAL_UNREADABLE,
+                    f"record={target} differs={','.join(moved)}",
+                    (
+                        "Re-record this exact approval through `just gated-paths approve`;"
+                        " a record that does not match its path and binding cannot clear the gate."
+                    ),
+                )
         try:
-            _write_record(target, json.dumps(document, indent=2, sort_keys=True) + "\n")
+            _write_record(target, encoded)
         except OSError as unwritable:
             raise ApprovalError(
                 APPROVAL_UNWRITTEN,

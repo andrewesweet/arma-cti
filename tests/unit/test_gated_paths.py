@@ -11,6 +11,7 @@ from __future__ import annotations
 import base64
 import json
 import os
+import re
 import subprocess
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Final
@@ -227,6 +228,118 @@ def test_an_approval_recorded_while_behind_survives_the_landing_rebase(
         "approval=carried" in line and "proof=exact_three_way_replay" in line
         for line in report.lines
     )
+
+
+FUNCNAME_KEPT: Final = re.compile(rb"\A@@ -\d+(?:,\d+)? \+\d+(?:,\d+)? @@")
+
+
+def normalise_with_funcname_kept(diff: bytes) -> bytes:
+    """Normalise as the pre-strip code did: ranges discarded, funcname kept."""
+    return b"".join(FUNCNAME_KEPT.sub(b"@@", line) for line in diff.splitlines(keepends=True))
+
+
+def test_a_funcname_approval_recorded_on_main_is_re_keyed_by_a_fresh_approval(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The stale-record construction the funcname strip creates (#623).
+
+    A human approves an edit while the branch sits exactly on ``main``; the
+    strip then re-keys that record's ``change_id`` without moving its
+    ``content_id`` or a single approved byte.  ``check`` names the mismatch and
+    prints the fresh commands, and re-running the printed ``approve`` command
+    re-keys the record in place — the store never needs a hand-edit.
+    """
+    repo = repository(tmp_path)
+    store = tmp_path / "approvals"
+    (repo / "AGENTS.md").write_text(
+        "heading\nalpha instructions\nmiddle instructions\nbeta instructions\n",
+        encoding="utf-8",
+    )
+    git(repo, "add", "AGENTS.md")
+    git(repo, "commit", "-q", "-m", "four gated lines")
+    git(repo, "update-ref", "refs/remotes/origin/main", "HEAD")
+
+    git(repo, "checkout", "-q", "-b", "main-ahead", "origin/main")
+    (repo / "AGENTS.md").write_text(
+        "heading\nalpha moved by main\nmiddle instructions\nbeta instructions\n",
+        encoding="utf-8",
+    )
+    git(repo, "add", "AGENTS.md")
+    git(repo, "commit", "-q", "-m", "main moves the second line")
+    git(repo, "update-ref", "refs/remotes/origin/main", "HEAD")
+    git(repo, "checkout", "-q", "work")
+    # The approval is recorded while the branch sits exactly on main: the
+    # worktree equals origin/main and only the human's edit is uncommitted.
+    git(repo, "reset", "--hard", "origin/main")
+
+    (repo / "AGENTS.md").write_text(
+        "heading\nalpha moved by main\nmiddle moved by branch\nbeta instructions\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(gated_paths, "_normalised_diff", normalise_with_funcname_kept)
+    content_id = approve(repo, store)
+    git(repo, "add", "AGENTS.md")
+    git(repo, "commit", "-q", "-m", "branch moves the third line")
+    monkeypatch.undo()
+
+    stale = gated_paths.check(repo, store, issue=ISSUE)
+
+    assert stale.exit_code == 1
+    assert "refusal=approval_missing" in stale.lines
+    assert any("not_carried=change_id_mismatch" in line for line in stale.lines)
+    assert not any("approval_unreadable" in line for line in stale.lines)
+    binding = gated_paths.binding_of(repo, "AGENTS.md")
+    assert binding.content_id == content_id
+
+    approval, target, added = gated_paths.record_approval(
+        repo,
+        store,
+        issue=ISSUE,
+        path="AGENTS.md",
+        expected_change_id=binding.approval_id,
+        approved_at=STAMP,
+        approved_by="andre",
+        environ={},
+    )
+
+    assert added
+    assert approval.change_id == binding.change_id
+    assert target == gated_paths.approval_path(store, ISSUE, content_id)
+    reread = gated_paths.read_approval(target)
+    assert reread.change_id == binding.change_id
+
+    rekeyed = gated_paths.check(repo, store, issue=ISSUE)
+
+    # The re-keyed record sits at the same content-addressed name as the
+    # binding, so the gate clears it directly as recorded rather than by carry.
+    assert rekeyed.exit_code == 0
+    assert any("approval=recorded" in line and f"record={target}" in line for line in rekeyed.lines)
+
+
+def test_a_re_approval_of_an_unchanged_binding_records_nothing_new(tmp_path: Path) -> None:
+    """Re-running the printed command at an unchanged binding stays `already`."""
+    repo = repository(tmp_path)
+    store = tmp_path / "approvals"
+    (repo / "AGENTS.md").write_text("changed by the branch\n", encoding="utf-8")
+    approve(repo, store)
+
+    _approval, target, added = gated_paths.record_approval(
+        repo,
+        store,
+        issue=ISSUE,
+        path="AGENTS.md",
+        expected_content_id=gated_paths.content_id_of(repo, "AGENTS.md"),
+        approved_at="2026-08-29T01:00:00+00:00",
+        approved_by="andre",
+        environ={},
+    )
+
+    assert added is False
+    assert target == gated_paths.approval_path(
+        store, ISSUE, gated_paths.content_id_of(repo, "AGENTS.md")
+    )
+    assert gated_paths.read_approval(target).approved_at == STAMP
 
 
 def test_a_codex_shaped_agents_edit_is_caught_without_running_the_hook(tmp_path: Path) -> None:
