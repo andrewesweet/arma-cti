@@ -382,7 +382,7 @@ class ExistingRecoveryClassifier:
     watch_dir: Path
     dispatch_dir: Path
     now: Callable[[], int] | None = None
-    machine: dispatch_stop.Machine = dispatch_stop.Machine()
+    machine: dispatch_stop.Machine = field(default_factory=dispatch_stop.Machine)
 
     def classify(self, run: policy.WorkRunFact) -> str | None:
         """Ask recovery only for a dispatch with no published result."""
