@@ -334,7 +334,15 @@ def test_an_ambiguous_record_refuses_done_and_restores_nothing() -> None:
     assert "cannot prove whose the differences are" in refusal.action
     # The checkout is named for the reader to take on the list, never run by the tool.
     assert "`git checkout -- .`" in refusal.action
-    assert "Nothing was restored" in refusal.action
+    # Only what every branch of this refusal knows: no recovery ran, the
+    # registration survived — never "nothing was removed", which the partial
+    # deletion this same text admits makes false (#632 round four).
+    assert "No recovery was performed" in refusal.action
+    assert "nothing was removed" not in refusal.action.lower()
+    assert "still registered" in refusal.action
+    # The clean retry's completion is conditional, not promised: a tree whose
+    # removal still fails refuses again however clean it reads.
+    assert "if that retry's removal succeeds, the worktree is gone" in refusal.action
 
 
 def test_an_ambiguous_record_names_the_retry_its_operation_chose() -> None:
@@ -384,6 +392,12 @@ def test_a_removal_failure_defers_the_judgement_to_the_ambiguous_retry() -> None
         assert "never reset" in text
         # The round-two defect: advice naming evidence this refusal does not print.
         assert "read the list" not in text
+        # Round four, finding 1: the summary states only what every branch knows —
+        # no recovery ran and the registration survived — because "nothing was
+        # removed" is false in exactly the branch the preceding sentence admits.
+        assert "No recovery was performed" in text
+        assert "nothing was removed" not in text.lower()
+        assert "still registered" in text
 
 
 def test_a_removal_failure_on_a_clean_tree_completes_without_the_ambiguous_refusal(
@@ -414,6 +428,10 @@ def test_a_removal_failure_on_a_clean_tree_completes_without_the_ambiguous_refus
     printed = lines_of(capsys)
     assert code == 1
     assert printed[0] == "refusal=worktree_remove_failed"
+    # The printed refusal, read in this branch: it knows no recovery ran and the
+    # registration survived, and claims nothing about what the tree lost.
+    assert any("No recovery was performed" in line for line in printed)
+    assert not any("nothing was removed" in line.lower() for line in printed)
     assert (created / "README.md").exists()  # nothing changed at all
     assert "issue-1" in git("worktree", "list", "--porcelain", cwd=repo)
 
@@ -958,6 +976,11 @@ def test_an_interrupted_removal_refuses_then_completes_once_the_reader_restores(
     printed = lines_of(capsys)
     assert code == 1
     assert printed[0] == "refusal=worktree_remove_failed"
+    # Round four, finding 1, asserted in the arrangement that proves it: this
+    # refusal has just followed a real deletion, so its text may only claim the
+    # two facts every branch knows — no recovery ran, the registration survived.
+    assert any("No recovery was performed" in line for line in printed)
+    assert not any("nothing was removed" in line.lower() for line in printed)
     assert "issue-1" in git("worktree", "list", "--porcelain", cwd=repo)
     record = worktree.read_teardown_record(created)
     assert record is not None
@@ -968,6 +991,9 @@ def test_an_interrupted_removal_refuses_then_completes_once_the_reader_restores(
     printed = lines_of(capsys)
     assert code == 1
     assert printed[0] == "refusal=teardown_ambiguous"
+    # The same two facts hold for the ambiguous refusal beside this debris.
+    assert any("No recovery was performed" in line for line in printed)
+    assert not any("nothing was removed" in line.lower() for line in printed)
     # The reviewer's probe: this state is also what a session's own deletion makes,
     # so the tool restores nothing and removes nothing.
     assert not (created / "README.md").exists()
