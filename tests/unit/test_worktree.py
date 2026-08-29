@@ -376,7 +376,8 @@ def test_a_removal_failure_defers_the_judgement_to_the_ambiguous_retry() -> None
         # clean retry's completion the reviewer's locked-worktree case produces.
         assert "teardown_ambiguous" in text
         assert "prints the tree's status beside the recovery" in text
-        assert "still clean" in text and "completes the removal without printing a list" in text
+        assert "still clean" in text
+        assert "completes the removal without printing a list" in text
         # Neither absolute order about the deletions survives the ruling.
         assert "Never commit the deletions" not in text
         assert "never commit" not in text.lower()
