@@ -348,6 +348,18 @@ def _run_matches_holder(
     )
 
 
+# The recovery verdicts that conclude rather than observe.  `lost_work` and
+# `finished_and_cleaned` cannot be un-concluded by a later look, so they are
+# the only kinds the terminal branch of `_with_recovery` stamps and the only
+# ones a later cycle leaves alone.  `still_live` and `unproven` are
+# observations — true when taken, silent about now — so they keep the run's
+# slot and stay open to re-classification, which is what lets a dispatch
+# classified healthy at one cycle resolve once its agent has died (#625).  A
+# kind missing from this set defaults to observed, never concluded: an
+# unknown verdict must not release a slot by accident.
+TERMINAL_RECOVERY_KINDS: Final = frozenset({"lost_work", "finished_and_cleaned"})
+
+
 @dataclass(frozen=True)
 class ExistingRecoveryClassifier:
     """Adapter around ``tools/recovery.py``'s existing read-only classification."""
@@ -422,24 +434,34 @@ class DispatchDeliveryFactCollector:
             runs[match] = policy.merge_work_run_observation(runs[match], observed)
 
     def _with_recovery(self, run: policy.WorkRunFact) -> policy.WorkRunFact:
-        """Attach an existing recovery verdict while preserving non-result semantics."""
-        if (
-            run.landed_sha is not None
-            or run.recovery_kind is not None
-            or run.state == policy.NON_RESULT
+        """Attach an existing recovery verdict while preserving non-result semantics.
+
+        Stickiness is carried by the state, never by the verdict: the terminal
+        branch below is the only writer of ``non_result``, so a concluded run
+        is skipped by its state and an observed one — `still_live`, `unproven`
+        — falls through and is re-derived every cycle.  A `non_result` run
+        carrying a non-terminal verdict is one an earlier cycle concluded as a
+        guess, so it too is re-derived rather than trusted.
+        """
+        if run.landed_sha is not None:
+            return run
+        if run.state == policy.NON_RESULT and (
+            run.recovery_kind is None or run.recovery_kind in TERMINAL_RECOVERY_KINDS
         ):
             return run
         kind = self.recovery.classify(run) if self.recovery is not None else None
         if kind is None:
             return run
+        if kind in TERMINAL_RECOVERY_KINDS:
+            return replace(
+                run,
+                state=policy.NON_RESULT,
+                failure_class=run.failure_class or "interrupted",
+                recovery_kind=kind,
+            )
         if kind == "still_live":
             return replace(run, state="running", recovery_kind=kind)
-        return replace(
-            run,
-            state=policy.NON_RESULT,
-            failure_class=run.failure_class or "interrupted",
-            recovery_kind=kind,
-        )
+        return replace(run, recovery_kind=kind)
 
 
 def _read_delivery(path: Path) -> policy.WorkRunFact:
