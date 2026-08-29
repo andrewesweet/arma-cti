@@ -21,7 +21,8 @@
   it adds the ledger materialisation owed before a run's spend or outcome is quoted,
   and the verbatim `just verdict` paste and `just trial close-audit` a close is judged
   from. The adjudication rule is reduced to the one obligation and a pointer: nothing above
-  Low is left open, and which route a finding may take is left to
+  Low is left open, and which route a finding may take, outside the cap the human's ruling
+  sets, is left to
   `docs/agents/review-severity.md` and `_route_checks`. The file carries only the part
   no check can catch, that `_route_checks` verifies `--conditional-on` is non-empty and
   nothing more.
@@ -40,8 +41,9 @@
 - **The tick's three missing review and dispatch obligations are restored, and the
   two-review cap is kept over the ADR that contradicts it (#643).** Harvest dispatches
   the `review` seat it had skipped between exchanging a branch and recording a verdict;
-  the landing section adds the post-landing `review` pass `AGENTS.md` retains as the
-  sole catch for a finding an arbiter dismissed; and dispatch preparation names
+  the landing section adds the post-landing `review` pass, bound to the landed SHA by a
+  re-exchange and a `--base-sha`, since `just land` pushes `HEAD:main` alone and never
+  moves the issue ref review dispatch restores; and dispatch preparation names
   `just worktree add` and the continuation's first `just handoff` read. A gate-clock
   drift line is given the response it lacked, `just gate-clock-history` before an anchor
   move is proposed. Four claims about the code are corrected: exit code 0 is the

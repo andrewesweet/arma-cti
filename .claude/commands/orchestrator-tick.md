@@ -43,7 +43,7 @@ If a branch is gated, reviewed and adjudicated, land it with `just land --audit-
 
 **Exit codes are part of the contract**: 0 is the invocation's own success, not proof of a landing — a clean `--dry-run` or `--stage` exits 0 too and prints `landed=no` (`tools/land.py`'s `stage` and dry-run plan), so read that line, not the code alone. 1 is nothing landed; 2 is the work **is** on `origin/main` and a step is outstanding — never a success. On the sandbox case the rung prints `merge_command=` naming the exact command for the orchestrator. A stale main checkout is where ADR-0042's stale-hook window comes from, so run what it names.
 
-**After the landing, dispatch the `review` seat once more.** The post-landing pass is the sole remaining catch for a real finding an arbiter dismissed, and it reads the terminus record (`AGENTS.md`, the three named exceptions to the no-further-passes rule). "Post-landing" names when the pass runs; `--seat` accepts no such name.
+**After the landing, dispatch the `review` seat once more, bound to the landed SHA.** `just land` pushes `HEAD:main` alone (`PUSH_REFSPEC`, `tools/land.py`) and never moves `refs/heads/issue-N`, which is what review dispatch restores, so a landing that carried a verdict through a rebase leaves that ref on the pre-rebase commit. Re-exchange from a tree at the landed commit, then dispatch with `--base-sha <landed sha>`, which refuses `review_ref_sha_mismatch` where the ref holds anything else. What the pass is for is `AGENTS.md`'s three named exceptions to the no-further-passes rule; "post-landing" names when it runs and `--seat` accepts no such name.
 
 **After a successful landing, the landed-issue projection is yours.** Run `just observatory` in the **main checkout** and commit its generated `docs/observatory/landed-issues.md` update as your own follow-up. A feature branch never writes that file; `just observatory` deliberately has no feature-branch guard, so running it anywhere else dirties that tree (`docs/agents/orchestration.md`, "The landing half").
 
@@ -84,7 +84,7 @@ Re-rank if the evidence says so, and say so in the tick rather than re-ranking q
 
 ## 5. Two reviews per landing, and the cap changes the work
 
-`critical` and `high` go back **once** (#217, human rulings of 2026-08-18 and 2026-08-19, verified on #217's thread). **The cap counts review rounds over one landing — the first review, and one re-review after the fix — never findings**: two `high`s in one report are one round, and clearing them is one patch. `medium` and below may be *routed* without a further review round, but not by default: filing one is `accepted_and_filed`, and that route requires named work outside the diff on which the harm is conditional. An unconditional `medium` is ordinarily fixed in this diff, but `fixed` is not the only route open to it: an authorised arbiter route may close it, and a finding left open blocks the landing (harvest, above).
+`critical` and `high` go back **once** (#217, human rulings of 2026-08-18 and 2026-08-19, verified on #217's thread). **The cap counts review rounds over one landing — the first review, and one re-review after the fix — never findings**: two `high`s in one report are one round, and clearing them is one patch.
 
 **The cap and the code disagree, and the cap binds** (human ruling, 2026-08-29, on #643): ADR-0071 and `tools/escalation.py`'s `THREE_ROUND_THRESHOLD` specify three fix rounds and four reviews, and the ADR is wrong. Nothing in the tree counts to two, so the cap is this seat's to hold by hand. **#645 carries both — the ADR's correction and the cap's missing in-tree home.**
 
@@ -94,7 +94,7 @@ Re-rank if the evidence says so, and say so in the tick rather than re-ranking q
 
 **Earlier trigger, worth more than the cap** (#217): when round two finds the *same class* of defect as round one, stop patching and question the requirement. #405 and #417 are that ruling's worked examples, not its source: #405 spent four rounds on one class and ended by deleting what was being defended. Two instances of a class is evidence about the design.
 
-Take rulings under the human's standing authorisation (#217), record them where they bind, and do not park work waiting for a turn. That authorisation does not displace ADR-0013: a delegated gated decision goes into a marked ADR.
+Take rulings under the human's standing authorisation (#217), record them where they bind, and do not park work waiting for a turn — **except at the cap, where parking and escalating to the human is one of the three routes above**. That authorisation does not displace ADR-0013: a delegated gated decision goes into a marked ADR.
 
 ## 6. Report briefly
 
