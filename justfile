@@ -285,6 +285,17 @@ unit-rust:
 guidance-eval *args:
     uv run python tools/guidance_eval.py {{args}}
 
+# Run the eval corpus against one or two agent configurations and compare task by task.
+# Typed verdict per case (a rate over the task's repeats, judged against its tolerance),
+# worst class as the exit code, cost reported, comparisons never netted. `--contract`
+# prints the task↔runner contract, derived from the runner. Tasks live in evals/corpus/;
+# graders are hash-pinned by their tasks; evidence lands under ~/.arma-cti/evals/runs/.
+# A single configuration runs an ablation across a task's own variants; two
+# configurations are compared pairwise, case by case.
+[positional-arguments]
+eval-corpus *args:
+    uv run python tools/eval_corpus.py {{args}}
+
 # Build every artefact the Arma tiers need. A green check does not imply a green build.
 build: build-addon build-shim build-missions
 

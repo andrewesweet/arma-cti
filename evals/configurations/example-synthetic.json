@@ -1,0 +1,11 @@
+{
+  "schema": "cti.eval-configuration/1",
+  "name": "example-synthetic",
+  "harness": {
+    "argv": [
+      "python3",
+      "{repo}/evals/adapters/synthetic-echo.py"
+    ],
+    "env": {}
+  }
+}

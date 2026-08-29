@@ -90,6 +90,22 @@ ignore = [
 # The installed client supervisor keeps its launch/observe/teardown ladder in
 # one function so every exit reaches the same owned-cgroup cleanup.
 "ops/machine-b/files/cti_arma_client.py" = ["C901", "PLR0912", "PLR0915"]
+# The eval runner keeps its document-validation ladders together so their typed
+# refusal kinds cannot drift by helper (#617), and a refusal's kind IS its
+# machine-readable interface — the shape tools/guidance_eval.py records for the
+# same reasons.
+"tools/eval_corpus.py" = [
+  "C901",     # the task-loader's validation ladder stays whole so its refusals cannot drift
+  "EM101",    # a refusal's kind IS the machine-readable interface, as in guidance_eval
+  "FBT003",   # ContractField registries state `required` positionally for scanability
+  "PLR0912",  # ditto: the loader checks each boundary in one place
+  "PLR0913",  # the trial pipeline passes its execution context explicitly
+  "PLR0917",  # ditto
+  "TRY301",   # main's one try block is the refusal boundary, not swallowed control flow
+]
+# Corpus data, graders and context stimuli are data and one-file tools, not
+# packages: evals/ is deliberately not an importable namespace.
+"evals/**" = ["INP001"]
 # Claude Code hooks: single-purpose scripts on a stdin/stderr/exit-code contract.
 ".claude/hooks/*.py" = [
   "EXE001",   # commit-msg invokes its guard through python3; Git mode is intentionally non-executable

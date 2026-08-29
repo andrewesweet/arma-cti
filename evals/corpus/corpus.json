@@ -1,0 +1,4 @@
+{
+  "schema": "cti.eval-corpus-manifest/1",
+  "min_cases_for_claim": 20
+}
