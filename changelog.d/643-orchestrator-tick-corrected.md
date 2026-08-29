@@ -25,12 +25,11 @@
   `docs/agents/review-severity.md` and `_route_checks`. The file carries only the part
   no check can catch, that `_route_checks` verifies `--conditional-on` is non-empty and
   nothing more.
-- **The tick now opens a controller reconciliation cycle, records how a gated path is
+- **The tick now runs a controller reconciliation cycle, records how a gated path is
   approved, and says who declares an unclaimed change's author (#643).** On the
-  human's rulings of 2026-08-29, the turn top runs `just controller reconcile`, which
-  no earlier authority had bound to this seat, and it runs before any read that
-  selects, `just watch-report`'s own queue report included, because its mutations would
-  otherwise stale a selection already taken; the landing section states
+  human's rulings of 2026-08-29, the turn top runs `just controller reconcile` after
+  `just watch-report`, a recipe no earlier authority had bound to this seat; the
+  landing section states
   the `just gated-paths` check and approval, the two ADR-0013 standing routes that stand
   in for an approval and what neither authorises, and that `.claude/commands/` is not on
   that list; and it states that a change no dispatch record claims declares its author
@@ -38,3 +37,24 @@
   `.claude/`. The file supplies no mechanism for that last, the mechanism differing by
   lane and none having been verified here. The file also now states that the
   orchestrator seat holds its own waits, which is the opposite of the subagent rule.
+- **The tick's three missing review and dispatch obligations are restored, and the
+  two-review cap is kept over the ADR that contradicts it (#643).** Harvest dispatches
+  the `review` seat it had skipped between exchanging a branch and recording a verdict;
+  the landing section adds the post-landing `review` pass `AGENTS.md` retains as the
+  sole catch for a finding an arbiter dismissed; and dispatch preparation names
+  `just worktree add` and the continuation's first `just handoff` read. A gate-clock
+  drift line is given the response it lacked, `just gate-clock-history` before an anchor
+  move is proposed. Four claims about the code are corrected: exit code 0 is the
+  invocation's success rather than proof of a landing, since a clean `--dry-run` or
+  `--stage` also exits 0 and prints `landed=no`; the terminus record is post-landing
+  review's rather than the landing rung's, which reads the loop and its stop condition;
+  `just queue next` returns eligible candidates in issue-number order rather than a
+  ranking of kinds; and `quota_exhausted` is taken off the escalation list, the response
+  being another lane or the provider's published reset. The false justification for
+  running the controller first is deleted rather than replaced, `default_controller`
+  wiring its worktree, dispatch and evidence ports to a refusing
+  `UnsupportedActionPort`. On the human's ruling of 2026-08-29 the two-review cap binds
+  and ADR-0071's three fix rounds are the error: the file records that, says the cap
+  counts review rounds rather than findings, states that a deletion or a narrowing at
+  the cap still owes a fresh verdict on the SHA it produces, and points #645 at both the
+  ADR's correction and the cap's missing in-tree home.
