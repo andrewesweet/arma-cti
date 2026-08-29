@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import subprocess
 from pathlib import Path
 from typing import Any
 
@@ -495,9 +496,7 @@ def test_dispatch_delivery_collector_composes_recovery_before_relaunch(
 
 
 def _git(*argv: str, cwd: Path) -> None:
-    import subprocess
-
-    subprocess.run(["git", *argv], cwd=cwd, check=True, capture_output=True)
+    subprocess.run(["git", *argv], cwd=cwd, check=True, capture_output=True)  # noqa: S603, S607 — fixed argv, PATH git as everywhere in tools/
 
 
 def test_a_healthy_dispatch_that_dies_before_the_next_cycle_resolves(tmp_path: Path) -> None:
