@@ -4100,12 +4100,15 @@ def _message_absent_refusal(
     attribution = worktree_tool.attribute_teardown_at(tree, status)
     if attribution == worktree_tool.AMBIGUOUS:
         torn = worktree_tool.read_teardown_record(tree)
-        assert torn is not None  # noqa: S101 — AMBIGUOUS means the record read back
-        return _harness_refusal(
-            "teardown_ambiguous",
-            found,
-            worktree_tool.teardown_ambiguous_action(torn.operation, torn.ref),
-        )
+        if torn is not None:
+            return _harness_refusal(
+                "teardown_ambiguous",
+                found,
+                worktree_tool.teardown_ambiguous_action(torn.operation, torn.ref),
+            )
+        # The record read a moment ago and cannot be read now: a concurrent removal
+        # is the only writer, and this refusal still discards nothing — so the
+        # unattributed text stands rather than a crash.
     return _harness_refusal("commit_message_absent", found, _UNATTRIBUTED_DIRT_ACTION)
 
 
