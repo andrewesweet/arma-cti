@@ -375,6 +375,83 @@ def test_recollection_after_reload_keeps_the_slot_released(tmp_path: Path) -> No
     assert policy.eligible_work_items(merged_facts) == loaded.facts.work_items
 
 
+def landed_run_facts() -> policy.ControlFacts:
+    """Facts whose one run has landed on item-1 and carries no publication yet."""
+    run = policy.WorkRunFact(
+        "d-1",
+        "landed",
+        work_item_key="item-1",
+        dispatch_id="d-1",
+        issue=1,
+        landed_sha="a" * 40,
+    )
+    item = policy.WorkItemFact("item-1", "open", issue=1)
+    return policy.ControlFacts(None, (), (), (item,), (run,), wip_limit=1)
+
+
+def stage_published_result_with_delivery(root: Path) -> None:
+    """Stage d-1's own result with the typed delivery block the collector reads."""
+    record = root / "dispatches" / "d-1"
+    record.mkdir(parents=True, exist_ok=True)
+    (record / "result.json").write_text(
+        json.dumps(
+            {
+                "dispatch_id": "d-1",
+                "delivery": {
+                    "key": "d-1",
+                    "state": "gated",
+                    "work_item_key": "item-1",
+                    "dispatch_id": "d-1",
+                    "issue": 1,
+                },
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+
+def run_published_cycle(
+    loaded: store.LoadedControllerState, root: Path, cycle_id: str
+) -> store.LoadedControllerState:
+    """Collect, merge, journal, and reload — one cycle exactly as production runs it."""
+    observed = ports.DispatchDeliveryFactCollector(root / "dispatches").collect(
+        loaded.facts.work_runs
+    )
+    merged = policy.merge_work_run_observations(loaded.facts.work_runs, observed)
+    merged_facts = policy.ControlFacts(None, (), (), loaded.facts.work_items, merged, wip_limit=1)
+    controller_store = store.ControllerStore(root / "controller")
+    document = payload()
+    document["facts"] = policy.facts_document(merged_facts)
+    controller_store.write_cycle(
+        cycle_id,
+        document,
+        recorded_at="2026-08-29T12:00:00+00:00",
+        recorded_by="test-controller",
+    )
+    return controller_store.load()
+
+
+def test_a_collector_sourced_stamp_survives_two_journalled_cycles(tmp_path: Path) -> None:
+    """The stamp is the collector's, and it must outlive every cycle after it.
+
+    The journal starts unstamped, so the only source of the publication fact
+    is the collection itself — no hand-written stamp exists anywhere in this
+    sequence.  Each cycle persists what it merged and reloads it before
+    collecting again, which is the span in which a branch that drops the fact
+    loses it permanently rather than for one cycle.
+    """
+    stage_published_result_with_delivery(tmp_path)
+    loaded = write_and_reload(tmp_path, landed_run_facts())
+    assert loaded.facts.work_runs[0].result_published is False
+
+    loaded = run_published_cycle(loaded, tmp_path, "cycle-2")
+    assert loaded.facts.work_runs[0].result_published is True
+
+    loaded = run_published_cycle(loaded, tmp_path, "cycle-3")
+    assert loaded.facts.work_runs[0].result_published is True
+
+
 def test_a_journal_written_before_the_stamp_self_heals_at_recollection(
     tmp_path: Path,
 ) -> None:

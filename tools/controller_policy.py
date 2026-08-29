@@ -414,33 +414,38 @@ def merge_work_run_observation(previous: WorkRunFact, current: WorkRunFact) -> W
     A terminal landing is write-once per Work Run.  A repeated signal may add
     close evidence for the same SHA; a different SHA becomes a visible conflict
     and can never satisfy completion.
+
+    ``result_published`` is deliberately outside the ladder below.  It records
+    where an observation was read from — a published ``result.json`` — and that
+    is a property of the observation's source, never something a merge branch
+    negotiates.  Two rounds of branch-by-branch fixes each missed branches that
+    silently dropped it, so no branch may touch it at all: whatever the ladder
+    resolves for the landing identity is stamped with the union here, and a
+    branch added tomorrow cannot omit it.
     """
     if not same_work_run(previous, current):
         raise ValueError(SAME_RUN_ERROR)
+    merged = _merge_delivery_identity(previous, current)
+    return replace(
+        merged,
+        result_published=previous.result_published or current.result_published,
+    )
+
+
+def _merge_delivery_identity(previous: WorkRunFact, current: WorkRunFact) -> WorkRunFact:
+    """Resolve which observation's identity survives for one Work Run."""
     previous_ids = _delivery_identities(previous)
     current_ids = _delivery_identities(current)
     different_identity = len(set(previous_ids + current_ids)) > 1
     if different_identity or previous.delivery_conflict or current.delivery_conflict:
-        # The conflict marks the landing identity; a recorded publication is a
-        # separate fact about the result, so it survives the conflict rather
-        # than being dropped with it.
-        return replace(
-            previous,
-            delivery_conflict=True,
-            result_published=previous.result_published or current.result_published,
-        )
+        # The conflict marks the landing identity; publication is stamped back
+        # by the caller, so this branch settles identity only.
+        return replace(previous, delivery_conflict=True)
     previous_non_result = previous.failure_class in NON_RESULT_CLASSES
     current_non_result = current.failure_class in NON_RESULT_CLASSES
     if previous_non_result:
         # A later delivery record cannot turn a typed non-result into success.
-        # A recorded publication is still a recorded fact: carrying it lets a
-        # journal written before the field existed recover at the next cycle's
-        # collection instead of holding its slot forever.
-        return replace(
-            previous,
-            delivery_conflict=True,
-            result_published=previous.result_published or current.result_published,
-        )
+        return replace(previous, delivery_conflict=True)
     if current_non_result:
         # The typed non-result is terminal for the run's outcome, but a result
         # record carries no Work Item binding: keep the prior observation's
@@ -473,7 +478,6 @@ def merge_work_run_observation(previous: WorkRunFact, current: WorkRunFact) -> W
             "landed_sha",
             "close_evidence_sha",
             "recovery_kind",
-            "result_published",
         )
     }
     return replace(

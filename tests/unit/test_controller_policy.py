@@ -653,6 +653,42 @@ def test_failure_evidence_blocks_completion_even_with_landing_fields() -> None:
     assert not policy.completion_ready(_delivery_run(failure_class="provider_refused"))
 
 
+@pytest.mark.parametrize(
+    ("previous", "current"),
+    [
+        # The identity-conflict branch.
+        (
+            _delivery_run(delivery_conflict=True, result_published=False),
+            _delivery_run(result_published=True),
+        ),
+        # The branch whose fresh observation is a stripped typed non-result.
+        (
+            _delivery_run(result_published=True, close_evidence_sha=None),
+            policy.WorkRunFact("run-1", "non_result", dispatch_id="dispatch-1"),
+        ),
+        # The landed branch, whose prior observation is unstamped.
+        (
+            _delivery_run(result_published=False, landed_sha="a" * 40),
+            _delivery_run(result_published=True),
+        ),
+    ],
+    ids=["identity_conflict", "fresh_non_result", "landed_prior"],
+)
+def test_no_merge_branch_clears_a_recorded_publication(
+    previous: policy.WorkRunFact, current: policy.WorkRunFact
+) -> None:
+    """Publication is stamped once after the identity ladder, never per branch.
+
+    ``result_published`` records where an observation was read from, so the
+    union is applied by the merge's single preserve point; these are the
+    branch shapes whose base observation carried no stamp and which round two
+    found dropping it.
+    """
+    merged = policy.merge_work_run_observation(previous, current)
+
+    assert merged.result_published is True
+
+
 def test_delayed_landing_without_a_repeated_candidate_still_conflicts() -> None:
     delayed = _delivery_run(
         candidate_sha=None,
