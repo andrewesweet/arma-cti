@@ -622,3 +622,42 @@ def test_a_non_result_concluded_on_an_unresolved_look_is_re_derived(tmp_path: Pa
     assert observed[0].state == policy.NON_RESULT
     assert observed[0].failure_class == "interrupted"
     assert observed[0].recovery_kind == "lost_work"
+
+
+def test_a_still_live_look_never_walks_a_published_workflow_state_back(tmp_path: Path) -> None:
+    """`still_live` speaks to process liveness, never to workflow progress.
+
+    The run's delivery says review and adjudication cleared; the worktree reads too, so
+    the look is genuinely live.  Re-deriving that look every cycle (#625) must not keep
+    forcing the run back to `running` — both facts are true and the workflow one wins.
+    """
+    record = tmp_path / "dispatches" / "d-1"
+    record.mkdir(parents=True)
+    (record / "dispatch.json").write_text('{"dispatch_id":"d-1","issue":1}\n', encoding="utf-8")
+    sha = "a" * 40
+    delivery = {
+        "schema": ports.DELIVERY_SCHEMA,
+        "work_run": {
+            "key": "run-1",
+            "state": "reviewed",
+            "dispatch_id": "d-1",
+            "candidate_sha": sha,
+            "reviewed_sha": sha,
+            "review_status": "cleared",
+            "adjudication_status": "cleared",
+            "adjudication_sha": sha,
+        },
+    }
+    (record / "delivery.json").write_text(json.dumps(delivery) + "\n", encoding="utf-8")
+
+    class Recovery:
+        def classify(self, _run: Any) -> str:  # noqa: ANN401 — dynamic policy module
+            return "still_live"
+
+    collector = ports.DispatchDeliveryFactCollector(tmp_path / "dispatches", recovery=Recovery())
+    run = policy.WorkRunFact("run-1", "running", "item-1", "d-1", issue=1)
+
+    observed = collector.collect((run,))
+
+    assert observed[0].state == "reviewed"
+    assert observed[0].recovery_kind == "still_live"

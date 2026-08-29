@@ -359,6 +359,12 @@ def _run_matches_holder(
 # unknown verdict must not release a slot by accident.
 TERMINAL_RECOVERY_KINDS: Final = frozenset({"lost_work", "finished_and_cleaned"})
 
+# The delivery-published states strictly further along the workflow than
+# `running`.  `still_live` is a liveness observation, so it may resolve a
+# stalled or interrupted run back to `running` but must never walk one of
+# these backwards — a re-derived verdict still says nothing about workflow.
+AFTER_RUNNING_STATES: Final = frozenset({"reviewed", "gated"})
+
 
 @dataclass(frozen=True)
 class ExistingRecoveryClassifier:
@@ -460,7 +466,8 @@ class DispatchDeliveryFactCollector:
                 recovery_kind=kind,
             )
         if kind == "still_live":
-            return replace(run, state="running", recovery_kind=kind)
+            state = run.state if run.state in AFTER_RUNNING_STATES else "running"
+            return replace(run, state=state, recovery_kind=kind)
         return replace(run, recovery_kind=kind)
 
 
