@@ -317,6 +317,50 @@ def test_a_funcname_approval_recorded_on_main_is_re_keyed_by_a_fresh_approval(
     assert any("approval=recorded" in line and f"record={target}" in line for line in rekeyed.lines)
 
 
+def _rebind(record: Path, field: str, value: object) -> None:
+    """Rewrite one recorded field in place, leaving the record's shape intact."""
+    document = json.loads(record.read_text(encoding="utf-8"))
+    document[field] = value
+    record.write_text(json.dumps(document, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("issue", ISSUE + 1),
+        ("path", "CONTEXT.md"),
+        ("base_sha", "f" * 40),
+        ("result_payload", base64.b64encode(b"not the approved bytes").decode("ascii")),
+        ("binary", True),
+    ],
+)
+def test_a_record_altered_behind_the_gate_is_not_accepted_as_recorded(
+    tmp_path: Path,
+    field: str,
+    value: object,
+) -> None:
+    """Every substantive field is compared against the binding, not only the id.
+
+    A record at the current content-addressed name with a matching ``change_id``
+    clears directly as recorded, so altering any other substantive field behind
+    the gate must refuse ``approval_unreadable`` rather than clear, whatever the
+    record's identifiers say.
+    """
+    repo = repository(tmp_path)
+    store = tmp_path / "approvals"
+    (repo / "AGENTS.md").write_text("changed by the branch\n", encoding="utf-8")
+    content_id = approve(repo, store)
+    record = gated_paths.approval_path(store, ISSUE, content_id)
+    _rebind(record, field, value)
+
+    altered = gated_paths.check(repo, store, issue=ISSUE)
+
+    assert altered.exit_code == 1
+    assert "refusal=approval_unreadable" in altered.lines
+    assert any(f"reason={field} does not match current binding" in line for line in altered.lines)
+    assert not any("approval=recorded" in line for line in altered.lines)
+
+
 def test_a_re_approval_of_an_unchanged_binding_records_nothing_new(tmp_path: Path) -> None:
     """Re-running the printed command at an unchanged binding stays `already`."""
     repo = repository(tmp_path)

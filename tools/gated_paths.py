@@ -1064,10 +1064,19 @@ def check(  # noqa: C901, PLR0911, PLR0912, PLR0915 — one report per fail-clos
             )
         content_id = binding.content_id
         record = approval_path(approvals, issue, content_id)
+        expected = _approval_for(issue, path, binding, "expected", "expected")
         not_carried: list[str] = []
         if record.exists():
             try:
                 prior = read_approval(record)
+                # The funcname strip re-keyed the change_id of 20 of the 23
+                # on-box records without moving an approved byte (#623), so the
+                # change identity is the one field this read tolerates finding
+                # moved: every other field is compared exactly against the
+                # current binding, and a moved change_id falls through to the
+                # carry rungs named below, where re-running the printed
+                # `approve` command is the route out.
+                read_approval(record, expected._replace(change_id=prior.change_id))
             except ApprovalError as refusal:
                 return refused(refusal.kind, (f"path={path}", refusal.detail), refusal.action)
             if prior.change_id == binding.change_id:
