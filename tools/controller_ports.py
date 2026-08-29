@@ -357,23 +357,32 @@ def _run_matches_holder(
 # classified healthy at one cycle resolve once its agent has died (#625).  A
 # kind missing from this set defaults to observed, never concluded: an
 # unknown verdict must not release a slot by accident.
+#
+# A terminal verdict also claims the agent is gone, and `recovery.py` says
+# itself that it cannot read that: unpushed commits are equally what a live
+# agent's ordinary progress looks like.  The occupancy scan is what carries
+# the claim — a terminal kind concludes only where `dispatch_stop.scan` finds
+# nobody working in the tree, and a tree still occupied is reported `still_live`.
 TERMINAL_RECOVERY_KINDS: Final = frozenset({"lost_work", "finished_and_cleaned"})
-
-# The delivery-published states strictly further along the workflow than
-# `running`.  `still_live` is a liveness observation, so it may resolve a
-# stalled or interrupted run back to `running` but must never walk one of
-# these backwards — a re-derived verdict still says nothing about workflow.
-AFTER_RUNNING_STATES: Final = frozenset({"reviewed", "gated"})
 
 
 @dataclass(frozen=True)
 class ExistingRecoveryClassifier:
-    """Adapter around ``tools/recovery.py``'s existing read-only classification."""
+    """Adapter around ``tools/recovery.py``'s existing read-only classification.
+
+    `recovery.py` declines to judge whether a worktree's agent is alive, and a
+    terminal verdict needs exactly that judgement, so this adapter answers it
+    with the project's own authority for the question — ``dispatch_stop.scan``,
+    the `/proc` read #105 built to answer whether anyone is still working in a
+    tree.  A terminal verdict therefore concludes only where the scan finds
+    nobody; unpushed commits beside a live process read as `still_live`.
+    """
 
     repository: Path
     watch_dir: Path
     dispatch_dir: Path
     now: Callable[[], int] | None = None
+    machine: dispatch_stop.Machine = dispatch_stop.Machine()
 
     def classify(self, run: policy.WorkRunFact) -> str | None:
         """Ask recovery only for a dispatch with no published result."""
@@ -394,7 +403,14 @@ class ExistingRecoveryClassifier:
             return None
         if evidence is None:
             return None
-        return recovery.decide(evidence).kind
+        verdict = recovery.decide(evidence)
+        if verdict.kind in TERMINAL_RECOVERY_KINDS and self._occupied(evidence.tree.path):
+            return recovery.LIVE
+        return verdict.kind
+
+    def _occupied(self, tree: Path) -> bool:
+        """Whether any process outside this one's own chain works inside `tree`."""
+        return bool(dispatch_stop.scan(tree, self.machine).matched)
 
 
 @dataclass(frozen=True)
@@ -448,6 +464,12 @@ class DispatchDeliveryFactCollector:
         — falls through and is re-derived every cycle.  A `non_result` run
         carrying a non-terminal verdict is one an earlier cycle concluded as a
         guess, so it too is re-derived rather than trusted.
+
+        An observation writes its verdict and nothing else.  `still_live` is a
+        look at a tree, not a workflow fact: whether a run is reviewed, gated,
+        stalled or anything else belongs to the delivery facts that moved it
+        there, so the progression is never restated here for a look to walk
+        back over.
         """
         if run.landed_sha is not None:
             return run
@@ -465,9 +487,6 @@ class DispatchDeliveryFactCollector:
                 failure_class=run.failure_class or "interrupted",
                 recovery_kind=kind,
             )
-        if kind == "still_live":
-            state = run.state if run.state in AFTER_RUNNING_STATES else "running"
-            return replace(run, state=state, recovery_kind=kind)
         return replace(run, recovery_kind=kind)
 
 

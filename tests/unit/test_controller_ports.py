@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 import subprocess
 from pathlib import Path
 from typing import Any
@@ -499,13 +500,43 @@ def _git(*argv: str, cwd: Path) -> None:
     subprocess.run(["git", *argv], cwd=cwd, check=True, capture_output=True)  # noqa: S603, S607 — fixed argv, PATH git as everywhere in tools/
 
 
+def _dispatch_record(tmp_path: Path) -> None:
+    """Stage one dispatch record over `d-1`, the shape a recovery look needs to find."""
+    record = tmp_path / "dispatches" / "d-1"
+    record.mkdir(parents=True)
+    (record / "dispatch.json").write_text('{"dispatch_id":"d-1","issue":1}\n', encoding="utf-8")
+
+
+def _live_agent(tmp_path: Path, pid: int, tree: Path) -> Any:
+    """A fake `/proc` in which `pid` works inside `tree` — an agent alive in it.
+
+    The worktree, not a pid, is the handle that identifies a dispatch's
+    processes, which is the same read `just dispatch --stop` makes (#105); the
+    scan under test is the project's own authority for it.
+    """
+    entry = tmp_path / "proc" / str(pid)
+    entry.mkdir(parents=True)
+    (entry / "cwd").symlink_to(tree.resolve())
+    return ports.dispatch_stop.Machine(procfs=tmp_path / "proc", self_pid=1)
+
+
+def _controller_classifier(tmp_path: Path, repo: Path, machine: Any) -> Any:
+    dispatches = tmp_path / "dispatches" / "d-1"
+    dispatches.mkdir(parents=True, exist_ok=True)
+    classifier = ports.ExistingRecoveryClassifier(
+        repo, tmp_path / "watch", dispatches.parent, machine=machine
+    )
+    return ports.DispatchDeliveryFactCollector(dispatches.parent, recovery=classifier)
+
+
 def test_a_healthy_dispatch_that_dies_before_the_next_cycle_resolves(tmp_path: Path) -> None:
     """The #625 sequence, through the real classifier: healthy at cycle N, dead at N+1.
 
-    `still_live` was an observation about cycle N's world; the agent then died without
-    writing a result, and only cycle N+1's look can see that.  A verdict frozen at first
-    stamp would hold the slot forever, so the run is carried between two real `collect`
-    cycles and the classifier reads a worktree that gained an unpushed commit in between.
+    The agent is a process working in the tree, so its death is an observed
+    fact — the fake `/proc` entry is removed between the cycles — and not a
+    story told about an unpushed commit.  The commit is staged too, because
+    `lost_work` is the verdict that reads it; the empty scan is what carries
+    the claim that nobody is coming back for it.
     """
     repo = tmp_path / "repo"
     repo.mkdir()
@@ -515,14 +546,14 @@ def test_a_healthy_dispatch_that_dies_before_the_next_cycle_resolves(tmp_path: P
     _git("commit", "--allow-empty", "-m", "base", cwd=repo)
     _git("update-ref", "refs/remotes/origin/main", "HEAD", cwd=repo)
     _git("worktree", "add", "--detach", ".claude/worktrees/d-1", "HEAD", cwd=repo)
-    dispatches = tmp_path / "dispatches" / "d-1"
-    dispatches.mkdir(parents=True)
-    classifier = ports.ExistingRecoveryClassifier(repo, tmp_path / "watch", dispatches.parent)
-    collector = ports.DispatchDeliveryFactCollector(dispatches.parent, recovery=classifier)
+    tree = repo / ".claude/worktrees/d-1"
+    _dispatch_record(tmp_path)
+    collector = _controller_classifier(tmp_path, repo, _live_agent(tmp_path, 4242, tree))
     run = policy.WorkRunFact("run-1", "running", "item-1", "d-1", issue=1)
 
     healthy = collector.collect((run,))[0]
-    _git("commit", "--allow-empty", "-m", "unpushed", cwd=repo / ".claude/worktrees/d-1")
+    shutil.rmtree(tmp_path / "proc" / "4242")
+    _git("commit", "--allow-empty", "-m", "unpushed", cwd=tree)
     resolved = collector.collect((healthy,))[0]
 
     assert healthy.state == "running"
@@ -536,12 +567,49 @@ def test_a_healthy_dispatch_that_dies_before_the_next_cycle_resolves(tmp_path: P
     )
 
 
+def test_a_live_agent_making_progress_is_never_concluded_lost(tmp_path: Path) -> None:
+    """Unpushed commits are also what a live agent's ordinary progress looks like.
+
+    Round two's High: `recovery.py` reads `tree.ahead` before anything else and
+    says itself that it cannot tell whether the agent is alive, so concluding
+    `lost_work` from the commit alone would release the slot under a running
+    agent and invite a duplicate dispatch.  The process is still in the tree,
+    so the look reads `still_live` and the run keeps everything it had.
+    """
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    _git("init", "-b", "main", cwd=repo)
+    _git("config", "user.email", "test@example.com", cwd=repo)
+    _git("config", "user.name", "Test", cwd=repo)
+    _git("commit", "--allow-empty", "-m", "base", cwd=repo)
+    _git("update-ref", "refs/remotes/origin/main", "HEAD", cwd=repo)
+    _git("worktree", "add", "--detach", ".claude/worktrees/d-1", "HEAD", cwd=repo)
+    tree = repo / ".claude/worktrees/d-1"
+    _dispatch_record(tmp_path)
+    collector = _controller_classifier(tmp_path, repo, _live_agent(tmp_path, 4242, tree))
+    run = policy.WorkRunFact("run-1", "running", "item-1", "d-1", issue=1)
+
+    healthy = collector.collect((run,))[0]
+    _git("commit", "--allow-empty", "-m", "unpushed", cwd=tree)
+    progressed = collector.collect((healthy,))[0]
+
+    assert healthy.recovery_kind == "still_live"
+    assert progressed.state == "running"
+    assert progressed.recovery_kind == "still_live"
+    assert (
+        len(
+            ports.policy.live_work_runs(
+                policy.ControlFacts(None, (), (), (), (progressed,), wip_limit=1)
+            )
+        )
+        == 1
+    )
+
+
 @pytest.mark.parametrize("kind", ["finished_and_cleaned", "lost_work"])
 def test_a_terminal_verdict_is_never_re_derived(tmp_path: Path, kind: str) -> None:
     """`lost_work` and `finished_and_cleaned` conclude; a later cycle asks nothing."""
-    record = tmp_path / "dispatches" / "d-1"
-    record.mkdir(parents=True)
-    (record / "dispatch.json").write_text('{"dispatch_id":"d-1","issue":1}\n', encoding="utf-8")
+    _dispatch_record(tmp_path)
     calls: list[str] = []
 
     class Recovery:
@@ -566,9 +634,7 @@ def test_an_unproven_look_records_a_verdict_without_concluding(tmp_path: Path) -
     recovery.py's own wording: clearing an unproven look here would be a guess.  The run
     keeps its state and slot, and stays open to the next cycle's classification.
     """
-    record = tmp_path / "dispatches" / "d-1"
-    record.mkdir(parents=True)
-    (record / "dispatch.json").write_text('{"dispatch_id":"d-1","issue":1}\n', encoding="utf-8")
+    _dispatch_record(tmp_path)
 
     class Recovery:
         def classify(self, _run: Any) -> str:  # noqa: ANN401 — dynamic policy module
@@ -598,9 +664,7 @@ def test_a_non_result_concluded_on_an_unresolved_look_is_re_derived(tmp_path: Pa
     Older cycles wrote exactly that state, so the run is built as they left it: a run
     whose next look resolves must not be held by the verdict it carries.
     """
-    record = tmp_path / "dispatches" / "d-1"
-    record.mkdir(parents=True)
-    (record / "dispatch.json").write_text('{"dispatch_id":"d-1","issue":1}\n', encoding="utf-8")
+    _dispatch_record(tmp_path)
 
     class Recovery:
         def classify(self, _run: Any) -> str:  # noqa: ANN401 — dynamic policy module
@@ -624,40 +688,57 @@ def test_a_non_result_concluded_on_an_unresolved_look_is_re_derived(tmp_path: Pa
     assert observed[0].recovery_kind == "lost_work"
 
 
-def test_a_still_live_look_never_walks_a_published_workflow_state_back(tmp_path: Path) -> None:
-    """`still_live` speaks to process liveness, never to workflow progress.
+@pytest.mark.parametrize(
+    "state",
+    [
+        "planned",
+        "starting",
+        "launching",
+        "running",
+        "stalled",
+        "interrupted",
+        "reviewed",
+        "gated",
+        "hypothesis-state",
+    ],
+)
+def test_a_still_live_look_never_rewrites_the_workflow_state(tmp_path: Path, state: str) -> None:
+    """`still_live` is a look at a tree, so it writes its verdict and nothing else.
 
-    The run's delivery says review and adjudication cleared; the worktree reads too, so
-    the look is genuinely live.  Re-deriving that look every cycle (#625) must not keep
-    forcing the run back to `running` — both facts are true and the workflow one wins.
+    Every workflow state a run can carry survives the look — the delivery
+    progression, the controller's own `launching`, and whatever arrives after
+    this test was written, which no hand-kept precedence list can be trusted to
+    remember.  The look says only that the tree reads; it is not evidence about
+    the workflow, and a stalled or interrupted run is not thereby confirmed
+    live.  Round two's Medium: the previous shape answered the precedence
+    question with a second copy of the progression, and `stalled` still
+    collapsed to `running`.
     """
-    record = tmp_path / "dispatches" / "d-1"
-    record.mkdir(parents=True)
-    (record / "dispatch.json").write_text('{"dispatch_id":"d-1","issue":1}\n', encoding="utf-8")
-    sha = "a" * 40
+    _dispatch_record(tmp_path)
     delivery = {
         "schema": ports.DELIVERY_SCHEMA,
-        "work_run": {
-            "key": "run-1",
-            "state": "reviewed",
-            "dispatch_id": "d-1",
-            "candidate_sha": sha,
-            "reviewed_sha": sha,
-            "review_status": "cleared",
-            "adjudication_status": "cleared",
-            "adjudication_sha": sha,
-        },
+        "work_run": {"key": "run-1", "state": state, "dispatch_id": "d-1"},
     }
-    (record / "delivery.json").write_text(json.dumps(delivery) + "\n", encoding="utf-8")
+    (tmp_path / "dispatches" / "d-1" / "delivery.json").write_text(
+        json.dumps(delivery) + "\n", encoding="utf-8"
+    )
 
     class Recovery:
         def classify(self, _run: Any) -> str:  # noqa: ANN401 — dynamic policy module
             return "still_live"
 
     collector = ports.DispatchDeliveryFactCollector(tmp_path / "dispatches", recovery=Recovery())
-    run = policy.WorkRunFact("run-1", "running", "item-1", "d-1", issue=1)
 
-    observed = collector.collect((run,))
+    observed = collector.collect(())
 
-    assert observed[0].state == "reviewed"
+    assert observed[0].state == state
     assert observed[0].recovery_kind == "still_live"
+    if state == "interrupted":
+        assert (
+            len(
+                ports.policy.live_work_runs(
+                    policy.ControlFacts(None, (), (), (), observed, wip_limit=1)
+                )
+            )
+            == 1
+        )
