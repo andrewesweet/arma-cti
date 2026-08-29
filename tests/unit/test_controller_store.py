@@ -340,15 +340,17 @@ def write_and_reload(root: Path, facts: policy.ControlFacts) -> store.LoadedCont
 def collect_and_merge(
     loaded: store.LoadedControllerState, root: Path
 ) -> tuple[policy.WorkRunFact, ...]:
-    """Re-read the run's published result and merge it over the reloaded fact.
+    """Re-read the run's published result over the reloaded fact, once.
 
-    One arrangement of the production sequence — collect, then merge — shared
-    by every test that recollects, so the two sites cannot drift (#639).
+    Production merges durable history with the base facts and then lets the
+    collector merge observations over that result, with no merge afterwards —
+    a merge here could restore a publication the collection dropped and mask
+    the loss #624 spent three rounds on (#639).  In this arrangement the
+    reloaded journal is both history and base, so collecting over it is the
+    whole sequence, and the seam stays shared so the recollection tests
+    cannot drift apart.
     """
-    observed = ports.DispatchDeliveryFactCollector(root / "dispatches").collect(
-        loaded.facts.work_runs
-    )
-    return policy.merge_work_run_observations(loaded.facts.work_runs, observed)
+    return ports.DispatchDeliveryFactCollector(root / "dispatches").collect(loaded.facts.work_runs)
 
 
 def recollect_over(loaded: store.LoadedControllerState, root: Path) -> policy.ControlFacts:

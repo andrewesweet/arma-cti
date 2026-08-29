@@ -705,28 +705,32 @@ def test_an_observation_fills_only_a_gap_the_record_left() -> None:
 
 
 @pytest.mark.parametrize(
-    ("previous", "current", "expected_failure_class", "expected_conflict"),
+    (
+        "previous",
+        "current",
+        "expected_failure_class",
+        "expected_conflict",
+        "expected_candidate_sha",
+    ),
     [
-        # The identity-conflict branch: the two observations carry different
-        # landing identities, so the prior record survives and holds the mark.
+        # The identity-conflict branch: the two observations disagree on the
+        # landed SHA, so the prior record survives and holds the mark.  The
+        # disagreement itself routes here — no preset conflict flag.
         (
-            _delivery_run(delivery_conflict=True, result_published=False),
-            _delivery_run(result_published=True),
+            _delivery_run(result_published=False),
+            _delivery_run(result_published=True, landed_sha="b" * 40),
             None,
             True,
+            "a" * 40,
         ),
         # The current-non-result branch: the fresh observation is a stripped
-        # typed non-result with no landing identity of its own, so no earlier
-        # identity can disagree with it and the fresh record survives.  The
-        # prior's shape is the controller's recorded launch, which carries no
-        # landing identity to collide with.
+        # typed non-result with no landing identity of its own, so a coherent
+        # landed prior cannot disagree with it and the fresh record wins.  The
+        # prior's candidate is dropped with the rest of its identity, which is
+        # what separates this case from the landed branch below — without the
+        # branch, this case falls into that one and keeps the candidate.
         (
-            policy.WorkRunFact(
-                "run-1",
-                policy.RECORDED_LAUNCH_STATE,
-                dispatch_id="dispatch-1",
-                result_published=True,
-            ),
+            _delivery_run(result_published=True),
             policy.WorkRunFact(
                 "run-1",
                 "non_result",
@@ -735,13 +739,18 @@ def test_an_observation_fills_only_a_gap_the_record_left() -> None:
             ),
             "quota_exhausted",
             False,
+            None,
         ),
-        # The landed branch, whose prior observation is unstamped.
+        # The landed branch, whose prior observation is unstamped and whose
+        # candidate the record left empty: a late observation cannot fill it.
+        # The final branch would have unioned the fresh candidate in, so the
+        # empty candidate is what pins this branch.
         (
-            _delivery_run(result_published=False, landed_sha="a" * 40),
+            _delivery_run(result_published=False, candidate_sha=None),
             _delivery_run(result_published=True),
             None,
             False,
+            None,
         ),
     ],
     ids=["identity_conflict", "fresh_non_result", "landed_prior"],
@@ -751,6 +760,7 @@ def test_no_merge_branch_clears_a_recorded_publication(
     current: policy.WorkRunFact,
     expected_failure_class: str | None,
     expected_conflict: bool,  # noqa: FBT001 — pytest passes parametrize values positionally
+    expected_candidate_sha: str | None,
 ) -> None:
     """Publication is stamped once after the identity ladder, never per branch.
 
@@ -766,10 +776,13 @@ def test_no_merge_branch_clears_a_recorded_publication(
     # the cases stay provably distinct: the identity-conflict and landed
     # branches return the prior observation, keeping its untyped failure
     # class, while the current-non-result branch returns the fresh record and
-    # its typed one.  A case that drifts into the branch another one names
-    # fails here rather than silently duplicating it (#639).
+    # its typed one.  The candidate carries the finer cut — the current-
+    # non-result branch strips the prior's candidate while the landed branch
+    # refuses to fill one — so deleting either branch fails a case here
+    # rather than letting it silently duplicate another (#639).
     assert merged.failure_class == expected_failure_class
     assert merged.delivery_conflict is expected_conflict
+    assert merged.candidate_sha == expected_candidate_sha
 
 
 def test_delayed_landing_without_a_repeated_candidate_still_conflicts() -> None:
