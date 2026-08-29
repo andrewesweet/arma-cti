@@ -28,9 +28,9 @@ record = {
     "env_seen": sorted(os.environ),
 }
 
-with open("trial.json", "w", encoding="utf-8") as handle:
+with Path("trial.json").open("w", encoding="utf-8") as handle:
     json.dump(record, handle)
 
-# The prompt is read to show the adapter sees only what the workspace holds.
+# The adapter sees only what the workspace holds; the prompt read below is the proof.
 prompt = Path("task.txt").read_text(encoding="utf-8")
-assert "subagent" in prompt
+assert "subagent" in prompt  # noqa: S101 — a fixture's self-check, not a test assertion

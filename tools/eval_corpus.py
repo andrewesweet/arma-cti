@@ -98,7 +98,7 @@ TRIAL_FILE: Final = "task.txt"
 ADAPTER_RECORD: Final = "trial.json"
 # A configuration's argv may carry this token; it expands to the repository root, so a
 # committed configuration can name a shipped adapter without an absolute path.
-REPO_TOKEN: Final = "{repo}"
+REPO_TOKEN: Final = "{repo}"  # noqa: S105 — a path substitution token, not a credential
 
 
 class EvalRefusalError(ValueError):
@@ -153,7 +153,8 @@ CONFIGURATION_FIELDS: Final[tuple[ContractField, ...]] = (
     ContractField(
         "harness.argv",
         True,
-        f"the adapter command, run inside the trial workspace; {REPO_TOKEN} expands to the repository root",
+        "the adapter command, run inside the trial workspace;"
+        f" {REPO_TOKEN} expands to the repository root",
     ),
     ContractField(
         "harness.env", False, "extra child environment entries; names recorded, never values"
