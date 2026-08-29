@@ -356,6 +356,27 @@ def test_a_removal_failure_names_the_retry_its_operation_chose() -> None:
     assert "just worktree archive <name> --ref refs/heads/issue-1-parked" in archive_text
 
 
+def test_a_removal_failure_defers_the_judgement_to_the_ambiguous_retry() -> None:
+    """The removal-failure refusal prints no listing, so it names none to read (#632).
+
+    `worktree_remove_failed`'s `found` lines carry the path, the command and git's
+    stderr — never `git status` — and a deletion could still land after the status
+    read that gated the removal. So the text sends the reader to the retry, whose
+    `teardown_ambiguous` refusal is the one place the listing and the recovery are
+    printed together, rather than asking for a judgement it never armed them for.
+    """
+    for text in (
+        worktree.remove_failed_action(worktree.DONE_OPERATION),
+        worktree.remove_failed_action(worktree.ARCHIVE_OPERATION, "refs/heads/issue-1-parked"),
+    ):
+        assert "teardown_ambiguous" in text
+        assert "prints the tree's status" in text
+        assert "Never commit the deletions" in text
+        assert "never reset" in text
+        # The round-two defect: advice naming evidence this refusal does not print.
+        assert "read the list" not in text
+
+
 def test_an_unreadable_record_never_unlocks_the_recovery_path(tmp_path: Path) -> None:
     """A record that answers None costs the deadlock back, never work (#632)."""
     (tmp_path / "teardown-record").write_text("head=x\nbegan=y\n", encoding="utf-8")

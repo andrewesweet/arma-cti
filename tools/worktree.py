@@ -153,13 +153,22 @@ def teardown_ambiguous_action(operation: str, ref: str = "") -> str:
 
 
 def remove_failed_action(operation: str, ref: str = "") -> str:
-    """Return the refusal text for a `git worktree remove` that aborted part-way (#632)."""
+    """Return the refusal text for a `git worktree remove` that aborted part-way (#632).
+
+    This refusal prints no status listing — only the command and its stderr — so it
+    never asks the reader to judge one. A concurrent deletion after the clean-status
+    read is still possible, and the record proves only that a removal *began*, so the
+    judgement is deferred to the retry's `teardown_ambiguous` refusal, which is the
+    one place that prints the tree's listing and the reader-owned recovery beside it.
+    """
     return (
         "git aborted the removal after it had begun, so the working copy may be partly "
-        "deleted. The teardown record is in place, so a retry recognises this state and "
-        "names the recovery. Fix what git names above, then run "
-        f"`{teardown_retry(operation, ref)}` again — and never commit the deletions, and "
-        "never reset: read the list and decide (#105)."
+        "deleted. This refusal prints no listing and the record proves only that the "
+        "removal started, so nothing is judged here. Fix what git names above, then run "
+        f"`{teardown_retry(operation, ref)}` again: it refuses `teardown_ambiguous`, "
+        "which prints the tree's status and names the recovery, and the decision about "
+        "the deletions is made there — never by attributing them here. Never commit the "
+        "deletions, and never reset (#105)."
     )
 
 
@@ -381,11 +390,6 @@ def attribute_teardown(record: TeardownRecord | None, status: Preflight) -> str:
     if record is None:
         return UNRECORDED
     return AMBIGUOUS
-
-
-def attribute_teardown_at(tree: Path, status: Preflight) -> str:
-    """`attribute_teardown` for a caller holding only the tree and a status read."""
-    return attribute_teardown(read_teardown_record(tree), status)
 
 
 # --------------------------------------------------------------------- ladders

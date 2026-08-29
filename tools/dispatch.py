@@ -4096,19 +4096,20 @@ def _message_absent_refusal(
     reader-owned recovery. Without a record the `never reset` text stands, but it no
     longer asserts whose the edits are: a removal that ran before records existed
     would leave none either.
+
+    The record is read once and that one object is classified: a second read could
+    return `None` — a concurrent removal retiring its own record is the only writer —
+    and a `None` there would fall through to `commit_message_absent`, refusing dirt
+    the first read had already placed under a record (#632 review, round two).
     """
-    attribution = worktree_tool.attribute_teardown_at(tree, status)
-    if attribution == worktree_tool.AMBIGUOUS:
-        torn = worktree_tool.read_teardown_record(tree)
-        if torn is not None:
-            return _harness_refusal(
-                "teardown_ambiguous",
-                found,
-                worktree_tool.teardown_ambiguous_action(torn.operation, torn.ref),
-            )
-        # The record read a moment ago and cannot be read now: a concurrent removal
-        # is the only writer, and this refusal still discards nothing — so the
-        # unattributed text stands rather than a crash.
+    torn = worktree_tool.read_teardown_record(tree)
+    if worktree_tool.attribute_teardown(torn, status) == worktree_tool.AMBIGUOUS:
+        assert torn is not None  # noqa: S101 — ambiguous is reachable only under a record
+        return _harness_refusal(
+            "teardown_ambiguous",
+            found,
+            worktree_tool.teardown_ambiguous_action(torn.operation, torn.ref),
+        )
     return _harness_refusal("commit_message_absent", found, _UNATTRIBUTED_DIRT_ACTION)
 
 

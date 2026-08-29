@@ -550,6 +550,44 @@ def test_an_ambiguous_teardown_state_refuses_harness_finish_without_assuming(
     assert (tree / "CLAUDE.md").read_text(encoding="utf-8") == "whose is this?\n"
 
 
+def test_a_record_retired_between_reads_still_refuses_ambiguous(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """One read classifies; a second returning `None` never downgrades the refusal (#632).
+
+    A concurrent removal is the only writer that can retire its own record, and the
+    round-two code read the record twice — once to attribute, once for `operation`
+    and `ref`. Where that second read answered `None` the refusal fell through to
+    `commit_message_absent`, telling a reader whose tree the first read had already
+    placed under a record that the harness committed nothing and the dirt is theirs.
+    """
+    tree = _worktree_tree(tmp_path)
+    (tree / "CLAUDE.md").write_text("gated\n", encoding="utf-8")
+    _git("add", "-A", cwd=tree)
+    _git("commit", "-qm", "chore: carry a tracked file to delete", cwd=tree)
+    (tree / "CLAUDE.md").unlink()
+    head = _git("rev-parse", "HEAD", cwd=tree)
+    dispatch.worktree_tool.write_teardown_record(tree, head)
+
+    real_read = dispatch.worktree_tool.read_teardown_record
+    reads = {"n": 0}
+
+    def read_then_retire(t: Path) -> dispatch.worktree_tool.TeardownRecord | None:
+        """First read sees the record; every later one sees a retired record."""
+        reads["n"] += 1
+        return real_read(t) if reads["n"] == 1 else None
+
+    monkeypatch.setattr(dispatch.worktree_tool, "read_teardown_record", read_then_retire)
+
+    lines, code = dispatch.harness_finish(tree, 405, _record(tmp_path))
+
+    assert code == dispatch.EXIT_REFUSED
+    assert "refusal=teardown_ambiguous" in lines
+    assert not any("commit by hand" in line for line in lines)
+    assert _git("rev-parse", "HEAD", cwd=tree) == head
+    assert not (tree / "CLAUDE.md").exists()
+
+
 def test_the_sessions_own_deletions_still_carry_never_reset(tmp_path: Path) -> None:
     """No record, and both readings of the dirt are stated, never one (#632 review)."""
     tree = _worktree_tree(tmp_path)
