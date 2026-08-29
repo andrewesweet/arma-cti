@@ -540,7 +540,15 @@ def test_incomplete_or_mismatched_delivery_evidence_leaves_item_unresolved(
         "interrupted",
     ],
 )
-def test_every_typed_non_result_stays_unresolved(failure_class: str) -> None:
+def test_every_published_non_result_releases_its_slot_and_reopens_its_item(
+    failure_class: str,
+) -> None:
+    """The shape `_read_result_non_result` produces: a bound run, its result published.
+
+    A non-result is never a completion, so the item stays open — but its slot
+    must be released and the item must be eligible again for the re-dispatch
+    the failure-class table requires.
+    """
     run = policy.WorkRunFact(
         "run-1",
         "non_result",
@@ -548,16 +556,34 @@ def test_every_typed_non_result_stays_unresolved(failure_class: str) -> None:
         dispatch_id="dispatch-1",
         issue=1,
         failure_class=failure_class,
-        recovery_kind="lost_work",
+        result_published=True,
     )
-    facts = coordination_facts(
-        (policy.WorkItemFact("item", "open", issue=1),), runs=(run,), limit=1
-    )
+    item = policy.WorkItemFact("item", "open", issue=1)
+    facts = coordination_facts((item,), runs=(run,), limit=1)
 
     advanced = policy.advance_completed_work_items(facts)
 
     assert advanced.work_items[0].state == "open"
     assert policy.live_work_runs(advanced) == ()
+    assert policy.eligible_work_items(advanced) == (item,)
+
+
+def test_an_unpublished_unclassified_non_result_still_holds_its_slot() -> None:
+    """Without a published result or a terminal recovery verdict, nothing releases."""
+    run = policy.WorkRunFact(
+        "run-1",
+        "non_result",
+        work_item_key="item",
+        dispatch_id="dispatch-1",
+        issue=1,
+        failure_class="quota_exhausted",
+    )
+    facts = coordination_facts(
+        (policy.WorkItemFact("item", "open", issue=1),), runs=(run,), limit=1
+    )
+
+    assert policy.live_work_runs(facts) == (run,)
+    assert policy.eligible_work_items(facts) == ()
 
 
 def test_non_result_cannot_be_replaced_by_later_completion() -> None:

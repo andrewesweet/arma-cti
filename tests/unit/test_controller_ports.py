@@ -202,6 +202,7 @@ def test_dispatch_delivery_collector_reads_typed_candidate_evidence(tmp_path: Pa
     assert observed[0].candidate_sha == "a" * 40
     assert observed[0].issue == 1
     assert observed[0].reviewed_sha == observed[0].gate_sha
+    assert observed[0].result_published is False
     assert observed[0].delivery_conflict is False
 
 
@@ -284,6 +285,33 @@ def test_dispatch_delivery_collector_normalizes_typed_result_non_results(
 
     assert observed[0].state == "non_result"
     assert observed[0].failure_class == failure_class
+    assert observed[0].result_published is True
+
+
+def test_a_published_non_result_keeps_the_binding_it_merged_over(tmp_path: Path) -> None:
+    """The bound prior run's identity survives the merge with the stripped result.
+
+    The slot the run holds is released only through that binding: `issue` and
+    `work_item_key` stay, `result_published` records the terminal outcome, and
+    no recovery verdict is invented for a run that already published one.
+    """
+    record = tmp_path / "dispatches" / "d-1"
+    record.mkdir(parents=True)
+    (record / "result.json").write_text(
+        json.dumps({"dispatch_id": "d-1", "status": "child_finished", "outcome": "quota_exhausted"})
+        + "\n",
+        encoding="utf-8",
+    )
+    bound = policy.WorkRunFact("run-1", "running", "item-1", "d-1", issue=1)
+
+    observed = ports.DispatchDeliveryFactCollector(tmp_path / "dispatches").collect((bound,))
+
+    assert observed[0].state == "non_result"
+    assert observed[0].failure_class == "quota_exhausted"
+    assert observed[0].work_item_key == "item-1"
+    assert observed[0].issue == 1
+    assert observed[0].result_published is True
+    assert observed[0].recovery_kind is None
 
 
 def test_dispatch_delivery_collector_rejects_malformed_typed_result_fields(tmp_path: Path) -> None:

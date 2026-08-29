@@ -120,6 +120,7 @@ class WorkRunFact:
     landed_sha: str | None = None
     close_evidence_sha: str | None = None
     recovery_kind: str | None = None
+    result_published: bool = False
     delivery_conflict: bool = False
 
     @property
@@ -265,9 +266,13 @@ def live_work_runs(facts: ControlFacts) -> tuple[WorkRunFact, ...]:
                 and not completion_ready(run)
                 and not _completed_item_owns_no_slot(run, facts.work_items)
             )
+            # A published result is the dispatcher's own terminal record:
+            # recovery never classifies such a run (the ports adapter
+            # refuses it), so only that recorded fact releases its slot.
             or (
                 run.failure_class in NON_RESULT_CLASSES
                 and run.recovery_kind not in RECOVERY_RELAUNCH_KINDS
+                and not run.result_published
             )
         )
     )

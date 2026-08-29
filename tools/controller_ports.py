@@ -63,6 +63,7 @@ WORK_RUN_OPTIONAL_FIELDS: Final = frozenset(
         "landed_sha",
         "close_evidence_sha",
         "recovery_kind",
+        "result_published",
         "delivery_conflict",
     }
 )
@@ -488,6 +489,7 @@ def _read_result_delivery(path: Path) -> policy.WorkRunFact | None:
     return replace(
         run,
         state=policy.derived_work_run_state(run),
+        result_published=True,
         delivery_conflict=run.delivery_conflict or policy.delivery_identity_conflict(run),
     )
 
@@ -515,6 +517,7 @@ def _read_result_non_result(raw: dict[str, object], path: Path) -> policy.WorkRu
         state=policy.NON_RESULT,
         dispatch_id=dispatch_id,
         failure_class=typed_class,
+        result_published=True,
     )
 
 
@@ -683,6 +686,7 @@ def _fact(
         _optional_nonempty_text(value, "landed_sha", source, name),
         _optional_nonempty_text(value, "close_evidence_sha", source, name),
         _optional_nonempty_text(value, "recovery_kind", source, name),
+        _optional_bool(value, "result_published", source, name),
         _optional_bool(value, "delivery_conflict", source, name),
     )
     return replace(run, state=policy.derived_work_run_state(run))
