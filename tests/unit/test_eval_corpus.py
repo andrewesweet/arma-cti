@@ -325,7 +325,7 @@ def test_dry_run_prints_the_plan_and_runs_nothing(tmp_path: Path) -> None:
     config = _write_config(corpus, "a", "GOOD answer")
     exit_code, runs_root = _run(tmp_path, corpus, [config], dry_run=True)
     assert exit_code == 0
-    assert [p.name for p in runs_root.iterdir() if p.name != "graders"] == []
+    assert not runs_root.exists()  # a dry run writes nothing at all
 
 
 def test_every_trial_retains_its_artefacts_and_nothing_is_overwritten(tmp_path: Path) -> None:

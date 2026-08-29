@@ -342,6 +342,20 @@ def sha256_file(path: Path) -> str:
     return sha256_bytes(path.read_bytes())
 
 
+def verify_grader_hash(source: Path, expected_sha: str) -> None:
+    """Refuse unless the grader on disk is the one its task pinned.
+
+    Called before the run directory is even created, so a moved oracle refuses the run
+    rather than being trusted with one — the integrity half of the grader criterion.
+    """
+    observed = sha256_file(source)
+    if observed != expected_sha:
+        raise EvalRefusalError(
+            "grader_hash_mismatch",
+            (f"grader={source.name}", f"expected={expected_sha}", f"observed={observed}"),
+        )
+
+
 def half_width(observations: int, rate: float = POWER_REFERENCE_RATE) -> float:
     """Return the 95% normal-approximation half-width at `rate` over `observations`.
 
@@ -598,12 +612,7 @@ class Grader:
 
     def __init__(self, source: Path, expected_sha: str, graders_dir: Path, name: str) -> None:
         """Verify the hash, copy into `graders_dir`, and import that copy."""
-        observed = sha256_file(source)
-        if observed != expected_sha:
-            raise EvalRefusalError(
-                "grader_hash_mismatch",
-                (f"grader={source.name}", f"expected={expected_sha}", f"observed={observed}"),
-            )
+        verify_grader_hash(source, expected_sha)
         target = graders_dir / expected_sha[:12] / source.name
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(source.read_bytes())
@@ -1264,10 +1273,10 @@ def print_plan(line: str) -> None:
     sys.stdout.write(f"plan: {line}\n")
 
 
-def _prepare(
+def prepare_run(
     args: argparse.Namespace,
-) -> tuple[list[Configuration], list[Task], dict[str, Grader], dict[str, object]]:
-    """Validate every input and load every grader before any trial exists.
+) -> tuple[list[Configuration], list[Task], dict[str, object]]:
+    """Validate every input before any trial exists.
 
     Integrity comes first on purpose: a grader whose hash does not match is refused
     before the run is trusted at all, and a pinned HEAD is checked before any trial,
@@ -1282,17 +1291,15 @@ def _prepare(
     if len(names) != len(configurations):
         raise EvalRefusalError("input_invalid", ("duplicate_configuration_name=",))
     tasks, manifest = load_corpus(args.corpus, ROOT)
-    graders = {
-        task.id: Grader(task.grader, task.grader_sha256, args.runs_root / "graders", task.id)
-        for task in tasks
-    }
+    for task in tasks:
+        verify_grader_hash(task.grader, task.grader_sha256)
     for configuration in configurations:
         pin = configuration.pins_repo_sha
         if pin is not None and git_head(ROOT) != pin:
             raise EvalRefusalError(
                 "pin_mismatch", (f"configuration={configuration.name}", f"expected={pin}")
             )
-    return configurations, tasks, graders, manifest
+    return configurations, tasks, manifest
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -1302,14 +1309,13 @@ def main(argv: list[str] | None = None) -> int:
         sys.stdout.write(render_contract())
         return 0
     try:
-        prepared = _prepare(args)
+        prepared = prepare_run(args)
     except EvalRefusalError as refusal:
         print_refusal(refusal, "before any trial")
         return REFUSAL_EXIT
-    configurations, tasks, graders, manifest = prepared
+    configurations, tasks, manifest = prepared
     independent_cases = sum(len(task.variants) for task in tasks)
     min_cases = int(manifest.get("min_cases_for_claim", DEFAULT_MIN_CASES_FOR_CLAIM))
-    independent_cases = sum(len(task.variants) for task in tasks)
     if args.dry_run:
         for configuration in configurations:
             for task in tasks:
@@ -1332,6 +1338,13 @@ def main(argv: list[str] | None = None) -> int:
             EvalRefusalError("run_dir_exists", (f"run_dir={run_dir}",)), "before any trial"
         )
         return REFUSAL_EXIT
+    # The graders load after the dry-run branch and after the run directory exists, so
+    # a dry run writes nothing at all and a real run's grader copies live beside its
+    # evidence, hash-verified before any trial.
+    graders = {
+        task.id: Grader(task.grader, task.grader_sha256, args.runs_root / "graders", task.id)
+        for task in tasks
+    }
     per_configuration: dict[str, list[CaseResult]] = {}
     totals: dict[str, dict[str, float]] = {}
     for configuration in configurations:
