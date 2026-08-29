@@ -269,6 +269,8 @@ def live_work_runs(facts: ControlFacts) -> tuple[WorkRunFact, ...]:
             # A published result is the dispatcher's own terminal record:
             # recovery never classifies such a run (the ports adapter
             # refuses it), so only that recorded fact releases its slot.
+            # The fact is read from the result itself and carried forward by
+            # the merge; it is never inferred from state or failure class.
             or (
                 run.failure_class in NON_RESULT_CLASSES
                 and run.recovery_kind not in RECOVERY_RELAUNCH_KINDS
@@ -419,12 +421,26 @@ def merge_work_run_observation(previous: WorkRunFact, current: WorkRunFact) -> W
     current_ids = _delivery_identities(current)
     different_identity = len(set(previous_ids + current_ids)) > 1
     if different_identity or previous.delivery_conflict or current.delivery_conflict:
-        return replace(previous, delivery_conflict=True)
+        # The conflict marks the landing identity; a recorded publication is a
+        # separate fact about the result, so it survives the conflict rather
+        # than being dropped with it.
+        return replace(
+            previous,
+            delivery_conflict=True,
+            result_published=previous.result_published or current.result_published,
+        )
     previous_non_result = previous.failure_class in NON_RESULT_CLASSES
     current_non_result = current.failure_class in NON_RESULT_CLASSES
     if previous_non_result:
         # A later delivery record cannot turn a typed non-result into success.
-        return replace(previous, delivery_conflict=True)
+        # A recorded publication is still a recorded fact: carrying it lets a
+        # journal written before the field existed recover at the next cycle's
+        # collection instead of holding its slot forever.
+        return replace(
+            previous,
+            delivery_conflict=True,
+            result_published=previous.result_published or current.result_published,
+        )
     if current_non_result:
         # The typed non-result is terminal for the run's outcome, but a result
         # record carries no Work Item binding: keep the prior observation's
@@ -457,6 +473,7 @@ def merge_work_run_observation(previous: WorkRunFact, current: WorkRunFact) -> W
             "landed_sha",
             "close_evidence_sha",
             "recovery_kind",
+            "result_published",
         )
     }
     return replace(
@@ -891,6 +908,10 @@ def _work_run_document(run: WorkRunFact) -> dict[str, object]:
         value = getattr(run, field_name)
         if value is not None:
             document[field_name] = value
+    # Recorded facts survive the journal boundary: a stamp dropped here would
+    # reload as False and put a released run's slot back on the next cycle.
+    if run.result_published:
+        document["result_published"] = True
     if run.delivery_conflict:
         document["delivery_conflict"] = True
     return document
