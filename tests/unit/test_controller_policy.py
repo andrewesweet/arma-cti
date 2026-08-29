@@ -569,7 +569,13 @@ def test_every_published_non_result_releases_its_slot_and_reopens_its_item(
 
 
 def test_an_unpublished_unclassified_non_result_still_holds_its_slot() -> None:
-    """Without a published result or a terminal recovery verdict, nothing releases."""
+    """Without a published result or a terminal recovery verdict, nothing releases.
+
+    Reachable through the typed delivery boundary, whose envelope carries
+    `failure_class` and which nothing yet writes (#629), and through journals
+    written before `result_published` existed whose result has since been
+    pruned; the hold is what the release fact is measured against.
+    """
     run = policy.WorkRunFact(
         "run-1",
         "non_result",
