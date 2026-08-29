@@ -492,3 +492,134 @@ def test_dispatch_delivery_collector_composes_recovery_before_relaunch(
         ports.policy.live_work_runs(policy.ControlFacts(None, (), (), (), observed, wip_limit=1))
         == ()
     )
+
+
+def _git(*argv: str, cwd: Path) -> None:
+    import subprocess
+
+    subprocess.run(["git", *argv], cwd=cwd, check=True, capture_output=True)
+
+
+def test_a_healthy_dispatch_that_dies_before_the_next_cycle_resolves(tmp_path: Path) -> None:
+    """The #625 sequence, through the real classifier: healthy at cycle N, dead at N+1.
+
+    `still_live` was an observation about cycle N's world; the agent then died without
+    writing a result, and only cycle N+1's look can see that.  A verdict frozen at first
+    stamp would hold the slot forever, so the run is carried between two real `collect`
+    cycles and the classifier reads a worktree that gained an unpushed commit in between.
+    """
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    _git("init", "-b", "main", cwd=repo)
+    _git("config", "user.email", "test@example.com", cwd=repo)
+    _git("config", "user.name", "Test", cwd=repo)
+    _git("commit", "--allow-empty", "-m", "base", cwd=repo)
+    _git("update-ref", "refs/remotes/origin/main", "HEAD", cwd=repo)
+    _git("worktree", "add", "--detach", ".claude/worktrees/d-1", "HEAD", cwd=repo)
+    dispatches = tmp_path / "dispatches" / "d-1"
+    dispatches.mkdir(parents=True)
+    classifier = ports.ExistingRecoveryClassifier(repo, tmp_path / "watch", dispatches.parent)
+    collector = ports.DispatchDeliveryFactCollector(dispatches.parent, recovery=classifier)
+    run = policy.WorkRunFact("run-1", "running", "item-1", "d-1", issue=1)
+
+    healthy = collector.collect((run,))[0]
+    _git("commit", "--allow-empty", "-m", "unpushed", cwd=repo / ".claude/worktrees/d-1")
+    resolved = collector.collect((healthy,))[0]
+
+    assert healthy.state == "running"
+    assert healthy.recovery_kind == "still_live"
+    assert resolved.state == policy.NON_RESULT
+    assert resolved.failure_class == "interrupted"
+    assert resolved.recovery_kind == "lost_work"
+    assert (
+        ports.policy.live_work_runs(policy.ControlFacts(None, (), (), (), (resolved,), wip_limit=1))
+        == ()
+    )
+
+
+@pytest.mark.parametrize("kind", ["finished_and_cleaned", "lost_work"])
+def test_a_terminal_verdict_is_never_re_derived(tmp_path: Path, kind: str) -> None:
+    """`lost_work` and `finished_and_cleaned` conclude; a later cycle asks nothing."""
+    record = tmp_path / "dispatches" / "d-1"
+    record.mkdir(parents=True)
+    (record / "dispatch.json").write_text('{"dispatch_id":"d-1","issue":1}\n', encoding="utf-8")
+    calls: list[str] = []
+
+    class Recovery:
+        def classify(self, run: Any) -> str:  # noqa: ANN401 — dynamic policy module
+            calls.append(run.dispatch_id)
+            return kind
+
+    collector = ports.DispatchDeliveryFactCollector(tmp_path / "dispatches", recovery=Recovery())
+    run = policy.WorkRunFact("run-1", "running", "item-1", "d-1", issue=1)
+
+    concluded = collector.collect((run,))[0]
+    settled = collector.collect((concluded,))[0]
+
+    assert calls == ["d-1"]
+    assert settled == concluded
+    assert settled.state == policy.NON_RESULT
+
+
+def test_an_unproven_look_records_a_verdict_without_concluding(tmp_path: Path) -> None:
+    """`unproven` says the look did not resolve, so it may not conclude the run either.
+
+    recovery.py's own wording: clearing an unproven look here would be a guess.  The run
+    keeps its state and slot, and stays open to the next cycle's classification.
+    """
+    record = tmp_path / "dispatches" / "d-1"
+    record.mkdir(parents=True)
+    (record / "dispatch.json").write_text('{"dispatch_id":"d-1","issue":1}\n', encoding="utf-8")
+
+    class Recovery:
+        def classify(self, _run: Any) -> str:  # noqa: ANN401 — dynamic policy module
+            return "unproven"
+
+    collector = ports.DispatchDeliveryFactCollector(tmp_path / "dispatches", recovery=Recovery())
+    run = policy.WorkRunFact("run-1", "running", "item-1", "d-1", issue=1)
+
+    observed = collector.collect((run,))
+
+    assert observed[0].state == "running"
+    assert observed[0].failure_class is None
+    assert observed[0].recovery_kind == "unproven"
+    assert (
+        len(
+            ports.policy.live_work_runs(
+                policy.ControlFacts(None, (), (), (), observed, wip_limit=1)
+            )
+        )
+        == 1
+    )
+
+
+def test_a_non_result_concluded_on_an_unresolved_look_is_re_derived(tmp_path: Path) -> None:
+    """A `non_result` an earlier cycle stamped `unproven` is a guess, not a conclusion.
+
+    Older cycles wrote exactly that state, so the run is built as they left it: a run
+    whose next look resolves must not be held by the verdict it carries.
+    """
+    record = tmp_path / "dispatches" / "d-1"
+    record.mkdir(parents=True)
+    (record / "dispatch.json").write_text('{"dispatch_id":"d-1","issue":1}\n', encoding="utf-8")
+
+    class Recovery:
+        def classify(self, _run: Any) -> str:  # noqa: ANN401 — dynamic policy module
+            return "lost_work"
+
+    collector = ports.DispatchDeliveryFactCollector(tmp_path / "dispatches", recovery=Recovery())
+    run = policy.WorkRunFact(
+        "run-1",
+        policy.NON_RESULT,
+        "item-1",
+        "d-1",
+        issue=1,
+        failure_class="interrupted",
+        recovery_kind="unproven",
+    )
+
+    observed = collector.collect((run,))
+
+    assert observed[0].state == policy.NON_RESULT
+    assert observed[0].failure_class == "interrupted"
+    assert observed[0].recovery_kind == "lost_work"
