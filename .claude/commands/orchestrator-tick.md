@@ -2,62 +2,88 @@
 description: One orchestrator cycle — harvest finished dispatches, land what is ready, refill WIP, report only what changed.
 ---
 
-Orchestrator tick. Act; do not wait for the human. *(This file's own convention; no ruling behind it.)*
+Orchestrator tick. Act; do not wait for the human — and **hold the waits this seat is for**. Ending a turn mid-wait is the subagent's rule and does not apply here (`docs/agents/orchestration.md`). *(The act-rather-than-ask half is this file's own convention; no ruling behind it.)*
 
-**Where this file and the code disagree, the code wins and this file is wrong.** Citations below name the ruling or the implementing path where one is known. Three review rounds each found the previous version's citation promise false in a different way — rules with no citation, citations to sources that did not state the rule, and citations to a ruling's worked examples rather than to the ruling. Treat a citation as a lead to check, not as proof that the rule is recorded. Most of the orchestration rulings here are #217's. Making the file reliably distinguish a recorded ruling from its own convention is #474; until that lands, this file does not promise it.
+**Where this file and the code disagree, the code wins and this file is wrong.** Citations name the ruling or the implementing symbol — a function, a docstring section, a refusal name — rather than line numbers, because line numbers at these coordinates had all drifted by the time #643 audited them. A citation is a lead to check, not proof the rule is recorded. Most of the orchestration rulings here are #217's. Making the file reliably distinguish a recorded ruling from its own convention is #474; until that lands, this file does not promise it.
+
+## 0. Read the turn top
+
+`just watch-report` first: lane breakers, the queue's underfill verdict, the review-loop terminus prompts (`review_terminus=due|blocked|incomplete|unreadable`; a `due` line names `just review-loop terminus --issue N` and is a prompt, not a landing prerequisite), watcher findings, Remote Control health, the trial and the gate clock. Every part is silent while healthy. Then `just queue state` and `just queue next` — the candidate with its derivation, or a named refusal. The queue selects and prints; it never dispatches (ADR-0053).
+
+Then `just controller reconcile` — exactly one System-of-Work reconciliation cycle, reporting the normalised Control Facts, the derived lifecycle state and the ordered Control Actions, and recording its planned, applied and confirmed transitions in its own journal. `--dry-run` inspects a cycle without writing tracker, worktree, dispatch, journal or evidence state. *(Human ruling, 2026-08-29, on #643: the tick uses this recipe. No earlier authority bound it to this seat.)*
 
 ## 1. Harvest
 
-For every dispatch finished since the last tick, do the orchestrator's half. **These acts belong to the seats that own them, not to every completion**: exchange belongs to a dispatch that produced a branch, and a verdict is derived only from a completed `seat=review` dispatch (`tools/review_exchange.py:10-26,210-218`; `derive_binding` at `:757-845`).
+For every dispatch finished since the last tick, do the orchestrator's half. **These acts belong to the seats that own them, not to every completion**: exchange belongs to a dispatch that produced a branch, and a verdict is derived only from a completed `seat=review` dispatch (`tools/review_exchange.py`'s `derive_binding`).
 
 - Read its result and its report.
-- **Exchange its branch** with `just review exchange <issue>` (`tools/review_exchange.py`), and retire its tree when the issue is closed. "Push the branch" describes neither the recipe nor what the reviewer needs.
-- Post the report to the issue, record the verdict with `just review record`, file every finding of `medium` and below as its own issue, and adjudicate each with `just review-loop adjudicate --route accepted_and_filed --filed-issue <n> --conditional-on "<the work outside the diff the harm depends on>"` (#217 for the policy that every `medium` and below is filed; `tools/review_loop.py:549-562,1431-1440` for the argument validation). `--filed-issue` is required. **`--conditional-on` takes a description, not an issue number** — any non-empty string passes, so a number there writes a semantically empty adjudication that still clears the rung.
+- **Exchange its branch** with `just review exchange <issue>` (`tools/review_exchange.py`), and retire its tree when the issue is closed (`just worktree done`, or `just worktree archive` for clean unlanded work preserved on a named remote ref). "Push the branch" describes neither the recipe nor what the reviewer needs.
+- Post the report to the issue, record the verdict with `just review record`, then **fold it into the loop with `just review-loop sync --issue N --reviewed-sha <sha>`** — the route that opens the loop at round zero or records the next round with the severities taken from the record, so the seat under review cannot re-grade its own review on the way in (`open` and `round` cannot make that promise). File every finding of `medium` and below as its own issue and adjudicate each:
+  `just review-loop adjudicate --issue N --finding <id> --route accepted_and_filed --filed-issue <n> --conditional-on "<the work outside the diff the harm depends on>"` (#217 for the policy that every `medium` and below is filed; `tools/review_loop.py`'s `_route_checks` for the restrictions). `--issue` and `--finding` are required. **`--conditional-on` takes a description, not an issue number** — any non-empty string passes, so a number there writes a semantically empty adjudication that still clears the rung.
+- Run `just review-loop terminus --issue N` when its prompt comes due: once per loop, it files every upheld finding on the originating item and records every dismissal, then writes the landing record the landing rung reads.
 
-**Reviewers are passed test reports and do not re-run the suite** (#353, clarified by #449). They post their own findings. A reviewer that identifies a needed gate **proposes** it; the review seat is `lands=False` under forced plan mode and cannot land it (`tools/dispatch.py:811-814`), so an implementer lands it on its own issue.
+**Reviewers are passed test reports and do not re-run the suite** (#353, clarified by #449). They post their own findings. A reviewer that identifies a needed gate **proposes** it; the review seat is `lands=False` under forced plan mode (`tools/dispatch.py`'s `review` seat row), so an implementer lands it on its own issue.
 
-**If a reviewer reports it could not post, relay for it** — but only on an observed refusal (`docs/review-dispatch.md:139-173`). Both runner families do post from forced plan mode; absence of `ExitPlanMode` is not evidence that `gh issue comment` is unavailable. Two runs on #455 this session (`d-20260821-012423-2f47dd`, `d-20260821-015701-05d3f8`) ended with the review written to a plan file and unposted; that is the observed case this covers, not a standing expectation.
+**Review delivery is the dispatcher's transport** (#496). The reviewer bounds its report with the marker lines its brief supplies and does not call `gh`; `deliver_review` posts that one bounded section, and a posted review prints `review_delivery=posted` as a completion. `just dispatch-follow` prints `review_delivery_failed` and exits non-zero on an undelivered review — treat that exit as the stop, not as a completed run. Manual relay from the named log survives only for a host-side authentication or network failure where attributable text exists (`docs/review-dispatch.md`, "Visibility is the target, not impossible loss"); a refusal with no attributable text takes a fresh review.
 
 ## 2. Land
 
 If a branch is gated, reviewed and adjudicated, land it with `just land --audit-file FILE`, passing one complete criterion-by-criterion audit written outside the worktree: what landed, who reviewed it, and what was filed rather than fixed. The rung posts that audit as its own comment and closes only from the successful posting receipt, so no comment anyone else wrote can satisfy the close. It refuses `audit_file_unreadable` without one, and `audit_recorded=yes` verifies the posting call rather than the audit's content or quality (#461, #499).
 
-**A verdict survives a clean rebase** (#417). `just land` and `just land --stage` record the rebase, and a verdict carries to the moved commit when the recorded chain reaches it and the diff's exact identity matches. A hand-resolved replay or a binary diff does not carry (`docs/review-dispatch.md:358-372`, `tools/land.py:990-1018`). So a second landing does not automatically orphan another branch's verdict.
+**A landing whose diff reaches an in-world surface refuses `corpus_owed` unless `--corpus POOL` names a whole, green `just regress` run over a matching tree.** The corpus cannot be run from a subagent, so the seat's obligation is to *see the run happen* and name its pool (`docs/agents/orchestration.md`, "The landing half").
+
+**A verdict survives a clean rebase** (#417). `just land` and `just land --stage` record the rebase (`_record_clean_rebase`, `tools/land.py`), and a verdict carries to the moved commit when the recorded chain reaches it and the diff's exact identity matches (`docs/review-dispatch.md`, "The verdict binds the diff, not only the commit"). A hand-resolved replay or a binary diff does not carry. So a second landing does not automatically orphan another branch's verdict.
+
+**Read the landing's `gate_review=` line.** Every gate-path landing prints exactly one, naming one of four derived facts: `cross_lane` (the preferred check), `lane_exhausted`, `lane_barred`, or `same_lane_chosen` (`tools/land_review.py`'s gate decision). It is computed at landing time from the registry and the records, never declared by whoever is landing, and no flag suppresses it — the three downgrades are different facts and a reader must be able to tell them apart. Two refusals survive where the record cannot be computed: `review_lane_unknown` and `gate_class_undetermined`. **`review_same_profile` is absolute** — take the same-lane review when a cross-lane one is unavailable, not when it is merely inconvenient.
+
+**Exit codes are part of the contract**: 0 landed; 1 nothing landed; 2 the work **is** on `origin/main` and a step is outstanding — never a success. On the sandbox case the rung prints `merge_command=` naming the exact command for the orchestrator (`tools/land.py`'s refusal vocabulary). A stale main checkout is where ADR-0042's stale-hook window comes from, so run what it names.
+
+**After a successful landing, the landed-issue projection is yours.** Run `just observatory` in the **main checkout** and commit its generated `docs/observatory/landed-issues.md` update as your own follow-up. A feature branch never writes that file; `just observatory` deliberately has no feature-branch guard, so running it anywhere else dirties that tree (`docs/agents/orchestration.md`, "The landing half").
 
 **Occupancy is by issue, not by tree.** `queue_policy.derive_in_flight` unions issue worktrees with unfinished dispatch records, then drops every issue GitHub reports closed. A successful `just land` normally closes the issue. So a **landed-but-open** issue still occupies a slot; closing it releases the slot and leaves the tree as `worktree_done_owed`, which retirement then clears.
 
+A registered human reviewer satisfies never-alone instead of a dispatched one: `just review record --reviewer-profile P` writes a separate declared record and refuses a dispatched session (ADR-0080).
+
+**A change on a sign-off-gated path owes its own approval.** `just gated-paths check` runs inside `just check` and refuses a change to `AGENTS.md`, `CLAUDE.md`, `CONTEXT.md`, `docs/adr/`, `tests/specs/` or `.claude/skills/` unless an approval covers it. `just gated-paths approve` is the human's act and refuses a dispatched session. `.claude/commands/` is not on that list.
+
+**A change no dispatch record claims declares its author.** `just review-loop author --profile P --issue N`, from an interactive session, names the profile that wrote it so the never-alone rung has an author to exclude. It adds an author and never clears the check, and it refuses a session carrying `CTI_DISPATCH_ID`. This is the route for a change under `.claude/`: the permission allowlist covers `.claude/skills/**` and `docs/**` and never `.claude/commands/**`, so no dispatched session can write the latter. *(Human ruling, 2026-08-29, on #643: that gap is the intent, so every correction to this file needs an interactive session.)*
+
 ## 3. Refill to the limit
 
-Read the limit and its ruling from `just queue state` — it holds both, and a number copied into this file goes stale silently. The ruling recorded there is the orchestrator's of 2026-08-19, taken on the human's standing authorisation, because #358 landed and the throttle's exit condition was met. (#284's own closing ruling says "WIP 3 remains in force" and closes that experiment as superseded; it is not the current authority.)
+Read the limit **and its ruling** from `just queue state` — it holds both, and a number or a date copied into this file goes stale silently. This file states none.
 
-Lane order of preference: **zai, then codex, then claude-native** (#217, human instruction of 2026-08-19).
+**Canonical dispatch is `just dispatch --seat S --issue N`, naming neither `--lane` nor `--profile`** (ADR-0071 ruling 2): the seat's preference list resolves the profile, and the two flags are both-or-neither everywhere. Name a lane only when a refusal forces the choice.
 
-Preference chooses among admissible lanes; it never overrides a refusal (#217). Still binding: the off-peak rule on zai (#238, no override), the breaker, and the routing policy.
-
-**The cross-lane rung is a preference, not a bar** (#426). On that rung specifically, lane coincidence no longer refuses; unknown lane or gate class still does — `review_lane_unknown`, `gate_class_undetermined`. Every other refusal in `tools/land.py:110-179` stands, including the absolute `review_same_profile`.
+When more than one lane is admissible and the choice is yours, the order of preference is **zai, then codex, then claude-native** (#217, human instruction of 2026-08-19). Preference chooses among admissible lanes; it never overrides a refusal. Still binding: the off-peak rule on zai (#238, no override — the refusal carries no failure class), the breaker, and the routing policy. A `codex` dispatch first runs a synchronous instruction-delivery preflight (#502): `instruction_delivery_mismatch` and `instruction_preflight_unavailable` are both `infra_unavailable` and are not results.
 
 **Codex may take the implementer seat**: `IMPLEMENTER_PREFERENCE` places `codex-luna-max` after the off-peak z.ai head `zai-glm53flash-max` (`tools/dispatch.py`'s registry). Canonical seat resolution walks that order and records what it passes over. This is not a general rule about seats — `orchestrator` is the sole `claude_only=True` row (ADR-0071 ruling 1).
 
-**Read each issue's routing block.** Recent issues carry a `cti.dispatch-plan/1` comment naming seat, lane and profile per stage with escalation triggers. `just dispatch` does not read them yet. #463 records them as advisory and leaves the treatment open — honour the block, refuse a contradiction, or proceed with a printed departure are all live options on that issue. Honouring by hand is this file's convention pending that decision, and is not #463's ruling.
+**Read each issue's routing block.** Recent issues carry a `cti.dispatch-plan/1` comment naming seat, lane and profile per stage with escalation triggers; no tool reads it. #463 records the blocks as advisory and leaves the treatment open — honour the block, refuse a contradiction, or proceed with a printed departure are all live options on that issue. Honouring by hand is this file's convention pending that decision, and is not #463's ruling.
+
+**Before dispatching**: `just brief N`, then write the variable half — task, scope, ground truth, and the reason for a non-default seat — after reading the issue's thread, not its body alone. Arm `just watch <name> <worktree>` at dispatch. **Follow a cohort in one invocation**: `just dispatch-follow <id> [<id> …]` returns on the **first** of them; never loop one follower per id inside one background task — that loop is a barrier, and the seat sleeps through every slot the faster members free (#280, #295).
+
+The implementer's Work Run may include a bounded self-review before it hands the candidate over (ADR-0079 ruling 1); that is its own interior, not a missing pass and not a defect to reject.
 
 ## 4. Priority
 
-1. The correctness backlog, defect-class first: #458's class — a check comparing a token rather than the thing — records eight instances in its body and a ninth in #470, with three candidate escapes.
-2. #353 and #393, the remaining throughput levers.
-3. The banked branches, disjoint surfaces first. Judge rebase against re-implementation per branch on how far behind it is and what it touches; #340, #342 and #349 are the open cases and record no threshold.
+Derive the ranking from the tracker each tick (`just queue next`); this file names the *order of kinds*, never issue numbers, because a number written here decays by construction:
+
+1. The correctness backlog, defect-class first — a check comparing a token rather than the thing is the standing example (#458's class).
+2. The remaining throughput levers.
+3. The banked branches, disjoint surfaces first. Judge rebase against re-implementation per branch on how far behind it is and what it touches; no threshold is recorded anywhere.
 4. The records backlog.
 
 Re-rank if the evidence says so, and say so in the tick rather than re-ranking quietly.
 
 ## 5. Two reviews per landing, and the cap changes the work
 
-`medium` and below are filed and the branch lands; `critical` and `high` go back **once** (#217, human rulings of 2026-08-18 and 2026-08-19). Two reviews total — not one per finding.
+`medium` and below are filed and the branch lands; `critical` and `high` go back **once** (#217, human rulings of 2026-08-18 and 2026-08-19, verified on #217's thread). Two reviews total — not one per finding.
 
-**At the cap with a `critical` or `high` outstanding, a third patch is not an option** (#217). The branch takes one of three routes: delete or simplify the thing being defended; narrow the claim to something provably sound and file the remainder; or park and escalate.
+**At the cap with a `critical` or `high` outstanding, a third patch is not an option** (#217). The branch takes one of three routes: delete or simplify the thing being defended; narrow the claim to something provably sound and file the remainder; or park and escalate. **The arbiter routes are not a fourth option at the cap**: `escalation_fires_on` requires the wall, `review_rounds >= 3` (`tools/review_loop.py`, `_route_checks` and `escalation_fires_on`; `tools/escalation.py`), so at two rounds an outstanding finding has only `fixed` or the block.
 
 **A changelog fragment is read as a claim, not as prose, and every sentence in it must be true of the code as merged** (ADR-0077, #460). ADR-0077 records five false fragments found, of which three blocked a landing.
 
-**Earlier trigger, worth more than the cap** (#217)**:** when round two finds the *same class* of defect as round one, stop patching and question the requirement. #405 and #417 are that ruling's worked examples, not its source: #405 spent four rounds on one class and ended by deleting what was being defended. Two instances of a class is evidence about the design.
+**Earlier trigger, worth more than the cap** (#217): when round two finds the *same class* of defect as round one, stop patching and question the requirement. #405 and #417 are that ruling's worked examples, not its source: #405 spent four rounds on one class and ended by deleting what was being defended. Two instances of a class is evidence about the design.
 
 Take rulings under the human's standing authorisation (#217), record them where they bind, and do not park work waiting for a turn. That authorisation does not displace ADR-0013: a delegated gated decision goes into a marked ADR.
 
