@@ -357,24 +357,74 @@ def test_a_removal_failure_names_the_retry_its_operation_chose() -> None:
 
 
 def test_a_removal_failure_defers_the_judgement_to_the_ambiguous_retry() -> None:
-    """The removal-failure refusal prints no listing, so it names none to read (#632).
+    """The removal-failure refusal states both retry outcomes, and judges neither (#632).
 
     `worktree_remove_failed`'s `found` lines carry the path, the command and git's
-    stderr — never `git status` — and a deletion could still land after the status
-    read that gated the removal. So the text sends the reader to the retry, whose
-    `teardown_ambiguous` refusal is the one place the listing and the recovery are
-    printed together, rather than asking for a judgement it never armed them for.
+    stderr — never `git status` — so the text asserts nothing whose evidence it does
+    not print. Both branches stay live: a failure that left the tree clean completes
+    the removal on retry with no listing, and a failure that left differences reaches
+    `teardown_ambiguous`, where the listing and the recovery are printed together.
+    The ruling (2026-08-29) forbids an unconditional imperative about an act whose
+    correctness depends on which branch is true — "Never commit the deletions" was
+    wrong in the branch where a session's work is among them and must be committed.
     """
     for text in (
         worktree.remove_failed_action(worktree.DONE_OPERATION),
         worktree.remove_failed_action(worktree.ARCHIVE_OPERATION, "refs/heads/issue-1-parked"),
     ):
+        # Both outcomes stated, conditionally: the dirty retry's refusal, and the
+        # clean retry's completion the reviewer's locked-worktree case produces.
         assert "teardown_ambiguous" in text
-        assert "prints the tree's status" in text
-        assert "Never commit the deletions" in text
+        assert "prints the tree's status beside the recovery" in text
+        assert "still clean" in text and "completes the removal without printing a list" in text
+        # Neither absolute order about the deletions survives the ruling.
+        assert "Never commit the deletions" not in text
+        assert "never commit" not in text.lower()
         assert "never reset" in text
         # The round-two defect: advice naming evidence this refusal does not print.
         assert "read the list" not in text
+
+
+def test_a_removal_failure_on_a_clean_tree_completes_without_the_ambiguous_refusal(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The reviewer's branch, pinned: a clean-tree failure's retry prints no listing.
+
+    A locked worktree is the everyday case: git refuses the removal before touching
+    the working copy, so the retry finds a clean tree under the surviving record and
+    removes it. `teardown_ambiguous` never fires and no status is ever printed — the
+    exact outcome the round-two text's unconditional promise denied.
+    """
+    repo = a_repo(tmp_path)
+    run(monkeypatch, repo, "add", "issue-1")
+    capsys.readouterr()
+    created = repo / ".claude" / "worktrees" / "issue-1"
+
+    real_git = worktree.git
+    git("worktree", "lock", str(created), cwd=repo)
+
+    def remove_that_fails_on_a_clean_tree(*args: str, **kwargs: object) -> str:
+        if args[:2] == ("worktree", "remove"):
+            raise worktree.GitError(args, "worktree is locked")
+        return real_git(*args, **kwargs)  # type: ignore[arg-type]  # same argv `git` takes
+
+    monkeypatch.setattr(worktree, "git", remove_that_fails_on_a_clean_tree)
+    code = run(monkeypatch, repo, "done", "issue-1")
+    printed = lines_of(capsys)
+    assert code == 1
+    assert printed[0] == "refusal=worktree_remove_failed"
+    assert (created / "README.md").exists()  # nothing changed at all
+    assert "issue-1" in git("worktree", "list", "--porcelain", cwd=repo)
+
+    monkeypatch.undo()
+    git("worktree", "unlock", str(created), cwd=repo)
+    code = run(monkeypatch, repo, "done", "issue-1")
+    printed = lines_of(capsys)
+    assert code == 0
+    assert printed[0] == "ok=worktree_removed"
+    # The whole point: the clean retry completed without ever printing a listing.
+    assert not any("refusal=teardown_ambiguous" in line for line in printed)
+    assert not created.exists()
 
 
 def test_an_unreadable_record_never_unlocks_the_recovery_path(tmp_path: Path) -> None:

@@ -156,19 +156,25 @@ def remove_failed_action(operation: str, ref: str = "") -> str:
     """Return the refusal text for a `git worktree remove` that aborted part-way (#632).
 
     This refusal prints no status listing — only the command and its stderr — so it
-    never asks the reader to judge one. A concurrent deletion after the clean-status
-    read is still possible, and the record proves only that a removal *began*, so the
-    judgement is deferred to the retry's `teardown_ambiguous` refusal, which is the
-    one place that prints the tree's listing and the reader-owned recovery beside it.
+    never asks the reader to judge one, and the record proves only that a removal
+    *began*, so the text states facts and the two retry outcomes rather than an
+    imperative about the deletions: a failure that changed nothing (a locked worktree
+    is the everyday case) leaves the retry a clean tree it removes without printing
+    anything, while a failure that left differences sends the retry to
+    `teardown_ambiguous`, whose listing beside the reader-owned recovery is the one
+    place that decision is made (#632 ruling, 2026-08-29).
     """
     return (
-        "git aborted the removal after it had begun, so the working copy may be partly "
-        "deleted. This refusal prints no listing and the record proves only that the "
-        "removal started, so nothing is judged here. Fix what git names above, then run "
-        f"`{teardown_retry(operation, ref)}` again: it refuses `teardown_ambiguous`, "
-        "which prints the tree's status and names the recovery, and the decision about "
-        "the deletions is made there — never by attributing them here. Never commit the "
-        "deletions, and never reset (#105)."
+        "git aborted the removal after it had begun. This refusal prints no listing and "
+        "the record proves only that the removal started, so nothing is judged here: the "
+        "working copy may be partly deleted, or the failure may have changed nothing. "
+        "Nothing was restored and nothing was removed. Fix what git names above, then run "
+        f"`{teardown_retry(operation, ref)}` again. If the failure is gone and the tree is "
+        "still clean, that call finds it so and completes the removal without printing a "
+        "list. If the tree now has differences, that call refuses `teardown_ambiguous`, "
+        "which prints the tree's status beside the recovery, and the decision is made "
+        "there — a deletion of a file nobody here authored can be restored by the recovery "
+        "it prints, and an entry that is work can be committed first — never reset (#105)."
     )
 
 
