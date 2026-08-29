@@ -705,28 +705,52 @@ def test_an_observation_fills_only_a_gap_the_record_left() -> None:
 
 
 @pytest.mark.parametrize(
-    ("previous", "current"),
+    ("previous", "current", "expected_failure_class", "expected_conflict"),
     [
-        # The identity-conflict branch.
+        # The identity-conflict branch: the two observations carry different
+        # landing identities, so the prior record survives and holds the mark.
         (
             _delivery_run(delivery_conflict=True, result_published=False),
             _delivery_run(result_published=True),
+            None,
+            True,
         ),
-        # The branch whose fresh observation is a stripped typed non-result.
+        # The current-non-result branch: the fresh observation is a stripped
+        # typed non-result with no landing identity of its own, so no earlier
+        # identity can disagree with it and the fresh record survives.  The
+        # prior's shape is the controller's recorded launch, which carries no
+        # landing identity to collide with.
         (
-            _delivery_run(result_published=True, close_evidence_sha=None),
-            policy.WorkRunFact("run-1", "non_result", dispatch_id="dispatch-1"),
+            policy.WorkRunFact(
+                "run-1",
+                policy.RECORDED_LAUNCH_STATE,
+                dispatch_id="dispatch-1",
+                result_published=True,
+            ),
+            policy.WorkRunFact(
+                "run-1",
+                "non_result",
+                dispatch_id="dispatch-1",
+                failure_class="quota_exhausted",
+            ),
+            "quota_exhausted",
+            False,
         ),
         # The landed branch, whose prior observation is unstamped.
         (
             _delivery_run(result_published=False, landed_sha="a" * 40),
             _delivery_run(result_published=True),
+            None,
+            False,
         ),
     ],
     ids=["identity_conflict", "fresh_non_result", "landed_prior"],
 )
 def test_no_merge_branch_clears_a_recorded_publication(
-    previous: policy.WorkRunFact, current: policy.WorkRunFact
+    previous: policy.WorkRunFact,
+    current: policy.WorkRunFact,
+    expected_failure_class: str | None,
+    expected_conflict: bool,  # noqa: FBT001 — pytest passes parametrize values positionally
 ) -> None:
     """Publication is stamped once after the identity ladder, never per branch.
 
@@ -738,6 +762,14 @@ def test_no_merge_branch_clears_a_recorded_publication(
     merged = policy.merge_work_run_observation(previous, current)
 
     assert merged.result_published is True
+    # Which branch a case reaches is visible in the merged record itself, so
+    # the cases stay provably distinct: the identity-conflict and landed
+    # branches return the prior observation, keeping its untyped failure
+    # class, while the current-non-result branch returns the fresh record and
+    # its typed one.  A case that drifts into the branch another one names
+    # fails here rather than silently duplicating it (#639).
+    assert merged.failure_class == expected_failure_class
+    assert merged.delivery_conflict is expected_conflict
 
 
 def test_delayed_landing_without_a_repeated_candidate_still_conflicts() -> None:

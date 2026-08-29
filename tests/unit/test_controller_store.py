@@ -337,18 +337,29 @@ def write_and_reload(root: Path, facts: policy.ControlFacts) -> store.LoadedCont
     return controller_store.load()
 
 
+def collect_and_merge(
+    loaded: store.LoadedControllerState, root: Path
+) -> tuple[policy.WorkRunFact, ...]:
+    """Re-read the run's published result and merge it over the reloaded fact.
+
+    One arrangement of the production sequence — collect, then merge — shared
+    by every test that recollects, so the two sites cannot drift (#639).
+    """
+    observed = ports.DispatchDeliveryFactCollector(root / "dispatches").collect(
+        loaded.facts.work_runs
+    )
+    return policy.merge_work_run_observations(loaded.facts.work_runs, observed)
+
+
 def recollect_over(loaded: store.LoadedControllerState, root: Path) -> policy.ControlFacts:
-    """Re-read the run's published result and merge it over the reloaded fact."""
+    """Stage a pruned non-result observation and recollect over the reloaded facts."""
     (root / "dispatches" / "d-1").mkdir(parents=True)
     (root / "dispatches" / "d-1" / "result.json").write_text(
         json.dumps({"dispatch_id": "d-1", "status": "child_finished", "outcome": "quota_exhausted"})
         + "\n",
         encoding="utf-8",
     )
-    observed = ports.DispatchDeliveryFactCollector(root / "dispatches").collect(
-        loaded.facts.work_runs
-    )
-    merged = policy.merge_work_run_observations(loaded.facts.work_runs, observed)
+    merged = collect_and_merge(loaded, root)
     return policy.ControlFacts(None, (), (), loaded.facts.work_items, merged, wip_limit=1)
 
 
@@ -415,10 +426,7 @@ def run_published_cycle(
     loaded: store.LoadedControllerState, root: Path, cycle_id: str
 ) -> store.LoadedControllerState:
     """Collect, merge, journal, and reload — one cycle exactly as production runs it."""
-    observed = ports.DispatchDeliveryFactCollector(root / "dispatches").collect(
-        loaded.facts.work_runs
-    )
-    merged = policy.merge_work_run_observations(loaded.facts.work_runs, observed)
+    merged = collect_and_merge(loaded, root)
     merged_facts = policy.ControlFacts(None, (), (), loaded.facts.work_items, merged, wip_limit=1)
     controller_store = store.ControllerStore(root / "controller")
     document = payload()
