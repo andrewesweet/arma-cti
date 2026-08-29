@@ -16,7 +16,8 @@
   from `just queue state`, the priority list names kinds rather than issue numbers,
   and every drifted line-number citation is replaced by a symbol or section anchor.
   Harvest now states that review delivery is the dispatcher's rather than the
-  orchestrator's and names the two narrow cases in which a manual relay is admissible;
+  orchestrator's and states that a manual relay is deliberate and conditional on a bounded report
+  existing in the named log, rather than on which host failure refused;
   it adds the ledger materialisation owed before a run's spend or outcome is quoted,
   and the verbatim `just verdict` paste and `just trial close-audit` a close is judged
   from. The adjudication rule is stated as the code enforces it: nothing above Low is
