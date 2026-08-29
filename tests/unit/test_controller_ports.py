@@ -507,8 +507,8 @@ def _dispatch_record(tmp_path: Path) -> None:
     (record / "dispatch.json").write_text('{"dispatch_id":"d-1","issue":1}\n', encoding="utf-8")
 
 
-def _live_agent(tmp_path: Path, pid: int, tree: Path) -> Any:
-    """A fake `/proc` in which `pid` works inside `tree` — an agent alive in it.
+def _live_agent(tmp_path: Path, pid: int, tree: Path) -> ports.dispatch_stop.Machine:
+    """Stage a fake `/proc` in which `pid` works inside `tree` — an agent alive in it.
 
     The worktree, not a pid, is the handle that identifies a dispatch's
     processes, which is the same read `just dispatch --stop` makes (#105); the
@@ -520,7 +520,9 @@ def _live_agent(tmp_path: Path, pid: int, tree: Path) -> Any:
     return ports.dispatch_stop.Machine(procfs=tmp_path / "proc", self_pid=1)
 
 
-def _controller_classifier(tmp_path: Path, repo: Path, machine: Any) -> Any:
+def _controller_classifier(
+    tmp_path: Path, repo: Path, machine: ports.dispatch_stop.Machine
+) -> ports.DispatchDeliveryFactCollector:
     dispatches = tmp_path / "dispatches" / "d-1"
     dispatches.mkdir(parents=True, exist_ok=True)
     classifier = ports.ExistingRecoveryClassifier(
