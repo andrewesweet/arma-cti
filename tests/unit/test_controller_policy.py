@@ -654,6 +654,57 @@ def test_failure_evidence_blocks_completion_even_with_landing_fields() -> None:
 
 
 @pytest.mark.parametrize(
+    ("field", "prior_value", "current_value"),
+    [
+        ("work_item_key", "item", "other"),
+        ("issue", 1, 2),
+        ("worktree", "issue-1", "issue-9"),
+    ],
+    ids=["work_item_key", "issue", "worktree"],
+)
+def test_a_present_binding_cannot_be_rebound_by_a_fresh_observation(
+    field: str, prior_value: object, current_value: object
+) -> None:
+    """Where both observations carry a binding, the recorded one stays.
+
+    A binding is a fact the controller recorded at launch, so a later
+    observation of the same dispatch that disagrees with it is a conflict on
+    the recorded value — never a silent rebind (#630), and never silently
+    retained either: the disagreement is information.
+    """
+    merged = policy.merge_work_run_observation(
+        _delivery_run(worktree="issue-1"),
+        _delivery_run(**{field: current_value}),
+    )
+
+    assert getattr(merged, field) == prior_value
+    assert merged.delivery_conflict is True
+    assert not policy.completion_ready(merged)
+
+
+def test_a_binding_that_agrees_is_not_a_conflict() -> None:
+    """A benign re-observation carrying the same binding stays conflict-free."""
+    merged = policy.merge_work_run_observation(
+        _delivery_run(worktree="issue-1"),
+        _delivery_run(worktree="issue-1", issue=1, work_item_key="item"),
+    )
+
+    assert merged.delivery_conflict is False
+    assert policy.completion_ready(merged) is True
+
+
+def test_an_observation_fills_only_a_gap_the_record_left() -> None:
+    """An unbound prior takes the observation's binding; a bound one never does."""
+    unbound = policy.WorkRunFact("run-1", "running", dispatch_id="dispatch-1")
+
+    merged = policy.merge_work_run_observation(unbound, _delivery_run())
+
+    assert merged.work_item_key == "item"
+    assert merged.issue == 1
+    assert merged.delivery_conflict is False
+
+
+@pytest.mark.parametrize(
     ("previous", "current"),
     [
         # The identity-conflict branch.

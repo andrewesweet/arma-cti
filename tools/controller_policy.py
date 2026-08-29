@@ -415,20 +415,56 @@ def merge_work_run_observation(previous: WorkRunFact, current: WorkRunFact) -> W
     close evidence for the same SHA; a different SHA becomes a visible conflict
     and can never satisfy completion.
 
-    ``result_published`` is deliberately outside the ladder below.  It records
-    where an observation was read from — a published ``result.json`` — and that
-    is a property of the observation's source, never something a merge branch
-    negotiates.  Two rounds of branch-by-branch fixes each missed branches that
-    silently dropped it, so no branch may touch it at all: whatever the ladder
-    resolves for the landing identity is stamped with the union here, and a
-    branch added tomorrow cannot omit it.
+    ``result_published`` and the Work Item binding are deliberately outside
+    the ladder below.  Publication records where an observation was read from —
+    a published ``result.json`` — and that is a property of the observation's
+    source, never something a merge branch negotiates.  The binding is the
+    controller's own launch record: a later observation fills a gap the prior
+    record left and conflicts where it disagrees, and is never allowed to
+    rebind.  Two rounds of branch-by-branch fixes each missed branches that
+    silently dropped the publication stamp or silently rebound the run, so no
+    branch may touch either: whatever the ladder resolves is stamped with the
+    preserves here, and a branch added tomorrow cannot omit them.
     """
     if not same_work_run(previous, current):
         raise ValueError(SAME_RUN_ERROR)
     merged = _merge_delivery_identity(previous, current)
+    merged = _preserve_work_item_binding(previous, current, merged)
     return replace(
         merged,
         result_published=previous.result_published or current.result_published,
+    )
+
+
+def _preserve_work_item_binding(
+    previous: WorkRunFact, current: WorkRunFact, merged: WorkRunFact
+) -> WorkRunFact:
+    """Stamp the Work Item binding once, outside every branch of the ladder.
+
+    A binding is a fact the controller recorded when it launched the run, so a
+    later observation of the same dispatch cannot revise it: a present-and-
+    differing value is a visible conflict on the prior binding, exactly as a
+    differing landing SHA is.  Only a field the prior record left empty takes
+    the observation's value.  This is the same ruling as #624's publication
+    stamp — the fact lives in one preserve point rather than in every branch,
+    so a branch added tomorrow cannot rebind either.
+    """
+    conflict = any(
+        prior is not None and fresh is not None and fresh != prior
+        for prior, fresh in (
+            (previous.work_item_key, current.work_item_key),
+            (previous.issue, current.issue),
+            (previous.worktree, current.worktree),
+        )
+    )
+    return replace(
+        merged,
+        delivery_conflict=merged.delivery_conflict or conflict,
+        work_item_key=(
+            previous.work_item_key if previous.work_item_key is not None else current.work_item_key
+        ),
+        issue=previous.issue if previous.issue is not None else current.issue,
+        worktree=previous.worktree if previous.worktree is not None else current.worktree,
     )
 
 
@@ -448,14 +484,12 @@ def _merge_delivery_identity(previous: WorkRunFact, current: WorkRunFact) -> Wor
         return replace(previous, delivery_conflict=True)
     if current_non_result:
         # The typed non-result is terminal for the run's outcome, but a result
-        # record carries no Work Item binding: keep the prior observation's
-        # structural fields so the run stays bound to the item, issue and
-        # worktree whose slot it holds rather than orphaning them.
+        # record carries no Work Item binding: the binding preserve above keeps
+        # the prior observation's structural fields so the run stays bound to
+        # the item, issue and worktree whose slot it holds rather than
+        # orphaning them.
         return replace(
             current,
-            work_item_key=current.work_item_key or previous.work_item_key,
-            issue=current.issue or previous.issue,
-            worktree=current.worktree or previous.worktree,
             delivery_conflict=previous.delivery_conflict or current.delivery_conflict,
         )
     if previous.landed_sha is not None:
