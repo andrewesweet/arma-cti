@@ -1,16 +1,16 @@
 ### Changed
 
-- **`/orchestrator-tick` is reduced towards steps, commands and pointers, and its
-  landing section is corrected (#643).** After `just land` exits 2 the file now says to
-  run the `merge_command=` line and then rerun `just land --audit-file FILE`, noting
-  that the rerun is what records the audit and closes the issue, and that the issue is
-  never closed by hand from exit 2. Other step changes: the review dispatch is preceded
-  by `just brief N --seat review --reviewing P --out FILE` and passes `--brief-file`,
-  with #647 named for the worktree path that composer gets wrong; the gated-path line
-  names all three routes `AGENTS.md` and `tools/gated_paths.py` allow, rather than human
-  approval alone; the global `zai, then codex, then claude-native` lane order is
-  replaced by a pointer to `tools/dispatch.py`'s per-seat `SEATS` and `just dispatch
-  --list`; the turn top asks `just queue next --count N` so the priority section has
-  candidates to rank; and the `cti.dispatch-plan/1` paragraph becomes one step with a
-  bare `#463` pointer. Rationale and code-assertion prose elsewhere in the file is cut
-  in favour of the pointer that owns the rule.
+- **`/orchestrator-tick` is reduced towards steps, commands and pointers, and four
+  factual defects in it are corrected (#643).** The harvest section now carries the
+  review dispatch's completion edge: arm `just watch`, wait on `just dispatch-follow`,
+  and only then run `just review record`, which `tools/review_exchange.py` refuses as
+  `no_review_dispatch` without a completed review dispatch. Review dispatches no longer
+  compose a brief at all — `just brief` and `just dispatch` name different worktrees and
+  #647 is cited as the blocked state, so they take the default brief until it lands. The
+  landing section reads `ok=landed`, the key `tools/land.py` prints on success, rather
+  than `landed=`. The turn top drops `--count N`, which cannot widen the candidate list
+  past available WIP room, and section 4 now reads the eligible issues named by
+  `considered.N=eligible` before ranking them. The `cti.dispatch-plan/1` line no longer
+  claims #463 mandates applying a routing block by hand; it says nothing reads the block
+  and its treatment is undecided. Rationale and code-restating prose elsewhere in the
+  file is cut in favour of the pointer that owns the rule.
