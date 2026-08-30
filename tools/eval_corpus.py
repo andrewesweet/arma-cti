@@ -35,14 +35,23 @@ What this is not: a judge of whether an expected outcome is the *right* expectat
 (the corpus author's judgement, held to review), a model benchmark, or a causal claim.
 A passing run says the corpus detected no regression, nothing more.
 
-Isolation and integrity are criteria, not flavour. Every trial runs in a fresh
-workspace seeded with only what the task declares, from an environment allowlist that
-carries no lane variable, credential or dispatch identity; graders are hash-verified,
-copied into the run directory — outside every trial workspace, whose path never reaches
-the harness child — and imported from that copy; every trial retains its workspace, its
-captured streams and its graded record, and nothing is written twice. A configuration
-may pin `pins.repo_sha`, which refuses the run on any other HEAD, so a run is
-reproducible at the tree it measured.
+Isolation and integrity are criteria, not flavour, and the words say exactly what is
+true. A trial is a fresh workspace holding only what the task declares, in a child
+environment assembled from an allowlist that carries no lane variable, credential or
+dispatch identity. **There is no sandbox.** The child runs as this user with its real
+`HOME`, the proxy variables the allowlist carries, and the whole filesystem its user
+can reach; a descendant that escapes its process group is not contained either. What
+the runner does promise: graders are hash-verified, copied into the run directory —
+outside every trial workspace, whose path never reaches the harness child — and
+re-executed per trial from those verified bytes, so no grader module global carries
+between trials or configurations; the wall-time budget is enforced over the trial's
+whole process group; token and command ceilings are checked against what the adapter
+reports after the trial, which is the only place those numbers exist; every trial
+retains its workspace, its captured streams and its graded record, and nothing is
+written twice; and a configuration may pin `pins.repo_sha`, which refuses the run on
+any other HEAD, so a run is reproducible at the tree it measured. The child
+interpreter is whatever the configuration's `argv[0]` resolves to against the
+allowlisted `PATH`; the run records that resolution in `run.json`.
 
 The task↔runner contract prints from this module (`--contract`), rendered from the same
 field registries the loader validates against and the same severity table the run exits
@@ -59,6 +68,8 @@ import importlib.util
 import json
 import math
 import os
+import shutil
+import signal
 import subprocess
 import sys
 import uuid
@@ -79,8 +90,10 @@ CONFIGURATION_SCHEMA: Final = "cti.eval-configuration/1"
 TRIAL_RECORD_SCHEMA: Final = "cti.eval-trial-record/1"
 GRADER_ENTRY: Final = "grade"
 
-# Per-trial budget defaults. A task or a configuration overrides any leg; the defaults
-# exist so a task that states none is still bounded rather than unbounded.
+# Per-trial ceiling defaults. A task or a configuration overrides any leg; the defaults
+# exist so a task that states none is still bounded rather than unbounded. Only the
+# seconds leg is enforced — the runner kills the trial's process group at the deadline;
+# the token and command legs are ceilings over what the adapter reports afterwards.
 DEFAULT_BUDGET_SECONDS: Final = 900.0
 DEFAULT_BUDGET_TOKENS: Final = 400_000
 DEFAULT_BUDGET_COMMANDS: Final = 400
@@ -144,7 +157,12 @@ TASK_FIELDS: Final[tuple[ContractField, ...]] = (
     ContractField("grader_sha256", True, "the grader's pinned sha256"),
     ContractField("title", False, "human-readable label"),
     ContractField("variants", False, "the ablation arms; default is one context-free arm"),
-    ContractField("budget", False, "per-trial budget override: seconds, tokens, commands"),
+    ContractField(
+        "budget",
+        False,
+        "per-trial ceiling override: seconds enforced; tokens and commands are"
+        " ceilings over the adapter's post-trial report",
+    ),
 )
 
 CONFIGURATION_FIELDS: Final[tuple[ContractField, ...]] = (
@@ -159,7 +177,12 @@ CONFIGURATION_FIELDS: Final[tuple[ContractField, ...]] = (
     ContractField(
         "harness.env", False, "extra child environment entries; names recorded, never values"
     ),
-    ContractField("budget", False, "per-trial budget: seconds, tokens, commands"),
+    ContractField(
+        "budget",
+        False,
+        "per-trial ceiling: seconds enforced; tokens and commands are ceilings"
+        " over the adapter's post-trial report",
+    ),
     ContractField("unit_costs", False, "currency reporting: input_per_1m, output_per_1m, currency"),
     ContractField("pins.repo_sha", False, "refuse the run unless HEAD is exactly this commit"),
 )
@@ -179,14 +202,17 @@ GRADER_FIELDS: Final[tuple[ContractField, ...]] = (
 
 
 class CaseState(StrEnum):
-    """The typed verdict a case can carry.
+    """How a case's rate is classified.
 
-    `pass`, `infra_unavailable` and `untyped_harness_failure` take their meaning from
+    A case's verdict is its **rate** — `met` over its graded repeats, judged against
+    the task's tolerance — and the state is that rate's classification, never a
+    substitute for it. A rate exists only when every repeat graded: a case the budget
+    touched is `budget_stopped`, no rate and no verdict, because a rate over a partial
+    denominator is the measurement the specification forbids. `pass`, `fail`,
+    `infra_unavailable` and `untyped_harness_failure` take their meaning from
     AGENTS.md's failure-class table and this output restates none of it; `quarantined`
     is `flake_quarantine`'s discipline carried by a case whose outcomes spread beyond
-    their tolerance; `budget_stopped` is a trial the budget ended, a measurement that
-    did not finish and never a configuration's failure; `fail` is the one state that
-    says the configuration missed its expected class beyond tolerance.
+    their tolerance.
     """
 
     PASS = "pass"  # noqa: S105 — the class name, not a credential
@@ -208,6 +234,24 @@ CASE_SEVERITY: Final[dict[CaseState, int]] = {
     CaseState.INFRA_UNAVAILABLE: 4,
     CaseState.UNTYPED_HARNESS_FAILURE: 5,
 }
+
+
+class TrialState(StrEnum):
+    """One trial's state, before any case verdict exists.
+
+    `graded_pending` is a record the oracle can read; `met` and `not_met` are its
+    answers. The other three are the states that make a case not-a-result: a budget
+    the trial hit, infrastructure that failed under it, and a harness that broke —
+    each one exactly what AGENTS.md's failure-class table says it is.
+    """
+
+    GRADED_PENDING = "graded_pending"
+    MET = "met"
+    NOT_MET = "not_met"
+    BUDGET_STOPPED = "budget_stopped"
+    INFRA_UNAVAILABLE = "infra_unavailable"
+    UNTYPED_HARNESS_FAILURE = "untyped_harness_failure"
+
 
 # What the adapter's `stopped_by` may say, and what each answer costs the case.
 STOPPED_COMPLETED: Final = "completed"
@@ -248,7 +292,16 @@ class Variant:
 
 @dataclass(frozen=True)
 class Budget:
-    """The per-trial budget: a trial that exhausts any leg is a budget stop."""
+    """The per-trial ceiling, named precisely because its legs are not equals.
+
+    `seconds` is a budget the runner enforces: the trial's whole process group is
+    killed at the deadline. `tokens` and `commands` are ceilings over what the
+    adapter reports after the trial — self-reports are the only place those numbers
+    exist, so a trial over either leg is recorded as a budget stop after the fact,
+    never prevented. A descendant that escapes its process group (it calls
+    `setsid` itself) evades the seconds leg too; nothing in this repository
+    sandboxes children, and this module does not pretend otherwise.
+    """
 
     seconds: float
     tokens: int
@@ -306,8 +359,9 @@ class TrialOutcome:
 
     index: str
     graded_class: str | None
-    state: str  # met | not_met | budget_stopped | infra_unavailable | untyped
+    state: TrialState
     detail: str = ""
+    reported: dict[str, int] | None = None  # the adapter's usage report, whatever the outcome
 
 
 @dataclass
@@ -317,6 +371,7 @@ class CaseResult:
     configuration: str
     case_id: str
     state: CaseState
+    rate: float | None = None
     met: int = 0
     graded: int = 0
     budget_stops: int = 0
@@ -601,35 +656,46 @@ def load_configuration(path: Path) -> Configuration:
 
 
 class Grader:
-    """A hash-verified grader module, imported from the run's own copy.
+    """A hash-verified grader module, loaded from the run's own copy, fresh per call.
 
-    The hash is verified before the module is imported at all, so a grader that does
+    The hash is verified before the module is loaded at all, so a grader that does
     not match what the task pinned is refused before any trial — the run is not
-    trusted rather than graded with a moved oracle. The import target is the run's own
-    copy under the runs root, never a trial workspace, whose path never reaches the
-    harness child.
+    trusted rather than graded with a moved oracle. The copy lives in the run
+    directory, never a trial workspace, whose path never reaches the harness child.
+    The module is re-executed for every `grade` call from those verified bytes, so a
+    grader's module globals cannot carry state between trials, between variants, or
+    between the two configurations of a comparison — the cross-trial contamination
+    path a shared module object leaves open.
     """
 
     def __init__(self, source: Path, expected_sha: str, graders_dir: Path, name: str) -> None:
-        """Verify the hash, copy into `graders_dir`, and import that copy."""
+        """Verify the hash, copy into `graders_dir`, and load that copy once to check it."""
         verify_grader_hash(source, expected_sha)
         target = graders_dir / expected_sha[:12] / source.name
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(source.read_bytes())
-        spec = importlib.util.spec_from_file_location(f"eval_grader_{name}", target)
-        if spec is None or spec.loader is None:
+        self._spec = importlib.util.spec_from_file_location(f"eval_grader_{name}", target)
+        if self._spec is None or self._spec.loader is None:
             raise EvalRefusalError("grader_unloadable", (f"grader={source.name}",))
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
-        entry = getattr(module, GRADER_ENTRY, None)
+        entry = self._fresh_entry()
         if not callable(entry):
             raise EvalRefusalError(
                 "grader_unloadable", (f"missing={GRADER_ENTRY}()", f"grader={source.name}")
             )
         self.name = name
-        self.entry = entry
         self.path = target
         self.sha256 = expected_sha
+
+    def _fresh_entry(self) -> object:
+        """Execute the verified bytes into a brand-new module and return its entry point.
+
+        A grader that keeps module globals cannot leak one trial's state into the
+        next: every call re-runs the module top level, so the only state that
+        survives a call is whatever the grader wrote to disk itself.
+        """
+        module = importlib.util.module_from_spec(self._spec)
+        self._spec.loader.exec_module(module)
+        return getattr(module, GRADER_ENTRY, None)
 
     def grade(self, record: dict[str, object], classes: tuple[str, ...]) -> tuple[str, str]:
         """Return the class the grader assigns, refusing one outside the task's set.
@@ -638,8 +704,9 @@ class Grader:
         failure: the oracle broke, and a broken oracle's answer says nothing about the
         configuration.
         """
+        entry = self._fresh_entry()
         try:
-            verdict = self.entry(record)
+            verdict = entry(record)
         except Exception as failure:  # noqa: BLE001 — a grader crash is the harness's fault
             raise EvalRefusalError(
                 "untyped_harness_failure", (f"grader={self.name}", f"error={failure!r}")
