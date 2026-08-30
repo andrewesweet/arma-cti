@@ -23,7 +23,7 @@ For every dispatch finished since the last tick:
 - `just review exchange <issue>` — for a dispatch that produced a branch.
 - `just dispatch --seat review --issue N --reviewing P --base-sha <sha>` — the SHA `just review exchange` emitted. Pass no `--brief-file`: the review seat runs in a dispatch-owned disposable worktree and `just brief` composes an `issue-N` tree.
 - `just review record --issue N --reviewed-sha SHA --findings FILE`
-- `just review-loop sync --issue N --reviewed-sha <sha>` — pre-landing verdicts only. Route a post-landing verdict's claims per `docs/review-dispatch.md`.
+- `just review-loop sync --issue N --reviewed-sha <sha>` — pre-landing verdicts only; nothing enforces that (#646). Route a post-landing verdict's claims per `docs/review-dispatch.md`.
 - `just review-loop adjudicate --issue N --finding <id> --route ROUTE` — nothing above Low may be left open. Routes and their conditions: `docs/agents/review-severity.md`, `tools/review_loop.py`'s `_route_checks`.
 - `just ledger-sync sync --behind`, then `just ledger-sync show --dispatch <id>`, before quoting a run's spend or outcome.
 - `just verdict` — paste verbatim where a pool gated the work; never retype the SHA or the evidence path.
