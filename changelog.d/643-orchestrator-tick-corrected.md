@@ -10,7 +10,15 @@
   before waiting on any of it: exchange, dispatch and arm `just watch` for
   every finished branch, then wait on a single `just dispatch-follow`
   invocation over them all, process the review that returns, land it and refill
-  the freed capacity, and only then re-follow the remainder. An interactive
+  the freed capacity, and only then re-follow the remainder. Each `just watch`
+  names the dispatch record's `result.json` as its subject rather than taking
+  the default newest pool, and the review dispatch's watcher is armed over the
+  issue's own worktree rather than the review's own tree. A
+  `refill-before-landing` turn top now runs the refill only as far as arming
+  that watcher, leaving the new dispatch to be followed with the harvest
+  cohort. The post-landing review is written as its own pass — dispatch, watch,
+  follow, then route its claims as `docs/review-dispatch.md` routes them — and
+  runs neither `just review-loop sync` nor `just land`. An interactive
   author declares itself with `just review-loop author` before the first review
   dispatch, so reviewer resolution cannot resolve to the author. Review
   dispatches take the default brief until #647 lands, under the human's ruling
