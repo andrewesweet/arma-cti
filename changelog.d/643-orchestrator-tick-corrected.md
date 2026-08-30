@@ -1,21 +1,22 @@
 ### Changed
 
-- **`/orchestrator-tick` is reduced towards steps, commands and pointers, and
-  factual defects in it are corrected (#643).** The harvest section now carries the
-  review dispatch's completion edge without serialising the cohort: exchange, dispatch
-  and arm `just watch` for every finished branch first, then wait on a single
-  `just dispatch-follow` invocation over them all, and only then run `just review
-  record`, which `tools/review_exchange.py` refuses as `no_review_dispatch` without a
-  completed review dispatch. The post-landing review dispatch gets that same watcher and
-  follower. Where `just watch-report` prints `action=refill-before-landing`, the refill
-  section now runs before the harvest as well as before the landing, so the refill no
-  longer waits behind a review. Review dispatches no longer
-  compose a brief at all — `just brief` and `just dispatch` name different worktrees and
-  #647 is cited as the blocked state, so they take the default brief until it lands. The
-  landing section reads `ok=landed`, the key `tools/land.py` prints on success, rather
-  than `landed=`. The turn top drops `--count N`, which cannot widen the candidate list
-  past available WIP room, and section 4 now reads the eligible issues named by
-  `considered.N=eligible` before ranking them. The `cti.dispatch-plan/1` line no longer
-  claims #463 mandates applying a routing block by hand; it says nothing reads the block
-  and its treatment is undecided. Rationale and code-restating prose elsewhere in the
-  file is cut in favour of the pointer that owns the rule.
+- **`/orchestrator-tick` is reduced to steps, commands and pointers, and its
+  factual defects are corrected (#643).** Rationale, worked examples and prose
+  restating what the code does give way to the path, ADR, ruling or issue that
+  owns the rule. The tick now opens with a turn-top section — `just
+  watch-report`, `just controller reconcile`, `just queue state` and `just queue
+  next` — and runs the refill ahead of the harvest and the landing when `just
+  watch-report` prints `action=refill-before-landing`. The harvest launches the
+  whole review cohort before waiting on any of it: exchange, dispatch and arm
+  `just watch` for every finished branch, then wait on a single `just
+  dispatch-follow` invocation over them all, process the review that returns,
+  and only then re-follow the remainder. An interactive author declares itself
+  with `just review-loop author` before the first review dispatch, so reviewer
+  resolution cannot resolve to the author. Review dispatches take the default
+  brief until #647 lands, under the human's ruling of 2026-08-30 on #643. The
+  landing section names `just land --audit-file`, its `--corpus` argument, the
+  `ok=landed` and `gate_review=` lines it prints, the exit-2 rerun, the
+  post-landing review and the `just observatory` commit that follows it. `just
+  verdict` is given its pool rather than left to pick one. Section 4 ranks by
+  kind, in place of the specific issue numbers that were eligible when the file
+  was written.
