@@ -13,7 +13,10 @@ Pointers below to open issues — #463, #645, #646, #647 — are permitted: huma
 - `just controller reconcile`
 - `just queue state`, then `just queue next` — section 4 ranks every `considered.N=eligible` number it prints.
 
-If `just watch-report` prints `action=refill-before-landing`, run section 3 before sections 1 and 2.
+If `just watch-report` prints `action=refill-before-landing`, run section 3 down to and
+including its `just watch` step, stop before its `just dispatch-follow`, then run
+sections 1 and 2. Follow the new dispatch in section 1's cohort invocation
+(`docs/agents/orchestration.md`, "Follow a cohort in one invocation").
 
 ## 1. Harvest
 
@@ -24,7 +27,9 @@ Launch the whole review cohort before waiting on any of it. For each finished di
 - `just review-loop author --profile P --issue N`, from an interactive session, where no dispatch record claims the change — before the dispatch below.
 - `just review exchange <issue>`
 - `just dispatch --seat review --issue N --reviewing P --base-sha <sha>` — the SHA `just review exchange` emitted. Pass no `--brief-file`: review dispatches take the default brief until #647 lands (human ruling of 2026-08-30, #643; `docs/review-dispatch.md`).
-- `just watch <name> <worktree>` at that dispatch.
+- `just watch <name> issue-<n> path --await-path ~/.arma-cti/dispatches/<id>/result.json` —
+  the issue's own worktree, never the review's own tree (`tools/dispatch.py`,
+  `disposable_worktree`); `<id>` is what `just dispatch` returned.
 
 Then, once, over every review dispatch just launched:
 
@@ -50,7 +55,16 @@ Brief a reviewer to read the test reports rather than re-run the suite. Do not p
 - Add `--corpus POOL` where the diff reaches an in-world surface (`docs/agents/orchestration.md`, "The landing half").
 - Read the printed `ok=landed`, `gate_review=` and exit status.
 - On exit 2: run the `merge_command=` it names, then rerun `just land --audit-file FILE`. Never close by hand from exit 2.
-- After the landing: run section 1's review-dispatch sequence from a tree at the landed commit, with `--base-sha <landed sha>`.
+- After the landing, run the post-landing review — its own pass, not a re-entry into section 1:
+  - `just dispatch --seat review --issue N --reviewing P --base-sha <landed sha>`. Pass no
+    `--brief-file` (human ruling of 2026-08-30, #643; `docs/review-dispatch.md`).
+  - `just watch <name> <main checkout> path --await-path ~/.arma-cti/dispatches/<id>/result.json`.
+  - `just dispatch-follow <id>`.
+  - Route the report's claims per `docs/review-dispatch.md`, "Routing": a **defect** as a new
+    `needs-triage` issue naming the reviewed issue, the reviewed SHA, the cited `file:line` and
+    the review's dispatch id; an **observation** as a comment on the reviewed issue; a claim
+    **not upheld** recorded on the reviewed issue as checked and not upheld.
+  - Run no `just review-loop sync` and no `just land` for this pass (#646).
 - `just trial close-audit --issue N`, once `just land` has closed the issue.
 - `just observatory` in the **main checkout**, then commit the `docs/observatory/landed-issues.md` update as a follow-up.
 
@@ -67,7 +81,8 @@ Read the limit and its ruling from `just queue state`.
 - A tree already present: `just worktree check <name>`; on `worktree_occupied` naming another holder, stop and report.
 - `just brief N --seat S --out FILE`, then write its variable half: task, scope, ground truth, and the reason for a non-default seat, naming the comment each pre-derived decision came from (`docs/agents/orchestration.md`).
 - `just dispatch --seat S --issue N --brief-file FILE` — naming neither `--lane` nor `--profile` (ADR-0071 ruling 2); the two are both-or-neither.
-- `just watch <name> <worktree>` at dispatch.
+- `just watch <name> <worktree> path --await-path ~/.arma-cti/dispatches/<id>/result.json`
+  at dispatch; `<id>` is what `just dispatch` returned.
 - `just dispatch-follow <id> [<id> …]` — one invocation over the cohort; never a follower per id.
 
 Lane preference: `tools/dispatch.py`'s `SEATS`, `just dispatch --list`.
