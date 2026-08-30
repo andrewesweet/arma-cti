@@ -613,6 +613,34 @@ the filed issue (#333); both landed carrying it, the ruling having been noted on
 #334's thread before that check was built, so this amendment brings the decision
 record level with the code that already enforces it.)*
 
+*(Amendment A11, 2026-08-30, on the human's ruling of that date recorded on #643.
+A7's "not available above Medium" stands as the **default** and stops being
+absolute: a human ruling quoted on a named finding lifts the ceiling for that
+finding alone. The ceiling exists to stop an implementer deferring its own way
+past a Critical, and that reason binds the implementer rather than the human who
+set it — a human who has read the finding and judged that its fix belongs in a
+later diff had no route that says so, and every such case had to be argued in
+prose or land as an exception. The alternative put on #643 was exactly that
+one-off exception, declined because it decides this instance while leaving the
+next one to be decided again from nothing.
+
+The lift is bounded to what makes it checkable rather than merely permitted. The
+ruling's **own words** are stored in the adjudication and ride the record
+wherever it goes, so a reader checks the citation instead of trusting the
+admission; a ruling offered without words authorises nothing and is refused by
+name, since blank text on the record would read to everyone downstream as a
+ruling. `--filed-issue` and `--conditional-on` remain required at every
+severity — a ruling lifts the ceiling and never excuses the rest of the route,
+and a Critical accepted with neither the issue it became nor the outside work its
+harm is conditional on would be a deferral with no successor and no test. A
+session carrying `CTI_DISPATCH_ID` is refused from supplying a ruling, the floor
+`author` and `gated-paths approve` already run: a dispatched agent quoting a
+ruling would be its author in fact while naming the human as its source. That is
+a mechanical floor and not an identity proof — the same limit this ruling states
+of itself above. Implemented under #651;
+`docs/agents/review-severity.md` carries the same qualification where it states
+the ceiling.)*
+
 **What this cannot do, stated plainly.** Every dispatch runs as the same user, so
 an agent determined to forge an evidence directory can. This is the same limit the
 credentials design already records — it protects against the accident and the

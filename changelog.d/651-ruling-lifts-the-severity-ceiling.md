@@ -21,5 +21,17 @@
   and `just gated-paths approve`'s refusals of the same shape already do. Without a
   `--ruling`, a dispatched session's `adjudicate` is unchanged.
 
-- A ruling that is whitespace-only refuses as `RULING_EMPTY_ERROR` rather than being read
-  as no flag at all: a ruling given without its words authorises nothing.
+- **A ruling offered without words is refused by name at every severity.** `--ruling ""`
+  and a whitespace-only ruling both refuse as `RULING_EMPTY_ERROR`, on any route and at
+  any severity, rather than being stored or read as no flag at all. The flag's absence is
+  distinguished from its text, so the dispatched-session refusal fires on the flag being
+  passed rather than on what it carries.
+
+### Changed
+
+- **ADR-0071 ruling 4 and `docs/agents/review-severity.md` record the lifted ceiling
+  (#651).** The Medium ceiling on `accepted_and_filed` (human ruling 2026-08-14, #334)
+  stands as the default, and a human ruling quoted on a named finding lifts it for that
+  finding alone — transcribed as ADR-0071 amendment A11 from the human's ruling of
+  2026-08-30 on #643, with the same qualification where the severity guide states the
+  ceiling.

@@ -75,9 +75,17 @@ finding that survives four readings is still Low: it changed what no rule meant.
   **accepted and filed**: agree it is real, state why the fix does not belong in
   this diff, and file it as an issue on the originating item **before** landing.
   The landing record carries it like any other adjudication, naming the issue it
-  became. Not available above Medium, and not available where the defect is in
-  the diff under review rather than conditional on work outside it — "it only
-  bites if someone later does X" is the test, and X must be named. Conditional
+  became. Not available above Medium **by default**, and not available at any
+  severity where the defect is in the diff under review rather than conditional
+  on work outside it — "it only bites if someone later does X" is the test, and X
+  must be named. The Medium ceiling binds the implementer, not the human who set
+  it: a **human ruling quoted on the finding** lifts it for that one finding, and
+  the ruling's own words are stored beside the adjudication so a reader checks
+  the citation rather than trusting the admission. It lifts the ceiling and
+  excuses nothing else — the filed issue and the named condition are still both
+  required, and a ruling given without words is refused (human ruling of
+  2026-08-30 on #643, amending ADR-0071 ruling 4 as amendment A11; #651).
+  Conditional
   harm does not re-grade the finding to Low: these levels anchor on blast radius
   and silence, not likelihood, and a latent design defect graded Low would
   understate it permanently in the landing record (human ruling of 2026-08-14 on

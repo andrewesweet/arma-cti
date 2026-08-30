@@ -592,17 +592,39 @@ def test_an_empty_ruling_text_is_refused_by_name() -> None:
 
 def test_medium_and_below_take_a_ruling_or_its_absence_unchanged() -> None:
     """The ruling is a lever on the ceiling, and the ceiling never held below it."""
-    loop = review_loop.first_review((finding("F1", review_loop.MEDIUM),))
-    ruled = review_loop.adjudicate(
-        loop, "F1", adjud(review_loop.ACCEPTED_AND_FILED, "#650", "work X", ruling="a ruling")
-    )
-    assert ruled.findings[0].adjudication is not None
-    assert ruled.findings[0].adjudication.ruling == "a ruling"
-    unruled = review_loop.adjudicate(
-        loop, "F1", adjud(review_loop.ACCEPTED_AND_FILED, "#650", "work X")
-    )
-    assert unruled.findings[0].adjudication is not None
-    assert unruled.findings[0].adjudication.ruling == ""
+    for severity in (review_loop.MEDIUM, review_loop.LOW):
+        loop = review_loop.first_review((finding("F1", severity),))
+        ruled = review_loop.adjudicate(
+            loop, "F1", adjud(review_loop.ACCEPTED_AND_FILED, "#650", "work X", ruling="a ruling")
+        )
+        assert ruled.findings[0].adjudication is not None
+        assert ruled.findings[0].adjudication.ruling == "a ruling"
+        unruled = review_loop.adjudicate(
+            loop, "F1", adjud(review_loop.ACCEPTED_AND_FILED, "#650", "work X")
+        )
+        assert unruled.findings[0].adjudication is not None
+        assert unruled.findings[0].adjudication.ruling == ""
+
+
+def test_a_wordless_ruling_is_refused_at_every_severity() -> None:
+    """Blank ruling text is wrong below the ceiling too, so it is refused before it (#651).
+
+    The ceiling is where blank text would do the most damage, not the only place it lies:
+    a Medium record carrying `"   "` reads to every downstream reader as a finding a human
+    ruled on. The refusal belongs to the ruling field, not to the route's severity check.
+    """
+    for severity in (review_loop.MEDIUM, review_loop.LOW):
+        loop = review_loop.first_review((finding("F1", severity),))
+        assert (
+            refused(
+                lambda: review_loop.adjudicate(
+                    loop,  # noqa: B023 — called immediately by `refused`, never deferred
+                    "F1",
+                    adjud(review_loop.ACCEPTED_AND_FILED, "#650", "work X", ruling="   "),
+                )
+            )
+            == review_loop.RULING_EMPTY_ERROR
+        )
 
 
 def test_a_ruled_above_medium_adjudication_reads_back_clean() -> None:
@@ -1370,6 +1392,87 @@ def test_a_dispatched_session_never_transcribes_a_ruling(
         )
         == review_loop.OK
     )
+
+
+def _adjudicate_argv(root: Path, journal: Path, issue: str, *extra: str) -> list[str]:
+    """One fourth-route adjudication command, so the ruling flag is the only variable."""
+    return [
+        "adjudicate",
+        "--issue",
+        issue,
+        "--root",
+        str(root),
+        "--journal",
+        str(journal),
+        "--finding",
+        "F1",
+        "--route",
+        review_loop.ACCEPTED_AND_FILED,
+        "--filed-issue",
+        "#650",
+        "--conditional-on",
+        "work X",
+        *extra,
+    ]
+
+
+def test_an_explicitly_empty_ruling_flag_is_refused_by_name(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """`--ruling ""` is a ruling offered without words, not a flag nobody passed (#651).
+
+    The flag's absence is `None`, so the offer survives into the handler and earns the
+    named refusal. Read as `""` it would be indistinguishable from omission and would
+    come back as the ceiling's generic refusal, which tells the human nothing about the
+    empty quotes they typed.
+    """
+    root = tmp_path / "review"
+    journal = tmp_path / "journal.jsonl"
+    base = ["--root", str(root), "--journal", str(journal)]
+    assert (
+        review_loop.main(
+            ["open", "--issue", "651", *base, "--finding", "F1=high"], now=stepped_clock()
+        )
+        == review_loop.OK
+    )
+    for text in ("", "   "):
+        assert (
+            review_loop.main(
+                _adjudicate_argv(root, journal, "651", "--ruling", text), now=stepped_clock()
+            )
+            == review_loop.REFUSED
+        )
+        assert review_loop.RULING_EMPTY_ERROR in capsys.readouterr().err
+    assert review_loop.load_loop(root, 651).findings[0].adjudication is None
+
+
+def test_a_dispatched_session_is_refused_on_the_offer_not_on_the_text(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The dispatch floor fires on the flag being passed, whatever it carries (#651).
+
+    Reading the text first would let a dispatched session pass the floor with blank
+    quotes at a severity the ceiling never guarded, and store `"   "` as a ruling on the
+    record a landing quotes.
+    """
+    root = tmp_path / "review"
+    journal = tmp_path / "journal.jsonl"
+    base = ["--root", str(root), "--journal", str(journal)]
+    assert (
+        review_loop.main(
+            ["open", "--issue", "651", *base, "--finding", "F1=medium"], now=stepped_clock()
+        )
+        == review_loop.OK
+    )
+    monkeypatch.setenv("CTI_DISPATCH_ID", "d-20260830-152517-ec744f")
+    assert (
+        review_loop.main(
+            _adjudicate_argv(root, journal, "651", "--ruling", "   "), now=stepped_clock()
+        )
+        == review_loop.REFUSED
+    )
+    assert "mechanical floor" in capsys.readouterr().err
+    assert review_loop.load_loop(root, 651).findings[0].adjudication is None
 
 
 def test_the_landing_record_carries_the_ruling() -> None:

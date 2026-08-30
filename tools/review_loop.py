@@ -403,9 +403,10 @@ CONDITIONAL_ON_ERROR: Final = (
     " adjudicable (human ruling 2026-08-14, #334)"
 )
 RULING_EMPTY_ERROR: Final = (
-    f"{ACCEPTED_AND_FILED} above {MEDIUM} refuses an empty ruling — the ruling text is"
-    " what lifts the ceiling, so a ruling given without its words authorises nothing"
-    " and is not the same as no flag at all (#651)"
+    "a ruling given without its words authorises nothing — the text is what lifts the"
+    f" ceiling on {ACCEPTED_AND_FILED}, and an empty or whitespace-only one is neither a"
+    " ruling nor the absence of the flag. Refused at every severity, because a record"
+    " carrying blank ruling text would read as a ruling to everyone downstream (#651)"
 )
 ADJUDICATE_DISPATCHED_ERROR: Final = (
     "this session is dispatched as {dispatch_id}, and a human ruling is transcribed by"
@@ -614,9 +615,15 @@ def adjudicate(loop: Loop, finding_id: str, adjudication: Adjudication) -> Loop:
     three restrictions. The adjudication is terminal — the returned loop's finding can
     never be adjudicated again, which is what bounds re-argument; the round budget bounds
     the loop.
+
+    A supplied ruling with no words in it is refused here rather than inside the fourth
+    route's checks, because it is wrong at every severity and on every route: the ceiling
+    is only where blank text would do the most damage, not the only place it lies (#651).
     """
     if adjudication.route not in ROUTES:
         raise ReviewLoopError(ROUTE_ERROR)
+    if adjudication.ruling and not adjudication.ruling.strip():
+        raise ReviewLoopError(RULING_EMPTY_ERROR)
     updated: list[Finding] = []
     found = False
     for finding in loop.findings:
@@ -1540,7 +1547,7 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     )
     judged.add_argument(
         "--ruling",
-        default="",
+        default=None,
         help="the human ruling lifting the Medium ceiling for this finding (accepted_and_filed)",
     )
     judged.set_defaults(handler=_cmd_adjudicate)
@@ -1724,11 +1731,19 @@ def _cmd_adjudicate(
     because it is the human's own words — and that is exactly why a dispatched session
     is refused from supplying one: a ruling enters the record from the human's session,
     the way `author` and `gated-paths approve` already refuse their own shape of this.
+
+    The flag's absence is `None` and never `""`, so whether a ruling was *offered* is a
+    separate fact from what it says. Both refusals need that separation: the dispatch
+    floor fires on the offer, so a dispatched session cannot slip one past it by sending
+    blank text, and `--ruling ""` earns the named empty refusal instead of being read as
+    a flag nobody passed (#651).
     """
     root = Path(args.root)
     dispatched = os.environ.get("CTI_DISPATCH_ID", "").strip()
-    if dispatched and args.ruling.strip():
+    if dispatched and args.ruling is not None:
         raise ReviewLoopError(ADJUDICATE_DISPATCHED_ERROR.format(dispatch_id=dispatched))
+    if args.ruling is not None and not args.ruling.strip():
+        raise ReviewLoopError(RULING_EMPTY_ERROR)
     loop = _read_loop(root, args.issue)
     arbiter = ""
     unchecked = False
@@ -1741,7 +1756,7 @@ def _cmd_adjudicate(
         # stronger fact than the resolution did.
         unchecked = authorisation.unchecked if arbiter else False
     adjudication = Adjudication(
-        args.route, args.filed_issue, args.conditional_on, arbiter, unchecked, args.ruling
+        args.route, args.filed_issue, args.conditional_on, arbiter, unchecked, args.ruling or ""
     )
     updated = adjudicate(loop, args.finding, adjudication)
     store_loop(root, args.issue, updated)
