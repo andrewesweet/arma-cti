@@ -11,7 +11,7 @@ Where this file and the code disagree, the code wins. Rules live at their pointe
 - `just watch-report`
 - Answer a gate-clock drift line with `just gate-clock-history` before proposing any anchor move.
 - `just controller reconcile`
-- `just queue state`, then `just queue next`
+- `just queue state`, then `just queue next --count N` for the candidates section 4 ranks.
 
 If `just watch-report` prints `action=refill-before-landing`, run section 3 before section 2.
 
@@ -21,9 +21,10 @@ For every dispatch finished since the last tick:
 
 - Read its result and its report.
 - `just review exchange <issue>` — for a dispatch that produced a branch.
-- `just dispatch --seat review --issue N --reviewing P --base-sha <sha>` — the SHA `just review exchange` emitted. Pass no `--brief-file`: the review seat runs in a dispatch-owned disposable worktree and `just brief` composes an `issue-N` tree.
+- `just brief N --seat review --reviewing P --out FILE`, then write its variable half; correct the composed worktree path per #647.
+- `just dispatch --seat review --issue N --reviewing P --base-sha <sha> --brief-file FILE` — the SHA `just review exchange` emitted.
 - `just review record --issue N --reviewed-sha SHA --findings FILE`
-- `just review-loop sync --issue N --reviewed-sha <sha>` — pre-landing verdicts only; nothing enforces that (#646). Route a post-landing verdict's claims per `docs/review-dispatch.md`.
+- `just review-loop sync --issue N --reviewed-sha <sha>` — pre-landing verdicts only (#646). Route a post-landing verdict's claims per `docs/review-dispatch.md`.
 - `just review-loop adjudicate --issue N --finding <id> --route ROUTE` — nothing above Low may be left open. Routes and their conditions: `docs/agents/review-severity.md`, `tools/review_loop.py`'s `_route_checks`.
 - `just ledger-sync sync --behind`, then `just ledger-sync show --dispatch <id>`, before quoting a run's spend or outcome.
 - `just verdict` — paste verbatim where a pool gated the work; never retype the SHA or the evidence path.
@@ -37,13 +38,13 @@ Brief a reviewer to read the test reports rather than re-run the suite (`docs/re
 
 - `just land --audit-file FILE`, the audit written outside the worktree.
 - Add `--corpus POOL` where the diff reaches an in-world surface (`docs/agents/orchestration.md`, "The landing half").
-- Read the printed `landed=`, `gate_review=` and exit status. Exit 2 means the work is on `origin/main` with a step outstanding. Run any `merge_command=` it names.
-- After the landing: re-exchange from a tree at the landed commit, then `just dispatch --seat review --issue N --reviewing P --base-sha <landed sha>`.
+- Read the printed `landed=`, `gate_review=` and exit status.
+- On exit 2: run the `merge_command=` it names, then rerun `just land --audit-file FILE`. The rerun records the audit and closes the issue; never close by hand from exit 2.
+- After the landing: re-exchange from a tree at the landed commit, then `just dispatch --seat review --issue N --reviewing P --base-sha <landed sha> --brief-file FILE`.
 - Then run `just observatory` in the **main checkout** and commit the `docs/observatory/landed-issues.md` update as a follow-up.
-- Close the landed issue; a landed-but-open issue still occupies a slot.
 
 A registered human reviewer: `just review record --issue N --reviewed-sha SHA --findings FILE --reviewer-profile P` (ADR-0080).
-A gated path owes its approval: `just gated-paths check` names them and prints both `approve` commands; approval is the human's act.
+A gated path takes one of the routes `AGENTS.md` and `tools/gated_paths.py` list: a human approval, an ADR-0013-marked delegated ADR, or the confined command-table route. `just gated-paths check` names the paths and prints both `approve` commands; approval is the human's act.
 A change no dispatch record claims declares its author: `just review-loop author --profile P --issue N`, from an interactive session.
 
 ## 3. Refill to the limit
@@ -57,13 +58,13 @@ Read the limit and its ruling from `just queue state`.
 - `just watch <name> <worktree>` at dispatch.
 - `just dispatch-follow <id> [<id> …]` — one invocation over the cohort; never a follower per id.
 
-Lane preference among admissible lanes: zai, then codex, then claude-native (#217). Preference never overrides a refusal.
+Lane preference is per seat: `tools/dispatch.py`'s `SEATS`, printed by `just dispatch --list`. Preference never overrides a refusal.
 
-Honour an issue's `cti.dispatch-plan/1` routing block by hand; no tool reads it (#463).
+Apply an issue's `cti.dispatch-plan/1` routing block by hand (#463).
 
 ## 4. Priority
 
-`just queue next` prints one candidate by default (`--count N` for more), with its derivation. Rank by kind:
+Rank the candidates by kind:
 
 1. The correctness backlog, defect-class first.
 2. The remaining throughput levers.
@@ -74,7 +75,7 @@ Re-rank if the evidence says so, and say so in the tick.
 
 ## 5. Two reviews per landing
 
-`critical` and `high` go back once (#217). The cap counts review rounds over one landing, never findings. It disagrees with ADR-0071 and `tools/escalation.py`'s `THREE_ROUND_THRESHOLD`, and the cap binds (human ruling, 2026-08-29, on #643); #645 carries both.
+`critical` and `high` go back once (#217). The cap counts review rounds over one landing, never findings; #645 carries its disagreement with ADR-0071 and `tools/escalation.py`'s `THREE_ROUND_THRESHOLD`.
 
 At the cap with a `critical` or `high` outstanding, take one of three routes: delete or simplify what is being defended; narrow the claim and file the remainder; or park and escalate to the human. Each still produces a diff that owes a fresh verdict. Arbiter routes are not open at the cap.
 
