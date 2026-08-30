@@ -4,14 +4,12 @@ description: One orchestrator cycle — harvest finished dispatches, land what i
 
 Orchestrator tick. Act; do not wait for the human, and hold the waits this seat is for (`docs/agents/orchestration.md`).
 
-Where this file and the code disagree, the code wins. Rules live at their pointers; this file carries steps and commands only.
-
 ## 0. Read the turn top
 
 - `just watch-report`
 - Answer a gate-clock drift line with `just gate-clock-history` before proposing any anchor move.
 - `just controller reconcile`
-- `just queue state`, then `just queue next --count N` for the candidates section 4 ranks.
+- `just queue state`, then `just queue next` — section 4 ranks every `considered.N=eligible` number it prints.
 
 If `just watch-report` prints `action=refill-before-landing`, run section 3 before section 2.
 
@@ -21,9 +19,10 @@ For every dispatch finished since the last tick:
 
 - Read its result and its report.
 - `just review exchange <issue>` — for a dispatch that produced a branch.
-- `just brief N --seat review --reviewing P --out FILE`, then write its variable half; correct the composed worktree path per #647.
-- `just dispatch --seat review --issue N --reviewing P --base-sha <sha> --brief-file FILE` — the SHA `just review exchange` emitted.
-- `just review record --issue N --reviewed-sha SHA --findings FILE`
+- `just dispatch --seat review --issue N --reviewing P --base-sha <sha>` — the SHA `just review exchange` emitted. Review dispatches take the default brief until #647 lands; pass no `--brief-file`.
+- `just watch <name> <worktree>` at that dispatch.
+- `just dispatch-follow <id>` — wait there for the review dispatch to complete.
+- `just review record --issue N --reviewed-sha SHA --findings FILE` — only after that completion (`no_review_dispatch`).
 - `just review-loop sync --issue N --reviewed-sha <sha>` — pre-landing verdicts only (#646). Route a post-landing verdict's claims per `docs/review-dispatch.md`.
 - `just review-loop adjudicate --issue N --finding <id> --route ROUTE` — nothing above Low may be left open. Routes and their conditions: `docs/agents/review-severity.md`, `tools/review_loop.py`'s `_route_checks`.
 - `just ledger-sync sync --behind`, then `just ledger-sync show --dispatch <id>`, before quoting a run's spend or outcome.
@@ -38,9 +37,9 @@ Brief a reviewer to read the test reports rather than re-run the suite (`docs/re
 
 - `just land --audit-file FILE`, the audit written outside the worktree.
 - Add `--corpus POOL` where the diff reaches an in-world surface (`docs/agents/orchestration.md`, "The landing half").
-- Read the printed `landed=`, `gate_review=` and exit status.
-- On exit 2: run the `merge_command=` it names, then rerun `just land --audit-file FILE`. The rerun records the audit and closes the issue; never close by hand from exit 2.
-- After the landing: re-exchange from a tree at the landed commit, then `just dispatch --seat review --issue N --reviewing P --base-sha <landed sha> --brief-file FILE`.
+- Read the printed `ok=landed`, `gate_review=` and exit status.
+- On exit 2: run the `merge_command=` it names, then rerun `just land --audit-file FILE`. Never close by hand from exit 2.
+- After the landing: re-exchange from a tree at the landed commit, then `just dispatch --seat review --issue N --reviewing P --base-sha <landed sha>`.
 - Then run `just observatory` in the **main checkout** and commit the `docs/observatory/landed-issues.md` update as a follow-up.
 
 A registered human reviewer: `just review record --issue N --reviewed-sha SHA --findings FILE --reviewer-profile P` (ADR-0080).
@@ -58,13 +57,13 @@ Read the limit and its ruling from `just queue state`.
 - `just watch <name> <worktree>` at dispatch.
 - `just dispatch-follow <id> [<id> …]` — one invocation over the cohort; never a follower per id.
 
-Lane preference is per seat: `tools/dispatch.py`'s `SEATS`, printed by `just dispatch --list`. Preference never overrides a refusal.
+Lane preference is per seat: `tools/dispatch.py`'s `SEATS`, printed by `just dispatch --list`.
 
-Apply an issue's `cti.dispatch-plan/1` routing block by hand (#463).
+Read an issue's `cti.dispatch-plan/1` routing block yourself before dispatching; nothing reads it for you, and its treatment is undecided (#463).
 
 ## 4. Priority
 
-Rank the candidates by kind:
+Read each eligible issue — `gh issue view N` — then rank by kind:
 
 1. The correctness backlog, defect-class first.
 2. The remaining throughput levers.
@@ -75,9 +74,9 @@ Re-rank if the evidence says so, and say so in the tick.
 
 ## 5. Two reviews per landing
 
-`critical` and `high` go back once (#217). The cap counts review rounds over one landing, never findings; #645 carries its disagreement with ADR-0071 and `tools/escalation.py`'s `THREE_ROUND_THRESHOLD`.
+Send `critical` and `high` back once (#217); count rounds over one landing, never findings. Disagreement with ADR-0071 and `tools/escalation.py`'s `THREE_ROUND_THRESHOLD`: #645.
 
-At the cap with a `critical` or `high` outstanding, take one of three routes: delete or simplify what is being defended; narrow the claim and file the remainder; or park and escalate to the human. Each still produces a diff that owes a fresh verdict. Arbiter routes are not open at the cap.
+At the cap with a `critical` or `high` outstanding, take one of three routes: delete or simplify what is being defended; narrow the claim and file the remainder; or park and escalate to the human. Take no arbiter route at the cap.
 
 When round two finds the same class of defect as round one, stop patching and question the requirement (#217).
 
@@ -93,6 +92,6 @@ Take rulings under the human's standing authorisation and record them where they
 
 ## 7. Escalate at once, not at the end of the tick
 
-A gated sign-off you cannot take; a `critical` that recurs on the same branch; a lane's quality breaker tripping; a refusal you cannot route around. Not `quota_exhausted` (`AGENTS.md`'s failure-class table).
+Escalate a gated sign-off you cannot take; a `critical` that recurs on the same branch; a lane's quality breaker tripping; a refusal you cannot route around. Do not escalate `quota_exhausted` (`AGENTS.md`'s failure-class table).
 
 Preserve typed refusals and exit status when chaining commands; check the operation's own result, not the presence of a success line.
