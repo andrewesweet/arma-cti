@@ -1,7 +1,7 @@
 ### Changed
 
 - **`/orchestrator-tick` is corrected against the code rather than remembered (#643).**
-  An audit against `origin/main` found twenty defects in the file, six of them high:
+  An audit against `origin/main` found that
   the `review-loop adjudicate` command it printed omitted two required arguments and
   could not run; it named neither `just review-loop sync` nor `just review-loop
   terminus`; it stopped at `just land` and omitted the landed-issue projection the
@@ -46,10 +46,9 @@
   moves the issue ref review dispatch restores; and dispatch preparation names
   `just worktree add` and the continuation's first `just handoff` read. A gate-clock
   drift line is given the response it lacked, `just gate-clock-history` before an anchor
-  move is proposed. Four claims about the code are corrected: exit code 0 is the
+  move is proposed. Three claims about the code are corrected: exit code 0 is the
   invocation's success rather than proof of a landing, since a clean `--dry-run` or
-  `--stage` also exits 0 and prints `landed=no`; the terminus record is post-landing
-  review's rather than the landing rung's, which reads the loop and its stop condition;
+  `--stage` also exits 0 and prints `landed=no`;
   `just queue next` returns eligible candidates in issue-number order rather than a
   ranking of kinds; and `quota_exhausted` is taken off the escalation list, the response
   being another lane or the provider's published reset. The false justification for
