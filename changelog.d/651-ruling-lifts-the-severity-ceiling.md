@@ -14,6 +14,19 @@
   ruling later vanishes from the record refuses the landing at `stored_route_violations`
   exactly as it did before.
 
+- **A ruling is refused by name on every other route.** `accepted_and_filed` is the one
+  route carrying a ceiling for a ruling to lift, so `--ruling` on `fixed`,
+  `arbiter_upheld` or `arbiter_dismissed` refuses as `RULING_ROUTE_ERROR` rather than
+  being stored, printed by `show` and emitted as `cti.review.ruling` — publishing human
+  authorisation of a disposition no human was asked about. The landing rung names the
+  same violation on a record hand-edited into that shape.
+
+- **A stored `"ruling": ""` reads as the wordless offer it is.** Parsing keeps the key's
+  presence rather than collapsing a missing key and a present empty string to the same
+  value, so an above-Medium record carrying blank ruling text refuses at
+  `stored_route_violations` instead of passing it as a finding with no ruling. Absence on
+  the record is `None`, the distinction the CLI's own `--ruling` default already makes.
+
 - **A session carrying `CTI_DISPATCH_ID` is refused from supplying a ruling.** A human
   ruling is transcribed by the human's own session; a dispatched agent quoting one would be
   the ruling's author in fact while naming the human as its source. The refusal names

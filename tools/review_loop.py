@@ -408,6 +408,13 @@ RULING_EMPTY_ERROR: Final = (
     " ruling nor the absence of the flag. Refused at every severity, because a record"
     " carrying blank ruling text would read as a ruling to everyone downstream (#651)"
 )
+RULING_ROUTE_ERROR: Final = (
+    "a ruling is admissible only on"
+    f" {ACCEPTED_AND_FILED}, the one route carrying a ceiling for it to lift (#651). On"
+    " any other route it authorises nothing and lifts nothing, while the record, `show`"
+    " and the dispute event would all publish it as the human's authorisation of a"
+    " disposition no human was asked about. Nothing was adjudicated"
+)
 ADJUDICATE_DISPATCHED_ERROR: Final = (
     "this session is dispatched as {dispatch_id}, and a human ruling is transcribed by"
     " the human's own session: a dispatched agent quoting a ruling into the record would"
@@ -472,9 +479,12 @@ class Adjudication(NamedTuple):
 
     `ruling` quotes the human ruling that lifts the Medium ceiling on this one finding
     (#651), in the shape `queue_policy`'s write verbs already use — a value stored beside
-    the ruling that authorised it. Empty means no ruling was given and the ceiling
-    stands; above Medium it is what turns the ceiling's refusal into an admission, and
-    it rides the record everywhere the adjudication does so a reader can check the
+    the ruling that authorised it. `None` means no ruling was offered and the ceiling
+    stands — the CLI's own distinction between the flag's absence and its text, kept here
+    and through parsing so that a stored `"ruling": ""` reads as the wordless offer it is
+    rather than as no offer at all (#651 round 3); above Medium it is what turns the
+    ceiling's refusal into an admission, and it rides the record everywhere the
+    adjudication does so a reader can check the
     citation rather than trust the admission. The CLI refuses a session carrying
     `CTI_DISPATCH_ID` that tries to supply one: a ruling is transcribed by the human's
     own session, never by a dispatched agent.
@@ -485,7 +495,7 @@ class Adjudication(NamedTuple):
     conditional_on: str = ""
     arbiter: str = ""
     unchecked: bool = False
-    ruling: str = ""
+    ruling: str | None = None
 
 
 class Loop(NamedTuple):
@@ -581,9 +591,11 @@ def _wordless_ruling(adjudication: Adjudication) -> bool:
     `stored_route_violations` names it as it is read. Round 1 fixed only the writer and
     left the reader checking it inside the above-Medium branch, so a stored Medium or an
     unrelated route carrying `"   "` parsed and reached `render_landing` as a ruling
-    (#651).
+    (#651). It stays route-independent: what round 3 made route-specific is a *valid*
+    ruling, asked separately by `_offroute_ruling`, so the two rules never have to agree
+    about anything but which of them answers first.
     """
-    return bool(adjudication.ruling) and not adjudication.ruling.strip()
+    return adjudication.ruling is not None and not adjudication.ruling.strip()
 
 
 def _fourth_route_ruling_violation(adjudication: Adjudication) -> str:
@@ -596,7 +608,22 @@ def _fourth_route_ruling_violation(adjudication: Adjudication) -> str:
     ahead of both callers, because a ruling given without its words is wrong at every
     severity and the ceiling is only where it would do the most damage (#651).
     """
-    return "" if adjudication.ruling.strip() else ROUTE_SEVERITY_ERROR
+    return "" if (adjudication.ruling or "").strip() else ROUTE_SEVERITY_ERROR
+
+
+def _offroute_ruling(adjudication: Adjudication) -> bool:
+    """Whether a ruling was offered on a route that has no ceiling for it to lift (#651).
+
+    The sibling of `_wordless_ruling`, and deliberately the other axis: that one asks
+    whether the offer has words and is true on every route, this one asks whether the
+    route may take an offer at all and is indifferent to what it says. Requirement 2
+    authorises `--ruling` to lift `accepted_and_filed`'s Medium ceiling and nothing else,
+    and `fixed` and both arbiter routes were carrying and publishing one.
+
+    Asked of the field rather than of the severity, so it holds below the ceiling too: a
+    Low `fixed` carrying a ruling is the same false authorisation as a Critical one.
+    """
+    return adjudication.ruling is not None and adjudication.route != ACCEPTED_AND_FILED
 
 
 def _route_checks(loop: Loop, finding: Finding, adjudication: Adjudication) -> None:
@@ -635,6 +662,8 @@ def adjudicate(loop: Loop, finding_id: str, adjudication: Adjudication) -> Loop:
         raise ReviewLoopError(ROUTE_ERROR)
     if _wordless_ruling(adjudication):
         raise ReviewLoopError(RULING_EMPTY_ERROR)
+    if _offroute_ruling(adjudication):
+        raise ReviewLoopError(RULING_ROUTE_ERROR)
     updated: list[Finding] = []
     found = False
     for finding in loop.findings:
@@ -678,6 +707,8 @@ def stored_route_violations(loop: Loop) -> tuple[str, ...]:
         # everywhere (#651).
         if _wordless_ruling(adjudication):
             violations.append(f"{finding.id}: {RULING_EMPTY_ERROR}")
+        if _offroute_ruling(adjudication):
+            violations.append(f"{finding.id}: {RULING_ROUTE_ERROR}")
         if adjudication.route != ACCEPTED_AND_FILED:
             continue
         if SEVERITY_RANK[finding.severity] < SEVERITY_RANK[MEDIUM]:
@@ -1185,7 +1216,11 @@ def _parse_adjudication(raw: object) -> Adjudication | None:
     conditional_on = raw.get("conditional_on", "")
     arbiter = raw.get("arbiter", "")
     unchecked = raw.get("arbiter_unchecked", False)
-    ruling = raw.get("ruling", "")
+    # `get` without a default, so a missing key is `None` and a present `""` stays `""`:
+    # the CLI's distinction between the flag's absence and its text, kept on the record
+    # rather than collapsed here, where collapsing it let a stored blank pass the blank
+    # rule as an absence (#651 round 3).
+    ruling = raw.get("ruling")
     if (
         not isinstance(issue, str)
         or not isinstance(conditional_on, str)
@@ -1193,7 +1228,7 @@ def _parse_adjudication(raw: object) -> Adjudication | None:
         # `bool` as itself, never `int`: `isinstance(True, int)` holds and the converse
         # does not, so an int check would let `0`/`1` through as a qualification.
         or not isinstance(unchecked, bool)
-        or not isinstance(ruling, str)
+        or not (ruling is None or isinstance(ruling, str))
     ):
         raise ReviewLoopError(ADJUDICATION_SHAPE_ERROR)
     return Adjudication(route, issue, conditional_on, arbiter, unchecked, ruling)
@@ -1774,7 +1809,7 @@ def _cmd_adjudicate(
         # stronger fact than the resolution did.
         unchecked = authorisation.unchecked if arbiter else False
     adjudication = Adjudication(
-        args.route, args.filed_issue, args.conditional_on, arbiter, unchecked, args.ruling or ""
+        args.route, args.filed_issue, args.conditional_on, arbiter, unchecked, args.ruling
     )
     updated = adjudicate(loop, args.finding, adjudication)
     store_loop(root, args.issue, updated)

@@ -85,7 +85,7 @@ def adjud(
     issue: str = "",
     conditional_on: str = "",
     arbiter: str | None = None,
-    ruling: str = "",
+    ruling: str | None = None,
 ) -> review_loop.Adjudication:
     """One adjudication, with an arbiter named wherever the route stands in for a ruling.
 
@@ -603,7 +603,8 @@ def test_medium_and_below_take_a_ruling_or_its_absence_unchanged() -> None:
             loop, "F1", adjud(review_loop.ACCEPTED_AND_FILED, "#650", "work X")
         )
         assert unruled.findings[0].adjudication is not None
-        assert unruled.findings[0].adjudication.ruling == ""
+        # Absence is `None`, the same fact the CLI's absent flag carries (#651 round 3).
+        assert unruled.findings[0].adjudication.ruling is None
 
 
 def test_a_wordless_ruling_is_refused_at_every_severity() -> None:
@@ -673,6 +674,92 @@ def test_a_wordless_ruling_is_a_stored_violation_on_any_route_and_severity() -> 
         assert [v for v in violations if review_loop.RULING_EMPTY_ERROR in v] == [
             f"F1: {review_loop.RULING_EMPTY_ERROR}"
         ]
+
+
+def test_a_ruling_is_refused_on_every_route_but_the_fourth() -> None:
+    """`--ruling` lifts one ceiling, and no other route has one to lift (#651 round 3).
+
+    Requirement 2 authorises the flag to lift `accepted_and_filed`'s Medium ceiling and
+    nothing else. Carried on `fixed` or on either arbiter route it lifted nothing, and
+    the record, `show` and the dispute event then published it as human authorisation of
+    a disposition no human authorised.
+    """
+    loop = review_loop.first_review((finding("F1", review_loop.HIGH),))
+    for route in (review_loop.FIXED, review_loop.ARBITER_UPHELD, review_loop.ARBITER_DISMISSED):
+        assert (
+            refused(
+                lambda: review_loop.adjudicate(
+                    loop,
+                    "F1",
+                    adjud(route, ruling="a ruling"),  # noqa: B023 — `refused` calls at once
+                )
+            )
+            == review_loop.RULING_ROUTE_ERROR
+        )
+    # The blank rule is route-independent and answers first, so a wordless ruling on an
+    # unauthorised route is still named for its wordlessness.
+    assert (
+        refused(lambda: review_loop.adjudicate(loop, "F1", adjud(review_loop.FIXED, ruling="   ")))
+        == review_loop.RULING_EMPTY_ERROR
+    )
+    # Every route is unchanged without the flag.
+    assert review_loop.adjudicate(loop, "F1", adjud(review_loop.FIXED)).findings[0].adjudication
+
+
+def test_a_stored_ruling_off_the_fourth_route_is_a_violation() -> None:
+    """The reader shares the writer's route restriction, as it shares the blank rule."""
+    for route in (review_loop.FIXED, review_loop.ARBITER_UPHELD, review_loop.ARBITER_DISMISSED):
+        stored = finding(
+            "F1", review_loop.HIGH, adjudication=adjud(route, arbiter=ARBITER, ruling="a ruling")
+        )
+        assert review_loop.stored_route_violations(review_loop.Loop(0, (stored,))) == (
+            f"F1: {review_loop.RULING_ROUTE_ERROR}",
+        )
+
+
+def test_a_stored_empty_ruling_is_not_read_as_the_absence_of_one() -> None:
+    """`"ruling": ""` on the record is an offer without words, never no offer (#651 round 3).
+
+    Parsing mapped both a missing key and a present empty string to `""`, and the blank
+    rule excludes `""`, so a hand-edited Critical carrying one passed the landing rung
+    below the ceiling. Key presence is what the CLI already distinguishes, so the reader
+    keeps it too: absent is `None`, present is its text however empty.
+    """
+    document = {
+        "version": review_loop.LOOP_VERSION,
+        "issue": 651,
+        "review_rounds": 0,
+        "findings": [
+            {
+                "id": "F1",
+                "severity": review_loop.CRITICAL,
+                "round_raised": 0,
+                "adjudication": {
+                    "route": review_loop.ACCEPTED_AND_FILED,
+                    "issue": "#650",
+                    "conditional_on": "work X",
+                    "ruling": "",
+                },
+            }
+        ],
+    }
+    parsed = review_loop.parse_loop(document)
+    adjudication = parsed.findings[0].adjudication
+    assert adjudication is not None
+    assert adjudication.ruling == ""
+    # Named for its wordlessness, and the ceiling it did not lift still stands beside it.
+    assert review_loop.stored_route_violations(parsed) == (
+        f"F1: {review_loop.RULING_EMPTY_ERROR}",
+        f"F1: {review_loop.ROUTE_SEVERITY_ERROR}",
+    )
+    # The key absent is the absence it has always been: the ceiling's own refusal, once.
+    del document["findings"][0]["adjudication"]["ruling"]
+    unruled = review_loop.parse_loop(document)
+    assert unruled.findings[0].adjudication is not None
+    assert unruled.findings[0].adjudication.ruling is None
+    assert review_loop.stored_route_violations(unruled) == (
+        f"F1: {review_loop.ROUTE_SEVERITY_ERROR}",
+    )
 
 
 def test_above_low_reads_the_band_the_stop_condition_adjudicates() -> None:
@@ -1420,6 +1507,45 @@ def test_an_explicitly_empty_ruling_flag_is_refused_by_name(
             == review_loop.REFUSED
         )
         assert review_loop.RULING_EMPTY_ERROR in capsys.readouterr().err
+    assert review_loop.load_loop(root, 651).findings[0].adjudication is None
+
+
+def test_the_cli_refuses_a_ruling_on_a_route_that_has_no_ceiling(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The flag reaches the record only by the route it was authorised for (#651 round 3).
+
+    `--ruling` is offered on every route the parser accepts, and the handler propagated it
+    onto the adjudication whatever the route was, so `fixed` could carry a human ruling
+    that lifted no ceiling — stored, printed by `show` and emitted as `cti.review.ruling`.
+    """
+    root = tmp_path / "review"
+    journal = tmp_path / "journal.jsonl"
+    assert (
+        review_loop.main(
+            [
+                "open",
+                "--issue",
+                "651",
+                "--root",
+                str(root),
+                "--journal",
+                str(journal),
+                "--finding",
+                "F1=high",
+            ],
+            now=stepped_clock(),
+        )
+        == review_loop.OK
+    )
+    assert (
+        review_loop.main(
+            _adjudicate_argv(root, journal, "651", "--ruling", "a ruling", route=review_loop.FIXED),
+            now=stepped_clock(),
+        )
+        == review_loop.REFUSED
+    )
+    assert review_loop.RULING_ROUTE_ERROR in capsys.readouterr().err
     assert review_loop.load_loop(root, 651).findings[0].adjudication is None
 
 
