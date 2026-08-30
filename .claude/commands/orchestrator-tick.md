@@ -28,22 +28,21 @@ Launch the whole review cohort before waiting on any of it. For each finished di
 
 Then, once, over every review dispatch just launched:
 
-- `just dispatch-follow <id> [<id> …]` — one invocation over the cohort; never a follower per id. It returns on the first completion and prints `pending=` for the rest.
+- `just dispatch-follow <id> [<id> …]` — one invocation over the cohort; never a follower per id.
 
-Process that completed review through the steps below, then re-follow the remainder in the same turn (`docs/agents/orchestration.md`, "Follow a cohort in one invocation").
+Process that completed review through the steps below, then run sections 2 and 3 for it — land it and refill the freed capacity — and only then re-follow the remainder, in the same turn (`docs/agents/orchestration.md`, "Follow a cohort in one invocation").
 
 Per completed review:
 
-- `just review record --issue N --reviewed-sha SHA --findings FILE` — only after that completion (`no_review_dispatch`).
+- `just review record --issue N --reviewed-sha SHA --findings FILE` — only after that completion.
 - `just review-loop sync --issue N --reviewed-sha <sha>` — pre-landing verdicts only (#646). Route a post-landing verdict's claims per `docs/review-dispatch.md`.
 - `just review-loop adjudicate --issue N --finding <id> --route ROUTE` — nothing above Low may be left open. Routes and their conditions: `docs/agents/review-severity.md`, `tools/review_loop.py`'s `_route_checks`.
 - `just ledger-sync sync --behind`, then `just ledger-sync show --dispatch <id>`, before quoting a run's spend or outcome.
 - `just verdict <pool-dir>` — name the exact pool; paste verbatim where a pool gated the work; never retype the SHA or the evidence path.
-- `just trial close-audit --issue N` — on every completion you judge. Judging the close stays yours.
 - `just review-loop terminus --issue N` — once per loop, when its prompt comes due.
 - `just worktree done <name>` when the issue is closed, or `just worktree archive <name> --ref R` for clean unlanded work already preserved on a named remote ref.
 
-Brief a reviewer to read the test reports rather than re-run the suite (`docs/review-dispatch.md`). Do not post the review report yourself; `just dispatch-follow` reports delivery. Refusal handling: `docs/review-dispatch.md`.
+Brief a reviewer to read the test reports rather than re-run the suite. Do not post the review report yourself. Refusal handling and the briefing rule: `docs/review-dispatch.md`.
 
 ## 2. Land
 
@@ -51,24 +50,27 @@ Brief a reviewer to read the test reports rather than re-run the suite (`docs/re
 - Add `--corpus POOL` where the diff reaches an in-world surface (`docs/agents/orchestration.md`, "The landing half").
 - Read the printed `ok=landed`, `gate_review=` and exit status.
 - On exit 2: run the `merge_command=` it names, then rerun `just land --audit-file FILE`. Never close by hand from exit 2.
-- After the landing: re-exchange from a tree at the landed commit, then run section 1's review-dispatch sequence with `--base-sha <landed sha>`.
-- Then run `just observatory` in the **main checkout** and commit the `docs/observatory/landed-issues.md` update as a follow-up.
+- After the landing: run section 1's review-dispatch sequence from a tree at the landed commit, with `--base-sha <landed sha>`.
+- `just trial close-audit --issue N`, once `just land` has closed the issue.
+- `just observatory` in the **main checkout**, then commit the `docs/observatory/landed-issues.md` update as a follow-up.
 
 A registered human reviewer: `just review record --issue N --reviewed-sha SHA --findings FILE --reviewer-profile P` (ADR-0080).
-A gated path takes one of the routes `AGENTS.md` and `tools/gated_paths.py` list: a human approval, an ADR-0013-marked delegated ADR, or the confined command-table route. `just gated-paths check` names the paths and prints both `approve` commands; approval is the human's act.
+Where the diff reaches a gated path, run `just gated-paths check` and take one of the routes `AGENTS.md` and `tools/gated_paths.py` list. Approval is the human's act.
 
 ## 3. Refill to the limit
 
 Read the limit and its ruling from `just queue state`.
 
-- `just handoff N` first, on a continuation.
-- `just worktree add <name>`
+- On a continuation, `just handoff N` first.
+- No tree yet: `just worktree add <name>`.
+- Clean work already archived on a named remote ref: `just worktree restore <name> --ref R`.
+- A tree already present: `just worktree check <name>`; on `worktree_occupied` naming another holder, stop and report.
 - `just brief N --seat S --out FILE`, then write its variable half: task, scope, ground truth, and the reason for a non-default seat, naming the comment each pre-derived decision came from (`docs/agents/orchestration.md`).
 - `just dispatch --seat S --issue N --brief-file FILE` — naming neither `--lane` nor `--profile` (ADR-0071 ruling 2); the two are both-or-neither.
 - `just watch <name> <worktree>` at dispatch.
 - `just dispatch-follow <id> [<id> …]` — one invocation over the cohort; never a follower per id.
 
-Lane preference is per seat: `tools/dispatch.py`'s `SEATS`, printed by `just dispatch --list`.
+Lane preference: `tools/dispatch.py`'s `SEATS`, `just dispatch --list`.
 
 Read an issue's `cti.dispatch-plan/1` routing block before dispatching (#463).
 
