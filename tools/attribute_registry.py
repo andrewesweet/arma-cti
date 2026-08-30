@@ -218,6 +218,12 @@ NAMES: Final[dict[str, Name]] = {
     "cti.review.route": Name(
         "attribute", "required", "The adjudication's route, upheld or dismissed."
     ),
+    "cti.review.ruling": Name(
+        "attribute",
+        "conditionally_required",
+        "The human ruling lifting the Medium ceiling, where one authorised the"
+        " adjudication (#651).",
+    ),
     "cti.review.default_applies": Name(
         "attribute", "required", "Whether the terminus applied the default verdict."
     ),

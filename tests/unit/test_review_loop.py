@@ -85,6 +85,7 @@ def adjud(
     issue: str = "",
     conditional_on: str = "",
     arbiter: str | None = None,
+    ruling: str = "",
 ) -> review_loop.Adjudication:
     """One adjudication, with an arbiter named wherever the route stands in for a ruling.
 
@@ -96,7 +97,9 @@ def adjud(
         arbiter = (
             ARBITER if route in (review_loop.ARBITER_UPHELD, review_loop.ARBITER_DISMISSED) else ""
         )
-    return review_loop.Adjudication(route, issue, conditional_on, arbiter)
+    return review_loop.Adjudication(
+        route, issue, conditional_on, arbiter, unchecked=False, ruling=ruling
+    )
 
 
 def refused(call: Callable[[], object]) -> str:
@@ -535,6 +538,99 @@ def test_accepted_and_filed_must_name_the_issue_and_the_outside_work() -> None:
         )
         == review_loop.CONDITIONAL_ON_ERROR
     )
+
+
+# ----------------------------------------------- the ruling that lifts the ceiling (#651)
+
+
+def test_a_ruling_lifts_the_ceiling_above_medium() -> None:
+    """A human ruling quoted in the record is the lever the ceiling lacked (#651).
+
+    The ceiling is the default, not a wall: the human who set it can lift it on a named
+    finding, and the ruling travels on the adjudication so the record names what
+    authorised it. The record is otherwise unchanged — the issue and the condition are
+    still both required, because a ruling lifts the ceiling and never excuses it.
+    """
+    ruling = "human ruling 2026-08-30 on #651: file them and land"
+    for severity in (review_loop.CRITICAL, review_loop.HIGH):
+        loop = review_loop.first_review((finding("F1", severity),))
+        closed = review_loop.adjudicate(
+            loop,
+            "F1",
+            adjud(review_loop.ACCEPTED_AND_FILED, "#650", "work X", ruling=ruling),
+        )
+        stored = closed.findings[0].adjudication
+        assert stored is not None
+        assert stored.ruling == ruling
+        assert stored.issue == "#650"
+        assert stored.conditional_on == "work X"
+
+
+def test_an_empty_ruling_text_is_refused_by_name() -> None:
+    """Whitespace is a ruling given without its words — named, never read as absence."""
+    loop = review_loop.first_review((finding("F1", review_loop.HIGH),))
+    assert (
+        refused(
+            lambda: review_loop.adjudicate(
+                loop,
+                "F1",
+                adjud(review_loop.ACCEPTED_AND_FILED, "#650", "work X", ruling="   "),
+            )
+        )
+        == review_loop.RULING_EMPTY_ERROR
+    )
+    # Absence keeps the ceiling's own refusal: without the flag, behaviour is unchanged.
+    assert (
+        refused(
+            lambda: review_loop.adjudicate(
+                loop, "F1", adjud(review_loop.ACCEPTED_AND_FILED, "#650", "work X")
+            )
+        )
+        == review_loop.ROUTE_SEVERITY_ERROR
+    )
+
+
+def test_medium_and_below_take_a_ruling_or_its_absence_unchanged() -> None:
+    """The ruling is a lever on the ceiling, and the ceiling never held below it."""
+    loop = review_loop.first_review((finding("F1", review_loop.MEDIUM),))
+    ruled = review_loop.adjudicate(
+        loop, "F1", adjud(review_loop.ACCEPTED_AND_FILED, "#650", "work X", ruling="a ruling")
+    )
+    assert ruled.findings[0].adjudication is not None
+    assert ruled.findings[0].adjudication.ruling == "a ruling"
+    unruled = review_loop.adjudicate(
+        loop, "F1", adjud(review_loop.ACCEPTED_AND_FILED, "#650", "work X")
+    )
+    assert unruled.findings[0].adjudication is not None
+    assert unruled.findings[0].adjudication.ruling == ""
+
+
+def test_a_ruled_above_medium_adjudication_reads_back_clean() -> None:
+    """The landing rung asks `stored_route_violations`, so the ruling must answer there.
+
+    A record a writer could produce must never refuse the landing that quotes it: the
+    ceiling with the ruling beside it is writable, so it is readable, and the round trip
+    through the document carries the ruling both ways.
+    """
+    ruling = "human ruling 2026-08-30 on #651: file them and land"
+    loop = review_loop.adjudicate(
+        review_loop.first_review((finding("F1", review_loop.CRITICAL),)),
+        "F1",
+        adjud(review_loop.ACCEPTED_AND_FILED, "#650", "work X", ruling=ruling),
+    )
+    assert review_loop.stored_route_violations(loop) == ()
+    assert review_loop.parse_loop(review_loop.render_loop(651, loop)) == loop
+    rendered = review_loop.render_loop(651, loop)["findings"][0]["adjudication"]
+    assert isinstance(rendered, dict)
+    assert rendered["ruling"] == ruling
+    # The unruled shape is still the violation it always was.
+    unruled = review_loop.adjudicate(
+        review_loop.first_review((finding("F1", review_loop.MEDIUM),)),
+        "F1",
+        adjud(review_loop.ACCEPTED_AND_FILED, "#650", "work X"),
+    )
+    hand_edited = unruled.findings[0]._replace(severity=review_loop.CRITICAL)
+    assert len(review_loop.stored_route_violations(review_loop.Loop(0, (hand_edited,)))) == 1
 
 
 def test_above_low_reads_the_band_the_stop_condition_adjudicates() -> None:
@@ -1138,6 +1234,156 @@ def test_the_cli_refuses_the_round_zero_dismissal(
     assert review_loop.ARBITER_UNAUTHORISED_ERROR in capsys.readouterr().err
     # Refused before the store: the loop on disk still carries the finding open.
     assert review_loop.load_loop(root, 326).findings[0].adjudication is None
+
+
+def test_the_cli_stores_a_ruling_and_reads_it_back(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The ruling rides the flag into the record, and `show` reads it back (#651)."""
+    root = tmp_path / "review"
+    base = ["--root", str(root), "--journal", str(tmp_path / "journal.jsonl")]
+    ruling = "human ruling 2026-08-30 on #651: file them and land"
+    assert (
+        review_loop.main(
+            ["open", "--issue", "651", *base, "--finding", "F1=high"], now=stepped_clock()
+        )
+        == review_loop.OK
+    )
+    assert (
+        review_loop.main(
+            [
+                "adjudicate",
+                "--issue",
+                "651",
+                *base,
+                "--finding",
+                "F1",
+                "--route",
+                review_loop.ACCEPTED_AND_FILED,
+                "--filed-issue",
+                "#650",
+                "--conditional-on",
+                "work X",
+                "--ruling",
+                ruling,
+            ],
+            now=stepped_clock(),
+        )
+        == review_loop.OK
+    )
+    assert (
+        review_loop.main(["show", "--issue", "651", "--root", str(root)], now=stepped_clock())
+        == review_loop.OK
+    )
+    # The earlier commands' progress lines share the capture; the document is the tail.
+    out = capsys.readouterr().out
+    shown = json.loads(out[out.index("{") :])
+    closed = shown["findings"][0]["adjudication"]
+    assert closed["ruling"] == ruling
+    assert closed["issue"] == "#650"
+    # The ceiling held the store shut without the flag: same command, no `--ruling`.
+    assert (
+        review_loop.main(
+            ["open", "--issue", "652", *base, "--finding", "F1=critical"], now=stepped_clock()
+        )
+        == review_loop.OK
+    )
+    assert (
+        review_loop.main(
+            [
+                "adjudicate",
+                "--issue",
+                "652",
+                *base,
+                "--finding",
+                "F1",
+                "--route",
+                review_loop.ACCEPTED_AND_FILED,
+                "--filed-issue",
+                "#650",
+                "--conditional-on",
+                "work X",
+            ],
+            now=stepped_clock(),
+        )
+        == review_loop.REFUSED
+    )
+    assert review_loop.ROUTE_SEVERITY_ERROR in capsys.readouterr().err
+
+
+def test_a_dispatched_session_never_transcribes_a_ruling(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A human ruling enters the record from the human's session, never a dispatch's (#651).
+
+    The same mechanical floor `author` and `gated-paths approve` run: it reads one
+    environment variable and is not an identity proof, and the refusal says so.
+    """
+    root = tmp_path / "review"
+    base = ["--root", str(root), "--journal", str(tmp_path / "journal.jsonl")]
+    assert (
+        review_loop.main(
+            ["open", "--issue", "651", *base, "--finding", "F1=high"], now=stepped_clock()
+        )
+        == review_loop.OK
+    )
+    monkeypatch.setenv("CTI_DISPATCH_ID", "d-20260830-152517-ec744f")
+    assert (
+        review_loop.main(
+            [
+                "adjudicate",
+                "--issue",
+                "651",
+                *base,
+                "--finding",
+                "F1",
+                "--route",
+                review_loop.ACCEPTED_AND_FILED,
+                "--filed-issue",
+                "#650",
+                "--conditional-on",
+                "work X",
+                "--ruling",
+                "human ruling 2026-08-30 on #651",
+            ],
+            now=stepped_clock(),
+        )
+        == review_loop.REFUSED
+    )
+    assert "mechanical floor" in capsys.readouterr().err
+    assert review_loop.load_loop(root, 651).findings[0].adjudication is None
+    # Without a ruling to transcribe, the dispatched session's act is unchanged.
+    monkeypatch.delenv("CTI_DISPATCH_ID")
+    assert (
+        review_loop.main(
+            [
+                "adjudicate",
+                "--issue",
+                "651",
+                *base,
+                "--finding",
+                "F1",
+                "--route",
+                review_loop.FIXED,
+            ],
+            now=stepped_clock(),
+        )
+        == review_loop.OK
+    )
+
+
+def test_the_landing_record_carries_the_ruling() -> None:
+    """Requirement 3's other half: the landing record quotes what authorised the filing."""
+    ruling = "human ruling 2026-08-30 on #651: file them and land"
+    loop = review_loop.adjudicate(
+        review_loop.first_review((finding("F1", review_loop.HIGH),)),
+        "F1",
+        adjud(review_loop.ACCEPTED_AND_FILED, "#650", "work X", ruling=ruling),
+    )
+    landing = review_loop.render_landing(651, loop, review_loop.Terminus(default_applies=True))
+    closed = landing["findings"][0]
+    assert closed["route"] == review_loop.ACCEPTED_AND_FILED
+    assert closed["ruling"] == ruling
 
 
 def test_the_command_surface_drives_one_loop_end_to_end(tmp_path: Path, exchanged: Path) -> None:

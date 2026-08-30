@@ -59,8 +59,11 @@ which amends ruling 4:
   outside the diff. The implementer agrees the finding is real, states why the fix does not
   belong in this diff, and files it as an issue on the originating item before landing; the
   adjudication carries both the named condition and the issue it became. Not available
-  above Medium, and not available without the condition named — "it only bites if someone
-  later does X" is the test, and X must be nameable to be adjudicable.
+  without the condition named — "it only bites if someone later does X" is the test, and X
+  must be nameable to be adjudicable. Above Medium the ceiling stands as the default and
+  the human who set it can lift it on one named finding: the adjudication carries the
+  ruling's own words beside the value it authorises, the shape `queue_policy`'s write
+  verbs already use, and a dispatched session is refused from supplying it (#651).
 
 One adjudication per finding is terminal: a finding the next round re-reports is a **new**
 finding with a new id, never a reopening — the ruling's own move, which is why `next_round`
@@ -399,6 +402,19 @@ CONDITIONAL_ON_ERROR: Final = (
     " 'it only bites if someone later does X' is the test, and X must be nameable to be"
     " adjudicable (human ruling 2026-08-14, #334)"
 )
+RULING_EMPTY_ERROR: Final = (
+    f"{ACCEPTED_AND_FILED} above {MEDIUM} refuses an empty ruling — the ruling text is"
+    " what lifts the ceiling, so a ruling given without its words authorises nothing"
+    " and is not the same as no flag at all (#651)"
+)
+ADJUDICATE_DISPATCHED_ERROR: Final = (
+    "this session is dispatched as {dispatch_id}, and a human ruling is transcribed by"
+    " the human's own session: a dispatched agent quoting a ruling into the record would"
+    " be the ruling's author in fact while naming the human as its source. Like"
+    " `author`'s and `gated-paths approve`'s refusal of the same shape, this is a"
+    " mechanical floor and not an identity proof — it reads one environment variable,"
+    " and nothing here can do more. Nothing was adjudicated"
+)
 ARBITER_UNAUTHORISED_ERROR: Final = (
     "an arbiter route on one finding is admissible only where the escalation that produces an"
     " arbiter has fired on that finding — the three-round wall holding, and this finding one"
@@ -452,6 +468,15 @@ class Adjudication(NamedTuple):
     which is safe in the direction that matters here and unlike the escalation record's
     own `unchecked`: this field qualifies a name, where that one decides a gate — every
     record carrying an arbiter at all was written by `adjudicate`, which writes both.
+
+    `ruling` quotes the human ruling that lifts the Medium ceiling on this one finding
+    (#651), in the shape `queue_policy`'s write verbs already use — a value stored beside
+    the ruling that authorised it. Empty means no ruling was given and the ceiling
+    stands; above Medium it is what turns the ceiling's refusal into an admission, and
+    it rides the record everywhere the adjudication does so a reader can check the
+    citation rather than trust the admission. The CLI refuses a session carrying
+    `CTI_DISPATCH_ID` that tries to supply one: a ruling is transcribed by the human's
+    own session, never by a dispatched agent.
     """
 
     route: str
@@ -459,6 +484,7 @@ class Adjudication(NamedTuple):
     conditional_on: str = ""
     arbiter: str = ""
     unchecked: bool = False
+    ruling: str = ""
 
 
 class Loop(NamedTuple):
@@ -547,6 +573,20 @@ def escalation_fires_on(loop: Loop, finding: Finding) -> bool:
     )
 
 
+def _fourth_route_ruling_violation(adjudication: Adjudication) -> str:
+    """Return the ceiling's answer for one above-Medium adjudication: the refusal, or `""`.
+
+    Both the writer (`_route_checks`) and the landing rung's reader
+    (`stored_route_violations`) ask the same question of the same field, so the answer
+    is derived once: without a ruling the ceiling stands and `ROUTE_SEVERITY_ERROR` is
+    the refusal it has always been; with whitespace, the named empty-ruling refusal —
+    a ruling given without its words is not the same act as no flag (#651).
+    """
+    if not adjudication.ruling.strip():
+        return RULING_EMPTY_ERROR if adjudication.ruling else ROUTE_SEVERITY_ERROR
+    return ""
+
+
 def _route_checks(loop: Loop, finding: Finding, adjudication: Adjudication) -> None:
     """Enforce the routes' own restrictions: the arbiter precondition, the fourth route's three."""
     if adjudication.route in (ARBITER_UPHELD, ARBITER_DISMISSED):
@@ -556,7 +596,9 @@ def _route_checks(loop: Loop, finding: Finding, adjudication: Adjudication) -> N
             raise ReviewLoopError(ARBITER_UNNAMED_ERROR)
     if adjudication.route == ACCEPTED_AND_FILED:
         if SEVERITY_RANK[finding.severity] < SEVERITY_RANK[MEDIUM]:
-            raise ReviewLoopError(ROUTE_SEVERITY_ERROR)
+            ruling_violation = _fourth_route_ruling_violation(adjudication)
+            if ruling_violation:
+                raise ReviewLoopError(ruling_violation)
         if not adjudication.issue:
             raise ReviewLoopError(FILED_ISSUE_ERROR)
         if not adjudication.conditional_on:
@@ -597,10 +639,11 @@ def stored_route_violations(loop: Loop) -> tuple[str, ...]:
     `parse_loop` validates the shape and leaves the *route's* preconditions alone, and its
     docstring says why for the arbiter one: it governs the act of adjudicating, and a
     verdict recorded before the precondition existed must still be readable. The fourth
-    route's three restrictions are not like that — they are the ruling's own words about
-    what the disposition *means*, so a record carrying `accepted_and_filed` on a Critical,
-    or without the issue it became, or without the work its harm is conditional on, is a
-    record no writer would have produced.
+    route's restrictions are not like that — they are the ruling's own words about what
+    the disposition *means*, so a record carrying `accepted_and_filed` on a Critical
+    without the human ruling that lifts the ceiling (#651), or without the issue it
+    became, or without the work its harm is conditional on, is a record no writer would
+    have produced.
 
     A reader that needs to act on those restrictions asks here rather than re-deriving
     them: #334's landing rung is the reader, and round 1 got the answer by rebuilding the
@@ -613,7 +656,9 @@ def stored_route_violations(loop: Loop) -> tuple[str, ...]:
         if adjudication is None or adjudication.route != ACCEPTED_AND_FILED:
             continue
         if SEVERITY_RANK[finding.severity] < SEVERITY_RANK[MEDIUM]:
-            violations.append(f"{finding.id}: {ROUTE_SEVERITY_ERROR}")
+            ruling_violation = _fourth_route_ruling_violation(adjudication)
+            if ruling_violation:
+                violations.append(f"{finding.id}: {ruling_violation}")
         if not adjudication.issue:
             violations.append(f"{finding.id}: {FILED_ISSUE_ERROR}")
         if not adjudication.conditional_on:
@@ -921,6 +966,7 @@ def dispute_event(
             "cti.review.severity": finding.severity,
             "cti.review.round_raised": finding.round_raised,
             "cti.review.route": adjudication.route,
+            **({"cti.review.ruling": adjudication.ruling} if adjudication.ruling else {}),
         },
         resource={"service.name": "arma-cti-review-loop", "cti.issue": issue},
     )
@@ -1075,6 +1121,8 @@ def _render_adjudication(adjudication: Adjudication) -> dict[str, object]:
         # about the name beside it, so a record that carries the name and omits this
         # would be the dropped `unchecked` again in the document rather than in the code.
         rendered["arbiter_unchecked"] = adjudication.unchecked
+    if adjudication.ruling:
+        rendered["ruling"] = adjudication.ruling
     return rendered
 
 
@@ -1112,6 +1160,7 @@ def _parse_adjudication(raw: object) -> Adjudication | None:
     conditional_on = raw.get("conditional_on", "")
     arbiter = raw.get("arbiter", "")
     unchecked = raw.get("arbiter_unchecked", False)
+    ruling = raw.get("ruling", "")
     if (
         not isinstance(issue, str)
         or not isinstance(conditional_on, str)
@@ -1119,9 +1168,10 @@ def _parse_adjudication(raw: object) -> Adjudication | None:
         # `bool` as itself, never `int`: `isinstance(True, int)` holds and the converse
         # does not, so an int check would let `0`/`1` through as a qualification.
         or not isinstance(unchecked, bool)
+        or not isinstance(ruling, str)
     ):
         raise ReviewLoopError(ADJUDICATION_SHAPE_ERROR)
-    return Adjudication(route, issue, conditional_on, arbiter, unchecked)
+    return Adjudication(route, issue, conditional_on, arbiter, unchecked, ruling)
 
 
 def parse_loop(document: object) -> Loop:
@@ -1327,6 +1377,11 @@ def render_landing(  # noqa: PLR0913 — the terminus record carries what the la
                     if f.adjudication and f.adjudication.conditional_on
                     else {}
                 ),
+                **(
+                    {"ruling": f.adjudication.ruling}
+                    if f.adjudication and f.adjudication.ruling
+                    else {}
+                ),
             }
             for f in loop.findings
         ],
@@ -1482,6 +1537,11 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
         "--conditional-on",
         default="",
         help="the named work outside the diff the harm is conditional on (accepted_and_filed)",
+    )
+    judged.add_argument(
+        "--ruling",
+        default="",
+        help="the human ruling lifting the Medium ceiling for this finding (accepted_and_filed)",
     )
     judged.set_defaults(handler=_cmd_adjudicate)
 
@@ -1655,12 +1715,21 @@ def _cmd_sync(
 def _cmd_adjudicate(
     args: argparse.Namespace, clock: Callable[[], float], _create: object, _post: object
 ) -> int:
+    """Close one finding through the CLI, where the human's rulings arrive by flag (#651).
+
+    The arbiter is read off the escalation record, never taken from a flag: the name on
+    an arbiter route is the profile `escalate` resolved, and a route standing in for a
+    ruling with no record behind it is refused by `_route_checks` rather than written
+    unnamed (#334 round 2, Medium 2). A `--ruling` is the opposite case — it is a flag
+    because it is the human's own words — and that is exactly why a dispatched session
+    is refused from supplying one: a ruling enters the record from the human's session,
+    the way `author` and `gated-paths approve` already refuse their own shape of this.
+    """
     root = Path(args.root)
+    dispatched = os.environ.get("CTI_DISPATCH_ID", "").strip()
+    if dispatched and args.ruling.strip():
+        raise ReviewLoopError(ADJUDICATE_DISPATCHED_ERROR.format(dispatch_id=dispatched))
     loop = _read_loop(root, args.issue)
-    # The arbiter is read off the escalation record, never taken from a flag: the name on an
-    # arbiter route is the profile `escalate` resolved, and a route standing in for a ruling
-    # with no record behind it is refused by `_route_checks` rather than written unnamed
-    # (#334 round 2, Medium 2).
     arbiter = ""
     unchecked = False
     if args.route in (ARBITER_UPHELD, ARBITER_DISMISSED):
@@ -1672,7 +1741,7 @@ def _cmd_adjudicate(
         # stronger fact than the resolution did.
         unchecked = authorisation.unchecked if arbiter else False
     adjudication = Adjudication(
-        args.route, args.filed_issue, args.conditional_on, arbiter, unchecked
+        args.route, args.filed_issue, args.conditional_on, arbiter, unchecked, args.ruling
     )
     updated = adjudicate(loop, args.finding, adjudication)
     store_loop(root, args.issue, updated)

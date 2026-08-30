@@ -1147,10 +1147,12 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
                 "review_loop_unreadable",
                 (f"loop={loop_file}", *(f"invalid={violation}" for violation in violations)),
                 "The loop state carries an adjudication that could not have been written:"
-                " the fourth route is Medium or below, names the issue the finding became,"
-                " and names the work outside this diff its harm is conditional on (human"
-                " ruling 2026-08-14, #334). Repair the record at the path above — a check"
-                " that could not run is not a check that passed (#41). Nothing was pushed.",
+                " the fourth route is Medium or below — or above it only beside the human"
+                " ruling that lifts the ceiling (#651) — names the issue the finding"
+                " became, and names the work outside this diff its harm is conditional on"
+                " (human ruling 2026-08-14, #334). Repair the record at the path above — a"
+                " check that could not run is not a check that passed (#41). Nothing was"
+                " pushed.",
             ),
             (),
         )
