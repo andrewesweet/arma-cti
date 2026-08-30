@@ -11,17 +11,24 @@ Orchestrator tick. Act; do not wait for the human, and hold the waits this seat 
 - `just controller reconcile`
 - `just queue state`, then `just queue next` — section 4 ranks every `considered.N=eligible` number it prints.
 
-If `just watch-report` prints `action=refill-before-landing`, run section 3 before section 2.
+If `just watch-report` prints `action=refill-before-landing`, run section 3 before sections 1 and 2.
 
 ## 1. Harvest
 
-For every dispatch finished since the last tick:
+Read the result and the report of every dispatch finished since the last tick.
 
-- Read its result and its report.
-- `just review exchange <issue>` — for a dispatch that produced a branch.
+Launch the whole review cohort before waiting on any of it. For each finished dispatch that produced a branch:
+
+- `just review exchange <issue>`
 - `just dispatch --seat review --issue N --reviewing P --base-sha <sha>` — the SHA `just review exchange` emitted. Review dispatches take the default brief until #647 lands; pass no `--brief-file`.
 - `just watch <name> <worktree>` at that dispatch.
-- `just dispatch-follow <id>` — wait there for the review dispatch to complete.
+
+Then, once, over every review dispatch just launched:
+
+- `just dispatch-follow <id> [<id> …]` — one invocation over the cohort; never a follower per id. It returns on the first completion and prints `pending=` for the rest; re-follow the remainder in the same turn.
+
+Then, per completed review:
+
 - `just review record --issue N --reviewed-sha SHA --findings FILE` — only after that completion (`no_review_dispatch`).
 - `just review-loop sync --issue N --reviewed-sha <sha>` — pre-landing verdicts only (#646). Route a post-landing verdict's claims per `docs/review-dispatch.md`.
 - `just review-loop adjudicate --issue N --finding <id> --route ROUTE` — nothing above Low may be left open. Routes and their conditions: `docs/agents/review-severity.md`, `tools/review_loop.py`'s `_route_checks`.
@@ -40,6 +47,7 @@ Brief a reviewer to read the test reports rather than re-run the suite (`docs/re
 - Read the printed `ok=landed`, `gate_review=` and exit status.
 - On exit 2: run the `merge_command=` it names, then rerun `just land --audit-file FILE`. Never close by hand from exit 2.
 - After the landing: re-exchange from a tree at the landed commit, then `just dispatch --seat review --issue N --reviewing P --base-sha <landed sha>`.
+- `just watch <name> <worktree>` at that dispatch, then `just dispatch-follow <id>`.
 - Then run `just observatory` in the **main checkout** and commit the `docs/observatory/landed-issues.md` update as a follow-up.
 
 A registered human reviewer: `just review record --issue N --reviewed-sha SHA --findings FILE --reviewer-profile P` (ADR-0080).
