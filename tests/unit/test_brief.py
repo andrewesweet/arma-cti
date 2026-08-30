@@ -602,14 +602,19 @@ def test_the_brief_enumerates_all_four_adjudication_routes() -> None:
     ADR-0071 ruling 4 as amended by A7: a finding at Medium or below may close
     `accepted_and_filed`. The brief is the one surface a dispatched agent reads
     first, so the enumeration is inlined there rather than left to the
-    `finding_unadjudicated` refusal.
+    `finding_unadjudicated` refusal. Amendment A11 makes that ceiling the default
+    rather than the whole rule, so the brief names the ruling path too — an
+    implementer that reads only the brief would otherwise still see no route above
+    Medium, which is the deadlock #651 was opened on.
     """
     rendered = composed()
     assert "`fixed`" in rendered
     assert "`arbiter_upheld` or `arbiter_dismissed`" in rendered
     assert "`accepted_and_filed`" in rendered
-    assert "Medium or below" in rendered
+    assert "Medium or below by default" in rendered
     assert "filed as an issue on the originating item first" in rendered
+    assert "`--ruling`" in rendered
+    assert "the human's own session" in rendered
 
 
 def test_prior_work_is_loud_and_states_without_interpreting() -> None:

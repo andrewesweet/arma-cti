@@ -655,6 +655,26 @@ def test_a_ruled_above_medium_adjudication_reads_back_clean() -> None:
     assert len(review_loop.stored_route_violations(review_loop.Loop(0, (hand_edited,)))) == 1
 
 
+def test_a_wordless_ruling_is_a_stored_violation_on_any_route_and_severity() -> None:
+    """The reader shares the writer's rule rather than guarding only the ceiling (#651).
+
+    `adjudicate` refuses `"   "` on every route and every severity, so a record carrying
+    one is a record no writer produced — but round 1 fixed only the writer, and the reader
+    checked wordlessness inside the above-Medium `accepted_and_filed` branch. A hand-edited
+    Medium, or an unrelated route, would parse and reach `render_landing` as a ruling.
+    """
+    for severity, route in (
+        (review_loop.MEDIUM, review_loop.ACCEPTED_AND_FILED),
+        (review_loop.LOW, review_loop.ACCEPTED_AND_FILED),
+        (review_loop.HIGH, review_loop.FIXED),
+    ):
+        stored = finding("F1", severity, adjudication=adjud(route, "#650", "work X", ruling="   "))
+        violations = review_loop.stored_route_violations(review_loop.Loop(0, (stored,)))
+        assert [v for v in violations if review_loop.RULING_EMPTY_ERROR in v] == [
+            f"F1: {review_loop.RULING_EMPTY_ERROR}"
+        ]
+
+
 def test_above_low_reads_the_band_the_stop_condition_adjudicates() -> None:
     assert [review_loop.above_low(s) for s in review_loop.SEVERITIES] == [
         True,
@@ -1258,12 +1278,47 @@ def test_the_cli_refuses_the_round_zero_dismissal(
     assert review_loop.load_loop(root, 326).findings[0].adjudication is None
 
 
+def _adjudicate_argv(
+    root: Path,
+    journal: Path,
+    issue: str,
+    *extra: str,
+    route: str = review_loop.ACCEPTED_AND_FILED,
+) -> list[str]:
+    """One adjudication command, so the caller's own flags are the only variable.
+
+    The fourth route's two other required flags ride with the route that requires them;
+    any other route takes neither.
+    """
+    required = (
+        ["--filed-issue", "#650", "--conditional-on", "work X"]
+        if route == review_loop.ACCEPTED_AND_FILED
+        else []
+    )
+    return [
+        "adjudicate",
+        "--issue",
+        issue,
+        "--root",
+        str(root),
+        "--journal",
+        str(journal),
+        "--finding",
+        "F1",
+        "--route",
+        route,
+        *required,
+        *extra,
+    ]
+
+
 def test_the_cli_stores_a_ruling_and_reads_it_back(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
     """The ruling rides the flag into the record, and `show` reads it back (#651)."""
     root = tmp_path / "review"
-    base = ["--root", str(root), "--journal", str(tmp_path / "journal.jsonl")]
+    journal = tmp_path / "journal.jsonl"
+    base = ["--root", str(root), "--journal", str(journal)]
     ruling = "human ruling 2026-08-30 on #651: file them and land"
     assert (
         review_loop.main(
@@ -1273,23 +1328,7 @@ def test_the_cli_stores_a_ruling_and_reads_it_back(
     )
     assert (
         review_loop.main(
-            [
-                "adjudicate",
-                "--issue",
-                "651",
-                *base,
-                "--finding",
-                "F1",
-                "--route",
-                review_loop.ACCEPTED_AND_FILED,
-                "--filed-issue",
-                "#650",
-                "--conditional-on",
-                "work X",
-                "--ruling",
-                ruling,
-            ],
-            now=stepped_clock(),
+            _adjudicate_argv(root, journal, "651", "--ruling", ruling), now=stepped_clock()
         )
         == review_loop.OK
     )
@@ -1311,23 +1350,7 @@ def test_the_cli_stores_a_ruling_and_reads_it_back(
         == review_loop.OK
     )
     assert (
-        review_loop.main(
-            [
-                "adjudicate",
-                "--issue",
-                "652",
-                *base,
-                "--finding",
-                "F1",
-                "--route",
-                review_loop.ACCEPTED_AND_FILED,
-                "--filed-issue",
-                "#650",
-                "--conditional-on",
-                "work X",
-            ],
-            now=stepped_clock(),
-        )
+        review_loop.main(_adjudicate_argv(root, journal, "652"), now=stepped_clock())
         == review_loop.REFUSED
     )
     assert review_loop.ROUTE_SEVERITY_ERROR in capsys.readouterr().err
@@ -1342,7 +1365,8 @@ def test_a_dispatched_session_never_transcribes_a_ruling(
     environment variable and is not an identity proof, and the refusal says so.
     """
     root = tmp_path / "review"
-    base = ["--root", str(root), "--journal", str(tmp_path / "journal.jsonl")]
+    journal = tmp_path / "journal.jsonl"
+    base = ["--root", str(root), "--journal", str(journal)]
     assert (
         review_loop.main(
             ["open", "--issue", "651", *base, "--finding", "F1=high"], now=stepped_clock()
@@ -1352,22 +1376,7 @@ def test_a_dispatched_session_never_transcribes_a_ruling(
     monkeypatch.setenv("CTI_DISPATCH_ID", "d-20260830-152517-ec744f")
     assert (
         review_loop.main(
-            [
-                "adjudicate",
-                "--issue",
-                "651",
-                *base,
-                "--finding",
-                "F1",
-                "--route",
-                review_loop.ACCEPTED_AND_FILED,
-                "--filed-issue",
-                "#650",
-                "--conditional-on",
-                "work X",
-                "--ruling",
-                "human ruling 2026-08-30 on #651",
-            ],
+            _adjudicate_argv(root, journal, "651", "--ruling", "human ruling 2026-08-30 on #651"),
             now=stepped_clock(),
         )
         == review_loop.REFUSED
@@ -1378,42 +1387,10 @@ def test_a_dispatched_session_never_transcribes_a_ruling(
     monkeypatch.delenv("CTI_DISPATCH_ID")
     assert (
         review_loop.main(
-            [
-                "adjudicate",
-                "--issue",
-                "651",
-                *base,
-                "--finding",
-                "F1",
-                "--route",
-                review_loop.FIXED,
-            ],
-            now=stepped_clock(),
+            _adjudicate_argv(root, journal, "651", route=review_loop.FIXED), now=stepped_clock()
         )
         == review_loop.OK
     )
-
-
-def _adjudicate_argv(root: Path, journal: Path, issue: str, *extra: str) -> list[str]:
-    """One fourth-route adjudication command, so the ruling flag is the only variable."""
-    return [
-        "adjudicate",
-        "--issue",
-        issue,
-        "--root",
-        str(root),
-        "--journal",
-        str(journal),
-        "--finding",
-        "F1",
-        "--route",
-        review_loop.ACCEPTED_AND_FILED,
-        "--filed-issue",
-        "#650",
-        "--conditional-on",
-        "work X",
-        *extra,
-    ]
 
 
 def test_an_explicitly_empty_ruling_flag_is_refused_by_name(

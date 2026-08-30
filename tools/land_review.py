@@ -43,7 +43,11 @@ is the ladder that reads them off records other tools wrote:
    ruling 4 (`fixed`, `arbiter_upheld`, `arbiter_dismissed`, `accepted_and_filed`),
    the fourth added by the human's ruling of 2026-08-14 on #334: Medium or below,
    naming the issue it was filed as and the work outside the diff its harm is
-   conditional on. The loop state that records adjudications is #333's format
+   conditional on. That severity bound is the default rather than the whole rule
+   (ADR-0071 amendment A11, #651): a human ruling quoted on one named finding, and
+   transcribed in the human's own session, opens the same route above Medium for
+   that finding alone, and `review_loop` is where the read of it lives. The loop
+   state that records adjudications is #333's format
    (below), and every route decision on read is `review_loop`'s own.
 
 The exemption table decides before any record is opened, and it is inverted the
@@ -384,10 +388,13 @@ def _unadjudicated_refusal(
         (f"loop={loop_file}", *found),
         "Adjudicate each finding above Low through one of the four routes — fixed,"
         " arbiter_upheld, arbiter_dismissed, or accepted_and_filed at Medium or below"
-        " naming the issue it became and the work outside the diff its harm is"
-        " conditional on (ADR-0071 ruling 4; the fourth route, human ruling"
+        " by default, naming the issue it became and the work outside the diff its harm"
+        " is conditional on (ADR-0071 ruling 4; the fourth route, human ruling"
         " 2026-08-14, #334) — with `just review-loop adjudicate --issue <n> --finding"
-        " <id> --route <route>`, then land again. Nothing was pushed.",
+        " <id> --route <route>`, then land again. Above Medium that fourth route needs"
+        " a human ruling quoted on the finding, added as `--ruling <words>` from the"
+        " human's own session and refused from a dispatched one (ADR-0071 amendment"
+        " A11, #651). Nothing was pushed.",
     )
 
 

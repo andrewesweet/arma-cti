@@ -574,18 +574,29 @@ def escalation_fires_on(loop: Loop, finding: Finding) -> bool:
     )
 
 
+def _wordless_ruling(adjudication: Adjudication) -> bool:
+    """Whether a ruling was offered with no words in it — wrong on every route and severity.
+
+    One rule, asked by both halves: `adjudicate` refuses it as it is written, and
+    `stored_route_violations` names it as it is read. Round 1 fixed only the writer and
+    left the reader checking it inside the above-Medium branch, so a stored Medium or an
+    unrelated route carrying `"   "` parsed and reached `render_landing` as a ruling
+    (#651).
+    """
+    return bool(adjudication.ruling) and not adjudication.ruling.strip()
+
+
 def _fourth_route_ruling_violation(adjudication: Adjudication) -> str:
     """Return the ceiling's answer for one above-Medium adjudication: the refusal, or `""`.
 
     Both the writer (`_route_checks`) and the landing rung's reader
-    (`stored_route_violations`) ask the same question of the same field, so the answer
-    is derived once: without a ruling the ceiling stands and `ROUTE_SEVERITY_ERROR` is
-    the refusal it has always been; with whitespace, the named empty-ruling refusal —
-    a ruling given without its words is not the same act as no flag (#651).
+    (`stored_route_violations`) ask the same question of the same field, so the answer is
+    derived once: without a ruling the ceiling stands and `ROUTE_SEVERITY_ERROR` is the
+    refusal it has always been. Wordlessness is not asked here — `_wordless_ruling` runs
+    ahead of both callers, because a ruling given without its words is wrong at every
+    severity and the ceiling is only where it would do the most damage (#651).
     """
-    if not adjudication.ruling.strip():
-        return RULING_EMPTY_ERROR if adjudication.ruling else ROUTE_SEVERITY_ERROR
-    return ""
+    return "" if adjudication.ruling.strip() else ROUTE_SEVERITY_ERROR
 
 
 def _route_checks(loop: Loop, finding: Finding, adjudication: Adjudication) -> None:
@@ -622,7 +633,7 @@ def adjudicate(loop: Loop, finding_id: str, adjudication: Adjudication) -> Loop:
     """
     if adjudication.route not in ROUTES:
         raise ReviewLoopError(ROUTE_ERROR)
-    if adjudication.ruling and not adjudication.ruling.strip():
+    if _wordless_ruling(adjudication):
         raise ReviewLoopError(RULING_EMPTY_ERROR)
     updated: list[Finding] = []
     found = False
@@ -660,7 +671,14 @@ def stored_route_violations(loop: Loop) -> tuple[str, ...]:
     violations: list[str] = []
     for finding in loop.findings:
         adjudication = finding.adjudication
-        if adjudication is None or adjudication.route != ACCEPTED_AND_FILED:
+        if adjudication is None:
+            continue
+        # Before the route and severity filters, because a wordless ruling is not a fact
+        # about the ceiling: the writer refuses it everywhere, so the reader names it
+        # everywhere (#651).
+        if _wordless_ruling(adjudication):
+            violations.append(f"{finding.id}: {RULING_EMPTY_ERROR}")
+        if adjudication.route != ACCEPTED_AND_FILED:
             continue
         if SEVERITY_RANK[finding.severity] < SEVERITY_RANK[MEDIUM]:
             ruling_violation = _fourth_route_ruling_violation(adjudication)

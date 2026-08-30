@@ -35,3 +35,9 @@
   finding alone — transcribed as ADR-0071 amendment A11 from the human's ruling of
   2026-08-30 on #643, with the same qualification where the severity guide states the
   ceiling.
+
+- **The surfaces that tell an implementer how to close a finding carry the lift too.** The
+  composed dispatch brief and `just land`'s `finding_unadjudicated` refusal both stated the
+  Medium ceiling flat; both now state it as the default and name the ruling route, including
+  that the ruling is transcribed in the human's own session. That refusal is the text a
+  blocked lander reads, so until it named the route the lift was not operationally present.

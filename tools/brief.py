@@ -894,14 +894,20 @@ PASTE_RULE: Final = (
 # rather than cited because it is an imperative: an implementer must be able to
 # close its findings having read only the brief, and the fourth route is the one a
 # brief never mentioned — `just land`'s `finding_unadjudicated` refusal names all
-# four, at the point where re-reading this document costs another round.
+# four, at the point where re-reading this document costs another round. A11's ruling
+# path is inlined for the same reason one rung down: an implementer holding a High it
+# cannot fix in this diff needs to know a route exists before it can ask for one.
 ADJUDICATION_RULE: Final = (
     "A review finding above Low closes through exactly one route before `just land`"
     " accepts the branch: `fixed`; `arbiter_upheld` or `arbiter_dismissed`; or"
-    " `accepted_and_filed` — Medium or below, harm conditional on named work outside"
-    " the diff, filed as an issue on the originating item first. Each route is"
+    " `accepted_and_filed` — Medium or below by default, harm conditional on named"
+    " work outside the diff, filed as an issue on the originating item first. That"
+    " ceiling is a default and not a wall: above Medium the same route opens where a"
+    " human ruling is quoted on the one finding, passed as `--ruling` and transcribed"
+    " in the human's own session, never a dispatched one. Each route is"
     " recorded by `just review-loop adjudicate` (ADR-0071 ruling 4; the fourth route"
-    " is the human ruling of 2026-08-14 on #334)."
+    " is the human ruling of 2026-08-14 on #334, its ceiling made a default by"
+    " amendment A11)."
 )
 # The human's ruling of 2026-08-20 (#460, recorded by ADR-0077). Spelled once and read by
 # every surface that states it: `AGENTS.md` carries this text, `docs/review-dispatch.md`

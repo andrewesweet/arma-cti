@@ -708,6 +708,21 @@ def test_a_verdict_finding_the_loop_does_not_hold_refuses_by_name(tmp_path: Path
     assert "finding=f1 severity=high source=verdict" in refusal.found
 
 
+def test_the_unadjudicated_remedy_names_the_ruling_route(tmp_path: Path) -> None:
+    """The remedy is the text a blocked lander reads, so it carries A11's fourth route (#651).
+
+    This exact remedy is what #643's deadlock read: it listed the four routes with the
+    Medium ceiling flat and no way past it, which is the no-route condition the ruling
+    lifted. Naming `--ruling` here is what makes the lift operational.
+    """
+    outcome = _rung(_stage(tmp_path, loop=_loop(findings=(_stored("f1", "high"),))))
+
+    refusal = outcome.refusal
+    assert refusal.kind == "finding_unadjudicated"
+    assert "--ruling" in refusal.action
+    assert "by default" in refusal.action
+
+
 def test_a_loop_finding_a_clean_verdict_never_reported_still_owes_its_route(
     tmp_path: Path,
 ) -> None:
