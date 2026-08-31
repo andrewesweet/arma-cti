@@ -53,7 +53,7 @@ run on any other HEAD, so a run is reproducible at the tree it measured.
 
 The task↔runner contract prints from this module (`--contract`), rendered from the same
 field registries the loader validates against and the same severity table the run exits
-with, so a key added there appears in the output and cannot drift —
+with, so adding a key to a registry changes the contract and its validation together —
 `tools/probe_contract.py`'s shape, with the mutation `tests/unit/test_eval_contract.py`
 plants to prove it is live.
 """
@@ -96,6 +96,7 @@ SANDBOX_INPUTS: Final = "/inputs"
 SANDBOX_TOOLCHAIN: Final = "/toolchain"
 SANDBOX_HOME: Final = "/home/eval"
 SAFE_SYSTEM_PATH: Final = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+BWRAP_BINARY: Final = "bwrap"
 SANDBOX_BIND_ROOTS: Final = ("/usr", "/bin", "/sbin", "/lib", "/lib64", "/etc")
 SANDBOX_HIDDEN_ROOTS: Final = ("/home", "/root", "/tmp", "/var", "/run")  # noqa: S108 — mounts hide host state
 IDENTIFIER_PATTERN: Final = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.-]*\Z")
@@ -120,6 +121,9 @@ MAX_CONFIGURATIONS: Final = 2
 
 TRIAL_FILE: Final = "task.txt"
 ADAPTER_RECORD: Final = "trial.json"
+ADAPTER_ENV_USAGE_FILE: Final = "CTI_EVAL_USAGE_FILE"
+ADAPTER_ENV_TOKEN_BUDGET: Final = "CTI_EVAL_TOKEN_BUDGET"  # noqa: S105 — environment name, not a credential
+ADAPTER_ENV_COMMAND_BUDGET: Final = "CTI_EVAL_COMMAND_BUDGET"
 # A configuration's argv may carry this token; it expands to the repository root, so a
 # committed configuration can name a shipped adapter without an absolute path.
 REPO_TOKEN: Final = "{repo}"  # noqa: S105 — a path substitution token, not a credential
@@ -237,10 +241,30 @@ CONFIGURATION_FIELDS: Final[tuple[ContractField, ...]] = (
 ADAPTER_FIELDS: Final[tuple[ContractField, ...]] = (
     ContractField("answer", True, "the harness's answer text, graded as written"),
     ContractField("stopped_by", True, "completed, budget or crash"),
-    ContractField("tokens_in", True, "input tokens the harness reports, 0 when unknown"),
-    ContractField("tokens_out", True, "output tokens the harness reports, 0 when unknown"),
-    ContractField("commands", True, "tool commands the harness ran, 0 when unknown"),
+    ContractField("tokens_in", True, f"input tokens; must exactly equal {USAGE_RECORD}.tokens_in"),
+    ContractField(
+        "tokens_out", True, f"output tokens; must exactly equal {USAGE_RECORD}.tokens_out"
+    ),
+    ContractField("commands", True, f"tool commands; must exactly equal {USAGE_RECORD}.commands"),
     ContractField("harness", False, "the harness's self-description, recorded verbatim"),
+)
+
+ADAPTER_ENV_FIELDS: Final[tuple[ContractField, ...]] = (
+    ContractField(
+        ADAPTER_ENV_USAGE_FILE,
+        True,
+        f"absolute sandbox path where the adapter atomically updates {USAGE_RECORD}",
+    ),
+    ContractField(
+        ADAPTER_ENV_TOKEN_BUDGET,
+        True,
+        "runner-owned token ceiling; the adapter may read it but cannot change it",
+    ),
+    ContractField(
+        ADAPTER_ENV_COMMAND_BUDGET,
+        True,
+        "runner-owned command ceiling; the adapter may read it but cannot change it",
+    ),
 )
 
 USAGE_FIELDS: Final[tuple[ContractField, ...]] = (
@@ -267,6 +291,7 @@ CONTRACT_REGISTRIES: Final[tuple[tuple[str, tuple[ContractField, ...]], ...]] = 
     ("unit_costs", UNIT_COST_FIELDS),
     ("pins", PIN_FIELDS),
     ("configuration", CONFIGURATION_FIELDS),
+    ("adapter_environment", ADAPTER_ENV_FIELDS),
     ("adapter", ADAPTER_FIELDS),
     ("usage", USAGE_FIELDS),
     ("grader", GRADER_FIELDS),
@@ -878,6 +903,8 @@ def load_configuration(path: Path) -> Configuration:
             )
         if (
             name.upper() in FORBIDDEN_ENV_NAMES
+            # This non-secret marker is reserved for boundary tests; every runner-owned
+            # CTI_EVAL_* name remains protected from configuration overrides.
             or (name.startswith("CTI_EVAL_") and name != "CTI_EVAL_MARKER")
             or any(marker in name.upper() for marker in FORBIDDEN_ENV_MARKERS)
         ):
@@ -1066,9 +1093,9 @@ def resolve_toolchain(configuration: Configuration, repo_root: Path = ROOT) -> T
 
 def _sandbox_binary() -> Path:
     """Find bubblewrap, the required filesystem and process boundary."""
-    executable = shutil.which("bwrap", path=os.environ.get("PATH", SAFE_SYSTEM_PATH))
+    executable = shutil.which(BWRAP_BINARY, path=os.environ.get("PATH", SAFE_SYSTEM_PATH))
     if executable is None:
-        raise EvalRefusalError("sandbox_unavailable", ("executable=bwrap",))
+        raise EvalRefusalError("sandbox_unavailable", (f"executable={BWRAP_BINARY}",))
     return Path(executable).resolve()
 
 
@@ -1172,9 +1199,9 @@ def sandbox_command(
             "PATH": f"{SANDBOX_TOOLCHAIN}/bin:{SAFE_SYSTEM_PATH}"
             if toolchain.root is not None
             else SAFE_SYSTEM_PATH,
-            "CTI_EVAL_USAGE_FILE": f"{SANDBOX_WORKSPACE}/{USAGE_RECORD}",
-            "CTI_EVAL_TOKEN_BUDGET": str(budget.tokens),
-            "CTI_EVAL_COMMAND_BUDGET": str(budget.commands),
+            ADAPTER_ENV_USAGE_FILE: f"{SANDBOX_WORKSPACE}/{USAGE_RECORD}",
+            ADAPTER_ENV_TOKEN_BUDGET: str(budget.tokens),
+            ADAPTER_ENV_COMMAND_BUDGET: str(budget.commands),
         }
     )
     for name, value in environment.items():
@@ -2138,8 +2165,8 @@ def render_contract() -> str:
         "eval-corpus contract — derived from tools/eval_corpus.py",
         "",
         "Rendered from the same field registries, state enum and severity table the",
-        "runner validates and exits with. If this module gains a field and this output",
-        "does not name it, that is a bug (tests/unit/test_eval_contract.py plants it).",
+        "runner validates and exits with. If a field is added to one registry and this",
+        "output does not name it, that is a bug (tests/unit/test_eval_contract.py plants it).",
         "",
         "=== Task file (schema " + TASK_SCHEMA + ") ===",
     ]
@@ -2162,12 +2189,18 @@ def render_contract() -> str:
         "temporary, repository and prior run state are not mounted. The child receives",
         f"an allowlisted environment ({', '.join(CHILD_ENV_ALLOWLIST)}) plus safe",
         "configuration entries — never a lane variable, credential or dispatch identity.",
-        "Runner-owned HOME, PWD, PATH and CTI_EVAL_* values point only inside the sandbox.",
+        "Runner-owned HOME, PWD, PATH and the adapter environment below are fixed by",
+        "the runner and point only inside the sandbox.",
         "The adapter must atomically update `usage.json` while running, then write",
-        "`trial.json`; the runner watches usage and enforces every budget leg.",
+        "`trial.json`; its three usage counters must exactly match the final `usage.json`",
+        "counters. Zero is a valid measured count; a missing or unreadable sidecar is",
+        "a harness failure, not an unknown value.",
         "Unknown record keys are ignored and retained verbatim.",
     ]
     lines.extend(interfaces)
+    lines.extend(["", "=== Runner-owned adapter environment ==="])
+    lines.extend(_field_block(ADAPTER_ENV_FIELDS))
+    lines.extend(["", "=== Adapter record ==="])
     lines.extend(_field_block(ADAPTER_FIELDS))
     lines.extend(["", "=== Live usage sidecar (written to " + USAGE_RECORD + ") ==="])
     lines.extend(_field_block(USAGE_FIELDS))
@@ -2195,8 +2228,10 @@ def render_contract() -> str:
         [
             f"  {REFUSAL_EXIT}  (refusal before any trial: input_invalid, grader_hash_mismatch,",
             "       pin_mismatch, run_dir_exists — never a verdict)",
+            "",
             "=== Materialized case ===",
             *(_field_block(CASE_FIELDS)),
+            "",
             "=== Comparison ===",
             "One configuration runs the corpus alone (an ablation across its own variants).",
             "Two configurations are compared case by case; divergent cases are named and no",

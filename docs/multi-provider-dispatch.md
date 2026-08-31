@@ -513,6 +513,11 @@ What that buys, measured rather than inferred, over five dispatches and four pro
 - `network_access` defaults off while the gate reads `gh` and `uv` may fetch, so it is
   enabled.
 
+The eval runner has its own required `bwrap` boundary. A live run of the shipped
+synthetic corpus inside an outer bubblewrap boundary completed successfully, including
+the runner's nested invocation, so the Codex lane needs no sandbox bypass or special
+case for `just fast` or `just eval-corpus`; `just prereqs check` reports the host binary.
+
 Read-only seats keep the sandbox they always had, and
 `--dangerously-bypass-approvals-and-sandbox` was put to the human, declined, and is unused.
 

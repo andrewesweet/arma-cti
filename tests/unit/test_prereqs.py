@@ -738,6 +738,7 @@ def test_the_check_reads_the_box_and_reports_a_line_per_item(tmp_path: Path) -> 
         f"item={item}"
         for item in (
             "gitleaks",
+            "bubblewrap",
             "credentials_file",
             "zai_key",
             "collector_ledger",
@@ -748,6 +749,16 @@ def test_the_check_reads_the_box_and_reports_a_line_per_item(tmp_path: Path) -> 
             "codex_cli",
         )
     ]
+
+
+def test_missing_bubblewrap_names_the_eval_pipeline_dependency() -> None:
+    """The eval runner's OS sandbox is a named week-one prerequisite."""
+    missing = prereqs.Probe(present=False, detail="not on PATH")
+    report = prereqs.render_check(prereqs.evaluate(facts(bubblewrap=missing)))
+    line = next(line for line in report.lines if line.startswith("item=bubblewrap"))
+    assert "state=missing" in line
+    assert "617" in line
+    assert "bubblewrap" in line
 
 
 def test_no_action_defaults_to_check() -> None:

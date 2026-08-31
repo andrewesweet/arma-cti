@@ -1,7 +1,7 @@
 """The eval contract is derived from the runner, and the shipped corpus validates.
 
-`tools/eval_corpus.py --contract` renders from the same registries the loader validates
-against, so a key added to the runner appears in the output — the drift
+`tools/eval_corpus.py --contract` renders from the same registries the runner validates
+or applies, so a field added to a registry appears in the output — the drift
 `tools/probe_contract.py` exists to prevent. These tests pin that derivation, and they
 validate the shipped ablation task against the runner's own loader, so the corpus
 cannot drift from the runner that grades it.
@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
 from typing import TYPE_CHECKING
 
 import pytest
@@ -40,6 +41,14 @@ def test_every_registry_field_is_rendered() -> None:
         for contract in registry:
             assert contract.name in rendered, f"{contract.name!r} missing from the contract"
             assert contract.purpose in rendered
+
+
+def test_adapter_contract_requires_final_usage_to_match_the_sidecar() -> None:
+    """The adapter-facing contract states the equality the runner enforces."""
+    rendered = eval_corpus.render_contract()
+    for name in ("tokens_in", "tokens_out", "commands"):
+        assert f"must exactly equal usage.json.{name}" in rendered
+    assert "0 when unknown" not in rendered
 
 
 def test_published_contract_command_executes() -> None:
@@ -96,6 +105,8 @@ def test_the_shipped_corpus_runs_end_to_end_against_the_synthetic_configuration(
     The synthetic adapter answers with the expected disposition, so every case passes;
     this proves the shipped artefacts work together and says nothing about a model.
     """
+    if shutil.which("bwrap") is None:
+        pytest.skip("bubblewrap (`bwrap`) is required for pipeline tests")
     configuration = ROOT / "evals" / "configurations" / "example-synthetic.json"
     exit_code = eval_corpus.main(
         [

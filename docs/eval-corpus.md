@@ -19,6 +19,16 @@ and its sha256, runner bytes and HEAD, and the graded report (`report.txt`). The
 workspace is run inside a bubblewrap filesystem/PID boundary; host home, repository,
 temporary, runtime and prior-run state are not mounted.
 
+## Toolchain prerequisite
+
+The runner requires the Linux `bwrap` executable from bubblewrap. `just prereqs check`
+reports it as the `bubblewrap` prerequisite; if it is absent, the runner refuses with
+`sandbox_unavailable` and the pipeline tests skip rather than turning a missing host
+package into an assertion failure. The runner's boundary was exercised inside an outer
+bubblewrap boundary like the Codex lane's, including the shipped synthetic corpus; the
+nested invocation completed successfully, so no sandbox bypass or special case is
+needed.
+
 ## What a task is
 
 A task file (`cti.eval-task/1`) declares the work (`prompt`), the expectation
@@ -38,6 +48,11 @@ variant; variants are correlated arms of one task, not independent observations.
 - A spread beyond tolerance quarantines the case, carrying its reproduction baseline
   (arrangement, run count, outcomes, disagreement, tolerance) — `flake_quarantine`'s
   discipline applied to a stochastic subject.
+- A complete case with a mid-range rate whose outcomes spread beyond tolerance is
+  quarantined deliberately, even when (for example) 3 of 5 repeats meet at tolerance
+  0.2. The runner cannot tell that variance from a partial regression without an
+  unchanged control, so `outside_tolerance` is reserved for a sufficiently stable
+  wrong-class result; quarantine therefore ranks below a budget stop by design.
 - A trial stopped by budget, and an infrastructure failure, type as exactly that —
   never a failed configuration.
 - The run's exit code is the worst class present; refusals before any trial exit 6.

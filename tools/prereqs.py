@@ -8,7 +8,8 @@ differently next time (#195, seed idea 3).
 
 Six actions, each its own subcommand:
 
-- ``check``       every item's true state, one line each. A check that could not
+- ``check``       every item's true state, one line each, including the Linux
+                  ``bwrap`` prerequisite for the eval corpus. A check that could not
                   run reports ``unknown`` and is never a pass (#41's shape).
 - ``credentials`` create ``~/.arma-cti/credentials.env`` at 0600, outside every
                   worktree, and take the key the human pastes. The value never
@@ -75,6 +76,7 @@ COLLECTOR_USER: Final = "otelcol-contrib"
 
 ZAI_KEY_NAME: Final = "ZAI_API_KEY"
 TAP_BASENAME: Final = "quota_tap.sh"
+BWRAP_BINARY: Final = "bwrap"
 
 # The GLM Coding Plan's published caps: prompts per five-hour window and per
 # seven days, per tier. Off-peak usage is charged at 50%; peak is Mon-Fri
@@ -760,6 +762,7 @@ class Facts(NamedTuple):
     """Everything ``check`` reads, gathered at the seam so the ladder stays pure."""
 
     gitleaks: Probe
+    bubblewrap: Probe
     codex_cli: Probe
     credentials: Probe
     zai_key: Probe
@@ -898,6 +901,7 @@ def gather(layout: Layout) -> Facts:
     credentials, zai_key = probe_credentials(layout.credentials)
     return Facts(
         gitleaks=probe_binary("gitleaks", layout.local_bin),
+        bubblewrap=probe_binary(BWRAP_BINARY, layout.local_bin),
         codex_cli=probe_binary("codex", layout.local_bin),
         credentials=credentials,
         zai_key=zai_key,
@@ -938,6 +942,13 @@ def evaluate(facts: Facts) -> tuple[Item, ...]:
     """Decide every prerequisite's state. Nothing here reads the box."""
     rows = (
         ("gitleaks", facts.gitleaks, "221", "just prereqs tools", False),
+        (
+            "bubblewrap",
+            facts.bubblewrap,
+            "617",
+            "Install the bubblewrap package (`bwrap`) before running the eval corpus",
+            False,
+        ),
         ("credentials_file", facts.credentials, "225", "just prereqs credentials", False),
         ("zai_key", facts.zai_key, "225", "just prereqs credentials (the human pastes)", False),
         ("collector_ledger", facts.collector, "226,227", SUDO_ACTION, False),

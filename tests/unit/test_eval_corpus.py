@@ -8,6 +8,7 @@ configuration's quality — the trap #615 names as the whole spec's point.
 from __future__ import annotations
 
 import json
+import shutil
 import sys
 from typing import TYPE_CHECKING
 
@@ -90,6 +91,7 @@ def _write_config(  # noqa: PLR0913 — a fixture builder with independently var
     stopped_by: str | None = None,
     exit_code: int = 0,
     sleep_s: int = 0,
+    live_usage_sleep_s: int = 0,
     probe_paths: tuple[Path, ...] = (),
 ) -> Path:
     """Write a configuration whose synthetic adapter always gives one answer."""
@@ -115,6 +117,8 @@ def _write_config(  # noqa: PLR0913 — a fixture builder with independently var
         lines.insert(-1, f'    "probe_{index}": os.path.exists({str(probe_path)!r}),')
     if sleep_s:
         lines.append(f"time.sleep({sleep_s})")
+    if live_usage_sleep_s:
+        lines.append(f"time.sleep({live_usage_sleep_s})")
     if exit_code:
         lines.append(f"sys.exit({exit_code})")
     lines.append(
@@ -141,6 +145,8 @@ def _run(
     dry_run: bool = False,
 ) -> tuple[int, Path]:
     """Run the runner over the fixture corpus and return (exit code, runs root)."""
+    if shutil.which("bwrap") is None:
+        pytest.skip("bubblewrap (`bwrap`) is required for pipeline tests")
     runs_root = tmp_path / "runs"
     argv = ["--corpus", str(corpus)]
     for config in configs:
@@ -209,6 +215,21 @@ def test_budget_stop_is_recorded_as_a_budget_stop(tmp_path: Path) -> None:
     body = (min(runs_root.iterdir()) / "report.txt").read_text(encoding="utf-8")
     assert "worst_class=budget_stopped exit=2" in body
     assert "status=outside_tolerance" not in body
+    assert "budget=tokens" in body
+
+
+def test_live_token_budget_stops_an_adapter_before_it_can_finish(
+    tmp_path: Path,
+) -> None:
+    """A live over-budget sidecar kills a still-running adapter, not just its report."""
+    corpus = tmp_path / "evals" / "corpus"
+    corpus.mkdir(parents=True)
+    _write_task(corpus, repeats=1, budget={"seconds": 60, "tokens": 10, "commands": 200})
+    config = _write_config(corpus, "a", "GOOD answer", live_usage_sleep_s=3)
+    exit_code, runs_root = _run(tmp_path, corpus, [config])
+    assert exit_code == 2
+    body = (min(runs_root.iterdir()) / "report.txt").read_text(encoding="utf-8")
+    assert "worst_class=budget_stopped exit=2" in body
     assert "budget=tokens" in body
 
 

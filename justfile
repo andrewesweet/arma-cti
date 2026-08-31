@@ -290,6 +290,7 @@ guidance-eval *args:
 # worst class as the exit code, cost reported, comparisons never netted. `--contract`
 # prints the task↔runner contract, derived from the runner. Tasks live in evals/corpus/;
 # graders are hash-pinned by their tasks; evidence lands under ~/.arma-cti/evals/runs/.
+# Linux bubblewrap (`bwrap`) is a required host dependency; `just prereqs check` reports it.
 # A single configuration runs an ablation across a task's own variants; two
 # configurations are compared pairwise, case by case.
 [positional-arguments]
