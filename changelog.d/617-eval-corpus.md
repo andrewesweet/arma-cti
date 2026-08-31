@@ -1,8 +1,16 @@
 # Added
 
 - `just eval-corpus` runs the eval corpus (`evals/corpus/`) against one or two agent
-  configurations and reports a typed verdict per case — a rate over the task's stated
-  repeats, judged against its tolerance — with the worst class as the exit code. The
+  configurations and reports each materialized task/configuration case with a rate
+  only when all stated repeats complete and agree within tolerance; otherwise it
+  reports the typed status and no partial rate. The worst status is the exit code. The
   `AGENTS.md` ablation is the corpus's first task (full file, imperatives only, absent).
   `just eval-corpus --contract` prints the task↔runner contract, derived from the
   runner, so a key added to it appears there.
+
+## Changed
+
+- Eval trials now run in fresh bubblewrap filesystem/PID boundaries with a resolved,
+  hash-recorded toolchain, live token/command usage enforcement, and per-run,
+  hash-verified grader copies. Reports retain live usage when available and typed
+  outcomes for every trial.

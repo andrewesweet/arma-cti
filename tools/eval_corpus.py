@@ -36,22 +36,20 @@ What this is not: a judge of whether an expected outcome is the *right* expectat
 A passing run says the corpus detected no regression, nothing more.
 
 Isolation and integrity are criteria, not flavour, and the words say exactly what is
-true. A trial is a fresh workspace holding only what the task declares, in a child
-environment assembled from an allowlist that carries no lane variable, credential or
-dispatch identity. **There is no sandbox.** The child runs as this user with its real
-`HOME`, the proxy variables the allowlist carries, and the whole filesystem its user
-can reach; a descendant that escapes its process group is not contained either. What
-the runner does promise: graders are hash-verified, copied into the run directory —
-outside every trial workspace, whose path never reaches the harness child — and
-re-executed per trial from those verified bytes, so no grader module global carries
-between trials or configurations; the wall-time budget is enforced over the trial's
-whole process group; token and command ceilings are checked against what the adapter
-reports after the trial, which is the only place those numbers exist; every trial
-retains its workspace, its captured streams and its graded record, and nothing is
-written twice; and a configuration may pin `pins.repo_sha`, which refuses the run on
-any other HEAD, so a run is reproducible at the tree it measured. The child
-interpreter is whatever the configuration's `argv[0]` resolves to against the
-allowlisted `PATH`; the run records that resolution in `run.json`.
+true. A trial is a fresh bubblewrap workspace and PID boundary holding only what the
+task declares, in a child environment assembled from an allowlist that carries no lane
+variable, credential or dispatch identity. Host home, repository, temporary, runtime
+and prior-run state are not mounted; descendants stay inside the trial boundary and
+the runner's process group. The harness executable is resolved before the run,
+content-hashed and mounted read-only, with the resolution recorded in `run.json`;
+`pins.toolchain_sha256` can require an exact hash. Graders are hash-verified, copied
+into that run directory — outside every trial workspace, whose path never reaches the
+harness child — and re-executed per trial from those verified bytes, so no grader
+module global carries between trials or configurations. The wall-time, token and
+command budgets are enforced while the adapter runs from its live usage sidecar;
+every trial retains its workspace, sidecar, captured streams and graded record, and
+nothing is written twice. A configuration may pin `pins.repo_sha`, which refuses the
+run on any other HEAD, so a run is reproducible at the tree it measured.
 
 The task↔runner contract prints from this module (`--contract`), rendered from the same
 field registries the loader validates against and the same severity table the run exits
@@ -68,10 +66,12 @@ import importlib.util
 import json
 import math
 import os
+import re
 import shutil
 import signal
 import subprocess
 import sys
+import threading
 import uuid
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
@@ -89,11 +89,22 @@ RUN_SCHEMA: Final = "cti.eval-run/1"
 CONFIGURATION_SCHEMA: Final = "cti.eval-configuration/1"
 TRIAL_RECORD_SCHEMA: Final = "cti.eval-trial-record/1"
 GRADER_ENTRY: Final = "grade"
+TASK_CONFIGURATION_SCOPE: Final = "per-run"
+USAGE_RECORD: Final = "usage.json"
+SANDBOX_WORKSPACE: Final = "/work"
+SANDBOX_INPUTS: Final = "/inputs"
+SANDBOX_TOOLCHAIN: Final = "/toolchain"
+SANDBOX_HOME: Final = "/home/eval"
+SAFE_SYSTEM_PATH: Final = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+SANDBOX_BIND_ROOTS: Final = ("/usr", "/bin", "/sbin", "/lib", "/lib64", "/etc")
+SANDBOX_HIDDEN_ROOTS: Final = ("/home", "/root", "/tmp", "/var", "/run")  # noqa: S108 — mounts hide host state
+IDENTIFIER_PATTERN: Final = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.-]*\Z")
+ENV_NAME_PATTERN: Final = re.compile(r"[A-Za-z_][A-Za-z0-9_]*\Z")
+SHA256_PATTERN: Final = re.compile(r"[0-9a-fA-F]{64}\Z")
 
 # Per-trial ceiling defaults. A task or a configuration overrides any leg; the defaults
-# exist so a task that states none is still bounded rather than unbounded. Only the
-# seconds leg is enforced — the runner kills the trial's process group at the deadline;
-# the token and command legs are ceilings over what the adapter reports afterwards.
+# exist so a task that states none is still bounded rather than unbounded. The runner
+# watches the adapter's usage sidecar and kills its process group at every ceiling.
 DEFAULT_BUDGET_SECONDS: Final = 900.0
 DEFAULT_BUDGET_TOKENS: Final = 400_000
 DEFAULT_BUDGET_COMMANDS: Final = 400
@@ -148,6 +159,12 @@ TASK_FIELDS: Final[tuple[ContractField, ...]] = (
     ContractField("schema", True, f"exactly {TASK_SCHEMA}"),
     ContractField("id", True, "task identity, unique within the corpus"),
     ContractField("provenance", True, "the issue or commit this task grew from"),
+    ContractField(
+        "configuration",
+        True,
+        f"configuration scope; must be {TASK_CONFIGURATION_SCOPE}, with the run "
+        "naming the actual configuration",
+    ),
     ContractField("prompt", True, "the self-contained work the harness is given"),
     ContractField("classes", True, "the outcome classes the grader may return"),
     ContractField("expected_class", True, "the class a good run produces, from classes"),
@@ -160,8 +177,34 @@ TASK_FIELDS: Final[tuple[ContractField, ...]] = (
     ContractField(
         "budget",
         False,
-        "per-trial ceiling override: seconds enforced; tokens and commands are"
-        " ceilings over the adapter's post-trial report",
+        "per-trial ceiling override: seconds, tokens and commands enforced from live usage",
+    ),
+)
+
+VARIANT_FIELDS: Final[tuple[ContractField, ...]] = (
+    ContractField("id", True, "variant identity, unique within its task"),
+    ContractField("file", False, "corpus stimulus copied into the trial workspace"),
+    ContractField("repo_file", False, "repository stimulus copied at run time and hash recorded"),
+)
+
+BUDGET_FIELDS: Final[tuple[ContractField, ...]] = (
+    ContractField("seconds", False, "wall-time ceiling, enforced by the runner"),
+    ContractField("tokens", False, "token ceiling, enforced from the live usage sidecar"),
+    ContractField("commands", False, "command ceiling, enforced from the live usage sidecar"),
+)
+
+UNIT_COST_FIELDS: Final[tuple[ContractField, ...]] = (
+    ContractField("input_per_1m", False, "currency cost per million input tokens; defaults to 0"),
+    ContractField("output_per_1m", False, "currency cost per million output tokens; defaults to 0"),
+    ContractField("currency", False, "currency code or label; defaults to USD"),
+)
+
+PIN_FIELDS: Final[tuple[ContractField, ...]] = (
+    ContractField("repo_sha", False, "exact repository HEAD required before the run"),
+    ContractField(
+        "toolchain_sha256",
+        False,
+        "optional exact hash for the executable resolved from harness.argv[0]",
     ),
 )
 
@@ -180,11 +223,15 @@ CONFIGURATION_FIELDS: Final[tuple[ContractField, ...]] = (
     ContractField(
         "budget",
         False,
-        "per-trial ceiling: seconds enforced; tokens and commands are ceilings"
-        " over the adapter's post-trial report",
+        "per-trial ceiling: seconds, tokens and commands enforced from live usage",
     ),
     ContractField("unit_costs", False, "currency reporting: input_per_1m, output_per_1m, currency"),
     ContractField("pins.repo_sha", False, "refuse the run unless HEAD is exactly this commit"),
+    ContractField(
+        "pins.toolchain_sha256",
+        False,
+        "refuse the run unless the resolved harness executable has this sha256",
+    ),
 )
 
 ADAPTER_FIELDS: Final[tuple[ContractField, ...]] = (
@@ -196,29 +243,51 @@ ADAPTER_FIELDS: Final[tuple[ContractField, ...]] = (
     ContractField("harness", False, "the harness's self-description, recorded verbatim"),
 )
 
+USAGE_FIELDS: Final[tuple[ContractField, ...]] = (
+    ContractField("tokens_in", True, "cumulative input tokens, updated while the adapter runs"),
+    ContractField("tokens_out", True, "cumulative output tokens, updated while the adapter runs"),
+    ContractField("commands", True, "cumulative tool commands, updated while the adapter runs"),
+)
+
 GRADER_FIELDS: Final[tuple[ContractField, ...]] = (
     ContractField("grade", True, "function: record -> {'class': str, 'note': str?}"),
+)
+
+CASE_FIELDS: Final[tuple[ContractField, ...]] = (
+    ContractField("task.id", True, "task identity carried into every materialized case"),
+    ContractField("task.provenance", True, "task provenance carried into every materialized case"),
+    ContractField("configuration", True, "actual configuration under test"),
+    ContractField("variant", True, "ablation arm under test"),
+)
+
+CONTRACT_REGISTRIES: Final[tuple[tuple[str, tuple[ContractField, ...]], ...]] = (
+    ("task", TASK_FIELDS),
+    ("variant", VARIANT_FIELDS),
+    ("budget", BUDGET_FIELDS),
+    ("unit_costs", UNIT_COST_FIELDS),
+    ("pins", PIN_FIELDS),
+    ("configuration", CONFIGURATION_FIELDS),
+    ("adapter", ADAPTER_FIELDS),
+    ("usage", USAGE_FIELDS),
+    ("grader", GRADER_FIELDS),
+    ("case", CASE_FIELDS),
 )
 
 
 class CaseState(StrEnum):
     """How a case's rate is classified.
 
-    A case's verdict is its **rate** — `met` over its graded repeats, judged against
-    the task's tolerance — and the state is that rate's classification, never a
-    substitute for it. A rate exists only when every repeat graded: a case the budget
-    touched is `budget_stopped`, no rate and no verdict, because a rate over a partial
-    denominator is the measurement the specification forbids. `pass`, `fail`,
-    `infra_unavailable` and `untyped_harness_failure` take their meaning from
-    AGENTS.md's failure-class table and this output restates none of it; `quarantined`
-    is `flake_quarantine`'s discipline carried by a case whose outcomes spread beyond
-    their tolerance.
+    A case's verdict is its **rate** — `met` over all stated repeats, judged against
+    the task's tolerance — and this enum is only that rate's status. A rate exists only
+    when every repeat graded: a case the budget touched has no verdict. Infrastructure
+    and harness failures remain typed not-a-result; `quarantined` carries the
+    `flake_quarantine` discipline.
     """
 
-    PASS = "pass"  # noqa: S105 — the class name, not a credential
+    WITHIN_TOLERANCE = "within_tolerance"
     QUARANTINED = "quarantined"
     BUDGET_STOPPED = "budget_stopped"
-    FAIL = "fail"
+    OUTSIDE_TOLERANCE = "outside_tolerance"
     INFRA_UNAVAILABLE = "infra_unavailable"
     UNTYPED_HARNESS_FAILURE = "untyped_harness_failure"
 
@@ -227,10 +296,10 @@ class CaseState(StrEnum):
 # corpus's own convention. These ranks are this runner's vocabulary for eval states;
 # the names shared with the failure-class table keep their table meaning, never redefined.
 CASE_SEVERITY: Final[dict[CaseState, int]] = {
-    CaseState.PASS: 0,
+    CaseState.WITHIN_TOLERANCE: 0,
     CaseState.QUARANTINED: 1,
     CaseState.BUDGET_STOPPED: 2,
-    CaseState.FAIL: 3,
+    CaseState.OUTSIDE_TOLERANCE: 3,
     CaseState.INFRA_UNAVAILABLE: 4,
     CaseState.UNTYPED_HARNESS_FAILURE: 5,
 }
@@ -263,22 +332,43 @@ STOPPED_BY_CRASH: Final = "crash"
 # because a trial that inherits the orchestrator's identity is not a fresh environment.
 # Anything else a harness needs is declared per configuration, names recorded only.
 CHILD_ENV_ALLOWLIST: Final = (
-    "PATH",
-    "HOME",
     "LANG",
     "LC_ALL",
     "TZ",
     "USER",
     "SHELL",
     "TERM",
-    "TMPDIR",
-    "HTTPS_PROXY",
-    "HTTP_PROXY",
-    "NO_PROXY",
-    "https_proxy",
-    "http_proxy",
-    "no_proxy",
 )
+FORBIDDEN_ENV_NAMES: Final = frozenset(
+    {
+        "HOME",
+        "PATH",
+        "TMPDIR",
+        "LD_PRELOAD",
+        "LD_LIBRARY_PATH",
+        "PYTHONPATH",
+        "PYTHONHOME",
+        "CTI_DISPATCH_ID",
+        "ANTHROPIC_BASE_URL",
+        "ANTHROPIC_API_KEY",
+        "HTTP_PROXY",
+        "HTTPS_PROXY",
+        "ALL_PROXY",
+        "NO_PROXY",
+        "FTP_PROXY",
+        "SSH_AUTH_SOCK",
+        "BASH_ENV",
+        "ENV",
+        "GIT_CONFIG_GLOBAL",
+        "GIT_CONFIG_SYSTEM",
+        "XDG_CONFIG_HOME",
+        "XDG_CACHE_HOME",
+        "SSL_CERT_FILE",
+        "REQUESTS_CA_BUNDLE",
+        "CURL_CA_BUNDLE",
+    }
+)
+FORBIDDEN_ENV_MARKERS: Final = ("KEY", "TOKEN", "SECRET", "PASSWORD", "CREDENTIAL")
 
 
 @dataclass(frozen=True)
@@ -292,20 +382,20 @@ class Variant:
 
 @dataclass(frozen=True)
 class Budget:
-    """The per-trial ceiling, named precisely because its legs are not equals.
-
-    `seconds` is a budget the runner enforces: the trial's whole process group is
-    killed at the deadline. `tokens` and `commands` are ceilings over what the
-    adapter reports after the trial — self-reports are the only place those numbers
-    exist, so a trial over either leg is recorded as a budget stop after the fact,
-    never prevented. A descendant that escapes its process group (it calls
-    `setsid` itself) evades the seconds leg too; nothing in this repository
-    sandboxes children, and this module does not pretend otherwise.
-    """
+    """The fully resolved per-trial ceiling enforced by the runner."""
 
     seconds: float
     tokens: int
     commands: int
+
+
+@dataclass(frozen=True)
+class BudgetSpec:
+    """An optional budget override, retaining which legs the document stated."""
+
+    seconds: float | None
+    tokens: int | None
+    commands: int | None
 
 
 @dataclass(frozen=True)
@@ -332,7 +422,8 @@ class Task:
     grader: Path
     grader_sha256: str
     variants: tuple[Variant, ...]
-    budget: Budget | None
+    budget: BudgetSpec | None
+    configuration: str = TASK_CONFIGURATION_SCOPE
 
     @property
     def case_ids(self) -> list[str]:
@@ -348,9 +439,22 @@ class Configuration:
     path: Path
     argv: tuple[str, ...]
     env: dict[str, str]
-    budget: Budget | None
+    budget: BudgetSpec | None
     unit_costs: UnitCosts | None
     pins_repo_sha: str | None
+    pins_toolchain_sha256: str | None = None
+
+
+@dataclass(frozen=True)
+class Toolchain:
+    """Executable identity pinned for one run and checked before each trial."""
+
+    requested: str
+    resolved: Path
+    sha256: str
+    sandbox_path: str
+    version: str
+    root: Path | None = None
 
 
 @dataclass
@@ -361,7 +465,7 @@ class TrialOutcome:
     graded_class: str | None
     state: TrialState
     detail: str = ""
-    reported: dict[str, int] | None = None  # the adapter's usage report, whatever the outcome
+    reported: dict[str, int] | None = None  # live usage, whatever the outcome
 
 
 @dataclass
@@ -371,6 +475,11 @@ class CaseResult:
     configuration: str
     case_id: str
     state: CaseState
+    task_id: str = ""
+    task_provenance: str = ""
+    variant_id: str = ""
+    expected_class: str = ""
+    tolerance: float = 0.0
     rate: float | None = None
     met: int = 0
     graded: int = 0
@@ -435,6 +544,31 @@ def percentage(value: float) -> str:
     return f"{value * 100:.1f}pp"
 
 
+def _identifier(value: object, label: str) -> str:
+    """Read a path-safe identity used as a durable directory component."""
+    if not isinstance(value, str) or not value or IDENTIFIER_PATTERN.fullmatch(value) is None:
+        raise EvalRefusalError("input_invalid", (f"identifier_invalid={label}",))
+    return value
+
+
+def _sha256(value: object, label: str) -> str:
+    """Read a lowercase-or-uppercase sha256 string."""
+    if not isinstance(value, str) or SHA256_PATTERN.fullmatch(value) is None:
+        raise EvalRefusalError("input_invalid", (f"sha256_invalid={label}",))
+    return value.lower()
+
+
+def _confined_path(root: Path, value: str, label: str) -> Path:
+    """Resolve a declared path and refuse it if it escapes `root`."""
+    root_resolved = root.resolve()
+    candidate = (root / value).resolve()
+    try:
+        candidate.relative_to(root_resolved)
+    except ValueError:
+        raise EvalRefusalError("input_invalid", (f"path_outside_root={label}",)) from None
+    return candidate
+
+
 def _required(mapping: dict[str, object], key: str, label: str) -> object:
     """Read a required key, refusing with the document's label when absent."""
     if key not in mapping:
@@ -450,6 +584,23 @@ def _string(mapping: dict[str, object], key: str, label: str) -> str:
     return value
 
 
+def _require_registry_fields(
+    mapping: dict[str, object], fields: tuple[ContractField, ...], label: str
+) -> None:
+    """Require the fields marked required by one contract registry."""
+    for contract in fields:
+        if not contract.required:
+            continue
+        parent, separator, leaf = contract.name.partition(".")
+        if separator:
+            section = mapping.get(parent)
+            present = isinstance(section, dict) and leaf in section
+        else:
+            present = contract.name in mapping
+        if not present:
+            raise EvalRefusalError("input_invalid", (f"missing={label}.{contract.name}",))
+
+
 def _integer(mapping: dict[str, object], key: str, label: str, minimum: int) -> int:
     """Read a required integer field bounded below by `minimum`."""
     value = _required(mapping, key, label)
@@ -460,23 +611,53 @@ def _integer(mapping: dict[str, object], key: str, label: str, minimum: int) -> 
     return value
 
 
-def _budget(mapping: object | None, label: str) -> Budget | None:
-    """Read an optional budget block, each leg independently defaulted."""
+def _budget(mapping: object | None, label: str) -> BudgetSpec | None:
+    """Read an optional budget block without losing which legs were stated."""
     if mapping is None:
         return None
     if not isinstance(mapping, dict):
         raise EvalRefusalError("input_invalid", (f"budget_not_an_object={label}",))
-    seconds = mapping.get("seconds", DEFAULT_BUDGET_SECONDS)
-    tokens = mapping.get("tokens", DEFAULT_BUDGET_TOKENS)
-    commands = mapping.get("commands", DEFAULT_BUDGET_COMMANDS)
+    values: dict[str, float | int | None] = {
+        "seconds": mapping.get("seconds"),
+        "tokens": mapping.get("tokens"),
+        "commands": mapping.get("commands"),
+    }
     for name, value, floor in (
-        ("seconds", seconds, 1.0),
-        ("tokens", tokens, 1),
-        ("commands", commands, 1),
+        ("seconds", values["seconds"], 1.0),
+        ("tokens", values["tokens"], 1),
+        ("commands", values["commands"], 1),
     ):
-        if isinstance(value, bool) or not isinstance(value, (int, float)) or value < floor:
+        if value is None:
+            continue
+        valid_number = isinstance(value, (int, float)) and not isinstance(value, bool)
+        if name == "seconds":
+            valid_number = valid_number and math.isfinite(float(value))
+        else:
+            valid_number = valid_number and isinstance(value, int)
+        if not valid_number or value < floor:
             raise EvalRefusalError("input_invalid", (f"budget_out_of_range={label}.{name}",))
-    return Budget(float(seconds), int(tokens), int(commands))
+    return BudgetSpec(
+        float(values["seconds"]) if values["seconds"] is not None else None,
+        int(values["tokens"]) if values["tokens"] is not None else None,
+        int(values["commands"]) if values["commands"] is not None else None,
+    )
+
+
+def _budget_override(
+    spec: BudgetSpec | Budget | None, name: str, default: float
+) -> float | int | None:
+    """Return one stated override, treating legacy full defaults as omitted."""
+    if spec is None:
+        return None
+    value = getattr(spec, name)
+    if value is None:
+        return None
+    # Budget was the public fixture type before partial overrides existed. Its
+    # default-valued legs represented omission; BudgetSpec preserves an explicit
+    # default and therefore takes the normal path below.
+    if isinstance(spec, Budget) and value == default:
+        return None
+    return value
 
 
 def read_json(path: Path) -> dict[str, object]:
@@ -500,6 +681,9 @@ def load_manifest(corpus_dir: Path) -> dict[str, object]:
     document = read_json(path)
     if document.get("schema") != MANIFEST_SCHEMA:
         raise EvalRefusalError("input_invalid", (f"schema={path}",))
+    minimum = document.get("min_cases_for_claim", DEFAULT_MIN_CASES_FOR_CLAIM)
+    if isinstance(minimum, bool) or not isinstance(minimum, int) or minimum < 1:
+        raise EvalRefusalError("input_invalid", (f"min_cases_for_claim_invalid={path}",))
     return document
 
 
@@ -511,12 +695,24 @@ def _variants(document: dict[str, object], path: Path, repo_root: Path) -> tuple
     if not isinstance(raw, list) or not raw:
         raise EvalRefusalError("input_invalid", (f"variants_not_a_nonempty_list={path.name}",))
     variants: list[Variant] = []
+    variant_ids: set[str] = set()
     for entry in raw:
         if not isinstance(entry, dict):
             raise EvalRefusalError("input_invalid", (f"variant_not_an_object={path.name}",))
-        variant_id = entry.get("id")
-        if not isinstance(variant_id, str) or not variant_id:
+        _require_registry_fields(entry, VARIANT_FIELDS, f"{path.name}.variant")
+        raw_variant_id = entry.get("id")
+        if (
+            not isinstance(raw_variant_id, str)
+            or not raw_variant_id
+            or IDENTIFIER_PATTERN.fullmatch(raw_variant_id) is None
+        ):
             raise EvalRefusalError("input_invalid", (f"variant_id_invalid={path.name}",))
+        variant_id = raw_variant_id
+        if variant_id in variant_ids:
+            raise EvalRefusalError(
+                "input_invalid", (f"duplicate_variant_id={path.name}.{variant_id}")
+            )
+        variant_ids.add(variant_id)
         file_value = entry.get("file")
         repo_value = entry.get("repo_file")
         if file_value is not None and repo_value is not None:
@@ -525,9 +721,11 @@ def _variants(document: dict[str, object], path: Path, repo_root: Path) -> tuple
             )
         context: Path | None = None
         if isinstance(file_value, str):
-            candidate = path.parent.parent / file_value
+            candidate = _confined_path(path.parent.parent, file_value, f"{path.name}.file")
             if not candidate.is_file():
                 raise EvalRefusalError("input_invalid", (f"variant_file_missing={file_value}",))
+            if candidate.name in {TRIAL_FILE, ADAPTER_RECORD, USAGE_RECORD}:
+                raise EvalRefusalError("input_invalid", (f"variant_file_reserved={file_value}",))
             context = candidate
         elif file_value is not None:
             raise EvalRefusalError(
@@ -535,8 +733,11 @@ def _variants(document: dict[str, object], path: Path, repo_root: Path) -> tuple
             )
         repo_path: str | None = None
         if isinstance(repo_value, str):
-            if not (repo_root / repo_value).is_file():
+            candidate = _confined_path(repo_root, repo_value, f"{path.name}.repo_file")
+            if not candidate.is_file():
                 raise EvalRefusalError("input_invalid", (f"repo_file_missing={repo_value}",))
+            if candidate.name in {TRIAL_FILE, ADAPTER_RECORD, USAGE_RECORD}:
+                raise EvalRefusalError("input_invalid", (f"repo_file_reserved={repo_value}",))
             repo_path = repo_value
         elif repo_value is not None:
             raise EvalRefusalError(
@@ -551,9 +752,7 @@ def load_task(corpus_dir: Path, path: Path, repo_root: Path) -> Task:
     document = read_json(path)
     if document.get("schema") != TASK_SCHEMA:
         raise EvalRefusalError("input_invalid", (f"schema={path}",))
-    for contract in TASK_FIELDS:
-        if contract.required and contract.name not in document:
-            raise EvalRefusalError("input_invalid", (f"missing={path.name}.{contract.name}",))
+    _require_registry_fields(document, TASK_FIELDS, path.name)
     classes = _required(document, "classes", path.name)
     if not isinstance(classes, list) or not classes:
         raise EvalRefusalError("input_invalid", (f"classes_not_a_list={path.name}",))
@@ -567,8 +766,11 @@ def load_task(corpus_dir: Path, path: Path, repo_root: Path) -> Task:
         raise EvalRefusalError("input_invalid", (f"tolerance_not_a_number={path.name}",))
     if not 0.0 <= float(tolerance) <= 1.0:
         raise EvalRefusalError("input_invalid", (f"tolerance_out_of_range={path.name}",))
+    configuration = _string(document, "configuration", path.name)
+    if configuration != TASK_CONFIGURATION_SCOPE:
+        raise EvalRefusalError("input_invalid", (f"configuration_scope_invalid={path.name}"))
     return Task(
-        id=_string(document, "id", path.name),
+        id=_identifier(document.get("id"), f"{path.name}.id"),
         title=str(document.get("title", "")),
         provenance=_string(document, "provenance", path.name),
         prompt=_string(document, "prompt", path.name),
@@ -576,10 +778,13 @@ def load_task(corpus_dir: Path, path: Path, repo_root: Path) -> Task:
         expected_class=expected,
         repeats=_integer(document, "repeats", path.name, 1),
         tolerance=float(tolerance),
-        grader=corpus_dir.parent / _string(document, "grader", path.name),
-        grader_sha256=_string(document, "grader_sha256", path.name),
+        grader=_confined_path(
+            corpus_dir.parent, _string(document, "grader", path.name), f"{path.name}.grader"
+        ),
+        grader_sha256=_sha256(_string(document, "grader_sha256", path.name), path.name),
         variants=_variants(document, path, repo_root),
         budget=_budget(document.get("budget"), path.name),
+        configuration=configuration,
     )
 
 
@@ -600,21 +805,61 @@ def load_corpus(corpus_dir: Path, repo_root: Path) -> tuple[list[Task], dict[str
     return tasks, load_manifest(corpus_dir)
 
 
+def _configuration_pins(document: dict[str, object], path: Path) -> tuple[str | None, str | None]:
+    """Read optional repository and executable pins."""
+    pins = document.get("pins")
+    if pins is None:
+        return None, None
+    if not isinstance(pins, dict):
+        raise EvalRefusalError("input_invalid", (f"pins_not_an_object={path.name}",))
+    repo_sha = pins.get("repo_sha")
+    toolchain_sha = pins.get("toolchain_sha256")
+    return (
+        _sha256(repo_sha, f"{path.name}.pins.repo_sha") if repo_sha is not None else None,
+        (
+            _sha256(toolchain_sha, f"{path.name}.pins.toolchain_sha256")
+            if toolchain_sha is not None
+            else None
+        ),
+    )
+
+
+def _configuration_costs(document: dict[str, object], path: Path) -> UnitCosts | None:
+    """Read optional unit prices, with explicit zero/US-dollar defaults."""
+    unit_costs = document.get("unit_costs")
+    if unit_costs is None:
+        return None
+    if not isinstance(unit_costs, dict):
+        raise EvalRefusalError("input_invalid", (f"unit_costs_not_an_object={path.name}",))
+    raw_costs: dict[str, object] = {
+        name: unit_costs.get(name) for name in ("input_per_1m", "output_per_1m", "currency")
+    }
+    for name in ("input_per_1m", "output_per_1m"):
+        value = raw_costs[name]
+        if value is None:
+            value = 0.0
+        if (
+            isinstance(value, bool)
+            or not isinstance(value, (int, float))
+            or not math.isfinite(float(value))
+            or value < 0
+        ):
+            raise EvalRefusalError("input_invalid", (f"unit_cost_invalid={path.name}.{name}",))
+        raw_costs[name] = float(value)
+    currency = raw_costs["currency"]
+    if currency is None:
+        currency = "USD"
+    if not isinstance(currency, str) or not currency:
+        raise EvalRefusalError("input_invalid", (f"unit_cost_invalid={path.name}.currency",))
+    return UnitCosts(float(raw_costs["input_per_1m"]), float(raw_costs["output_per_1m"]), currency)
+
+
 def load_configuration(path: Path) -> Configuration:
     """Load and validate one configuration against the runner's own field registry."""
     document = read_json(path)
     if document.get("schema") != CONFIGURATION_SCHEMA:
         raise EvalRefusalError("input_invalid", (f"schema={path}",))
-    for contract in CONFIGURATION_FIELDS:
-        if not contract.required:
-            continue
-        parent, _, leaf = contract.name.partition(".")
-        if leaf and parent in document:
-            section = document[parent]
-            if not isinstance(section, dict) or leaf not in section:
-                raise EvalRefusalError("input_invalid", (f"missing={path.name}.{contract.name}",))
-        elif contract.name not in document:
-            raise EvalRefusalError("input_invalid", (f"missing={path.name}.{contract.name}",))
+    _require_registry_fields(document, CONFIGURATION_FIELDS, path.name)
     harness = document.get("harness")
     if not isinstance(harness, dict) or not isinstance(harness.get("argv"), list):
         raise EvalRefusalError("input_invalid", (f"harness_not_an_object={path.name}",))
@@ -626,32 +871,29 @@ def load_configuration(path: Path) -> Configuration:
         isinstance(name, str) and isinstance(value, str) for name, value in env_raw.items()
     ):
         raise EvalRefusalError("input_invalid", (f"harness_env_not_a_string_map={path.name}",))
-    pins = document.get("pins")
-    pins_repo_sha: str | None = None
-    if pins is not None:
-        if not isinstance(pins, dict):
-            raise EvalRefusalError("input_invalid", (f"pins_not_an_object={path.name}",))
-        pins_repo_sha = pins.get("repo_sha") or None
-        if pins_repo_sha is not None and not isinstance(pins_repo_sha, str):
-            raise EvalRefusalError("input_invalid", (f"pins_repo_sha_not_a_sha={path.name}",))
-    unit_costs = document.get("unit_costs")
-    costs: UnitCosts | None = None
-    if unit_costs is not None:
-        if not isinstance(unit_costs, dict):
-            raise EvalRefusalError("input_invalid", (f"unit_costs_not_an_object={path.name}",))
-        costs = UnitCosts(
-            input_per_1m=float(unit_costs.get("input_per_1m", 0.0)),
-            output_per_1m=float(unit_costs.get("output_per_1m", 0.0)),
-            currency=str(unit_costs.get("currency", "USD")),
-        )
+    for name in env_raw:
+        if ENV_NAME_PATTERN.fullmatch(name) is None:
+            raise EvalRefusalError(
+                "input_invalid", (f"harness_env_name_invalid={path.name}.{name}",)
+            )
+        if (
+            name.upper() in FORBIDDEN_ENV_NAMES
+            or (name.startswith("CTI_EVAL_") and name != "CTI_EVAL_MARKER")
+            or any(marker in name.upper() for marker in FORBIDDEN_ENV_MARKERS)
+        ):
+            raise EvalRefusalError(
+                "input_invalid", (f"harness_env_name_forbidden={path.name}.{name}",)
+            )
+    pins_repo_sha, pins_toolchain_sha256 = _configuration_pins(document, path)
     return Configuration(
-        name=_string(document, "name", path.name),
+        name=_identifier(document.get("name"), f"{path.name}.name"),
         path=path,
         argv=tuple(argv),
         env=dict(env_raw),
         budget=_budget(document.get("budget"), path.name),
-        unit_costs=costs,
+        unit_costs=_configuration_costs(document, path),
         pins_repo_sha=pins_repo_sha,
+        pins_toolchain_sha256=pins_toolchain_sha256,
     )
 
 
@@ -677,14 +919,14 @@ class Grader:
         self._spec = importlib.util.spec_from_file_location(f"eval_grader_{name}", target)
         if self._spec is None or self._spec.loader is None:
             raise EvalRefusalError("grader_unloadable", (f"grader={source.name}",))
+        self.name = name
+        self.path = target
+        self.sha256 = expected_sha
         entry = self._fresh_entry()
         if not callable(entry):
             raise EvalRefusalError(
                 "grader_unloadable", (f"missing={GRADER_ENTRY}()", f"grader={source.name}")
             )
-        self.name = name
-        self.path = target
-        self.sha256 = expected_sha
 
     def _fresh_entry(self) -> object:
         """Execute the verified bytes into a brand-new module and return its entry point.
@@ -693,8 +935,13 @@ class Grader:
         next: every call re-runs the module top level, so the only state that
         survives a call is whatever the grader wrote to disk itself.
         """
-        module = importlib.util.module_from_spec(self._spec)
-        self._spec.loader.exec_module(module)
+        try:
+            module = importlib.util.module_from_spec(self._spec)
+            self._spec.loader.exec_module(module)
+        except Exception as failure:  # noqa: BLE001 — a grader import is harness input
+            raise EvalRefusalError(
+                "untyped_harness_failure", (f"grader={self.name}", f"error={failure!r}")
+            ) from None
         return getattr(module, GRADER_ENTRY, None)
 
     def grade(self, record: dict[str, object], classes: tuple[str, ...]) -> tuple[str, str]:
@@ -726,38 +973,214 @@ class Grader:
 
 
 def effective_budget(task: Task, configuration: Configuration) -> Budget:
-    """Resolve the trial's budget: task legs override configuration legs override defaults.
+    """Resolve task legs over configuration legs over runner defaults."""
+    configuration_budget = configuration.budget
+    task_budget = task.budget
 
-    Deliberately blunt about precedence: a task's stated leg wins whenever the task
-    states that leg at all, and a leg the task leaves out falls to the configuration
-    and then to the runner's defaults. A budget the operator cannot predict is worse
-    than a blunt one.
-    """
-    budget = configuration.budget or Budget(
-        DEFAULT_BUDGET_SECONDS, DEFAULT_BUDGET_TOKENS, DEFAULT_BUDGET_COMMANDS
-    )
-    if task.budget is None:
-        return budget
+    def leg(name: str, default: float) -> float | int:
+        """Resolve one leg while retaining partial override semantics."""
+        task_value = _budget_override(task_budget, name, float(default))
+        if task_value is not None:
+            return task_value
+        config_value = _budget_override(configuration_budget, name, float(default))
+        return config_value if config_value is not None else default
+
     return Budget(
-        task.budget.seconds if task.budget.seconds != DEFAULT_BUDGET_SECONDS else budget.seconds,
-        task.budget.tokens if task.budget.tokens != DEFAULT_BUDGET_TOKENS else budget.tokens,
-        task.budget.commands
-        if task.budget.commands != DEFAULT_BUDGET_COMMANDS
-        else budget.commands,
+        float(leg("seconds", DEFAULT_BUDGET_SECONDS)),
+        int(leg("tokens", DEFAULT_BUDGET_TOKENS)),
+        int(leg("commands", DEFAULT_BUDGET_COMMANDS)),
     )
 
 
 def child_environment(configuration: Configuration) -> dict[str, str]:
-    """Assemble the child environment: the allowlist plus the declared extras only.
-
-    This is the seam that keeps an eval trial a fresh environment. A lane variable, a
-    credential or CTI_DISPATCH_ID reaches a trial only if the configuration names it,
-    and a configuration that names a lane secret is recorded — by name, never by value
-    — in the run directory.
-    """
+    """Assemble safe inherited names plus explicitly declared non-secret extras."""
     selected = {name: value for name, value in os.environ.items() if name in CHILD_ENV_ALLOWLIST}
     selected.update(configuration.env)
     return selected
+
+
+def _resolve_executable(requested: str, repo_root: Path) -> Path:
+    """Resolve argv[0] once, refusing a missing or non-executable command."""
+    expanded = requested.replace(REPO_TOKEN, str(repo_root))
+    candidate = Path(expanded)
+    if not candidate.is_absolute():
+        resolved_name = shutil.which(expanded, path=os.environ.get("PATH", SAFE_SYSTEM_PATH))
+        if resolved_name is None:
+            raise EvalRefusalError("toolchain_unavailable", (f"executable={requested}",))
+        candidate = Path(resolved_name)
+    try:
+        resolved = candidate.resolve(strict=True)
+    except OSError:
+        raise EvalRefusalError("toolchain_unavailable", (f"executable={requested}",)) from None
+    if not resolved.is_file() or not os.access(resolved, os.X_OK):
+        raise EvalRefusalError("toolchain_unavailable", (f"not_executable={resolved}",))
+    return resolved
+
+
+def _toolchain_root(executable: Path, repo_root: Path) -> Path | None:
+    """Return an install root that can be mounted read-only into the trial."""
+    if executable.is_relative_to(repo_root.resolve()):
+        return None
+    for root_name in ("/usr", "/bin", "/sbin", "/lib", "/lib64"):
+        root = Path(root_name)
+        if executable == root or executable.is_relative_to(root):
+            return None
+    if executable.parent.name == "bin":
+        return executable.parent.parent
+    return executable.parent
+
+
+def resolve_toolchain(configuration: Configuration, repo_root: Path = ROOT) -> Toolchain:
+    """Resolve and hash argv[0]; the same bytes are required for every trial."""
+    resolved = _resolve_executable(configuration.argv[0], repo_root)
+    digest = sha256_file(resolved)
+    if (
+        configuration.pins_toolchain_sha256 is not None
+        and digest != configuration.pins_toolchain_sha256
+    ):
+        raise EvalRefusalError(
+            "toolchain_hash_mismatch",
+            (
+                f"configuration={configuration.name}",
+                f"expected={configuration.pins_toolchain_sha256}",
+                f"observed={digest}",
+            ),
+        )
+    root = _toolchain_root(resolved, repo_root)
+    if root is not None:
+        relative = resolved.relative_to(root)
+        sandbox_path = str(Path(SANDBOX_TOOLCHAIN) / relative)
+    elif resolved.is_relative_to(repo_root.resolve()):
+        sandbox_path = f"{SANDBOX_INPUTS}/toolchain-{digest[:12]}-{resolved.name}"
+    else:
+        sandbox_path = str(resolved)
+    return Toolchain(
+        requested=configuration.argv[0],
+        resolved=resolved,
+        sha256=digest,
+        sandbox_path=sandbox_path,
+        version=f"{resolved.name} sha256={digest}",
+        root=root,
+    )
+
+
+def _sandbox_binary() -> Path:
+    """Find bubblewrap, the required filesystem and process boundary."""
+    executable = shutil.which("bwrap", path=os.environ.get("PATH", SAFE_SYSTEM_PATH))
+    if executable is None:
+        raise EvalRefusalError("sandbox_unavailable", ("executable=bwrap",))
+    return Path(executable).resolve()
+
+
+def _stage_input(source: Path, inputs: Path, label: str) -> str:
+    """Copy one declared command input into this trial's read-only input mount."""
+    digest = sha256_file(source)
+    target = inputs / f"{label}-{digest[:12]}-{source.name}"
+    if not target.exists():
+        shutil.copyfile(source, target)
+        shutil.copymode(source, target)
+    return f"{SANDBOX_INPUTS}/{target.name}"
+
+
+def _sandbox_argument(
+    raw: str,
+    index: int,
+    toolchain: Toolchain,
+    workspace: Path,
+    inputs: Path,
+    repo_root: Path,
+) -> str:
+    """Map a configuration argument into the sandbox or stage its declared file."""
+    if index == 0:
+        if toolchain.root is not None or not toolchain.resolved.is_relative_to(repo_root.resolve()):
+            return toolchain.sandbox_path
+        return _stage_input(toolchain.resolved, inputs, "toolchain")
+    value = raw.replace(REPO_TOKEN, str(repo_root))
+    workspace_text = str(workspace.resolve())
+    result: str
+    if value == workspace_text or value.startswith(workspace_text + os.sep):
+        relative = Path(value).resolve().relative_to(workspace.resolve())
+        result = str(Path(SANDBOX_WORKSPACE) / relative)
+    elif REPO_TOKEN in raw:
+        source = _confined_path(repo_root, raw.replace(REPO_TOKEN, "").lstrip("/"), "harness.argv")
+        if not source.is_file():
+            raise EvalRefusalError("input_invalid", (f"harness_argument_not_a_file={raw}",))
+        result = _stage_input(source, inputs, "repo-input")
+    elif Path(value).is_absolute():
+        source = Path(value)
+        if source.is_file():
+            result = _stage_input(source.resolve(), inputs, "argument")
+        elif value in {SANDBOX_WORKSPACE, SANDBOX_INPUTS, SANDBOX_TOOLCHAIN}:
+            result = value
+        else:
+            raise EvalRefusalError("input_invalid", (f"absolute_harness_argument={raw}",))
+    else:
+        result = value
+    return result
+
+
+def sandbox_command(
+    configuration: Configuration,
+    toolchain: Toolchain,
+    workspace: Path,
+    inputs: Path,
+    repo_root: Path,
+    budget: Budget,
+) -> list[str]:
+    """Build a bubblewrap command with only OS, toolchain and trial mounts visible."""
+    bwrap = _sandbox_binary()
+    inputs.mkdir(parents=True, exist_ok=True)
+    mapped = [
+        _sandbox_argument(raw, index, toolchain, workspace, inputs, repo_root)
+        for index, raw in enumerate(configuration.argv)
+    ]
+    command = [
+        str(bwrap),
+        "--die-with-parent",
+        "--new-session",
+        "--unshare-pid",
+        "--clearenv",
+    ]
+    for root in SANDBOX_BIND_ROOTS:
+        if Path(root).exists():
+            command.extend(("--ro-bind", root, root))
+    for root in SANDBOX_HIDDEN_ROOTS:
+        command.extend(("--tmpfs", root))
+    command.extend(
+        (
+            "--proc",
+            "/proc",
+            "--dev",
+            "/dev",
+            "--dir",
+            SANDBOX_HOME,
+            "--bind",
+            str(workspace),
+            SANDBOX_WORKSPACE,
+            "--ro-bind",
+            str(inputs),
+            SANDBOX_INPUTS,
+        )
+    )
+    if toolchain.root is not None:
+        command.extend(("--ro-bind", str(toolchain.root), SANDBOX_TOOLCHAIN))
+    environment = child_environment(configuration)
+    environment.update(
+        {
+            "HOME": SANDBOX_HOME,
+            "PWD": SANDBOX_WORKSPACE,
+            "PATH": f"{SANDBOX_TOOLCHAIN}/bin:{SAFE_SYSTEM_PATH}"
+            if toolchain.root is not None
+            else SAFE_SYSTEM_PATH,
+            "CTI_EVAL_USAGE_FILE": f"{SANDBOX_WORKSPACE}/{USAGE_RECORD}",
+            "CTI_EVAL_TOKEN_BUDGET": str(budget.tokens),
+            "CTI_EVAL_COMMAND_BUDGET": str(budget.commands),
+        }
+    )
+    for name, value in environment.items():
+        command.extend(("--setenv", name, value))
+    command.extend(("--chdir", SANDBOX_WORKSPACE, "--", *mapped))
+    return command
 
 
 def seed_workspace(
@@ -799,60 +1222,291 @@ def seed_workspace(
     return seeded
 
 
+def _usage_from_mapping(mapping: object, label: str) -> dict[str, int]:
+    """Validate cumulative usage counters from the live sidecar or final record."""
+    if not isinstance(mapping, dict):
+        detail = f"{label}_not_an_object"
+        raise TypeError(detail)
+    usage: dict[str, int] = {}
+    for contract in USAGE_FIELDS:
+        value = mapping.get(contract.name)
+        if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+            detail = f"{label}.{contract.name}_not_a_nonnegative_integer"
+            raise ValueError(detail)
+        usage[contract.name] = value
+    return usage
+
+
+def read_usage(path: Path) -> tuple[dict[str, int] | None, str | None]:
+    """Read the adapter's cumulative usage sidecar without raising into the runner."""
+    if not path.is_file():
+        return None, None
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+        return _usage_from_mapping(raw, USAGE_RECORD), None
+    except (OSError, json.JSONDecodeError, TypeError, ValueError) as failure:
+        return None, str(failure)
+
+
+def _budget_reason(usage: dict[str, int], budget: Budget) -> str | None:
+    """Return the first exceeded live usage leg, if any."""
+    if usage["tokens_in"] + usage["tokens_out"] > budget.tokens:
+        return "tokens"
+    if usage["commands"] > budget.commands:
+        return "commands"
+    return None
+
+
+@dataclass
+class ProcessWatch:
+    """Shared state between the process wait and live budget monitor."""
+
+    done: threading.Event = field(default_factory=threading.Event)
+    state: TrialState | None = None
+    detail: str = ""
+    reported: dict[str, int] | None = None
+
+
+def _terminate_process_group(process: subprocess.Popen[bytes]) -> None:
+    """Stop the complete trial process group, including descendants."""
+    try:
+        os.killpg(process.pid, signal.SIGTERM)
+    except ProcessLookupError:
+        return
+    try:
+        process.wait(timeout=0.25)
+    except subprocess.TimeoutExpired:
+        try:
+            os.killpg(process.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            return
+        process.wait()
+
+
+def _watch_process_usage(
+    process: subprocess.Popen[bytes], usage_path: Path, budget: Budget, watch: ProcessWatch
+) -> None:
+    """Kill a live trial when its sidecar reports a token or command ceiling."""
+    while process.poll() is None and not watch.done.is_set():
+        usage, error = read_usage(usage_path)
+        if error is not None:
+            watch.state = TrialState.UNTYPED_HARNESS_FAILURE
+            watch.detail = f"usage_unreadable={error}"
+            _terminate_process_group(process)
+            return
+        if usage is not None:
+            watch.reported = usage
+            reason = _budget_reason(usage, budget)
+            if reason is not None:
+                watch.state = TrialState.BUDGET_STOPPED
+                watch.detail = f"budget={reason}"
+                _terminate_process_group(process)
+                return
+        watch.done.wait(0.01)
+
+
+def _write_streams(trial_dir: Path, stdout: bytes | None, stderr: bytes | None) -> None:
+    """Retain both harness streams, including output collected after a timeout."""
+    (trial_dir / "harness-stdout.txt").write_bytes(stdout or b"")
+    (trial_dir / "harness-stderr.txt").write_bytes(stderr or b"")
+
+
+def _raw_adapter_record(workspace: Path) -> dict[str, object] | None:
+    """Read a final adapter record for exit-code classification."""
+    path = workspace / ADAPTER_RECORD
+    if not path.is_file():
+        return None
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    return raw if isinstance(raw, dict) else None
+
+
+def _record_context(
+    task: Task, variant: Variant, configuration: Configuration, toolchain: Toolchain
+) -> dict[str, object]:
+    """Return provenance carried into every accepted trial record."""
+    return {
+        "task": {"id": task.id, "provenance": task.provenance},
+        "configuration": configuration.name,
+        "variant": variant.id,
+        "toolchain": {
+            "requested": toolchain.requested,
+            "resolved": str(toolchain.resolved),
+            "sha256": toolchain.sha256,
+        },
+    }
+
+
+def _run_adapter_process(
+    trial_dir: Path,
+    workspace: Path,
+    argv: list[str],
+    budget: Budget,
+) -> tuple[TrialOutcome | None, dict[str, int] | None]:
+    """Run one sandboxed adapter and return a terminal process outcome, if any."""
+    process = subprocess.Popen(  # noqa: S603 — argv is a validated configuration input
+        argv,
+        cwd=workspace,
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        start_new_session=True,
+        text=False,
+    )
+    usage_path = workspace / USAGE_RECORD
+    watch = ProcessWatch()
+    monitor = threading.Thread(
+        target=_watch_process_usage,
+        args=(process, usage_path, budget, watch),
+        name=f"eval-budget-{trial_dir.name}",
+        daemon=True,
+    )
+    monitor.start()
+    outcome: TrialOutcome | None = None
+    observed: dict[str, int] | None = None
+    try:
+        stdout, stderr = process.communicate(timeout=budget.seconds)
+    except subprocess.TimeoutExpired:
+        _terminate_process_group(process)
+        stdout, stderr = process.communicate()
+        outcome = TrialOutcome(
+            trial_dir.name,
+            None,
+            TrialState.BUDGET_STOPPED,
+            f"budget=time ({budget.seconds}s)",
+        )
+        (trial_dir / "harness-timeout.txt").write_text(
+            f"time budget {budget.seconds}s exhausted\n", encoding="utf-8"
+        )
+    finally:
+        watch.done.set()
+        monitor.join()
+    _write_streams(trial_dir, stdout, stderr)
+    observed, usage_error = read_usage(usage_path)
+    if outcome is None and watch.state is not None:
+        outcome = TrialOutcome(
+            trial_dir.name,
+            None,
+            watch.state,
+            watch.detail,
+            observed or watch.reported,
+        )
+    if outcome is None and process.returncode != 0:
+        raw_record = _raw_adapter_record(workspace)
+        crash_record = raw_record is not None and raw_record.get("stopped_by") == STOPPED_BY_CRASH
+        sandbox_error = stderr.startswith(b"bwrap:")
+        if crash_record or sandbox_error:
+            outcome = TrialOutcome(
+                trial_dir.name,
+                None,
+                TrialState.INFRA_UNAVAILABLE,
+                (
+                    f"harness_crash_exit={process.returncode}"
+                    if crash_record
+                    else f"sandbox_exit={process.returncode}"
+                ),
+                observed,
+            )
+        else:
+            outcome = TrialOutcome(
+                trial_dir.name,
+                None,
+                TrialState.UNTYPED_HARNESS_FAILURE,
+                f"harness_exit={process.returncode}",
+                observed,
+            )
+    if outcome is None and usage_error is not None:
+        outcome = TrialOutcome(
+            trial_dir.name,
+            None,
+            TrialState.UNTYPED_HARNESS_FAILURE,
+            f"usage_unreadable={usage_error}",
+            observed,
+        )
+    if outcome is None and observed is None:
+        outcome = TrialOutcome(
+            trial_dir.name,
+            None,
+            TrialState.UNTYPED_HARNESS_FAILURE,
+            f"missing={USAGE_RECORD}",
+        )
+    if outcome is not None and outcome.reported is None:
+        outcome.reported = observed
+    return outcome, observed
+
+
 def execute_trial(
     task: Task,
     variant: Variant,
     configuration: Configuration,
     trial_dir: Path,
     repo_root: Path,
+    toolchain: Toolchain | None = None,
 ) -> tuple[TrialOutcome, dict[str, object] | None]:
     """Run one trial in a fresh workspace and return its outcome and its record.
 
-    State is one of `graded_pending` (a record the grader can read), `budget_stopped`,
-    `infra_unavailable` or `untyped_harness_failure`. Grading happens in `grade_trial`,
-    never here: this half owns execution and isolation, that half owns the oracle.
+    The adapter runs in a bubblewrap filesystem and PID boundary. Its usage sidecar is
+    watched while it runs; a ceiling kills the whole process group before a verdict can
+    exist. Grading happens in `grade_trial`, never here.
     """
-    workspace = trial_dir / "workspace"
-    seeded = seed_workspace(workspace, task, variant, repo_root)
-    budget = effective_budget(task, configuration)
     try:
-        argv = [token.replace(REPO_TOKEN, str(repo_root)) for token in configuration.argv]
-        completed = subprocess.run(  # noqa: S603 — argv is a validated configuration input
-            argv,
-            cwd=workspace,
-            env=child_environment(configuration),
-            capture_output=True,
-            timeout=budget.seconds,
-            check=False,
-        )
-        (trial_dir / "harness-stdout.txt").write_bytes(completed.stdout)
-        (trial_dir / "harness-stderr.txt").write_bytes(completed.stderr)
-        if completed.returncode != 0:
-            return (
-                TrialOutcome(
-                    trial_dir.name,
-                    None,
-                    "infra_unavailable",
-                    f"harness_exit={completed.returncode}",
-                ),
+        trial_dir.mkdir(parents=True, exist_ok=False)
+        workspace = trial_dir / "workspace"
+        seeded = seed_workspace(workspace, task, variant, repo_root)
+        budget = effective_budget(task, configuration)
+        resolved_toolchain = toolchain or resolve_toolchain(configuration, repo_root)
+        if sha256_file(resolved_toolchain.resolved) != resolved_toolchain.sha256:
+            outcome = TrialOutcome(
+                trial_dir.name,
                 None,
+                TrialState.INFRA_UNAVAILABLE,
+                "toolchain_changed_before_trial",
             )
-    except subprocess.TimeoutExpired:
-        (trial_dir / "harness-timeout.txt").write_text(
-            f"time budget {budget.seconds}s exhausted\n", encoding="utf-8"
+            return outcome, None
+        inputs = trial_dir / "inputs"
+        argv = sandbox_command(
+            configuration, resolved_toolchain, workspace, inputs, repo_root, budget
         )
-        return TrialOutcome(trial_dir.name, None, "budget_stopped", "budget=time"), None
-    except OSError as failure:
+        outcome, observed = _run_adapter_process(trial_dir, workspace, argv, budget)
+        if outcome is not None:
+            return outcome, None
+    except (EvalRefusalError, OSError) as failure:
+        kind = failure.kind if isinstance(failure, EvalRefusalError) else "harness_oserror"
+        detail = (
+            ",".join(failure.details) if isinstance(failure, EvalRefusalError) else str(failure)
+        )
         return (
             TrialOutcome(
                 trial_dir.name,
                 None,
-                "infra_unavailable",
-                f"harness_oserror={failure}",
+                TrialState.INFRA_UNAVAILABLE
+                if isinstance(failure, OSError)
+                else TrialState.UNTYPED_HARNESS_FAILURE,
+                f"{kind}={detail}",
             ),
             None,
         )
-    return read_adapter_record(trial_dir, workspace, budget, seeded)
+    except Exception as failure:  # noqa: BLE001 — any runner failure must be typed
+        return (
+            TrialOutcome(
+                trial_dir.name,
+                None,
+                TrialState.UNTYPED_HARNESS_FAILURE,
+                f"runner_exception={failure!r}",
+            ),
+            None,
+        )
+    return read_adapter_record(
+        trial_dir,
+        workspace,
+        budget,
+        seeded,
+        observed_usage=observed,
+        require_live_usage=True,
+        context=_record_context(task, variant, configuration, resolved_toolchain),
+    )
 
 
 def read_adapter_record(
@@ -860,6 +1514,10 @@ def read_adapter_record(
     workspace: Path,
     budget: Budget,
     seeded: dict[str, object],
+    *,
+    observed_usage: dict[str, int] | None = None,
+    require_live_usage: bool = False,
+    context: dict[str, object] | None = None,
 ) -> tuple[TrialOutcome, dict[str, object] | None]:
     """Validate what the adapter wrote, typing every way it can be unusable."""
     record_path = workspace / ADAPTER_RECORD
@@ -868,26 +1526,28 @@ def read_adapter_record(
             TrialOutcome(
                 trial_dir.name,
                 None,
-                "untyped_harness_failure",
+                TrialState.UNTYPED_HARNESS_FAILURE,
                 f"missing={ADAPTER_RECORD}",
             ),
             None,
         )
     try:
         record = json.loads(record_path.read_text(encoding="utf-8"))
-    except json.JSONDecodeError as failure:
+    except (OSError, json.JSONDecodeError) as failure:
         return (
             TrialOutcome(
                 trial_dir.name,
                 None,
-                "untyped_harness_failure",
+                TrialState.UNTYPED_HARNESS_FAILURE,
                 f"record_unreadable={failure}",
             ),
             None,
         )
     if not isinstance(record, dict):
         return (
-            TrialOutcome(trial_dir.name, None, "untyped_harness_failure", "record_not_an_object"),
+            TrialOutcome(
+                trial_dir.name, None, TrialState.UNTYPED_HARNESS_FAILURE, "record_not_an_object"
+            ),
             None,
         )
     for contract in ADAPTER_FIELDS:
@@ -896,12 +1556,20 @@ def read_adapter_record(
                 TrialOutcome(
                     trial_dir.name,
                     None,
-                    "untyped_harness_failure",
+                    TrialState.UNTYPED_HARNESS_FAILURE,
                     f"missing={ADAPTER_RECORD}.{contract.name}",
                 ),
                 None,
             )
-    return enforce_budget(trial_dir, record, budget, seeded)
+    return enforce_budget(
+        trial_dir,
+        record,
+        budget,
+        seeded,
+        observed_usage=observed_usage,
+        require_live_usage=require_live_usage,
+        context=context,
+    )
 
 
 def enforce_budget(
@@ -909,51 +1577,104 @@ def enforce_budget(
     record: dict[str, object],
     budget: Budget,
     seeded: dict[str, object],
+    *,
+    observed_usage: dict[str, int] | None = None,
+    require_live_usage: bool = False,
+    context: dict[str, object] | None = None,
 ) -> tuple[TrialOutcome, dict[str, object] | None]:
     """Type a budget stop, an infra stop, or a usable record for grading."""
     stopped_by = record.get("stopped_by")
+    outcome: TrialOutcome | None = None
+    record_usage: dict[str, int] | None = None
     if stopped_by not in (STOPPED_COMPLETED, STOPPED_BY_BUDGET, STOPPED_BY_CRASH):
-        return (
-            TrialOutcome(
-                trial_dir.name, None, "untyped_harness_failure", f"stopped_by={stopped_by!r}"
-            ),
+        outcome = TrialOutcome(
+            trial_dir.name,
             None,
+            TrialState.UNTYPED_HARNESS_FAILURE,
+            f"stopped_by={stopped_by!r}",
+            observed_usage,
         )
-    tokens_in = int(record.get("tokens_in", 0))
-    tokens_out = int(record.get("tokens_out", 0))
-    commands = int(record.get("commands", 0))
-    over_budget = tokens_in + tokens_out > budget.tokens or commands > budget.commands
-    if stopped_by == STOPPED_BY_BUDGET or over_budget:
-        reason = (
-            record.get("stopped_by")
-            if stopped_by == STOPPED_BY_BUDGET
-            else "tokens"
-            if tokens_in + tokens_out > budget.tokens
-            else "commands"
-        )
-        return (
-            TrialOutcome(trial_dir.name, None, "budget_stopped", f"budget={reason}"),
-            None,
-        )
-    if stopped_by == STOPPED_BY_CRASH:
-        return (
-            TrialOutcome(trial_dir.name, None, "infra_unavailable", "harness=crashed"),
-            None,
-        )
-    answer = record.get("answer")
-    if not isinstance(answer, str):
-        return (
-            TrialOutcome(trial_dir.name, None, "untyped_harness_failure", "answer_not_a_string"),
-            None,
-        )
-    record_out = dict(record)
-    record_out["schema"] = TRIAL_RECORD_SCHEMA
-    record_out["seeded"] = seeded
-    (trial_dir / "record.json").write_text(
-        json.dumps(record_out, indent=2, sort_keys=True),
-        encoding="utf-8",
-    )
-    return TrialOutcome(trial_dir.name, None, "graded_pending", "record accepted"), record_out
+    else:
+        try:
+            record_usage = _usage_from_mapping(record, ADAPTER_RECORD)
+        except (TypeError, ValueError) as failure:
+            outcome = TrialOutcome(
+                trial_dir.name,
+                None,
+                TrialState.UNTYPED_HARNESS_FAILURE,
+                str(failure),
+                observed_usage,
+            )
+        if outcome is None and require_live_usage and observed_usage is None:
+            outcome = TrialOutcome(
+                trial_dir.name,
+                None,
+                TrialState.UNTYPED_HARNESS_FAILURE,
+                f"missing={USAGE_RECORD}",
+                record_usage,
+            )
+        if outcome is None and observed_usage is not None and observed_usage != record_usage:
+            outcome = TrialOutcome(
+                trial_dir.name,
+                None,
+                TrialState.UNTYPED_HARNESS_FAILURE,
+                "usage_mismatch=trial.json_vs_usage.json",
+                observed_usage,
+            )
+        if outcome is None:
+            usage = observed_usage or record_usage
+            if usage is None:
+                outcome = TrialOutcome(
+                    trial_dir.name,
+                    None,
+                    TrialState.UNTYPED_HARNESS_FAILURE,
+                    f"missing={USAGE_RECORD}",
+                    observed_usage,
+                )
+            else:
+                reason = _budget_reason(usage, budget)
+                if stopped_by == STOPPED_BY_BUDGET or reason is not None:
+                    detail = f"budget={stopped_by if stopped_by == STOPPED_BY_BUDGET else reason}"
+                    outcome = TrialOutcome(
+                        trial_dir.name, None, TrialState.BUDGET_STOPPED, detail, usage
+                    )
+                elif stopped_by == STOPPED_BY_CRASH:
+                    outcome = TrialOutcome(
+                        trial_dir.name,
+                        None,
+                        TrialState.INFRA_UNAVAILABLE,
+                        "harness=crashed",
+                        usage,
+                    )
+                elif not isinstance(record.get("answer"), str):
+                    outcome = TrialOutcome(
+                        trial_dir.name,
+                        None,
+                        TrialState.UNTYPED_HARNESS_FAILURE,
+                        "answer_not_a_string",
+                        usage,
+                    )
+                else:
+                    record_out = dict(record)
+                    record_out["schema"] = TRIAL_RECORD_SCHEMA
+                    record_out["seeded"] = seeded
+                    record_out["usage"] = usage
+                    if context is not None:
+                        record_out.update(context)
+                    (trial_dir / "record.json").write_text(
+                        json.dumps(record_out, indent=2, sort_keys=True),
+                        encoding="utf-8",
+                    )
+                    return TrialOutcome(
+                        trial_dir.name, None, TrialState.GRADED_PENDING, "record accepted", usage
+                    ), record_out
+    return outcome or TrialOutcome(
+        trial_dir.name,
+        None,
+        TrialState.UNTYPED_HARNESS_FAILURE,
+        "budget_enforcement_incomplete",
+        observed_usage,
+    ), None
 
 
 def grade_trial(
@@ -965,9 +1686,72 @@ def grade_trial(
     """Grade one trial's answer and turn it into met/not_met."""
     assigned, note = grader.grade(record, task.classes)
     outcome.graded_class = assigned
-    outcome.state = "met" if assigned == task.expected_class else "not_met"
+    outcome.state = TrialState.MET if assigned == task.expected_class else TrialState.NOT_MET
     outcome.detail = f"class={assigned} note={note}".strip()
     return outcome
+
+
+def _collect_trial_states(trials: list[TrialOutcome], result: CaseResult) -> tuple[bool, bool]:
+    """Count trial classes and return whether harness or infrastructure failed."""
+    saw_untyped = False
+    saw_infra = False
+    for trial in trials:
+        try:
+            state = TrialState(trial.state)
+        except ValueError:
+            state = TrialState.UNTYPED_HARNESS_FAILURE
+            trial.detail = f"unknown_trial_state={trial.state!r} {trial.detail}".strip()
+            trial.state = state
+        saw_untyped = saw_untyped or state is TrialState.UNTYPED_HARNESS_FAILURE
+        saw_infra = saw_infra or state is TrialState.INFRA_UNAVAILABLE
+        if state is TrialState.BUDGET_STOPPED:
+            result.budget_stops += 1
+            result.details.append(f"trial={trial.index} budget_stopped {trial.detail}")
+        elif state in (TrialState.INFRA_UNAVAILABLE, TrialState.UNTYPED_HARNESS_FAILURE):
+            result.not_a_result += 1
+            result.details.append(f"trial={trial.index} {state.value} {trial.detail}")
+        elif state in (TrialState.MET, TrialState.NOT_MET):
+            key = trial.graded_class or "?"
+            result.classes_seen[key] = result.classes_seen.get(key, 0) + 1
+        else:
+            result.not_a_result += 1
+            result.details.append(f"trial={trial.index} {state.value} not graded")
+    result.graded = sum(result.classes_seen.values())
+    return saw_untyped, saw_infra
+
+
+def _quarantine_baseline(
+    result: CaseResult,
+    trials: list[TrialOutcome],
+    task_id: str,
+    variant_id: str,
+    configuration_name: str,
+    toolchain: Toolchain | None,
+) -> None:
+    """Attach the complete arrangement and outcome record for a quarantined case."""
+    result.baseline = {
+        "arrangement": {
+            "task": task_id,
+            "variant": variant_id,
+            "configuration": configuration_name,
+            "fresh_workspace_per_trial": True,
+            "toolchain": toolchain.sha256 if toolchain is not None else "unknown",
+        },
+        "run_count": len(trials),
+        "stated_repeats": len(trials),
+        "outcomes": [
+            {
+                "trial": trial.index,
+                "state": TrialState(trial.state).value,
+                "class": trial.graded_class,
+                "detail": trial.detail,
+            }
+            for trial in trials
+        ],
+        "budget_stops": result.budget_stops,
+        "disagreement": round(1.0 - max(result.classes_seen.values()) / result.graded, 4),
+        "tolerance": result.tolerance,
+    }
 
 
 def aggregate_case(
@@ -977,6 +1761,10 @@ def aggregate_case(
     expected_class: str,
     tolerance: float,
     usage: dict[str, float],
+    *,
+    task: Task | None = None,
+    variant: Variant | None = None,
+    toolchain: Toolchain | None = None,
 ) -> CaseResult:
     """Turn a case's trials into its verdict: a rate over the graded repeats.
 
@@ -987,7 +1775,19 @@ def aggregate_case(
     case whose trials agree within tolerance is judged on its rate, and a case the
     budget ended before it graded anything is a budget stop, never a fail.
     """
-    result = CaseResult(configuration_name, case_id, CaseState.PASS)
+    task_id = task.id if task is not None else case_id.split("/", maxsplit=1)[0]
+    variant_id = variant.id if variant is not None else case_id.rsplit("/", maxsplit=1)[-1]
+    provenance = task.provenance if task is not None else ""
+    result = CaseResult(
+        configuration=configuration_name,
+        case_id=case_id,
+        state=CaseState.WITHIN_TOLERANCE,
+        task_id=task_id,
+        task_provenance=provenance,
+        variant_id=variant_id,
+        expected_class=expected_class,
+        tolerance=tolerance,
+    )
     result.wall_seconds = usage["wall_seconds"]
     result.tokens_in = int(usage["tokens_in"])
     result.tokens_out = int(usage["tokens_out"])
@@ -995,49 +1795,43 @@ def aggregate_case(
     result.currency_cost = (
         float(usage["currency_cost"]) if usage.get("currency_cost") is not None else None
     )
-    for trial in trials:
-        if trial.state == "budget_stopped":
-            result.budget_stops += 1
-            result.details.append(f"trial={trial.index} budget_stopped {trial.detail}")
-        elif trial.state in ("infra_unavailable", "untyped_harness_failure"):
-            result.not_a_result += 1
-            result.details.append(f"trial={trial.index} {trial.state} {trial.detail}")
-        else:
-            key = trial.graded_class or "?"
-            result.classes_seen[key] = result.classes_seen.get(key, 0) + 1
-    if result.not_a_result:
-        result.state = (
-            CaseState.UNTYPED_HARNESS_FAILURE
-            if any(trial.state == "untyped_harness_failure" for trial in trials)
-            else CaseState.INFRA_UNAVAILABLE
-        )
-        return result
-    result.graded = sum(result.classes_seen.values())
-    result.met = result.classes_seen.get(expected_class, 0)
-    if result.graded == 0:
+    saw_untyped, saw_infra = _collect_trial_states(trials, result)
+    if saw_untyped:
+        result.state = CaseState.UNTYPED_HARNESS_FAILURE
+    elif saw_infra:
+        result.state = CaseState.INFRA_UNAVAILABLE
+    elif result.not_a_result:
+        result.state = CaseState.UNTYPED_HARNESS_FAILURE
+    elif result.budget_stops:
         result.state = CaseState.BUDGET_STOPPED
         result.details.append(
-            f"budget_stops={result.budget_stops} graded=0 — no observation, no verdict"
+            f"budget_stops={result.budget_stops} graded={result.graded} — no complete rate"
         )
+    elif result.graded != len(trials):
+        result.state = CaseState.UNTYPED_HARNESS_FAILURE
+        result.details.append(f"graded={result.graded} repeats={len(trials)}")
+    if result.state is not CaseState.WITHIN_TOLERANCE:
         return result
-    dominant = max(result.classes_seen.values())
-    disagreement = 1.0 - dominant / result.graded
+    result.met = result.classes_seen.get(expected_class, 0)
+    if result.graded == 0:
+        result.state = CaseState.UNTYPED_HARNESS_FAILURE
+        result.details.append("graded=0 — no observation, no verdict")
+        return result
+    disagreement = 1.0 - max(result.classes_seen.values()) / result.graded
     if disagreement > tolerance:
         result.state = CaseState.QUARANTINED
-        result.baseline = {
-            "arrangement": "fresh workspace per trial, one configuration, no state carried",
-            "run_count": result.graded,
-            "outcomes": [t.graded_class for t in trials if t.graded_class is not None],
-            "disagreement": round(disagreement, 4),
-            "tolerance": tolerance,
-        }
+        _quarantine_baseline(result, trials, task_id, variant_id, configuration_name, toolchain)
         return result
-    rate = result.met / result.graded
-    result.under_powered = half_width(result.graded) > tolerance
-    result.state = CaseState.PASS if rate >= 1.0 - tolerance else CaseState.FAIL
+    result.rate = result.met / len(trials)
+    result.under_powered = half_width(len(trials)) > tolerance
+    result.state = (
+        CaseState.WITHIN_TOLERANCE
+        if result.rate >= 1.0 - tolerance
+        else CaseState.OUTSIDE_TOLERANCE
+    )
     result.details.append(
-        f"rate={rate:.2f} met={result.met}/{result.graded} tolerance={tolerance}"
-        f" half_width={percentage(half_width(result.graded))}"
+        f"verdict_rate={result.rate:.2f} met={result.met}/{len(trials)}"
+        f" tolerance={tolerance} half_width={percentage(half_width(len(trials)))}"
     )
     return result
 
@@ -1058,6 +1852,7 @@ def run_configuration(
     run_dir: Path,
     repo_root: Path,
     graders: dict[str, Grader],
+    toolchain: Toolchain | None = None,
 ) -> tuple[list[CaseResult], dict[str, float]]:
     """Run every case of every task under one configuration and total its cost."""
     config_dir = run_dir / "configurations" / configuration.name
@@ -1069,6 +1864,7 @@ def run_configuration(
         "commands": 0.0,
         "wall_seconds": 0.0,
         "currency_cost": 0.0,
+        "usage_unknown": 0.0,
     }
     for task in tasks:
         for variant in task.variants:
@@ -1081,25 +1877,37 @@ def run_configuration(
                 "tokens_out": 0.0,
                 "commands": 0.0,
                 "currency_cost": 0.0,
+                "usage_unknown": 0.0,
             }
             for index in range(1, task.repeats + 1):
                 started = datetime.now(UTC)
                 trial_dir = case_dir / f"trial-{index:03d}"
-                outcome, record = execute_trial(task, variant, configuration, trial_dir, repo_root)
-                if outcome.state == "graded_pending":
-                    outcome = grade_trial(outcome, record, graders[task.id], task)
+                outcome, record = execute_trial(
+                    task, variant, configuration, trial_dir, repo_root, toolchain
+                )
+                if outcome.state is TrialState.GRADED_PENDING and record is not None:
+                    try:
+                        outcome = grade_trial(outcome, record, graders[task.id], task)
+                    except EvalRefusalError as failure:
+                        outcome.state = TrialState.UNTYPED_HARNESS_FAILURE
+                        outcome.detail = (
+                            f"grader={failure.kind} {' '.join(failure.details)}"
+                        ).strip()
                 usage["wall_seconds"] += (datetime.now(UTC) - started).total_seconds()
-                if outcome.graded_class is not None:
-                    usage["tokens_in"] += int(record.get("tokens_in", 0))
-                    usage["tokens_out"] += int(record.get("tokens_out", 0))
-                    usage["commands"] += int(record.get("commands", 0))
+                if outcome.reported is None:
+                    usage["usage_unknown"] += 1.0
+                else:
+                    usage["tokens_in"] += outcome.reported["tokens_in"]
+                    usage["tokens_out"] += outcome.reported["tokens_out"]
+                    usage["commands"] += outcome.reported["commands"]
                 (trial_dir / "outcome.json").write_text(
                     json.dumps(
                         {
                             "index": outcome.index,
-                            "state": outcome.state,
+                            "state": outcome.state.value,
                             "graded_class": outcome.graded_class,
                             "detail": outcome.detail,
+                            "reported": outcome.reported,
                         },
                         indent=2,
                         sort_keys=True,
@@ -1110,7 +1918,15 @@ def run_configuration(
             usage["currency_cost"] = currency_cost(configuration, usage) or 0.0
             results.append(
                 aggregate_case(
-                    configuration.name, case_id, trials, task.expected_class, task.tolerance, usage
+                    configuration.name,
+                    case_id,
+                    trials,
+                    task.expected_class,
+                    task.tolerance,
+                    usage,
+                    task=task,
+                    variant=variant,
+                    toolchain=toolchain,
                 )
             )
             for key in totals:
@@ -1127,10 +1943,12 @@ def power_statement(independent_cases: int, min_cases_for_claim: int) -> list[st
     """
     supported = independent_cases >= min_cases_for_claim
     lines = [
-        f"power: independent_cases={independent_cases}",
+        f"power: independent_tasks={independent_cases}",
         (
-            f"power: half_width n=20 {percentage(half_width(20))}"
-            f" n=50 {percentage(half_width(50))}"
+            f"power: half_width observed_n={independent_cases}"
+            f" {percentage(half_width(independent_cases))}"
+            f" reference_n=20 {percentage(half_width(20))}"
+            f" reference_n=50 {percentage(half_width(50))}"
             f" at p={POWER_REFERENCE_RATE} (95% normal approximation)"
         ),
         (
@@ -1156,12 +1974,23 @@ def worst_state(results: list[CaseResult]) -> CaseState:
     return max(results, key=lambda result: CASE_SEVERITY[result.state]).state
 
 
-def toolchain_pin(repo_root: Path) -> dict[str, object]:
-    """Record what produced the run: interpreter, runner bytes and tree identity."""
+def toolchain_pin(
+    repo_root: Path, toolchains: dict[str, Toolchain] | None = None
+) -> dict[str, object]:
+    """Record runner identity and each configuration's executable pin."""
     return {
         "python": sys.version.split()[0],
         "runner_sha256": sha256_file(Path(__file__)),
         "head": git_head(repo_root),
+        "configurations": {
+            name: {
+                "requested": toolchain.requested,
+                "resolved": str(toolchain.resolved),
+                "sha256": toolchain.sha256,
+                "version": toolchain.version,
+            }
+            for name, toolchain in (toolchains or {}).items()
+        },
     }
 
 
@@ -1177,6 +2006,23 @@ def git_head(repo_root: Path) -> str | None:
     return completed.stdout.strip() if completed.returncode == 0 else None
 
 
+def _field_block(fields: tuple[ContractField, ...]) -> list[str]:
+    """Render one registry as the contract's field lines."""
+    width = max(len(field.name) for field in fields)
+    return [
+        f"  {field.name:<{width}}  {'required' if field.required else 'optional '}  {field.purpose}"
+        for field in fields
+    ]
+
+
+def _group_by_task(results: list[CaseResult]) -> dict[str, list[CaseResult]]:
+    """Group materialized variant cases without treating them as independent tasks."""
+    grouped: dict[str, list[CaseResult]] = {}
+    for result in results:
+        grouped.setdefault(result.task_id, []).append(result)
+    return grouped
+
+
 def render_report(
     run_id: str,
     configurations: list[Configuration],
@@ -1186,7 +2032,13 @@ def render_report(
     min_cases_for_claim: int,
 ) -> str:
     """Render the human report: per case, per configuration, never netted."""
-    lines = [f"eval_run={run_id} configurations={len(configurations)} cases={independent_cases}"]
+    materialized_cases = len(next(iter(per_configuration.values()), []))
+    lines = [
+        (
+            f"eval_run={run_id} configurations={len(configurations)}"
+            f" independent_tasks={independent_cases} materialized_cases={materialized_cases}"
+        )
+    ]
     for configuration in configurations:
         counts: dict[str, int] = {}
         for result in per_configuration[configuration.name]:
@@ -1196,12 +2048,29 @@ def render_report(
         case_count = len(per_configuration[configuration.name])
         lines.append(f"config={configuration.name:<{name_w}} cases={case_count} {summary}")
     for configuration in configurations:
-        for result in per_configuration[configuration.name]:
+        grouped = _group_by_task(per_configuration[configuration.name])
+        for task_id in sorted(grouped):
+            task_state = worst_state(grouped[task_id])
             lines.append(
-                f"case={result.case_id} config={result.configuration} state={result.state.value}"
+                f"task={task_id} config={configuration.name} verdict={task_state.value}"
+                f" cases={len(grouped[task_id])}"
+            )
+    for configuration in configurations:
+        for result in per_configuration[configuration.name]:
+            verdict = f"rate={result.rate:.2f}" if result.rate is not None else "unavailable"
+            power = (
+                "not_applicable"
+                if result.rate is None
+                else ("yes" if result.under_powered else "no")
+            )
+            lines.append(
+                f"case={result.case_id} task={result.task_id}"
+                f" config={result.configuration} variant={result.variant_id}"
+                f" expected={result.expected_class} tolerance={result.tolerance}"
+                f" verdict={verdict} status={result.state.value}"
                 f" met={result.met}/{result.graded} budget_stops={result.budget_stops}"
                 f" not_a_result={result.not_a_result}"
-                f" under_powered={'yes' if result.under_powered else 'no'}"
+                f" under_powered={power}"
             )
             lines.extend(f"  {detail}" for detail in result.details)
             if result.baseline is not None:
@@ -1217,7 +2086,9 @@ def render_report(
             f" commands={int(totals[name]['commands'])}"
             f" wall_s={totals[name]['wall_seconds']:.1f}"
         )
-        if configuration.unit_costs is not None:
+        if totals[name]["usage_unknown"]:
+            cost_line += f" currency=unreported usage_unknown={int(totals[name]['usage_unknown'])}"
+        elif configuration.unit_costs is not None:
             cost_line += (
                 f" currency={totals[name]['currency_cost']:.4f} {configuration.unit_costs.currency}"
             )
@@ -1231,13 +2102,26 @@ def render_report(
         right = {result.case_id: result for result in per_configuration[second]}
         divergent = 0
         for case_id in sorted(left):
-            differed = left[case_id].state != right[case_id].state
+            differed = (
+                left[case_id].state != right[case_id].state
+                or left[case_id].rate != right[case_id].rate
+            )
             divergent += 1 if differed else 0
             lines.append(
                 f"pair={case_id} {first}={left[case_id].state.value}"
                 f" {second}={right[case_id].state.value} divergent={'yes' if differed else 'no'}"
             )
         lines.append(f"divergent_cases={divergent}")
+        left_tasks = _group_by_task(per_configuration[first])
+        right_tasks = _group_by_task(per_configuration[second])
+        for task_id in sorted(left_tasks):
+            left_state = worst_state(left_tasks[task_id])
+            right_state = worst_state(right_tasks[task_id])
+            lines.append(
+                f"task_pair={task_id} {first}={left_state.value}"
+                f" {second}={right_state.value}"
+                f" divergent={'yes' if left_state != right_state else 'no'}"
+            )
     worst = worst_state([r for results in per_configuration.values() for r in results])
     lines.append(f"worst_class={worst.value} exit={CASE_SEVERITY[worst]}")
     return "\n".join(lines) + "\n"
@@ -1260,32 +2144,46 @@ def render_contract() -> str:
         "=== Task file (schema " + TASK_SCHEMA + ") ===",
     ]
     lines.extend(_field_block(TASK_FIELDS))
+    lines.extend(["", "=== Task variants ==="])
+    lines.extend(_field_block(VARIANT_FIELDS))
+    lines.extend(["", "=== Budget override ==="])
+    lines.extend(_field_block(BUDGET_FIELDS))
+    lines.extend(["", "=== Unit costs ==="])
+    lines.extend(_field_block(UNIT_COST_FIELDS))
+    lines.extend(["", "=== Configuration pins ==="])
+    lines.extend(_field_block(PIN_FIELDS))
     lines.extend(["", "=== Configuration file (schema " + CONFIGURATION_SCHEMA + ") ==="])
     lines.extend(_field_block(CONFIGURATION_FIELDS))
     interfaces = [
         "",
         "=== What the adapter owes the runner (written to " + ADAPTER_RECORD + " in its cwd) ===",
-        "The adapter runs with cwd = a fresh trial workspace holding only `task.txt`",
-        "(the prompt) and the arm's context file, if the task declares one. It inherits",
-        f"an allowlisted environment ({', '.join(CHILD_ENV_ALLOWLIST)}) plus the",
-        "configuration's harness.env entries — never a lane variable, a credential or a",
-        "dispatch identity. Unknown record keys are ignored and retained verbatim.",
+        "The adapter runs in a fresh bubblewrap workspace holding only `task.txt`",
+        "(the prompt), the arm's context file, and its own output files. Host home,",
+        "temporary, repository and prior run state are not mounted. The child receives",
+        f"an allowlisted environment ({', '.join(CHILD_ENV_ALLOWLIST)}) plus safe",
+        "configuration entries — never a lane variable, credential or dispatch identity.",
+        "Runner-owned HOME, PWD, PATH and CTI_EVAL_* values point only inside the sandbox.",
+        "The adapter must atomically update `usage.json` while running, then write",
+        "`trial.json`; the runner watches usage and enforces every budget leg.",
+        "Unknown record keys are ignored and retained verbatim.",
     ]
     lines.extend(interfaces)
     lines.extend(_field_block(ADAPTER_FIELDS))
+    lines.extend(["", "=== Live usage sidecar (written to " + USAGE_RECORD + ") ==="])
+    lines.extend(_field_block(USAGE_FIELDS))
     lines.extend(["", "=== What the grader owes the runner ==="])
     lines.extend(_field_block(GRADER_FIELDS))
     grader_block = [
         "",
         "A grader lives under evals/graders/, pinned by the task's grader_sha256, is",
-        "copied into the run directory before any trial and imported from that copy —",
+        "copied into this run directory before any trial and imported from that copy —",
         "never from a trial workspace, whose path never reaches the harness child. A hash",
         "that does not match refuses the run before any trial; a class outside the task's",
         "`classes` is a harness failure, not a graded outcome.",
         "",
         "=== Verdict and exit codes ===",
         "A trial stopped by its budget, and an infrastructure failure, are recorded as",
-        "exactly that. A case is a rate over its graded repeats; a spread beyond the",
+        "exactly that. A case verdict is a rate over all its stated repeats; a spread beyond the",
         "task's tolerance quarantines it with its reproduction baseline. The run's exit",
         "code is the worst class present. What a failure class *means* — including for",
         "the names this runner shares with AGENTS.md's failure-class table — is the",
@@ -1297,6 +2195,8 @@ def render_contract() -> str:
         [
             f"  {REFUSAL_EXIT}  (refusal before any trial: input_invalid, grader_hash_mismatch,",
             "       pin_mismatch, run_dir_exists — never a verdict)",
+            "=== Materialized case ===",
+            *(_field_block(CASE_FIELDS)),
             "=== Comparison ===",
             "One configuration runs the corpus alone (an ablation across its own variants).",
             "Two configurations are compared case by case; divergent cases are named and no",
@@ -1357,6 +2257,7 @@ def prepare_run(
     names = {configuration.name for configuration in configurations}
     if len(names) != len(configurations):
         raise EvalRefusalError("input_invalid", ("duplicate_configuration_name=",))
+    _sandbox_binary()
     tasks, manifest = load_corpus(args.corpus, ROOT)
     for task in tasks:
         verify_grader_hash(task.grader, task.grader_sha256)
@@ -1366,22 +2267,22 @@ def prepare_run(
             raise EvalRefusalError(
                 "pin_mismatch", (f"configuration={configuration.name}", f"expected={pin}")
             )
+        resolve_toolchain(configuration, ROOT)
     return configurations, tasks, manifest
 
 
-def main(argv: list[str] | None = None) -> int:
-    """Run the corpus, write the run directory, and exit on the worst class."""
-    args = parse_args(argv)
-    if args.contract:
-        sys.stdout.write(render_contract())
-        return 0
-    try:
-        prepared = prepare_run(args)
-    except EvalRefusalError as refusal:
-        print_refusal(refusal, "before any trial")
-        return REFUSAL_EXIT
-    configurations, tasks, manifest = prepared
-    independent_cases = sum(len(task.variants) for task in tasks)
+def run_prepared(
+    args: argparse.Namespace,
+    configurations: list[Configuration],
+    tasks: list[Task],
+    manifest: dict[str, object],
+) -> int:
+    """Run inputs that passed the no-trial validation phase."""
+    toolchains = {
+        configuration.name: resolve_toolchain(configuration, ROOT)
+        for configuration in configurations
+    }
+    independent_cases = len(tasks)
     min_cases = int(manifest.get("min_cases_for_claim", DEFAULT_MIN_CASES_FOR_CLAIM))
     if args.dry_run:
         for configuration in configurations:
@@ -1392,30 +2293,32 @@ def main(argv: list[str] | None = None) -> int:
                         f" repeats={task.repeats} tolerance={task.tolerance}"
                         f" expected={task.expected_class}"
                         f" budget={effective_budget(task, configuration)}"
+                        f" toolchain_sha256={toolchains[configuration.name].sha256}"
                     )
         for line in power_statement(independent_cases, min_cases):
             print_plan(line)
         return 0
     run_id = datetime.now(UTC).strftime("%Y%m%dT%H%M%S") + "-" + uuid.uuid4().hex[:8]
-    run_dir = args.runs_root / run_id
+    run_dir = (args.runs_root / run_id).resolve()
     try:
         run_dir.mkdir(parents=True)
-    except OSError:
-        print_refusal(
-            EvalRefusalError("run_dir_exists", (f"run_dir={run_dir}",)), "before any trial"
-        )
-        return REFUSAL_EXIT
+    except OSError as failure:
+        raise EvalRefusalError(
+            "run_dir_exists", (f"run_dir={run_dir}", f"error={failure}")
+        ) from None
     # The graders load after the dry-run branch and after the run directory exists, so
     # a dry run writes nothing at all and a real run's grader copies live beside its
     # evidence, hash-verified before any trial.
     graders = {
-        task.id: Grader(task.grader, task.grader_sha256, args.runs_root / "graders", task.id)
+        task.id: Grader(task.grader, task.grader_sha256, run_dir / "graders", task.id)
         for task in tasks
     }
     per_configuration: dict[str, list[CaseResult]] = {}
     totals: dict[str, dict[str, float]] = {}
     for configuration in configurations:
-        results, config_totals = run_configuration(tasks, configuration, run_dir, ROOT, graders)
+        results, config_totals = run_configuration(
+            tasks, configuration, run_dir, ROOT, graders, toolchains[configuration.name]
+        )
         per_configuration[configuration.name] = results
         totals[configuration.name] = config_totals
     report = render_report(
@@ -1428,9 +2331,11 @@ def main(argv: list[str] | None = None) -> int:
                 "schema": RUN_SCHEMA,
                 "run_id": run_id,
                 "corpus": str(args.corpus),
-                "toolchain": toolchain_pin(ROOT),
+                "toolchain": toolchain_pin(ROOT, toolchains),
                 "configurations": [c.name for c in configurations],
                 "graders": {name: g.sha256 for name, g in graders.items()},
+                "independent_tasks": independent_cases,
+                "materialized_cases": sum(len(task.variants) for task in tasks),
             },
             indent=2,
             sort_keys=True,
@@ -1442,20 +2347,19 @@ def main(argv: list[str] | None = None) -> int:
     return CASE_SEVERITY[worst]
 
 
+def main(argv: list[str] | None = None) -> int:
+    """Run the corpus, write the run directory, and exit on the worst class."""
+    args = parse_args(argv)
+    if args.contract:
+        sys.stdout.write(render_contract())
+        return 0
+    try:
+        configurations, tasks, manifest = prepare_run(args)
+        return run_prepared(args, configurations, tasks, manifest)
+    except EvalRefusalError as refusal:
+        print_refusal(refusal, "before any trial")
+        return REFUSAL_EXIT
+
+
 if __name__ == "__main__":
     sys.exit(main())
-
-
-def _field_block(fields: tuple[ContractField, ...]) -> list[str]:
-    """Render one registry as the contract's field lines."""
-    width = max(len(field.name) for field in fields)
-    return [
-        f"  {field.name:<{width}}  {'required' if field.required else 'optional '}  {field.purpose}"
-        for field in fields
-    ]
-    """Render one registry as the contract's field lines."""
-    width = max(len(field.name) for field in fields)
-    return [
-        f"  {field.name:<{width}}  {'required' if field.required else 'optional '}  {field.purpose}"
-        for field in fields
-    ]

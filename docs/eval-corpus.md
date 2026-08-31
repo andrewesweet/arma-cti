@@ -13,21 +13,28 @@ just eval-corpus --configuration C.json [--configuration C2.json] [--corpus eval
 
 `--dry-run` names every case, its repeats, tolerance, expected class and budget, and
 runs nothing. Evidence lands under `~/.arma-cti/evals/runs/<run-id>/` — per-trial
-workspace, captured harness streams, the adapter record and the graded outcome per
-trial, a run manifest (`run.json`) carrying the toolchain pin — interpreter, runner
-bytes, HEAD — and the graded report (`report.txt`).
+workspace, live usage sidecar, captured harness streams, the adapter record and the
+graded outcome per trial, a run manifest (`run.json`) carrying the resolved executable
+and its sha256, runner bytes and HEAD, and the graded report (`report.txt`). The
+workspace is run inside a bubblewrap filesystem/PID boundary; host home, repository,
+temporary, runtime and prior-run state are not mounted.
 
 ## What a task is
 
 A task file (`cti.eval-task/1`) declares the work (`prompt`), the expectation
-(`classes` + `expected_class`, never an exact string), the repeats, the tolerance, and
-its hash-pinned grader. Variants are the ablation arms: each variant seeds the trial
-workspace's context file, and `full` derives from the repository's `AGENTS.md` at run
-time so it can never drift from the file it ablates.
+(`classes` + `expected_class`, never an exact string), the configuration scope
+(`configuration: per-run`), the repeats, the tolerance, and its hash-pinned grader.
+Variants are the ablation arms: each variant seeds the trial workspace's context file,
+and `full` derives from the repository's `AGENTS.md` at run time so it can never drift
+from the file it ablates. A materialized case names the selected configuration and
+variant; variants are correlated arms of one task, not independent observations.
 
 ## Verdicts, not results
 
-- The verdict is a rate over the graded repeats, judged against the task's tolerance.
+- The verdict is a rate over all stated repeats, judged against the task's tolerance;
+  if any repeat stops or fails, the case has no rate and reports that typed state.
+- Each materialized case reports its rate, and each task reports the worst typed status
+  across its variants; no rate is aggregated across correlated variants.
 - A spread beyond tolerance quarantines the case, carrying its reproduction baseline
   (arrangement, run count, outcomes, disagreement, tolerance) — `flake_quarantine`'s
   discipline applied to a stochastic subject.
@@ -37,18 +44,27 @@ time so it can never drift from the file it ablates.
 
 ## Statistics, derived
 
-`power_statement` computes the corpus statistics from the case count — the 95%
-normal-approximation half-width at the reference rate, the rule of three where nothing
-fails, and a claim-supported flag against the manifest's `min_cases_for_claim` (20).
-The shipped corpus holds 3 cases, so a run says `claim=not_supported` out loud: this
-corpus catches large regressions, proves the harness and exposes qualitative failures,
-and nothing finer.
+`power_statement` computes the corpus statistics from the number of independent task
+identities, not materialized variants — the 95% normal-approximation half-width at the
+reference rate, the rule of three where nothing fails, and a claim-supported flag
+against the manifest's `min_cases_for_claim` (20). The shipped corpus holds one
+independent task and three materialized arms, so a run says `claim=not_supported` out
+loud: this corpus catches large regressions, proves the harness and exposes qualitative
+failures, and nothing finer.
 
 ## Cost
 
-Tokens and wall time are reported per configuration; a currency figure appears only
-when the configuration declares `unit_costs`, because a price this repository invents
-would be a number nobody can audit.
+Tokens, commands and wall time are reported per configuration, including completed,
+budget-stopped and infrastructure trials when live usage was available. A currency
+figure appears only when the configuration declares `unit_costs` and every trial has
+known usage, because a price this repository invents would be a number nobody can
+audit.
+
+Graders are copied beneath the run directory, hash-verified before the run, and
+re-executed from those bytes for every trial. The adapter must atomically update
+`usage.json` while running; the runner watches it and kills the complete process group
+when a time, token or command ceiling is reached. Missing or malformed live usage is a
+typed harness failure, never a partial passing case.
 
 ## What it does not claim
 

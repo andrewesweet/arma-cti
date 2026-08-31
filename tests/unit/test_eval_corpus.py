@@ -43,7 +43,7 @@ def _grader_sha() -> str:
 
 
 # The runner's own vocabulary, imported for direct assertions.
-CASE_PASS = eval_corpus.CaseState.PASS
+CASE_WITHIN_TOLERANCE = eval_corpus.CaseState.WITHIN_TOLERANCE
 
 
 def _write_task(  # noqa: PLR0913 — a fixture builder with independently varied knobs
@@ -63,6 +63,7 @@ def _write_task(  # noqa: PLR0913 — a fixture builder with independently varie
         "schema": eval_corpus.TASK_SCHEMA,
         "id": task_id,
         "provenance": "test fixture",
+        "configuration": "per-run",
         "prompt": "Answer GOOD or BAD.",
         "classes": ["expected_cls", "other_cls", "unclear"],
         "expected_class": expected,
@@ -89,22 +90,29 @@ def _write_config(  # noqa: PLR0913 — a fixture builder with independently var
     stopped_by: str | None = None,
     exit_code: int = 0,
     sleep_s: int = 0,
+    probe_paths: tuple[Path, ...] = (),
 ) -> Path:
     """Write a configuration whose synthetic adapter always gives one answer."""
     config_path = corpus.parent / f"config-{name}.json"
     adapter = corpus.parent / f"adapter-{name}.py"
     lines = [
         "import json, os, sys, time",
+        "usage = {'tokens_in': 11, 'tokens_out': 7, 'commands': 3}",
+        (
+            "with open('usage.json.tmp', 'w', encoding='utf-8') as handle:\n"
+            "    json.dump(usage, handle)\n"
+            "os.replace('usage.json.tmp', 'usage.json')"
+        ),
         "record = {",
         f'    "answer": {answer!r},',
         f'    "stopped_by": {stopped_by or "completed"!r},',
-        '    "tokens_in": 11,',
-        '    "tokens_out": 7,',
-        '    "commands": 3,',
+        "    **usage,",
         '    "harness": "synthetic-1.0",',
         '    "env_seen": sorted(os.environ),',
         "}",
     ]
+    for index, probe_path in enumerate(probe_paths):
+        lines.insert(-1, f'    "probe_{index}": os.path.exists({str(probe_path)!r}),')
     if sleep_s:
         lines.append(f"time.sleep({sleep_s})")
     if exit_code:
@@ -145,7 +153,7 @@ def _run(
 
 
 def test_passing_corpus_exits_zero(tmp_path: Path) -> None:
-    """A corpus whose cases meet their expectation is worst_class=pass, exit 0."""
+    """A corpus whose cases meet their expectation has a within-tolerance status."""
     corpus = tmp_path / "evals" / "corpus"
     corpus.mkdir(parents=True)
     _write_task(corpus, task_id="t1", repeats=3)
@@ -156,14 +164,14 @@ def test_passing_corpus_exits_zero(tmp_path: Path) -> None:
     report = sorted(runs_root.rglob("report.txt"))
     assert len(report) == 1
     body = report[0].read_text(encoding="utf-8")
-    assert "worst_class=pass exit=0" in body
-    assert "state=pass" in body
+    assert "worst_class=within_tolerance exit=0" in body
+    assert "status=within_tolerance" in body
     assert "met=3/3" in body
     assert "claim=not_supported" in body  # two cases is far below the claim floor
 
 
 def test_one_failing_case_sets_the_worst_class(tmp_path: Path) -> None:
-    """One case grading outside its tolerance types `fail` and sets the exit."""
+    """One case grading outside its tolerance types `outside_tolerance`."""
     corpus = tmp_path / "evals" / "corpus"
     corpus.mkdir(parents=True)
     _write_task(corpus, repeats=3)
@@ -172,22 +180,22 @@ def test_one_failing_case_sets_the_worst_class(tmp_path: Path) -> None:
     exit_code, runs_root = _run(tmp_path, corpus, [passing, failing])
     assert exit_code == 3
     body = (min(runs_root.iterdir()) / "report.txt").read_text(encoding="utf-8")
-    assert "worst_class=fail exit=3" in body
-    assert "state=fail" in body
-    assert "state=pass" in body  # the passing configuration is shown too, never netted
+    assert "worst_class=outside_tolerance exit=3" in body
+    assert "status=outside_tolerance" in body
+    assert "status=within_tolerance" in body  # both configurations remain visible
 
 
 def test_infra_failure_is_never_a_failed_configuration(tmp_path: Path) -> None:
-    """An adapter that dies types not-a-result, never `fail`."""
+    """An adapter configuration defect types an untyped non-result, never a failed case."""
     corpus = tmp_path / "evals" / "corpus"
     corpus.mkdir(parents=True)
     _write_task(corpus, repeats=2)
     broken = _write_config(corpus, "b", "GOOD answer", exit_code=1)
     exit_code, runs_root = _run(tmp_path, corpus, [broken])
-    assert exit_code == 4
+    assert exit_code == 5
     body = (min(runs_root.iterdir()) / "report.txt").read_text(encoding="utf-8")
-    assert "worst_class=infra_unavailable exit=4" in body
-    assert "state=fail" not in body
+    assert "worst_class=untyped_harness_failure exit=5" in body
+    assert "status=outside_tolerance" not in body
 
 
 def test_budget_stop_is_recorded_as_a_budget_stop(tmp_path: Path) -> None:
@@ -200,7 +208,7 @@ def test_budget_stop_is_recorded_as_a_budget_stop(tmp_path: Path) -> None:
     assert exit_code == 2
     body = (min(runs_root.iterdir()) / "report.txt").read_text(encoding="utf-8")
     assert "worst_class=budget_stopped exit=2" in body
-    assert "state=fail" not in body
+    assert "status=outside_tolerance" not in body
     assert "budget=tokens" in body
 
 
@@ -223,7 +231,7 @@ def test_rate_over_repeats_judged_against_tolerance() -> None:
         eval_corpus.TrialOutcome("3", "other_cls", "not_met"),
     ]
     result = eval_corpus.aggregate_case("cfg", "t/v", outcomes, "expected_cls", 0.4, _usage())
-    assert result.state is eval_corpus.CaseState.PASS
+    assert result.state is CASE_WITHIN_TOLERANCE
     assert (result.met, result.graded) == (2, 3)
     assert result.under_powered is True
 
@@ -239,17 +247,20 @@ def test_quarantine_beyond_tolerance_with_reproduction_baseline() -> None:
     assert result.state is eval_corpus.CaseState.QUARANTINED
     baseline = result.baseline or {}
     assert baseline["run_count"] == 3
-    assert baseline["outcomes"] == ["expected_cls", "other_cls", "unclear"]
+    assert [outcome["class"] for outcome in baseline["outcomes"]] == [
+        "expected_cls",
+        "other_cls",
+        "unclear",
+    ]
     assert baseline["disagreement"] == pytest.approx(2 / 3, abs=1e-3)
     assert "tolerance" in baseline
     assert result.graded == 3
-    assert result.state is not eval_corpus.CaseState.FAIL
+    assert result.state is not eval_corpus.CaseState.OUTSIDE_TOLERANCE
 
 
 def test_power_statement_is_derived_from_the_case_count() -> None:
     """The quoted corpus statistics come from the formula, never from prose."""
     assert eval_corpus.half_width(20) == pytest.approx(0.1753, abs=5e-4)
-    assert eval_corpus.half_width(50) == pytest.approx(0.1109, abs=5e-4)
     assert eval_corpus.half_width(50) == pytest.approx(0.1109, abs=5e-4)
     assert eval_corpus.zero_failure_upper_bound(20) == pytest.approx(0.15, abs=1e-9)
     lines = eval_corpus.power_statement(1, min_cases_for_claim=20)
@@ -270,11 +281,12 @@ def test_pairwise_comparison_shows_both_sides_never_netted(tmp_path: Path) -> No
     assert exit_code == 3
     body = (min(runs_root.iterdir()) / "report.txt").read_text(encoding="utf-8")
     assert "comparison=task_by_task netted=no" in body
-    assert "pair=t1/v1 incumbent=pass candidate=fail divergent=yes" in body
+    assert "pair=t1/v1 incumbent=within_tolerance candidate=outside_tolerance divergent=yes" in body
     pair_t2 = [line for line in body.splitlines() if line.startswith("pair=t2/v1 ")]
     assert len(pair_t2) == 1
     assert "divergent=yes" in pair_t2[0]
-    assert body.count("pair=") == 2
+    assert len([line for line in body.splitlines() if line.startswith("pair=")]) == 2
+    assert "task_pair=t1 incumbent=within_tolerance candidate=outside_tolerance" in body
     assert "divergent_cases=2" in body
 
 
@@ -313,8 +325,39 @@ def test_child_environment_is_allowlisted(tmp_path: Path, monkeypatch: pytest.Mo
     assert "CTI_EVAL_MARKER" in env_seen  # the configuration's declared extra arrived
     assert "CTI_DISPATCH_ID" not in env_seen
     assert not [name for name in env_seen if name.startswith("ANTHROPIC")]
-    allowed = set(eval_corpus.CHILD_ENV_ALLOWLIST) | {"CTI_EVAL_MARKER"}
+    allowed = set(eval_corpus.CHILD_ENV_ALLOWLIST) | {
+        "CTI_EVAL_MARKER",
+        "CTI_EVAL_USAGE_FILE",
+        "CTI_EVAL_TOKEN_BUDGET",
+        "CTI_EVAL_COMMAND_BUDGET",
+        "HOME",
+        "PATH",
+        "PWD",
+    }
     assert set(env_seen) <= allowed
+
+
+def test_child_cannot_read_host_state_or_repository(
+    tmp_path: Path,
+) -> None:
+    """The sandbox hides the caller's temporary file and repository from the adapter."""
+    sentinel = tmp_path / "host-secret"
+    sentinel.write_text("must stay outside", encoding="utf-8")
+    corpus = tmp_path / "evals" / "corpus"
+    corpus.mkdir(parents=True)
+    _write_task(corpus, repeats=1)
+    config = _write_config(
+        corpus,
+        "a",
+        "GOOD answer",
+        probe_paths=(sentinel, eval_corpus.ROOT),
+    )
+    exit_code, runs_root = _run(tmp_path, corpus, [config])
+    assert exit_code == 0
+    record = json.loads(min(runs_root.rglob("record.json")).read_text(encoding="utf-8"))
+    assert record["probe_0"] is False
+    assert record["probe_1"] is False
+    assert record["env_seen"]
 
 
 def test_dry_run_prints_the_plan_and_runs_nothing(tmp_path: Path) -> None:
@@ -336,6 +379,7 @@ def test_every_trial_retains_its_artefacts_and_nothing_is_overwritten(tmp_path: 
     config = _write_config(corpus, "a", "GOOD answer")
     _first_exit, runs_root = _run(tmp_path, corpus, [config])
     _second_exit, runs_root = _run(tmp_path, corpus, [config])
+    assert not (runs_root / "graders").exists()
     run_dirs = sorted(p for p in runs_root.iterdir() if p.name != "graders")
     assert len(run_dirs) == 2
     for run_dir in run_dirs:
@@ -345,6 +389,7 @@ def test_every_trial_retains_its_artefacts_and_nothing_is_overwritten(tmp_path: 
             trial_dir = record_path.parent
             assert (trial_dir / "outcome.json").is_file()
             assert (trial_dir / "workspace" / "task.txt").is_file()
+            assert (trial_dir / "workspace" / "usage.json").is_file()
             assert (trial_dir / "workspace" / "trial.json").is_file()
             assert (trial_dir / "harness-stdout.txt").exists()
 

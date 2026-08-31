@@ -3,7 +3,7 @@
   "name": "example-synthetic",
   "harness": {
     "argv": [
-      "python3",
+      "/usr/bin/python3",
       "{repo}/evals/adapters/synthetic-echo.py"
     ],
     "env": {}

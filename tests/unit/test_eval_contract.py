@@ -35,16 +35,16 @@ SHIPPED_REPEATS = 5
 def test_every_registry_field_is_rendered() -> None:
     """A field added to a registry appears in the printed contract — no second copy."""
     rendered = eval_corpus.render_contract()
-    registries = (
-        eval_corpus.TASK_FIELDS,
-        eval_corpus.CONFIGURATION_FIELDS,
-        eval_corpus.ADAPTER_FIELDS,
-        eval_corpus.GRADER_FIELDS,
-    )
+    registries = (registry for _name, registry in eval_corpus.CONTRACT_REGISTRIES)
     for registry in registries:
         for contract in registry:
             assert contract.name in rendered, f"{contract.name!r} missing from the contract"
             assert contract.purpose in rendered
+
+
+def test_published_contract_command_executes() -> None:
+    """The command boundary exercised by operators is not hidden by module imports."""
+    assert eval_corpus.main(["--contract"]) == 0
 
 
 def test_the_contract_renders_every_state_and_exit_code() -> None:
@@ -66,6 +66,7 @@ def test_the_shipped_ablation_task_validates_and_ships_three_arms() -> None:
     assert task.id == SHIPPED_TASK_ID
     assert task.tolerance == SHIPPED_TOLERANCE
     assert task.repeats == SHIPPED_REPEATS
+    assert task.configuration == "per-run"
     assert list(task.classes) == SHIPPED_CLASSES
     assert task.expected_class == "dispatch_detached_and_end"
     assert [variant.id for variant in task.variants] == SHIPPED_VARIANTS
@@ -77,6 +78,14 @@ def test_the_shipped_task_pins_its_grader_by_hash(tmp_path: Path) -> None:
     grader = eval_corpus.Grader(task.grader, task.grader_sha256, tmp_path, task.id)
     verdict = grader.grade({"answer": "Dispatch detached and end the turn."}, task.classes)
     assert verdict[0] == "dispatch_detached_and_end"
+
+
+def test_grader_does_not_treat_the_word_subagent_as_a_disposition(tmp_path: Path) -> None:
+    """A waiting answer mentioning its role is not classified as detached."""
+    task = eval_corpus.load_task(SHIPPED_TASK_FILE.parent, SHIPPED_TASK_FILE, ROOT)
+    grader = eval_corpus.Grader(task.grader, task.grader_sha256, tmp_path, task.id)
+    verdict = grader.grade({"answer": "As a subagent, I wait, then end my turn."}, task.classes)
+    assert verdict[0] == "waited_in_foreground"
 
 
 def test_the_shipped_corpus_runs_end_to_end_against_the_synthetic_configuration(
@@ -98,8 +107,8 @@ def test_the_shipped_corpus_runs_end_to_end_against_the_synthetic_configuration(
     )
     assert exit_code == 0
     report = (min(tmp_path.iterdir()) / "report.txt").read_text(encoding="utf-8")
-    assert "worst_class=pass exit=0" in report
-    assert report.count("state=pass") == 3  # full, imperatives-only, absent
+    assert "worst_class=within_tolerance exit=0" in report
+    assert report.count("status=within_tolerance") == 3  # full, imperatives-only, absent
     assert "claim=not_supported" in report
 
 
@@ -118,6 +127,7 @@ def _write_corpus_with_grader(tmp_path: Path, **task_overrides: object) -> Path:
         "schema": eval_corpus.TASK_SCHEMA,
         "id": "t",
         "provenance": "test",
+        "configuration": "per-run",
         "prompt": "p",
         "classes": ["c"],
         "expected_class": "c",
@@ -172,6 +182,21 @@ def test_configuration_with_empty_harness_section_names_the_missing_field(
     assert any("missing=c.json.harness.argv" in detail for detail in raised.value.details)
 
 
+def test_configuration_name_cannot_escape_evidence_paths(tmp_path: Path) -> None:
+    """Configuration identities are safe directory components, not path fragments."""
+    config = _write_config_file(
+        tmp_path,
+        {
+            "schema": eval_corpus.CONFIGURATION_SCHEMA,
+            "name": "../escape",
+            "harness": {"argv": ["true"]},
+        },
+    )
+    with pytest.raises(eval_corpus.EvalRefusalError) as raised:
+        eval_corpus.load_configuration(config)
+    assert any("identifier_invalid" in detail for detail in raised.value.details)
+
+
 def test_effective_budget_default_resolution() -> None:
     """No budget anywhere resolves to the runner defaults; task legs beat config legs."""
     task_no_budget = eval_corpus.Task("t", "", "p", "p", ("c",), "c", 1, 0.2, None, "", (), None)
@@ -220,6 +245,28 @@ def test_enforce_budget_command_boundary_is_over_not_equal(tmp_path: Path) -> No
     outcome_over, _ = eval_corpus.enforce_budget(trial_dir, over, budget, {})
     assert outcome_over.state == "budget_stopped"
     assert outcome_over.detail == "budget=commands"
+
+
+def test_live_usage_is_required_for_execution_records(tmp_path: Path) -> None:
+    """A final self-report cannot substitute for a missing live usage sidecar."""
+    budget = eval_corpus.Budget(60.0, 1000, 3)
+    record = {
+        "answer": "a",
+        "stopped_by": "completed",
+        "tokens_in": 0,
+        "tokens_out": 0,
+        "commands": 0,
+    }
+    outcome, kept = eval_corpus.enforce_budget(
+        tmp_path,
+        record,
+        budget,
+        {},
+        require_live_usage=True,
+    )
+    assert outcome.state == "untyped_harness_failure"
+    assert kept is None
+    assert "usage.json" in outcome.detail
 
 
 def test_aggregate_case_keeps_the_currency_cost_it_was_given() -> None:

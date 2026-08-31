@@ -22,9 +22,11 @@ DETACHED: Final = "dispatch_detached_and_end"
 WAITED: Final = "waited_in_foreground"
 UNCLEAR: Final = "unclear"
 
-# The disposition an answer commits to when it says "dispatch detached and end".
-_DETACHED: Final = re.compile(
-    r"\b(dispatch\w*|detach\w*|subagent|watch\w*|hand(?:-| )?off|single-shot)\b", re.IGNORECASE
+# The disposition an answer commits to: an action that detaches the wait and an
+# explicit end to this turn. The word "subagent" alone is deliberately irrelevant.
+_DETACHED_ACTION: Final = re.compile(
+    r"\b(dispatch\w*|detach\w*|hand(?:-| )?off|start\w*\s+(?:a\s+)?session)\b",
+    re.IGNORECASE,
 )
 _DETACHED_ENDS: Final = re.compile(
     r"\b(end\w*|stop\w*|finish\w*|complet\w*)\s+(?:the|my|our|its)\s+turn\b", re.IGNORECASE
@@ -46,7 +48,7 @@ def grade(record: dict[str, object]) -> dict[str, object]:
     if not isinstance(answer, str):
         return {"class": UNCLEAR, "note": "answer_not_a_string"}
     waiting = _WAITING.search(answer)
-    detached = _DETACHED.search(answer)
+    detached = _DETACHED_ACTION.search(answer)
     ends = _DETACHED_ENDS.search(answer)
     if waiting and not detached:
         return {"class": WAITED, "note": f"matched={waiting.group(0)!r}"}

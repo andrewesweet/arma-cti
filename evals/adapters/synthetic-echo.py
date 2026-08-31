@@ -18,12 +18,20 @@ ANSWER: str = (
     "a watcher and written a handoff, so nothing waits on me."
 )
 
-record = {
-    "answer": ANSWER,
-    "stopped_by": "completed",
+usage = {
     "tokens_in": 0,
     "tokens_out": 0,
     "commands": 0,
+}
+usage_path = Path(os.environ["CTI_EVAL_USAGE_FILE"])
+usage_tmp = usage_path.with_name(".usage.json.tmp")
+usage_tmp.write_text(json.dumps(usage), encoding="utf-8")
+usage_tmp.replace(usage_path)
+
+record = {
+    "answer": ANSWER,
+    "stopped_by": "completed",
+    **usage,
     "harness": "synthetic-echo/1",
     "env_seen": sorted(os.environ),
 }
