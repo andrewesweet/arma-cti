@@ -188,3 +188,6 @@
 |624|628b4b94952ae8c89a6b5ac7e75f272cb0e8e724|journal|6|2|8192|codex,zai|N|U|U|
 |630|09996dc1ce77d13917def1f47650d77ecc4b088f|journal|4|0|3316|codex,zai|N|U|U|
 |639|60859df24e8a6372650785da2c0e6b412e2f7c1b|journal|4|1|3159|codex,zai|N|U|U|
+|641|78cffe7d05e0466a7078a08607b3768500aaceda|journal|5|1|5539|claude-native,codex|C0.642259|U|N|
+|643|61bfc7d90c2bc4a7000960adb82a00a88ba0c4ca|journal|17|13|126043|codex,zai|N|U|U|
+|651|590307ccff8cc13e91ab6a987b5e94f07ecdbaaa|journal|6|4|15759|codex,zai|N|U|U|
