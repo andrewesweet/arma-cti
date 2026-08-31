@@ -688,11 +688,11 @@ def _await_empty(
     *,
     dispatch_created_at: float | None,
 ) -> Scan:
-    """Re-scan until the tree is empty, observation is incomplete, or the budget runs out."""
+    """Re-scan until no match remains, an incomplete pass finds no match, or budget runs out."""
     deadline = machine.monotonic() + budget
     while True:
         found = scan(worktree, machine, dispatch_created_at=dispatch_created_at)
-        if not found.matched or found.indeterminate:
+        if not found.matched:
             return found
         if machine.monotonic() >= deadline:
             return found
@@ -738,8 +738,7 @@ def _stop_processes(
         machine.term_grace,
         dispatch_created_at=dispatch_created_at,
     )
-    if verification.indeterminate:
-        return Stopped({}, verification.matched, commands, verification_unproven=True)
+    verification_unproven = verification.indeterminate
     survivors = verification.matched
     alive = {process.pid for process in survivors}
     finished.update({pid: "SIGTERM" for pid in commands if pid not in alive})
@@ -757,7 +756,9 @@ def _stop_processes(
         finished.update(
             {pid: "SIGKILL" for pid in commands if pid not in alive and pid not in finished}
         )
-    return Stopped(finished, survivors, commands, verification.indeterminate)
+    return Stopped(
+        finished, survivors, commands, verification_unproven or verification.indeterminate
+    )
 
 
 def _record_ending(record: Record, finished: dict[int, str]) -> str:
