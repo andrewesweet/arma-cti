@@ -284,6 +284,79 @@ def test_the_command_line_is_rendered_for_the_report(tmp_path: Path) -> None:
     assert found.matched[0].command == "claude --print pid-51"
 
 
+def _unreadable(root: Path, pid: int, uid: int | None) -> None:
+    """Make one arranged pid's cwd unreadable, naming its owner when it has one.
+
+    A regular file where the `cwd` link belongs is the stand-in for a `readlink`
+    that fails for any reason other than a process already gone — the kernel says
+    `EINVAL` here where a foreign or protected process would say `EPERM`, and the
+    scan must treat every non-`ENOENT` errno as could-not-look (#625's cap ruling).
+    """
+    entry = root / str(pid)
+    (entry / "cwd").unlink()
+    (entry / "cwd").write_text("", encoding="utf-8")
+    if uid is not None:
+        (entry / "status").write_text(
+            f"Name:\tt\nUid:\t{uid}\t{uid}\t{uid}\t{uid}\n", encoding="utf-8"
+        )
+
+
+def test_a_cwd_it_cannot_read_on_its_own_user_is_reported_unresolved(tmp_path: Path) -> None:
+    """Could-not-look is its own result and never an empty tree (#625's cap ruling)."""
+    _, target, _, _ = trees(tmp_path)
+    fake = procfs(tmp_path, {61: str(target)})
+    _unreadable(fake, 61, 1000)
+    found = dispatch_stop.scan(
+        target, dispatch_stop.Machine(procfs=fake, self_pid=999999, euid=1000)
+    )
+    assert found.matched == ()
+    assert found.unresolved == 1
+    assert not found.proc_unreadable
+
+
+def test_a_cwd_it_cannot_read_on_another_user_is_not_unresolved(tmp_path: Path) -> None:
+    """A foreign owner's cwd was never visible to this read, so it hides nothing of ours."""
+    _, target, _, _ = trees(tmp_path)
+    fake = procfs(tmp_path, {62: str(target)})
+    _unreadable(fake, 62, 1000)
+    found = dispatch_stop.scan(
+        target, dispatch_stop.Machine(procfs=fake, self_pid=999999, euid=1001)
+    )
+    assert found.matched == ()
+    assert found.unresolved == 0
+
+
+def test_an_owner_it_cannot_read_counts_as_unresolved(tmp_path: Path) -> None:
+    """Unplaceable is not knowably foreign: the conservative side of the line."""
+    _, target, _, _ = trees(tmp_path)
+    fake = procfs(tmp_path, {63: str(target)})
+    _unreadable(fake, 63, None)
+    found = dispatch_stop.scan(
+        target, dispatch_stop.Machine(procfs=fake, self_pid=999999, euid=1001)
+    )
+    assert found.unresolved == 1
+
+
+def test_a_pid_gone_between_listing_and_read_is_nobody_not_unresolved(tmp_path: Path) -> None:
+    """`ENOENT` says the process exited, which is a positive empty and may conclude."""
+    _, target, _, _ = trees(tmp_path)
+    fake = procfs(tmp_path, {64: str(target)})
+    (fake / "64" / "cwd").unlink()
+    found = dispatch_stop.scan(target, machine(fake, []))
+    assert found.matched == ()
+    assert found.unresolved == 0
+
+
+def test_a_procfs_that_cannot_be_listed_is_reported_not_looked_at(tmp_path: Path) -> None:
+    """A scan that looked at nothing may not present that as an empty box."""
+    _, target, _, _ = trees(tmp_path)
+    absent = tmp_path / "not-a-directory"
+    absent.write_text("", encoding="utf-8")
+    found = dispatch_stop.scan(target, dispatch_stop.Machine(procfs=absent, self_pid=999999))
+    assert found.matched == ()
+    assert found.proc_unreadable
+
+
 # -------------------------------------------------------------------------- stopping
 
 
