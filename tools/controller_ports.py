@@ -411,22 +411,29 @@ class ExistingRecoveryClassifier:
         if evidence is None:
             return None
         verdict = recovery.decide(evidence)
-        if verdict.kind in TERMINAL_RECOVERY_KINDS and not self._proven_empty(evidence.tree.path):
+        if verdict.kind in TERMINAL_RECOVERY_KINDS and not self._proven_empty(
+            evidence.tree.path, record
+        ):
             return recovery.LIVE
         return verdict.kind
 
-    def _proven_empty(self, tree: Path) -> bool:
+    def _proven_empty(self, tree: Path, dispatch_record: Path) -> bool:
         """Whether the scan positively found nobody working in `tree`.
 
         Only a positive empty may conclude a terminal verdict (#625's cap ruling),
         and each of these says the scan cannot support the claim that the agent is
-        gone: a matched process, a live process the tree was removed under, a pid of
-        this user's whose cwd could not be read, or a `/proc` it could not list.  A
+        gone: a matched process, a live process the tree was removed under, or a pid
+        of this user's whose cwd could not be read and whose start time could not
+        prove it predates the dispatch, or a `/proc` it could not list.  A
         different-uid unreadable cwd is excluded by `scan` itself — that read was
         never visible to it — and a known controller-chain cwd failure is a reasoned
         identity exclusion rather than a failure to look, so neither holds the slot.
         """
-        found = dispatch_stop.scan(tree, self.machine)
+        found = dispatch_stop.scan(
+            tree,
+            self.machine,
+            dispatch_created_at=dispatch_stop.record_created_at(dispatch_record),
+        )
         return found.proven_empty
 
 

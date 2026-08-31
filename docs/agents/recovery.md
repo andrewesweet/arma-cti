@@ -160,7 +160,8 @@ Three properties are worth knowing before you need them.
   stop command instead. The launcher pid stays on the record as `launcher_pid`, named so a
   later reader cannot mistake it for the work.
 - **Every refusal writes nothing and kills nothing** — `unknown_dispatch`,
-  `invalid_dispatch_id`, `dispatch_unreadable`, `worktree_gone`, `procfs_unavailable` — so
+  `invalid_dispatch_id`, `dispatch_unreadable`, `worktree_gone`, `procfs_unavailable`,
+  `process_scan_unresolved` — so
   "refused" and "nothing happened" are the same state. `worktree_gone` in particular is a
   refusal rather than a clean answer: a process holding a removed directory keeps reporting
   that path, so a missing tree does not prove the work stopped.
