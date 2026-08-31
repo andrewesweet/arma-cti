@@ -169,6 +169,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 import attribute_registry
 import dispatch
 import escalation
+import gate_report
 import handoff_fetch
 import ledger
 import readiness
@@ -408,6 +409,30 @@ def render_handoff(issue: int, handoff: Handoff) -> list[str]:
     if oversize:
         lines += ["", oversize]
     return lines
+
+
+# -------------------------------------------------------------------- the gate report (#641)
+
+# The dispatcher reads this report before a review child starts: the child is forced into
+# `plan` mode and therefore cannot read the issue thread itself. The selector and the three
+# states live in `gate_report`; these aliases keep the brief's public surface parallel to the
+# handoff surface while both composed and default briefs use the same implementation.
+GATE_REPORT_CARRIED: Final = gate_report.CARRIED
+GATE_REPORT_ABSENT: Final = gate_report.ABSENT
+GATE_REPORT_UNAVAILABLE: Final = gate_report.UNAVAILABLE
+GateReport = gate_report.GateReport
+
+
+def fetch_gate_report(
+    issue: int, fetch: handoff_fetch.Fetch = handoff_fetch.fetch_comments
+) -> GateReport:
+    """Return the issue's newest marked gate report, or why it could not be read."""
+    return gate_report.fetch(issue, fetch_comments=fetch)
+
+
+def render_gate_report(issue: int, report: GateReport) -> list[str]:
+    """Render the report supplied to a reviewer without collapsing its negative states."""
+    return gate_report.render(issue, report)
 
 
 # ----------------------------------------------------------------------- the flake lines
@@ -813,7 +838,8 @@ REVIEW_GATE_RULE: Final = (
     f"{MUTATION_SAMPLING_PASTE_RULE} (#344) — unconditionally."
     " A paste that is absent, thinner than that, silent on counts, or silent on"
     " sampled-or-exhaustive is a finding — report it rather than running the implementer's"
-    " gate yourself (#421)."
+    " gate yourself (#421). The dispatcher supplies the thread read in the gate-report"
+    " section below; do not call `gh` to obtain that record."
 )
 REVIEW_FLAKE_RESPONSE: Final = (
     "You re-run none of these: a flake named in the implementer's paste is context for"
@@ -859,7 +885,8 @@ THREAD_GATE_REPORT_RULE: Final = (
     "Before review, post on #{issue}'s thread the implementer's gate report — `just check`,"
     " `just unit`, `just mutation`, each with its result counts —"
     f" including {MUTATION_SAMPLING_PASTE_RULE} (#344, #421:"
-    " unconditionally, never only where a kill rate is quoted). That paste is the"
+    " unconditionally, never only where a kill rate is quoted). Begin the comment with the"
+    " exact heading `### Implementer gate report`. That paste is the"
     " review's gate record (#449), so it is owed before the branch is handed over. It is"
     " not the closing audit and no words inside it satisfy the closing rung (#499)."
 )
@@ -970,6 +997,11 @@ class Briefing(NamedTuple):
     # one outcome that renders no section; `Firing` renders the firing and `Unreadable` renders the
     # gap, each under its own heading.
     escalation: escalation.Evaluation = escalation.NoFiring()
+    # The implementer's gate report is read by the host dispatcher and carried into a review
+    # brief because the review child is forced into `plan` mode. Defaulting to a confirmed
+    # absence keeps ordinary implementer briefs unchanged; review composition supplies the
+    # fetched state explicitly.
+    gate_report: GateReport = GateReport(GATE_REPORT_ABSENT)
 
 
 def escalation_for(body: str, seat_name: str, repo: Path) -> escalation.Evaluation:
@@ -1183,6 +1215,8 @@ def compose(briefing: Briefing) -> str:
     handoff_lines = render_handoff(issue, briefing.handoff)
     if handoff_lines:
         lines += ["", *handoff_lines]
+    if seat.reviews:
+        lines += ["", *render_gate_report(issue, briefing.gate_report)]
     lines += _escalation_lines(briefing.escalation)
     lines += [
         "",
@@ -1347,6 +1381,24 @@ def _note_brief_arrival(issue: int, seat_name: str) -> None:
     )
 
 
+def gate_report_for(
+    issue: int, seat: Seat, read_gate_report: Callable[[int], GateReport]
+) -> GateReport:
+    """Read a thread report only for a review brief; other seats keep the quiet default."""
+    return read_gate_report(issue) if seat.reviews else GateReport(GATE_REPORT_ABSENT)
+
+
+def warn_gate_report_unavailable(issue: int, report: GateReport) -> None:
+    """Name an unavailable thread read without making it look like a missing report."""
+    if report.state != GATE_REPORT_UNAVAILABLE:
+        return
+    print(  # noqa: T201 — a CLI's refusal channel
+        f"[brief] gate_report=unavailable for #{issue}: {report.detail}"
+        " The brief says so; it does not render the absence.",
+        file=sys.stderr,
+    )
+
+
 def main(  # noqa: PLR0913 — one keyword seam per external read, each injected independently in tests
     argv: Sequence[str] | None = None,
     *,
@@ -1354,6 +1406,7 @@ def main(  # noqa: PLR0913 — one keyword seam per external read, each injected
     read_open: Callable[[str], list[dict[str, object]]] = fetch_open_issues,
     read_prior: Callable[[int, Path], tuple[PriorWork, ...]] = prior_work,
     read_handoff: Callable[[int], Handoff] = fetch_handoff,
+    read_gate_report: Callable[[int], GateReport] = fetch_gate_report,
     repo: Path = REPO,
 ) -> int:
     """Compose the brief, or refuse loudly. Never a silent empty brief."""
@@ -1391,6 +1444,7 @@ def main(  # noqa: PLR0913 — one keyword seam per external read, each injected
     gate = derive_gate(body, read_vocabulary(repo))
     handoff = read_handoff(args.issue)
     seat = derive_seat(args.seat, args.reviewing)
+    gate_report = gate_report_for(args.issue, seat, read_gate_report)
     rendered = compose(
         Briefing(
             issue=args.issue,
@@ -1403,6 +1457,7 @@ def main(  # noqa: PLR0913 — one keyword seam per external read, each injected
             reserved=reserved_surfaces(named_paths(body)),
             prior_work=work,
             handoff=handoff,
+            gate_report=gate_report,
             escalation=escalation_for(body, seat.name, repo),
         )
     )
@@ -1424,6 +1479,7 @@ def main(  # noqa: PLR0913 — one keyword seam per external read, each injected
             " The brief says so; it does not render the absence.",
             file=sys.stderr,
         )
+    warn_gate_report_unavailable(args.issue, gate_report)
     if args.out:
         Path(args.out).expanduser().write_text(rendered, encoding="utf-8")
     else:

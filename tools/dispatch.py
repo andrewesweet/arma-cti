@@ -262,6 +262,7 @@ import codex_guidance
 import dispatch_stop
 import gate
 import gate_clock
+import gate_report
 import hook_parity
 import queue_policy
 import readiness
@@ -3325,7 +3326,11 @@ REVIEW_DELIVERY_PROTOCOL: Final = (
 )
 
 
-def default_brief(identity: Identity, worktree: Path) -> str:
+def default_brief(
+    identity: Identity,
+    worktree: Path,
+    thread_report: gate_report.GateReport | None = None,
+) -> str:
     """Compose the brief a dispatch sends when the caller named no file.
 
     Deliberately thin: it states the assignment and points at the issue, because a
@@ -3344,7 +3349,14 @@ def default_brief(identity: Identity, worktree: Path) -> str:
             "Run no gate and re-run none of the implementer's tests — you are passed their"
             " report instead, and the wall time is the reason (human ruling 2026-08-14 on #353,"
             " as clarified 2026-08-20 on #449); read what the issue thread and the repository"
-            " carry. Reading is this seat's work, not a breach of that (#421)."
+            " carry. "
+            + (
+                "The dispatcher-supplied gate-report section below is the record; do not call"
+                " `gh` to obtain that report. Reading the supplied record is this seat's work,"
+                " not a breach of that (#421)."
+                if SEATS[identity.seat].reviews
+                else "Reading is this seat's work, not a breach of that (#421)."
+            )
         )
         if judgement_only
         else "Run `just fast` after every edit."
@@ -3361,6 +3373,12 @@ def default_brief(identity: Identity, worktree: Path) -> str:
         f"are the contract. {gate_line}\n"
     )
     if SEATS[identity.seat].reviews:
+        if thread_report is None:
+            thread_report = gate_report.GateReport(
+                gate_report.UNAVAILABLE,
+                detail="the planner did not obtain an issue-thread report",
+            )
+        rendered += "\n" + "\n".join(gate_report.render(identity.issue, thread_report)) + "\n"
         rendered += f"\n{REVIEW_DELIVERY_PROTOCOL}\n"
     return rendered
 
@@ -5414,10 +5432,21 @@ def plan_dispatch(  # noqa: C901, PLR0911, PLR0912 — planning owns the ordered
         issue=args.issue,
         base_sha=base_sha,
     )
+    thread_report = getattr(args, "gate_report", None)
+    if thread_report is None and seat.reviews:
+        read_gate_report = getattr(args, "gate_report_fetch", None)
+        thread_report = (
+            read_gate_report(args.issue)
+            if read_gate_report is not None
+            else gate_report.GateReport(
+                gate_report.UNAVAILABLE,
+                detail="the planner was called without a thread-read result",
+            )
+        )
     brief = (
         Path(args.brief_file).expanduser().read_text(encoding="utf-8")
         if args.brief_file
-        else default_brief(identity, worktree)
+        else default_brief(identity, worktree, thread_report)
     )
     sandbox_disposable = seat.disposable_worktree
     writable_roots = None
@@ -6216,6 +6245,13 @@ def answer_directly(args: argparse.Namespace) -> int | None:
     return None
 
 
+def prepare_gate_report_read(args: argparse.Namespace) -> None:
+    """Give the real planner a host-side thread reader for the default review brief."""
+    seat = SEATS.get(args.seat)
+    if not args.brief_file and seat is not None and seat.reviews:
+        args.gate_report_fetch = gate_report.fetch
+
+
 def main(argv: list[str] | None = None, now: datetime | None = None) -> int:
     """Plan a dispatch, or run one the seam already planned.
 
@@ -6246,6 +6282,12 @@ def main(argv: list[str] | None = None, now: datetime | None = None) -> int:
 
     when = datetime.now(tz=UTC) if now is None else now
     args.materialize_worktree = not args.dry_run
+    # A review child cannot read the issue thread under its forced `plan` containment. The
+    # host reads the gate report and lets `plan_dispatch` carry the result into the default
+    # brief. The callable is attached to the namespace rather than fetched here so refusal
+    # tests that replace the planner do not make a network call; the real planner invokes it
+    # only after the route has cleared its own refusal ladder.
+    prepare_gate_report_read(args)
     plan, brief, refusal = plan_dispatch(args, main_checkout(Path.cwd()), when)
     if refusal is not None or plan is None:
         # A peak-band rehearsal is read-only: unlike a real attempt, it must not make the

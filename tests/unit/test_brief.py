@@ -841,6 +841,14 @@ A_HANDOFF = (
     "**Gates:**     `just fast` green at `0f21191`.\n"
 )
 
+A_GATE_REPORT = (
+    "### Implementer gate report — issue 251 at 0f21191\n\n"
+    "**`just check`** — 22 passed\n"
+    "**`just unit`** — 318 passed, 0 failed\n"
+    "**`just mutation`** — 2 modules, 10 killed\n"
+    "`mutation smoke: run was exhaustive`\n"
+)
+
 
 def handoff_payload(*bodies: str) -> str:
     """Render comment bodies the way `gh api --jq '.[] | .body | @json'` does."""
@@ -926,6 +934,75 @@ def test_an_oversize_handoff_is_still_composed_verbatim_with_the_report() -> Non
     rendered = composed(handoff=brief.Handoff(brief.HANDOFF_CARRIED, body=body))
     assert body in rendered  # still composed — the check informs, it does not block
     assert "over the" in rendered
+
+
+# ----------------------------------------------------------- the gate report (#641)
+
+
+def test_fetch_gate_report_returns_the_newest_marked_comment_verbatim() -> None:
+    report = brief.fetch_gate_report(251, fetch=lambda _i: handoff_payload("noise", A_GATE_REPORT))
+    assert report.state == brief.GATE_REPORT_CARRIED
+    assert report.body == A_GATE_REPORT
+
+
+def test_fetch_gate_report_does_not_treat_a_handoff_as_a_gate_report() -> None:
+    report = brief.fetch_gate_report(251, fetch=lambda _i: handoff_payload(A_HANDOFF))
+    assert report.state == brief.GATE_REPORT_ABSENT
+    assert report.body == ""
+
+
+def test_fetch_gate_report_keeps_a_thread_fetch_failure_distinct_from_absence() -> None:
+    detail = "`gh` could not read #251: 404"
+
+    def refusing(_issue: int) -> str:
+        raise brief.gate_report.handoff_fetch.FetchError(detail)
+
+    report = brief.fetch_gate_report(251, fetch=refusing)
+    assert report.state == brief.GATE_REPORT_UNAVAILABLE
+    assert report.state != brief.GATE_REPORT_ABSENT
+    assert "404" in report.detail
+
+
+def test_a_review_brief_carries_the_gate_report_and_distinguishes_negative_states() -> None:
+    review = brief.derive_seat("review", "opus-high")
+    carried = composed(
+        seat=review,
+        gate_report=brief.GateReport(brief.GATE_REPORT_CARRIED, body=A_GATE_REPORT),
+    )
+    assert A_GATE_REPORT in carried
+    assert carried.count(A_GATE_REPORT) == 1
+
+    absent = composed(
+        seat=review,
+        gate_report=brief.GateReport(brief.GATE_REPORT_ABSENT),
+    )
+    assert "GATE REPORT ABSENT" in absent
+    assert "GATE REPORT UNAVAILABLE" not in absent
+
+    unavailable = composed(
+        seat=review,
+        gate_report=brief.GateReport(brief.GATE_REPORT_UNAVAILABLE, detail="network refused"),
+    )
+    assert "GATE REPORT UNAVAILABLE" in unavailable
+    assert "GATE REPORT ABSENT" not in unavailable
+    assert "network refused" in unavailable
+
+
+def test_the_default_review_brief_carries_the_dispatcher_supplied_gate_report() -> None:
+    identity = dispatch.Identity(
+        dispatch_id="d-test",
+        lane="claude-native",
+        profile="opus-high",
+        seat="review",
+        issue=251,
+        base_sha="deadbee",
+    )
+    rendered = dispatch.default_brief(
+        identity,
+        REPO / ".claude" / "worktrees" / "issue-251",
+        brief.GateReport(brief.GATE_REPORT_CARRIED, body=A_GATE_REPORT),
+    )
+    assert A_GATE_REPORT in rendered
 
 
 def test_main_composes_a_carried_handoff_through_the_seam(tmp_path: Path) -> None:
@@ -1938,6 +2015,7 @@ def test_a_composed_brief_records_the_brief_arrival(
         },
         read_open=lambda _repo: [],
         read_handoff=lambda _issue: brief.Handoff(brief.HANDOFF_ABSENT),
+        read_gate_report=lambda _issue: brief.GateReport(brief.GATE_REPORT_ABSENT),
         repo=REPO,
     )
     assert code == 0
@@ -1966,6 +2044,7 @@ def test_a_brief_for_a_review_seat_records_no_arrival(
         },
         read_open=lambda _repo: [],
         read_handoff=lambda _issue: brief.Handoff(brief.HANDOFF_ABSENT),
+        read_gate_report=lambda _issue: brief.GateReport(brief.GATE_REPORT_ABSENT),
         repo=REPO,
     )
     assert code == 0
