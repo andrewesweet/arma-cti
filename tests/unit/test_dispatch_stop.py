@@ -73,7 +73,12 @@ def parent(root: Path, pid: int, ppid: int) -> None:
     (root / str(pid) / "status").write_text(f"Name:\tt\nPPid:\t{ppid}\n", encoding="utf-8")
 
 
-def machine(root: Path, killed: list[tuple[int, int]], self_pid: int = 999999) -> AMachine:
+def machine(
+    root: Path,
+    killed: list[tuple[int, int]],
+    self_pid: int = 999999,
+    euid: int | None = None,
+) -> AMachine:
     """Build a `Machine` whose kill removes the pid from the arranged `/proc`, never waiting.
 
     Removal on signal is what makes the re-scan a real verification in these tests: the
@@ -98,6 +103,7 @@ def machine(root: Path, killed: list[tuple[int, int]], self_pid: int = 999999) -
         kill_grace=0.0,
         poll=0.0,
         self_pid=self_pid,
+        euid=euid,
     )
 
 
@@ -263,6 +269,17 @@ def test_a_deleted_working_directory_is_counted_and_never_signalled(tmp_path: Pa
     found = dispatch_stop.scan(target, machine(fake, killed))
     assert [process.pid for process in found.matched] == [32]
     assert found.deleted == 1
+
+
+def test_a_deleted_cwd_on_the_controller_chain_is_excluded_by_identity(tmp_path: Path) -> None:
+    """A known controller process is not dispatch occupancy, even after its cwd vanished."""
+    _, target, _, _ = trees(tmp_path)
+    fake = procfs(tmp_path, {33: f"{target} (deleted)"})
+    parent(fake, 33, 1)
+    found = dispatch_stop.scan(target, machine(fake, [], self_pid=33))
+
+    assert found.matched == ()
+    assert found.deleted == 0
 
 
 def test_this_process_and_its_ancestors_are_reported_and_never_signalled(tmp_path: Path) -> None:
@@ -579,6 +596,63 @@ def test_a_box_with_no_procfs_refuses_rather_than_reporting_an_empty_tree(
     assert code == dispatch_stop.EXIT_REFUSED
     assert found["refusal"] == "procfs_unavailable"
     assert found["class"] == "infra_unavailable"
+    assert not (target_record.directory / "result.json").exists()
+
+
+def test_a_process_scan_with_unreadable_cwd_refuses_before_signalling(
+    tmp_path: Path,
+) -> None:
+    """An incomplete initial scan cannot authorize a stop or write a closeout."""
+    _, target, _, _ = trees(tmp_path)
+    fake = procfs(tmp_path, {61: str(target)})
+    _unreadable(fake, 61, 1000)
+    killed: list[tuple[int, int]] = []
+    target_record = record(tmp_path, target)
+
+    code, printed = dispatch_stop.stop(target_record, machine(fake, killed, euid=1000))
+
+    found = lines(printed)
+    assert code == dispatch_stop.EXIT_REFUSED
+    assert found["refusal"] == "process_scan_unresolved"
+    assert found["class"] == "infra_unavailable"
+    assert found["scan_unresolved"] == "1"
+    assert killed == []
+    assert not (target_record.directory / "result.json").exists()
+
+
+def test_a_stop_does_not_claim_success_when_its_rescan_cannot_look(
+    tmp_path: Path,
+) -> None:
+    """A process becoming unreadable after SIGTERM remains an unverified stop."""
+    _, target, _, _ = trees(tmp_path)
+    fake = procfs(tmp_path, {71: str(target)})
+    killed: list[tuple[int, int]] = []
+
+    def kill(pid: int, number: int) -> None:
+        killed.append((pid, number))
+        if number == signal.SIGTERM:
+            _unreadable(fake, pid, 1000)
+
+    target_record = record(tmp_path, target)
+    scanner = dispatch_stop.Machine(
+        procfs=fake,
+        kill=kill,
+        pause=lambda _: None,
+        term_grace=0.0,
+        kill_grace=0.0,
+        poll=0.0,
+        self_pid=999999,
+        euid=1000,
+    )
+
+    code, printed = dispatch_stop.stop(target_record, scanner)
+
+    found = lines(printed)
+    assert code == dispatch_stop.EXIT_FINDING
+    assert found["finding"] == "stop_unverified"
+    assert found["verified"] == "no"
+    assert found["result"] == "none"
+    assert killed == [(71, signal.SIGTERM)]
     assert not (target_record.directory / "result.json").exists()
 
 

@@ -136,6 +136,11 @@ UNVERIFIED_ACTION: Final = (
     "(`ls -l /proc/<pid>/cwd`, `cat /proc/<pid>/status`); a process that outlives SIGKILL "
     "is in uninterruptible sleep and is the box's problem, not this dispatch's."
 )
+SCAN_UNVERIFIED_ACTION: Final = (
+    "A post-signal process scan could not determine whether the tree is empty, so the stop "
+    "is not proven and must not be treated as one. No result was written. Restore process "
+    "visibility, inspect the tree and its processes by hand, and stop it again."
+)
 
 
 class Refusal(NamedTuple):
@@ -190,6 +195,16 @@ class Scan(NamedTuple):
     deleted: int
     unresolved: int = 0
     proc_unreadable: bool = False
+
+    @property
+    def indeterminate(self) -> bool:
+        """Whether this pass could not inspect every relevant process."""
+        return self.proc_unreadable or self.unresolved > 0
+
+    @property
+    def proven_empty(self) -> bool:
+        """Whether this pass positively found no process that can hold the tree."""
+        return not (self.matched or self.deleted or self.indeterminate)
 
 
 class Machine(NamedTuple):
@@ -425,7 +440,7 @@ def _pids(procfs: Path) -> tuple[int, ...] | None:
     return tuple(entries)
 
 
-def _cwd_of(procfs: Path, pid: int) -> tuple[str, int]:
+def _cwd_of(procfs: Path, pid: int) -> tuple[str, int | None]:
     """Read one process's working directory link, with the errno when it could not be.
 
     The errno is what lets the scan tell a process that is gone (ENOENT — it exited
@@ -434,7 +449,7 @@ def _cwd_of(procfs: Path, pid: int) -> tuple[str, int]:
     sides of the line.
     """
     try:
-        return str((procfs / str(pid) / "cwd").readlink()), 0
+        return str((procfs / str(pid) / "cwd").readlink()), None
     except OSError as failure:
         return "", failure.errno
 
@@ -507,8 +522,8 @@ def scan(worktree: Path, machine: Machine) -> Scan:
     run as the controller's user and that read was never visible to it anyway; an
     ENOENT does not count, because the process is gone, not hidden.  A `/proc` that
     cannot be listed is `proc_unreadable` — a look that never happened.  The
-    controller's own chain stays excluded as before, which is a reasoned exclusion
-    rather than a failure to look.
+    controller's own chain stays excluded from matching and from unresolved cwd
+    failures, which are reasoned identity exclusions rather than failures to look.
     """
     resolved = worktree.resolve()
     mine = own_chain(machine)
@@ -518,17 +533,19 @@ def scan(worktree: Path, machine: Machine) -> Scan:
     unresolved = 0
     pids = _pids(machine.procfs)
     if pids is None:
-        return Scan((), (), 0, 0, proc_unreadable=True)
+        return Scan((), (), 0, proc_unreadable=True)
     for pid in pids:
         link, failure = _cwd_of(machine.procfs, pid)
         if failure == errno.ENOENT:
             continue
-        if failure:
+        if failure is not None:
+            if pid in mine:
+                continue
             if _uid_of(machine.procfs, pid) in (None, machine.effective_uid):
                 unresolved += 1
             continue
         if link.endswith(DELETED_MARKER):
-            if inside(Path(link.removesuffix(DELETED_MARKER)), resolved):
+            if pid not in mine and inside(Path(link.removesuffix(DELETED_MARKER)), resolved):
                 deleted += 1
             continue
         if not inside(Path(link), resolved):
@@ -552,15 +569,15 @@ def _signal(processes: Sequence[Process], number: int, machine: Machine) -> None
             continue
 
 
-def _await_empty(worktree: Path, machine: Machine, budget: float) -> tuple[Process, ...]:
-    """Re-scan until the tree holds no signallable process, or the budget runs out."""
+def _await_empty(worktree: Path, machine: Machine, budget: float) -> Scan:
+    """Re-scan until the tree is empty, observation is incomplete, or the budget runs out."""
     deadline = machine.monotonic() + budget
     while True:
         found = scan(worktree, machine)
-        if not found.matched:
-            return ()
+        if not found.matched or found.indeterminate:
+            return found
         if machine.monotonic() >= deadline:
-            return found.matched
+            return found
         machine.pause(machine.poll)
 
 
@@ -570,6 +587,7 @@ class Stopped(NamedTuple):
     finished: dict[int, str]
     survivors: tuple[Process, ...]
     commands: dict[int, str]
+    verification_unproven: bool = False
 
     def killed_lines(self) -> tuple[str, ...]:
         """Render one line per process this stop ended, with the signal that ended it."""
@@ -590,18 +608,22 @@ def _stop_processes(worktree: Path, first: Scan, machine: Machine) -> Stopped:
     finished: dict[int, str] = {}
 
     _signal(first.matched, signal.SIGTERM, machine)
-    survivors = _await_empty(worktree, machine, machine.term_grace)
+    verification = _await_empty(worktree, machine, machine.term_grace)
+    if verification.indeterminate:
+        return Stopped({}, verification.matched, commands, verification_unproven=True)
+    survivors = verification.matched
     alive = {process.pid for process in survivors}
     finished.update({pid: "SIGTERM" for pid in commands if pid not in alive})
     if survivors:
         commands.update({process.pid: process.command for process in survivors})
         _signal(survivors, signal.SIGKILL, machine)
-        survivors = _await_empty(worktree, machine, machine.kill_grace)
+        verification = _await_empty(worktree, machine, machine.kill_grace)
+        survivors = verification.matched
         alive = {process.pid for process in survivors}
         finished.update(
             {pid: "SIGKILL" for pid in commands if pid not in alive and pid not in finished}
         )
-    return Stopped(finished, survivors, commands)
+    return Stopped(finished, survivors, commands, verification.indeterminate)
 
 
 def _record_ending(record: Record, finished: dict[int, str]) -> str:
@@ -655,7 +677,61 @@ def _context(record: Record, found: Scan) -> tuple[str, ...]:
     lines += [f"skipped_self.{process.pid}={process.command}" for process in found.mine]
     if found.deleted:
         lines.append(f"skipped_deleted_cwd={found.deleted}")
+    if found.unresolved:
+        lines.append(f"scan_unresolved={found.unresolved}")
+    if found.proc_unreadable:
+        lines.append("scan_procfs_unreadable=yes")
     return tuple(lines)
+
+
+def _process_scan_refusal(record: Record, found: Scan) -> tuple[int, tuple[str, ...]]:
+    """Refuse before signalling when process visibility is incomplete."""
+    return EXIT_REFUSED, Refusal(
+        "process_scan_unresolved",
+        _context(record, found),
+        (
+            "The process scan could not determine whether every relevant process is "
+            "in this worktree, so an empty match is not proof that it is empty. "
+            "Nothing was signalled. Restore process visibility and run the stop again."
+        ),
+        failure_class="infra_unavailable",
+    ).lines()
+
+
+def _stop_result(record: Record, found: Scan, done: Stopped) -> tuple[int, tuple[str, ...]]:
+    """Render the post-signal result, preserving an unverified scan as a finding."""
+    if done.verification_unproven or done.survivors:
+        action = SCAN_UNVERIFIED_ACTION if done.verification_unproven else UNVERIFIED_ACTION
+        return EXIT_FINDING, (
+            "finding=stop_unverified",
+            *_context(record, found),
+            *done.killed_lines(),
+            *(f"survivor.{p.pid}={p.command}" for p in done.survivors),
+            f"survivors={len(done.survivors)}",
+            "verified=no",
+            "result=none",
+            f"action={action}",
+        )
+    cleanup_refusal, cleanup_lines = cleanup_disposable_worktree(record)
+    if cleanup_refusal is not None:
+        return EXIT_REFUSED, (
+            f"stop={STOPPED}",
+            *_context(record, found),
+            *done.killed_lines(),
+            f"killed={len(done.finished)}",
+            "verified=no_process_in_worktree",
+            *cleanup_refusal.lines(),
+            "result=none",
+        )
+    return 0, (
+        f"stop={STOPPED}",
+        *_context(record, found),
+        *done.killed_lines(),
+        f"killed={len(done.finished)}",
+        "verified=no_process_in_worktree",
+        *cleanup_lines,
+        f"result={_record_ending(record, done.finished)}",
+    )
 
 
 def stop(  # noqa: PLR0911 — the stop protocol preserves each typed terminal outcome
@@ -694,6 +770,8 @@ def stop(  # noqa: PLR0911 — the stop protocol preserves each typed terminal o
             return EXIT_REFUSED, ownership_refusal.lines()
 
     found = scan(record.worktree, machine)
+    if found.indeterminate:
+        return _process_scan_refusal(record, found)
     if not record.worktree.is_dir() and (found.matched or found.deleted):
         return EXIT_REFUSED, Refusal(
             "worktree_gone",
@@ -712,37 +790,7 @@ def stop(  # noqa: PLR0911 — the stop protocol preserves each typed terminal o
         return _nothing_running(record, found, cleanup_lines)
 
     done = _stop_processes(record.worktree, found, machine)
-    if done.survivors:
-        return EXIT_FINDING, (
-            "finding=stop_unverified",
-            *_context(record, found),
-            *done.killed_lines(),
-            *(f"survivor.{p.pid}={p.command}" for p in done.survivors),
-            f"survivors={len(done.survivors)}",
-            "verified=no",
-            "result=none",
-            f"action={UNVERIFIED_ACTION}",
-        )
-    cleanup_refusal, cleanup_lines = cleanup_disposable_worktree(record)
-    if cleanup_refusal is not None:
-        return EXIT_REFUSED, (
-            f"stop={STOPPED}",
-            *_context(record, found),
-            *done.killed_lines(),
-            f"killed={len(done.finished)}",
-            "verified=no_process_in_worktree",
-            *cleanup_refusal.lines(),
-            "result=none",
-        )
-    return 0, (
-        f"stop={STOPPED}",
-        *_context(record, found),
-        *done.killed_lines(),
-        f"killed={len(done.finished)}",
-        "verified=no_process_in_worktree",
-        *cleanup_lines,
-        f"result={_record_ending(record, done.finished)}",
-    )
+    return _stop_result(record, found, done)
 
 
 def _nothing_running(

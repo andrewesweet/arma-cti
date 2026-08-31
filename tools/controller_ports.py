@@ -423,11 +423,11 @@ class ExistingRecoveryClassifier:
         gone: a matched process, a live process the tree was removed under, a pid of
         this user's whose cwd could not be read, or a `/proc` it could not list.  A
         different-uid unreadable cwd is excluded by `scan` itself — that read was
-        never visible to it — and the controller's own chain is a reasoned exclusion
-        rather than a failure to look, so neither holds the slot.
+        never visible to it — and a known controller-chain cwd failure is a reasoned
+        identity exclusion rather than a failure to look, so neither holds the slot.
         """
         found = dispatch_stop.scan(tree, self.machine)
-        return not (found.matched or found.deleted or found.unresolved or found.proc_unreadable)
+        return found.proven_empty
 
 
 @dataclass(frozen=True)

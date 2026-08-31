@@ -4,10 +4,12 @@
   of freezing it at first stamp, and a non-terminal look now writes only its
   verdict — never the Work Run's workflow state — so a `still_live` reading can
   no longer walk a reviewed, gated, stalled or interrupted run back to
-  `running`. `lost_work` and `finished_and_cleaned` stay conclusions only where
-  the scan positively found nobody working in the tree — no process, no
-  unreadable cwd on a process of the controller's own user, no deleted cwd
-  inside the tree, and a `/proc` it could list — because unpushed commits are
-  also what a live agent's ordinary progress looks like, and any look that
-  could not be made keeps the slot and reads `still_live` rather than
-  releasing it onto unproven liveness.
+  `running`. `lost_work` and `finished_and_cleaned` stay conclusions only where a
+  listable `/proc` scan positively finds no dispatch process: no matched or
+  deleted-cwd process, and no same-user or owner-unknown process whose cwd could
+  not be read. Foreign-user unreadable cwds, and cwd failures on a known
+  controller-chain process, are excluded by known owner or identity. Unpushed commits are also what a live
+  agent's ordinary progress looks like, so an incomplete scan keeps the slot
+  and reads `still_live` rather than releasing it onto unproven liveness;
+  `just dispatch --stop` likewise refuses before signalling and reports an
+  unverified finding when its visibility is incomplete.
