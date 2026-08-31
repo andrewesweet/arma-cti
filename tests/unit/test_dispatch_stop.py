@@ -151,24 +151,28 @@ def deaf(root: Path, killed: list[tuple[int, int]]) -> AMachine:
 
 
 def record(
-    tmp_path: Path, worktree: Path, dispatch_id: str = "d-20260810-141138-0fb6a9"
+    tmp_path: Path,
+    worktree: Path,
+    dispatch_id: str = "d-20260810-141138-0fb6a9",
+    *,
+    planned_at: datetime | None = None,
 ) -> ARecord:
     """Write a dispatch record over this worktree and return it as the tool reads it."""
     directory = tmp_path / "dispatches" / dispatch_id
     directory.mkdir(parents=True, exist_ok=True)
+    document = {
+        "dispatch_id": dispatch_id,
+        "issue": 304,
+        "worktree": str(worktree),
+        # The trap this whole issue exists to defuse: a pid on the record. It
+        # names a process that is not in the tree, so any tool that reaches for
+        # it instead of for the worktree kills the wrong thing.
+        "launcher_pid": RECORDED_LAUNCHER_PID,
+    }
+    if planned_at is not None:
+        document["planned_at"] = planned_at.isoformat()
     (directory / "dispatch.json").write_text(
-        json.dumps(
-            {
-                "dispatch_id": dispatch_id,
-                "issue": 304,
-                "worktree": str(worktree),
-                # The trap this whole issue exists to defuse: a pid on the record. It
-                # names a process that is not in the tree, so any tool that reaches for
-                # it instead of for the worktree kills the wrong thing.
-                "launcher_pid": RECORDED_LAUNCHER_PID,
-            },
-            indent=2,
-        ),
+        json.dumps(document, indent=2),
         encoding="utf-8",
     )
     return dispatch_stop.Record(dispatch_id, worktree, directory)
@@ -732,7 +736,44 @@ def test_a_stop_does_not_claim_success_when_its_rescan_cannot_look(
     assert found["finding"] == "stop_unverified"
     assert found["verified"] == "no"
     assert found["result"] == "none"
+    assert found["final_scan_unresolved"] == "1"
     assert killed == [(71, signal.SIGTERM)]
+    assert not (target_record.directory / "result.json").exists()
+
+
+def test_a_stop_reports_a_final_procfs_visibility_failure(
+    tmp_path: Path,
+) -> None:
+    """A post-signal `/proc` listing failure is named in the unverified finding."""
+    _, target, _, _ = trees(tmp_path)
+    fake = procfs(tmp_path, {72: str(target)})
+    killed: list[tuple[int, int]] = []
+
+    def kill(pid: int, number: int) -> None:
+        killed.append((pid, number))
+        if number == signal.SIGTERM:
+            hidden = tmp_path / "hidden-proc"
+            fake.rename(hidden)
+            fake.write_text("", encoding="utf-8")
+
+    target_record = record(tmp_path, target)
+    scanner = dispatch_stop.Machine(
+        procfs=fake,
+        kill=kill,
+        pause=lambda _: None,
+        term_grace=0.0,
+        kill_grace=0.0,
+        poll=0.0,
+        self_pid=999999,
+    )
+
+    code, printed = dispatch_stop.stop(target_record, scanner)
+
+    found = lines(printed)
+    assert code == dispatch_stop.EXIT_FINDING
+    assert found["finding"] == "stop_unverified"
+    assert found["final_scan_procfs_unreadable"] == "yes"
+    assert killed == [(72, signal.SIGTERM)]
     assert not (target_record.directory / "result.json").exists()
 
 
@@ -1026,13 +1067,13 @@ def test_a_real_process_working_in_the_tree_is_found_stopped_and_verified(
     if not Path("/proc").is_dir():  # pragma: no cover - this project's tier is Linux
         pytest.skip("no /proc on this box")
     _, target, sibling, _ = trees(tmp_path)
+    target_record = record(tmp_path, target, planned_at=datetime.now(tz=UTC))
     # One process in the tree and one in the neighbouring tree. The second is the claim.
     # S603: this interpreter and a fixed literal, which is the whole of the input.
     idle = [sys.executable, "-c", "import time; time.sleep(120)"]
     inside_tree = subprocess.Popen(idle, cwd=target)  # noqa: S603
     outside = subprocess.Popen(idle, cwd=sibling)  # noqa: S603
     try:
-        target_record = record(tmp_path, target)
         code, printed = dispatch_stop.stop(target_record)
 
         found = lines(printed)

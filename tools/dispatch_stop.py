@@ -706,6 +706,7 @@ class Stopped(NamedTuple):
     survivors: tuple[Process, ...]
     commands: dict[int, str]
     verification_unproven: bool = False
+    verification: Scan | None = None
 
     def killed_lines(self) -> tuple[str, ...]:
         """Render one line per process this stop ended, with the signal that ended it."""
@@ -757,7 +758,11 @@ def _stop_processes(
             {pid: "SIGKILL" for pid in commands if pid not in alive and pid not in finished}
         )
     return Stopped(
-        finished, survivors, commands, verification_unproven or verification.indeterminate
+        finished,
+        survivors,
+        commands,
+        verification_unproven or verification.indeterminate,
+        verification,
     )
 
 
@@ -819,6 +824,16 @@ def _context(record: Record, found: Scan) -> tuple[str, ...]:
     return tuple(lines)
 
 
+def _final_scan_context(found: Scan) -> tuple[str, ...]:
+    """Render visibility gaps from the final post-signal scan."""
+    lines: list[str] = []
+    if found.unresolved:
+        lines.append(f"final_scan_unresolved={found.unresolved}")
+    if found.proc_unreadable:
+        lines.append("final_scan_procfs_unreadable=yes")
+    return tuple(lines)
+
+
 def _process_scan_refusal(record: Record, found: Scan) -> tuple[int, tuple[str, ...]]:
     """Refuse before signalling when process visibility is incomplete."""
     return EXIT_REFUSED, Refusal(
@@ -837,9 +852,11 @@ def _stop_result(record: Record, found: Scan, done: Stopped) -> tuple[int, tuple
     """Render the post-signal result, preserving an unverified scan as a finding."""
     if done.verification_unproven or done.survivors:
         action = SCAN_UNVERIFIED_ACTION if done.verification_unproven else UNVERIFIED_ACTION
+        final_scan = _final_scan_context(done.verification) if done.verification else ()
         return EXIT_FINDING, (
             "finding=stop_unverified",
             *_context(record, found),
+            *final_scan,
             *done.killed_lines(),
             *(f"survivor.{p.pid}={p.command}" for p in done.survivors),
             f"survivors={len(done.survivors)}",
