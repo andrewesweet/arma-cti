@@ -678,6 +678,28 @@ def test_a_known_match_is_signalled_when_an_unrelated_scan_is_indeterminate(
     assert not (target_record.directory / "result.json").exists()
 
 
+def test_a_stubborn_match_is_killed_when_an_unrelated_scan_is_indeterminate(
+    tmp_path: Path,
+) -> None:
+    """Escalate a known match even when an unrelated pid keeps the scan incomplete."""
+    _, target, _, _ = trees(tmp_path)
+    fake = procfs(tmp_path, {61: str(target), 62: str(target)})
+    _unreadable(fake, 62, None)
+    killed: list[tuple[int, int]] = []
+    target_record = record(tmp_path, target)
+
+    code, printed = dispatch_stop.stop(target_record, stubborn(fake, killed, {61}))
+
+    found = lines(printed)
+    assert code == dispatch_stop.EXIT_FINDING
+    assert found["finding"] == "stop_unverified"
+    assert found["verified"] == "no"
+    assert found["result"] == "none"
+    assert killed == [(61, signal.SIGTERM), (61, signal.SIGKILL)]
+    assert found["killed.61"] == "SIGKILL claude --print pid-61"
+    assert not (target_record.directory / "result.json").exists()
+
+
 def test_a_stop_does_not_claim_success_when_its_rescan_cannot_look(
     tmp_path: Path,
 ) -> None:

@@ -367,7 +367,12 @@ def _run_matches_holder(
 # this user's, and a `/proc` it could list.  Every could-not-look reads
 # `still_live`, because failing closed here costs a held slot until someone
 # looks while failing open costs a duplicate dispatch onto live work.
+# The human's cap ruling deliberately accepts one limit: a same-uid unreadable-cwd process born
+# after `planned_at` can keep this dispatch indeterminate for its lifetime, because only a process
+# proven older than the dispatch can be excluded.
 TERMINAL_RECOVERY_KINDS: Final = frozenset({"lost_work", "finished_and_cleaned"})
+# This intentionally remains a byte-identical twin of `controller_policy.RECOVERY_RELAUNCH_KINDS`
+# while #630 keeps the ports adapter and pure policy boundaries separate.
 
 
 @dataclass(frozen=True)
