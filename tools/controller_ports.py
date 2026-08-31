@@ -361,8 +361,12 @@ def _run_matches_holder(
 # A terminal verdict also claims the agent is gone, and `recovery.py` says
 # itself that it cannot read that: unpushed commits are equally what a live
 # agent's ordinary progress looks like.  The occupancy scan is what carries
-# the claim — a terminal kind concludes only where `dispatch_stop.scan` finds
-# nobody working in the tree, and a tree still occupied is reported `still_live`.
+# the claim, and #625's cap ruling is what bounds it: a terminal kind
+# concludes only where the scan *positively* found nobody — no matched
+# process, no deleted cwd inside the tree, no unreadable cwd on a process of
+# this user's, and a `/proc` it could list.  Every could-not-look reads
+# `still_live`, because failing closed here costs a held slot until someone
+# looks while failing open costs a duplicate dispatch onto live work.
 TERMINAL_RECOVERY_KINDS: Final = frozenset({"lost_work", "finished_and_cleaned"})
 
 
@@ -374,8 +378,11 @@ class ExistingRecoveryClassifier:
     terminal verdict needs exactly that judgement, so this adapter answers it
     with the project's own authority for the question — ``dispatch_stop.scan``,
     the `/proc` read #105 built to answer whether anyone is still working in a
-    tree.  A terminal verdict therefore concludes only where the scan finds
-    nobody; unpushed commits beside a live process read as `still_live`.
+    tree.  A terminal verdict concludes only where the scan *positively* found
+    nobody; any look that could not be made — an unreadable cwd, a deleted cwd
+    inside the tree, a `/proc` that could not be listed — keeps the slot and
+    reads `still_live` (#625's cap ruling), because an absence of evidence is
+    not evidence of absence.
     """
 
     repository: Path
@@ -404,13 +411,23 @@ class ExistingRecoveryClassifier:
         if evidence is None:
             return None
         verdict = recovery.decide(evidence)
-        if verdict.kind in TERMINAL_RECOVERY_KINDS and self._occupied(evidence.tree.path):
+        if verdict.kind in TERMINAL_RECOVERY_KINDS and not self._proven_empty(evidence.tree.path):
             return recovery.LIVE
         return verdict.kind
 
-    def _occupied(self, tree: Path) -> bool:
-        """Whether any process outside this one's own chain works inside `tree`."""
-        return bool(dispatch_stop.scan(tree, self.machine).matched)
+    def _proven_empty(self, tree: Path) -> bool:
+        """Whether the scan positively found nobody working in `tree`.
+
+        Only a positive empty may conclude a terminal verdict (#625's cap ruling),
+        and each of these says the scan cannot support the claim that the agent is
+        gone: a matched process, a live process the tree was removed under, a pid of
+        this user's whose cwd could not be read, or a `/proc` it could not list.  A
+        different-uid unreadable cwd is excluded by `scan` itself — that read was
+        never visible to it — and the controller's own chain is a reasoned exclusion
+        rather than a failure to look, so neither holds the slot.
+        """
+        found = dispatch_stop.scan(tree, self.machine)
+        return not (found.matched or found.deleted or found.unresolved or found.proc_unreadable)
 
 
 @dataclass(frozen=True)

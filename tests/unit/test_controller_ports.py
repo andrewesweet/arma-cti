@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import subprocess
 from pathlib import Path
@@ -507,6 +508,19 @@ def _dispatch_record(tmp_path: Path) -> None:
     (record / "dispatch.json").write_text('{"dispatch_id":"d-1","issue":1}\n', encoding="utf-8")
 
 
+def _worktree_repo(tmp_path: Path) -> tuple[Path, Path]:
+    """Stage a repository with one detached worktree under it, as every agent test does."""
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    _git("init", "-b", "main", cwd=repo)
+    _git("config", "user.email", "test@example.com", cwd=repo)
+    _git("config", "user.name", "Test", cwd=repo)
+    _git("commit", "--allow-empty", "-m", "base", cwd=repo)
+    _git("update-ref", "refs/remotes/origin/main", "HEAD", cwd=repo)
+    _git("worktree", "add", "--detach", ".claude/worktrees/d-1", "HEAD", cwd=repo)
+    return repo, repo / ".claude/worktrees/d-1"
+
+
 def _live_agent(tmp_path: Path, pid: int, tree: Path) -> ports.dispatch_stop.Machine:
     """Stage a fake `/proc` in which `pid` works inside `tree` — an agent alive in it.
 
@@ -531,6 +545,31 @@ def _controller_classifier(
     return ports.DispatchDeliveryFactCollector(dispatches.parent, recovery=classifier)
 
 
+def _plant(
+    tmp_path: Path,
+    pid: int,
+    tree: Path,
+    *,
+    unreadable: bool = False,
+    deleted: bool = False,
+) -> ports.dispatch_stop.Machine:
+    """Stage a fake `/proc` whose `pid` reports `tree` as its working directory.
+
+    `unreadable` makes the `cwd` link a regular file, which is the stand-in for a
+    `readlink` that fails for any reason other than a process already gone: the
+    errno, not the empty result, is what the scan must carry (#625's cap ruling).
+    """
+    entry = tmp_path / "proc" / str(pid)
+    entry.mkdir(parents=True)
+    if unreadable:
+        (entry / "cwd").write_text("", encoding="utf-8")
+    elif deleted:
+        (entry / "cwd").symlink_to(f"{tree.resolve()} (deleted)")
+    else:
+        (entry / "cwd").symlink_to(tree.resolve())
+    return ports.dispatch_stop.Machine(procfs=tmp_path / "proc", self_pid=1)
+
+
 def test_a_healthy_dispatch_that_dies_before_the_next_cycle_resolves(tmp_path: Path) -> None:
     """The #625 sequence, through the real classifier: healthy at cycle N, dead at N+1.
 
@@ -540,15 +579,7 @@ def test_a_healthy_dispatch_that_dies_before_the_next_cycle_resolves(tmp_path: P
     `lost_work` is the verdict that reads it; the empty scan is what carries
     the claim that nobody is coming back for it.
     """
-    repo = tmp_path / "repo"
-    repo.mkdir()
-    _git("init", "-b", "main", cwd=repo)
-    _git("config", "user.email", "test@example.com", cwd=repo)
-    _git("config", "user.name", "Test", cwd=repo)
-    _git("commit", "--allow-empty", "-m", "base", cwd=repo)
-    _git("update-ref", "refs/remotes/origin/main", "HEAD", cwd=repo)
-    _git("worktree", "add", "--detach", ".claude/worktrees/d-1", "HEAD", cwd=repo)
-    tree = repo / ".claude/worktrees/d-1"
+    repo, tree = _worktree_repo(tmp_path)
     _dispatch_record(tmp_path)
     collector = _controller_classifier(tmp_path, repo, _live_agent(tmp_path, 4242, tree))
     run = policy.WorkRunFact("run-1", "running", "item-1", "d-1", issue=1)
@@ -578,15 +609,7 @@ def test_a_live_agent_making_progress_is_never_concluded_lost(tmp_path: Path) ->
     agent and invite a duplicate dispatch.  The process is still in the tree,
     so the look reads `still_live` and the run keeps everything it had.
     """
-    repo = tmp_path / "repo"
-    repo.mkdir()
-    _git("init", "-b", "main", cwd=repo)
-    _git("config", "user.email", "test@example.com", cwd=repo)
-    _git("config", "user.name", "Test", cwd=repo)
-    _git("commit", "--allow-empty", "-m", "base", cwd=repo)
-    _git("update-ref", "refs/remotes/origin/main", "HEAD", cwd=repo)
-    _git("worktree", "add", "--detach", ".claude/worktrees/d-1", "HEAD", cwd=repo)
-    tree = repo / ".claude/worktrees/d-1"
+    repo, tree = _worktree_repo(tmp_path)
     _dispatch_record(tmp_path)
     collector = _controller_classifier(tmp_path, repo, _live_agent(tmp_path, 4242, tree))
     run = policy.WorkRunFact("run-1", "running", "item-1", "d-1", issue=1)
@@ -605,6 +628,196 @@ def test_a_live_agent_making_progress_is_never_concluded_lost(tmp_path: Path) ->
             )
         )
         == 1
+    )
+
+
+def test_a_real_process_in_the_tree_reads_still_live_through_real_proc(
+    tmp_path: Path,
+) -> None:
+    """The positive half end to end: a real process against the real `/proc`.
+
+    Pins the whole chain through the kernel's answer rather than a fake one, and
+    is the behavioural red against `1255d040`, which concluded `lost_work` with
+    this very process still working in the tree.
+    """
+    repo, tree = _worktree_repo(tmp_path)
+    _git("commit", "--allow-empty", "-m", "unpushed", cwd=tree)
+    _dispatch_record(tmp_path)
+    classifier = ports.ExistingRecoveryClassifier(repo, tmp_path / "watch", tmp_path / "dispatches")
+    collector = ports.DispatchDeliveryFactCollector(tmp_path / "dispatches", recovery=classifier)
+    run = policy.WorkRunFact("run-1", "running", "item-1", "d-1", issue=1)
+    worker = subprocess.Popen(
+        ["/bin/sleep", "30"], cwd=tree, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+    )
+    try:
+        resolved = collector.collect((run,))[0]
+    finally:
+        worker.kill()
+        worker.wait()
+
+    assert resolved.state == "running"
+    assert resolved.recovery_kind == "still_live"
+    assert (
+        len(
+            ports.policy.live_work_runs(
+                policy.ControlFacts(None, (), (), (), (resolved,), wip_limit=1)
+            )
+        )
+        == 1
+    )
+
+
+def test_an_unreadable_cwd_of_our_own_keeps_the_verdict_from_concluding(
+    tmp_path: Path,
+) -> None:
+    """A cwd the scan cannot read is not an empty tree (#625's cap ruling).
+
+    Round two's High: an empty `matched` was read as proof the tree holds
+    nobody, but a process of this user whose `readlink` fails for any reason
+    but ENOENT is exactly the agent a terminal verdict would have to be sure
+    about.  The could-not-look keeps the slot: failing closed costs a held
+    slot until someone looks; failing open costs a duplicate dispatch onto
+    live work.
+    """
+    repo, tree = _worktree_repo(tmp_path)
+    _git("commit", "--allow-empty", "-m", "unpushed", cwd=tree)
+    _dispatch_record(tmp_path)
+    collector = _controller_classifier(
+        tmp_path, repo, _plant(tmp_path, 4242, tree, unreadable=True)
+    )
+    run = policy.WorkRunFact("run-1", "running", "item-1", "d-1", issue=1)
+
+    resolved = collector.collect((run,))[0]
+
+    assert resolved.state == "running"
+    assert resolved.recovery_kind == "still_live"
+    assert (
+        len(
+            ports.policy.live_work_runs(
+                policy.ControlFacts(None, (), (), (), (resolved,), wip_limit=1)
+            )
+        )
+        == 1
+    )
+
+
+def test_a_cwd_unreadable_because_unowned_does_not_block_concluding(
+    tmp_path: Path,
+) -> None:
+    """A different-uid process's unreadable cwd was never visible to this read anyway.
+
+    The deliberate half of the unreadable-cwd placement: dispatches run as the
+    controller's own user, so a process whose `status` names another owner is
+    not one of this dispatch's and its unreadable directory is not evidence
+    about the tree.  Only a same-uid could-not-look (or an unplaceable one)
+    keeps the slot.
+    """
+    repo, tree = _worktree_repo(tmp_path)
+    _git("commit", "--allow-empty", "-m", "unpushed", cwd=tree)
+    _dispatch_record(tmp_path)
+    machine = _plant(tmp_path, 4242, tree, unreadable=True)
+    foreign = os.geteuid() + 1
+    status = machine.procfs / "4242" / "status"
+    status.write_text(
+        f"Name:\tagent\nUid:\t{foreign}\t{foreign}\t{foreign}\t{foreign}\n", encoding="utf-8"
+    )
+    collector = _controller_classifier(tmp_path, repo, machine)
+    run = policy.WorkRunFact("run-1", "running", "item-1", "d-1", issue=1)
+
+    resolved = collector.collect((run,))[0]
+
+    assert resolved.state == policy.NON_RESULT
+    assert resolved.failure_class == "interrupted"
+    assert resolved.recovery_kind == "lost_work"
+    assert (
+        ports.policy.live_work_runs(policy.ControlFacts(None, (), (), (), (resolved,), wip_limit=1))
+        == ()
+    )
+
+
+def test_a_deleted_cwd_inside_the_tree_keeps_the_verdict_from_concluding(
+    tmp_path: Path,
+) -> None:
+    """A live process the tree was removed under is somebody, not nobody.
+
+    The kernel still names the old path with its ` (deleted)` marker, so the
+    scan saw the pid and cannot prove it is gone — the same absence-of-evidence
+    shape as round two's High, one door over.
+    """
+    repo, tree = _worktree_repo(tmp_path)
+    _git("commit", "--allow-empty", "-m", "unpushed", cwd=tree)
+    _dispatch_record(tmp_path)
+    collector = _controller_classifier(tmp_path, repo, _plant(tmp_path, 4242, tree, deleted=True))
+    run = policy.WorkRunFact("run-1", "running", "item-1", "d-1", issue=1)
+
+    resolved = collector.collect((run,))[0]
+
+    assert resolved.state == "running"
+    assert resolved.recovery_kind == "still_live"
+    assert (
+        len(
+            ports.policy.live_work_runs(
+                policy.ControlFacts(None, (), (), (), (resolved,), wip_limit=1)
+            )
+        )
+        == 1
+    )
+
+
+def test_an_unreadable_procfs_keeps_the_verdict_from_concluding(tmp_path: Path) -> None:
+    """A `/proc` the scan cannot list is a look that never happened.
+
+    `just dispatch --stop` refuses the same input by name (`procfs_unavailable`);
+    the classifier has no refusal vocabulary, so it keeps the slot instead —
+    which is the same fail-closed answer in the only shape it can say.
+    """
+    repo, tree = _worktree_repo(tmp_path)
+    _git("commit", "--allow-empty", "-m", "unpushed", cwd=tree)
+    _dispatch_record(tmp_path)
+    classifier = ports.ExistingRecoveryClassifier(
+        repo,
+        tmp_path / "watch",
+        tmp_path / "dispatches",
+        machine=ports.dispatch_stop.Machine(procfs=tmp_path / "no-proc", self_pid=1),
+    )
+    collector = ports.DispatchDeliveryFactCollector(tmp_path / "dispatches", recovery=classifier)
+    run = policy.WorkRunFact("run-1", "running", "item-1", "d-1", issue=1)
+
+    resolved = collector.collect((run,))[0]
+
+    assert resolved.state == "running"
+    assert resolved.recovery_kind == "still_live"
+    assert (
+        len(
+            ports.policy.live_work_runs(
+                policy.ControlFacts(None, (), (), (), (resolved,), wip_limit=1)
+            )
+        )
+        == 1
+    )
+
+
+def test_the_controllers_own_chain_does_not_block_a_conclusion(tmp_path: Path) -> None:
+    """The controller's own chain is a reasoned exclusion, not a could-not-look.
+
+    A process of this scan's own chain sits in the tree by construction and is
+    never occupancy, so its presence must not hold the slot the way an
+    unreadable cwd does.  Concluding past it is the scan working as designed.
+    """
+    repo, tree = _worktree_repo(tmp_path)
+    _git("commit", "--allow-empty", "-m", "unpushed", cwd=tree)
+    _dispatch_record(tmp_path)
+    collector = _controller_classifier(tmp_path, repo, _plant(tmp_path, 1, tree))
+    run = policy.WorkRunFact("run-1", "running", "item-1", "d-1", issue=1)
+
+    resolved = collector.collect((run,))[0]
+
+    assert resolved.state == policy.NON_RESULT
+    assert resolved.failure_class == "interrupted"
+    assert resolved.recovery_kind == "lost_work"
+    assert (
+        ports.policy.live_work_runs(policy.ControlFacts(None, (), (), (), (resolved,), wip_limit=1))
+        == ()
     )
 
 

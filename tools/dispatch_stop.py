@@ -70,6 +70,7 @@ Refs #308, #105, ADR-0022, ADR-0049.
 
 from __future__ import annotations
 
+import errno
 import json
 import os
 import re
@@ -175,11 +176,20 @@ class Record(NamedTuple):
 
 
 class Scan(NamedTuple):
-    """What one pass over `/proc` found for a worktree, split by what may be signalled."""
+    """What one pass over `/proc` found for a worktree, split by what may be signalled.
+
+    An empty `matched` is not proof the tree is empty, so the inputs that can hide
+    the difference are reported rather than collapsed into it (#625's cap ruling):
+    `unresolved` counts pids of this user's whose cwd could not be read, or whose
+    owner could not be read at all, `proc_unreadable` says `/proc` itself could not
+    be listed, and `deleted` counts a live process the tree was removed under.
+    """
 
     matched: tuple[Process, ...]
     mine: tuple[Process, ...]
     deleted: int
+    unresolved: int = 0
+    proc_unreadable: bool = False
 
 
 class Machine(NamedTuple):
@@ -202,11 +212,19 @@ class Machine(NamedTuple):
     # 0 means "ask the process", which is what every real caller wants; a test that
     # arranges a fake `/proc` names the pid it planted there instead.
     self_pid: int = 0
+    # None means "ask the process", for the same reason; a test that arranges a fake
+    # `/proc` names the user it is scanning as instead.
+    euid: int | None = None
 
     @property
     def me(self) -> int:
         """Return the running process's own pid, as the scan must see it."""
         return self.self_pid or os.getpid()
+
+    @property
+    def effective_uid(self) -> int:
+        """Return the running process's user, as the unreadable-cwd placement sees it."""
+        return os.geteuid() if self.euid is None else self.euid
 
 
 # ------------------------------------------------------------------ reading the records
@@ -393,21 +411,32 @@ def inside(cwd: Path, worktree: Path) -> bool:
     return cwd == worktree or cwd.is_relative_to(worktree)
 
 
-def _pids(procfs: Path) -> tuple[int, ...]:
-    """Every pid `/proc` currently lists, in numeric order."""
+def _pids(procfs: Path) -> tuple[int, ...] | None:
+    """Every pid `/proc` currently lists, in numeric order, or None when it cannot be listed.
+
+    The None is the scan saying it looked at nothing rather than at an empty box
+    (#625's cap ruling): a caller reading an empty tuple as an empty tree would be
+    reading an absence of evidence as evidence of absence.
+    """
     try:
         entries = sorted(int(entry.name) for entry in procfs.iterdir() if entry.name.isdigit())
     except OSError:
-        return ()
+        return None
     return tuple(entries)
 
 
-def _cwd_of(procfs: Path, pid: int) -> str:
-    """Read one process's working directory link, or the empty string if it is gone."""
+def _cwd_of(procfs: Path, pid: int) -> tuple[str, int]:
+    """Read one process's working directory link, with the errno when it could not be.
+
+    The errno is what lets the scan tell a process that is gone (ENOENT — it exited
+    between the listing and this read, so nobody is there) from one it could not look
+    at (EPERM, EINVAL, ...) — the two inputs #625's cap ruling places on opposite
+    sides of the line.
+    """
     try:
-        return str((procfs / str(pid) / "cwd").readlink())
-    except OSError:
-        return ""
+        return str((procfs / str(pid) / "cwd").readlink()), 0
+    except OSError as failure:
+        return "", failure.errno
 
 
 def _command_of(procfs: Path, pid: int) -> str:
@@ -425,8 +454,8 @@ def _command_of(procfs: Path, pid: int) -> str:
         return "unknown"
 
 
-def _parent_of(procfs: Path, pid: int) -> int:
-    """Read one process's parent pid from `status`, which names its fields.
+def _status_field(procfs: Path, pid: int, name: str) -> str | None:
+    """Read one `status` line's value by its exact field name, or None when unreadable.
 
     `stat` is the more usual source and is the wrong one here: its second field is the
     command in parentheses and a command containing `) ` splits it, so a positional parse
@@ -435,12 +464,23 @@ def _parent_of(procfs: Path, pid: int) -> int:
     try:
         status = (procfs / str(pid) / "status").read_text(encoding="utf-8")
     except OSError:
-        return 0
+        return None
     for line in status.splitlines():
-        if line.startswith("PPid:"):
-            value = line.removeprefix("PPid:").strip()
-            return int(value) if value.isdigit() else 0
-    return 0
+        if line.startswith(f"{name}:"):
+            return line.removeprefix(f"{name}:").strip()
+    return None
+
+
+def _parent_of(procfs: Path, pid: int) -> int:
+    """Read one process's parent pid from `status`."""
+    value = _status_field(procfs, pid, "PPid")
+    return int(value) if value and value.isdigit() else 0
+
+
+def _uid_of(procfs: Path, pid: int) -> int | None:
+    """Read one process's real uid from `status`, or None when its owner cannot be placed."""
+    fields = (_status_field(procfs, pid, "Uid") or "").split()
+    return int(fields[0]) if fields and fields[0].isdigit() else None
 
 
 def own_chain(machine: Machine) -> frozenset[int]:
@@ -456,15 +496,36 @@ def own_chain(machine: Machine) -> frozenset[int]:
 
 
 def scan(worktree: Path, machine: Machine) -> Scan:
-    """Find every process working inside this worktree, split by what may be signalled."""
+    """Find every process working inside this worktree, split by what may be signalled.
+
+    An empty `matched` is not proof the tree is empty, so the inputs that could hide
+    the difference are reported rather than collapsed into it (#625's cap ruling).
+    Each placement is deliberate: a pid of this user's whose cwd cannot be read counts
+    in `unresolved`, because that could be an agent this scan cannot see; a pid whose
+    owner cannot be read counts too, because unplaceable is not knowably foreign; a
+    different owner's unreadable cwd does not count, because a dispatch's processes
+    run as the controller's user and that read was never visible to it anyway; an
+    ENOENT does not count, because the process is gone, not hidden.  A `/proc` that
+    cannot be listed is `proc_unreadable` — a look that never happened.  The
+    controller's own chain stays excluded as before, which is a reasoned exclusion
+    rather than a failure to look.
+    """
     resolved = worktree.resolve()
     mine = own_chain(machine)
     matched: list[Process] = []
     ours: list[Process] = []
     deleted = 0
-    for pid in _pids(machine.procfs):
-        link = _cwd_of(machine.procfs, pid)
-        if not link:
+    unresolved = 0
+    pids = _pids(machine.procfs)
+    if pids is None:
+        return Scan((), (), 0, 0, proc_unreadable=True)
+    for pid in pids:
+        link, failure = _cwd_of(machine.procfs, pid)
+        if failure == errno.ENOENT:
+            continue
+        if failure:
+            if _uid_of(machine.procfs, pid) in (None, machine.effective_uid):
+                unresolved += 1
             continue
         if link.endswith(DELETED_MARKER):
             if inside(Path(link.removesuffix(DELETED_MARKER)), resolved):
@@ -474,7 +535,7 @@ def scan(worktree: Path, machine: Machine) -> Scan:
             continue
         found = Process(pid, _command_of(machine.procfs, pid))
         (ours if pid in mine else matched).append(found)
-    return Scan(tuple(matched), tuple(ours), deleted)
+    return Scan(tuple(matched), tuple(ours), deleted, unresolved)
 
 
 # ------------------------------------------------------------------------- stopping
