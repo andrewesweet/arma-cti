@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 import os
-import shutil
 import subprocess
 from pathlib import Path
 from typing import Any
@@ -521,19 +520,6 @@ def _worktree_repo(tmp_path: Path) -> tuple[Path, Path]:
     return repo, repo / ".claude/worktrees/d-1"
 
 
-def _live_agent(tmp_path: Path, pid: int, tree: Path) -> ports.dispatch_stop.Machine:
-    """Stage a fake `/proc` in which `pid` works inside `tree` — an agent alive in it.
-
-    The worktree, not a pid, is the handle that identifies a dispatch's
-    processes, which is the same read `just dispatch --stop` makes (#105); the
-    scan under test is the project's own authority for it.
-    """
-    entry = tmp_path / "proc" / str(pid)
-    entry.mkdir(parents=True)
-    (entry / "cwd").symlink_to(tree.resolve())
-    return ports.dispatch_stop.Machine(procfs=tmp_path / "proc", self_pid=1)
-
-
 def _controller_classifier(
     tmp_path: Path, repo: Path, machine: ports.dispatch_stop.Machine
 ) -> ports.DispatchDeliveryFactCollector:
@@ -543,6 +529,28 @@ def _controller_classifier(
         repo, tmp_path / "watch", dispatches.parent, machine=machine
     )
     return ports.DispatchDeliveryFactCollector(dispatches.parent, recovery=classifier)
+
+
+def _real_recovery_arrangement(
+    tmp_path: Path,
+) -> tuple[Path, Path, ports.DispatchDeliveryFactCollector, policy.WorkRunFact]:
+    """Stage one real recovery arrangement shared by both process-backed tests."""
+    repo, tree = _worktree_repo(tmp_path)
+    _dispatch_record(tmp_path)
+    classifier = ports.ExistingRecoveryClassifier(repo, tmp_path / "watch", tmp_path / "dispatches")
+    collector = ports.DispatchDeliveryFactCollector(tmp_path / "dispatches", recovery=classifier)
+    run = policy.WorkRunFact("run-1", "running", "item-1", "d-1", issue=1)
+    return repo, tree, collector, run
+
+
+def _start_real_agent(tree: Path) -> subprocess.Popen[bytes]:
+    """Start a fixed-command process whose cwd is the staged worktree."""
+    return subprocess.Popen(
+        ["/bin/sleep", "30"],
+        cwd=tree,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
 
 
 def _plant(
@@ -579,15 +587,18 @@ def test_a_healthy_dispatch_that_dies_before_the_next_cycle_resolves(tmp_path: P
     `lost_work` is the verdict that reads it; the empty scan is what carries
     the claim that nobody is coming back for it.
     """
-    repo, tree = _worktree_repo(tmp_path)
-    _dispatch_record(tmp_path)
-    collector = _controller_classifier(tmp_path, repo, _live_agent(tmp_path, 4242, tree))
-    run = policy.WorkRunFact("run-1", "running", "item-1", "d-1", issue=1)
-
-    healthy = collector.collect((run,))[0]
-    shutil.rmtree(tmp_path / "proc" / "4242")
-    _git("commit", "--allow-empty", "-m", "unpushed", cwd=tree)
-    resolved = collector.collect((healthy,))[0]
+    _, tree, collector, run = _real_recovery_arrangement(tmp_path)
+    worker = _start_real_agent(tree)
+    try:
+        healthy = collector.collect((run,))[0]
+        worker.kill()
+        worker.wait()
+        _git("commit", "--allow-empty", "-m", "unpushed", cwd=tree)
+        resolved = collector.collect((healthy,))[0]
+    finally:
+        if worker.poll() is None:
+            worker.kill()
+        worker.wait()
 
     assert healthy.state == "running"
     assert healthy.recovery_kind == "still_live"
@@ -609,14 +620,16 @@ def test_a_live_agent_making_progress_is_never_concluded_lost(tmp_path: Path) ->
     agent and invite a duplicate dispatch.  The process is still in the tree,
     so the look reads `still_live` and the run keeps everything it had.
     """
-    repo, tree = _worktree_repo(tmp_path)
-    _dispatch_record(tmp_path)
-    collector = _controller_classifier(tmp_path, repo, _live_agent(tmp_path, 4242, tree))
-    run = policy.WorkRunFact("run-1", "running", "item-1", "d-1", issue=1)
-
-    healthy = collector.collect((run,))[0]
-    _git("commit", "--allow-empty", "-m", "unpushed", cwd=tree)
-    progressed = collector.collect((healthy,))[0]
+    _, tree, collector, run = _real_recovery_arrangement(tmp_path)
+    worker = _start_real_agent(tree)
+    try:
+        healthy = collector.collect((run,))[0]
+        _git("commit", "--allow-empty", "-m", "unpushed", cwd=tree)
+        progressed = collector.collect((healthy,))[0]
+    finally:
+        if worker.poll() is None:
+            worker.kill()
+        worker.wait()
 
     assert healthy.recovery_kind == "still_live"
     assert progressed.state == "running"
@@ -625,42 +638,6 @@ def test_a_live_agent_making_progress_is_never_concluded_lost(tmp_path: Path) ->
         len(
             ports.policy.live_work_runs(
                 policy.ControlFacts(None, (), (), (), (progressed,), wip_limit=1)
-            )
-        )
-        == 1
-    )
-
-
-def test_a_real_process_in_the_tree_reads_still_live_through_real_proc(
-    tmp_path: Path,
-) -> None:
-    """The positive half end to end: a real process against the real `/proc`.
-
-    Pins the whole chain through the kernel's answer rather than a fake one, and
-    is the behavioural red against `1255d040`, which concluded `lost_work` with
-    this very process still working in the tree.
-    """
-    repo, tree = _worktree_repo(tmp_path)
-    _git("commit", "--allow-empty", "-m", "unpushed", cwd=tree)
-    _dispatch_record(tmp_path)
-    classifier = ports.ExistingRecoveryClassifier(repo, tmp_path / "watch", tmp_path / "dispatches")
-    collector = ports.DispatchDeliveryFactCollector(tmp_path / "dispatches", recovery=classifier)
-    run = policy.WorkRunFact("run-1", "running", "item-1", "d-1", issue=1)
-    worker = subprocess.Popen(
-        ["/bin/sleep", "30"], cwd=tree, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
-    )
-    try:
-        resolved = collector.collect((run,))[0]
-    finally:
-        worker.kill()
-        worker.wait()
-
-    assert resolved.state == "running"
-    assert resolved.recovery_kind == "still_live"
-    assert (
-        len(
-            ports.policy.live_work_runs(
-                policy.ControlFacts(None, (), (), (), (resolved,), wip_limit=1)
             )
         )
         == 1
