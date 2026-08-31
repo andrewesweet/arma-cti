@@ -107,6 +107,10 @@ POLL_S: Final = 0.05
 # `/proc/<pid>/cwd` for a removed directory reads back as the old path plus this marker.
 DELETED_MARKER: Final = " (deleted)"
 
+# `/proc/<pid>/stat` fields after the command name start at field 3, so field 22 is
+# the twentieth item in the suffix after the final closing parenthesis.
+PROC_STAT_START_INDEX: Final = 19
+
 # A dispatch id becomes a path segment under the dispatch root, so it is checked against
 # the alphabet it is minted in rather than joined and hoped for. Kept here rather than
 # imported from `tools/dispatch.py`, which imports *this* module.
@@ -186,8 +190,9 @@ class Scan(NamedTuple):
     An empty `matched` is not proof the tree is empty, so the inputs that can hide
     the difference are reported rather than collapsed into it (#625's cap ruling):
     `unresolved` counts pids of this user's whose cwd could not be read, or whose
-    owner could not be read at all, `proc_unreadable` says `/proc` itself could not
-    be listed, and `deleted` counts a live process the tree was removed under.
+    owner could not be read at all, after any process proven older than the dispatch
+    has been excluded. `proc_unreadable` says `/proc` itself could not be listed, and
+    `deleted` counts a live process the tree was removed under.
     """
 
     matched: tuple[Process, ...]
@@ -243,6 +248,21 @@ class Machine(NamedTuple):
 
 
 # ------------------------------------------------------------------ reading the records
+
+
+def record_created_at(directory: Path) -> float | None:
+    """Read a dispatch plan's frozen creation instant, or None when it is unavailable."""
+    try:
+        document = json.loads((directory / "dispatch.json").read_text(encoding="utf-8"))
+        planned_at = document.get("planned_at")
+        if not isinstance(planned_at, str):
+            return None
+        parsed = datetime.fromisoformat(planned_at)
+    except (OSError, UnicodeError, AttributeError, TypeError, ValueError):
+        return None
+    if parsed.tzinfo is None:
+        return None
+    return parsed.timestamp()
 
 
 def read_record(directory: Path) -> Record | None:
@@ -454,6 +474,75 @@ def _cwd_of(procfs: Path, pid: int) -> tuple[str, int | None]:
         return "", failure.errno
 
 
+def _boot_time(procfs: Path) -> float | None:
+    """Read the kernel boot epoch used to place `/proc/<pid>/stat` start ticks."""
+    try:
+        lines = (procfs / "stat").read_text(encoding="ascii").splitlines()
+    except (OSError, UnicodeError):
+        return None
+    for line in lines:
+        name, separator, value = line.partition(" ")
+        if name == "btime" and separator and value.isdigit():
+            return float(value)
+    return None
+
+
+def _start_ticks(procfs: Path, pid: int) -> int | None:
+    """Read field 22 from one `/proc/<pid>/stat`, tolerating `)` in the command name."""
+    try:
+        raw = (procfs / str(pid) / "stat").read_bytes()
+    except OSError:
+        return None
+    closing = raw.rfind(b")")
+    if closing < 0:
+        return None
+    fields = raw[closing + 2 :].split()
+    if len(fields) <= PROC_STAT_START_INDEX or not fields[PROC_STAT_START_INDEX].isdigit():
+        return None
+    return int(fields[PROC_STAT_START_INDEX])
+
+
+def _started_before(
+    procfs: Path,
+    pid: int,
+    dispatch_created_at: float | None,
+    boot_time: float | None,
+    clock_ticks: int | None,
+) -> bool:
+    """Whether a process predates the dispatch and cannot be its agent."""
+    if dispatch_created_at is None or boot_time is None or clock_ticks is None or clock_ticks <= 0:
+        return False
+    start_ticks = _start_ticks(procfs, pid)
+    if start_ticks is None:
+        return False
+    return boot_time + start_ticks / clock_ticks < dispatch_created_at
+
+
+def _unresolved_cwd(
+    procfs: Path,
+    pid: int,
+    effective_uid: int,
+    *,
+    preexisting: bool,
+) -> bool:
+    """Whether an unreadable cwd can still hide this dispatch's process."""
+    if preexisting:
+        return False
+    return _uid_of(procfs, pid) in (None, effective_uid)
+
+
+def _deleted_cwd_count(
+    link: str,
+    pid: int,
+    resolved: Path,
+    mine: frozenset[int],
+) -> int:
+    """Count a deleted cwd that belongs to this tree and is safe to report."""
+    if pid in mine or not inside(Path(link.removesuffix(DELETED_MARKER)), resolved):
+        return 0
+    return 1
+
+
 def _command_of(procfs: Path, pid: int) -> str:
     """Render one process's command line, falling back to its `comm` for a kernel thread."""
     try:
@@ -510,7 +599,12 @@ def own_chain(machine: Machine) -> frozenset[int]:
     return frozenset(chain)
 
 
-def scan(worktree: Path, machine: Machine) -> Scan:
+def scan(
+    worktree: Path,
+    machine: Machine,
+    *,
+    dispatch_created_at: float | None = None,
+) -> Scan:
     """Find every process working inside this worktree, split by what may be signalled.
 
     An empty `matched` is not proof the tree is empty, so the inputs that could hide
@@ -520,10 +614,13 @@ def scan(worktree: Path, machine: Machine) -> Scan:
     owner cannot be read counts too, because unplaceable is not knowably foreign; a
     different owner's unreadable cwd does not count, because a dispatch's processes
     run as the controller's user and that read was never visible to it anyway; an
-    ENOENT does not count, because the process is gone, not hidden.  A `/proc` that
-    cannot be listed is `proc_unreadable` — a look that never happened.  The
-    controller's own chain stays excluded from matching and from unresolved cwd
-    failures, which are reasoned identity exclusions rather than failures to look.
+    unreadable cwd whose field-22 start time precedes the dispatch record's frozen
+    creation instant does not count, because it cannot be that dispatch's agent. If
+    that age cannot be established, the pid remains unresolved. An ENOENT does not
+    count, because the process is gone, not hidden. A `/proc` that cannot be listed is
+    `proc_unreadable` — a look that never happened. The controller's own chain stays
+    excluded from matching and from unresolved cwd failures, which are reasoned
+    identity exclusions rather than failures to look.
     """
     resolved = worktree.resolve()
     mine = own_chain(machine)
@@ -531,6 +628,11 @@ def scan(worktree: Path, machine: Machine) -> Scan:
     ours: list[Process] = []
     deleted = 0
     unresolved = 0
+    boot_time = _boot_time(machine.procfs) if dispatch_created_at is not None else None
+    try:
+        clock_ticks = int(os.sysconf("SC_CLK_TCK")) if dispatch_created_at is not None else None
+    except (OSError, ValueError):
+        clock_ticks = None
     pids = _pids(machine.procfs)
     if pids is None:
         return Scan((), (), 0, proc_unreadable=True)
@@ -541,12 +643,22 @@ def scan(worktree: Path, machine: Machine) -> Scan:
         if failure is not None:
             if pid in mine:
                 continue
-            if _uid_of(machine.procfs, pid) in (None, machine.effective_uid):
+            if _unresolved_cwd(
+                machine.procfs,
+                pid,
+                machine.effective_uid,
+                preexisting=_started_before(
+                    machine.procfs,
+                    pid,
+                    dispatch_created_at,
+                    boot_time,
+                    clock_ticks,
+                ),
+            ):
                 unresolved += 1
             continue
         if link.endswith(DELETED_MARKER):
-            if pid not in mine and inside(Path(link.removesuffix(DELETED_MARKER)), resolved):
-                deleted += 1
+            deleted += _deleted_cwd_count(link, pid, resolved, mine)
             continue
         if not inside(Path(link), resolved):
             continue
@@ -569,11 +681,17 @@ def _signal(processes: Sequence[Process], number: int, machine: Machine) -> None
             continue
 
 
-def _await_empty(worktree: Path, machine: Machine, budget: float) -> Scan:
+def _await_empty(
+    worktree: Path,
+    machine: Machine,
+    budget: float,
+    *,
+    dispatch_created_at: float | None,
+) -> Scan:
     """Re-scan until the tree is empty, observation is incomplete, or the budget runs out."""
     deadline = machine.monotonic() + budget
     while True:
-        found = scan(worktree, machine)
+        found = scan(worktree, machine, dispatch_created_at=dispatch_created_at)
         if not found.matched or found.indeterminate:
             return found
         if machine.monotonic() >= deadline:
@@ -597,7 +715,13 @@ class Stopped(NamedTuple):
         )
 
 
-def _stop_processes(worktree: Path, first: Scan, machine: Machine) -> Stopped:
+def _stop_processes(
+    worktree: Path,
+    first: Scan,
+    machine: Machine,
+    *,
+    dispatch_created_at: float | None,
+) -> Stopped:
     """Signal, verify, escalate, verify again — and report which signal finished each pid.
 
     The second round re-signals whatever the *re-scan* found rather than whatever the
@@ -608,7 +732,12 @@ def _stop_processes(worktree: Path, first: Scan, machine: Machine) -> Stopped:
     finished: dict[int, str] = {}
 
     _signal(first.matched, signal.SIGTERM, machine)
-    verification = _await_empty(worktree, machine, machine.term_grace)
+    verification = _await_empty(
+        worktree,
+        machine,
+        machine.term_grace,
+        dispatch_created_at=dispatch_created_at,
+    )
     if verification.indeterminate:
         return Stopped({}, verification.matched, commands, verification_unproven=True)
     survivors = verification.matched
@@ -617,7 +746,12 @@ def _stop_processes(worktree: Path, first: Scan, machine: Machine) -> Stopped:
     if survivors:
         commands.update({process.pid: process.command for process in survivors})
         _signal(survivors, signal.SIGKILL, machine)
-        verification = _await_empty(worktree, machine, machine.kill_grace)
+        verification = _await_empty(
+            worktree,
+            machine,
+            machine.kill_grace,
+            dispatch_created_at=dispatch_created_at,
+        )
         survivors = verification.matched
         alive = {process.pid for process in survivors}
         finished.update(
@@ -769,8 +903,13 @@ def stop(  # noqa: PLR0911 — the stop protocol preserves each typed terminal o
         if ownership_refusal is not None:
             return EXIT_REFUSED, ownership_refusal.lines()
 
-    found = scan(record.worktree, machine)
-    if found.indeterminate:
+    dispatch_created_at = record_created_at(record.directory)
+    found = scan(
+        record.worktree,
+        machine,
+        dispatch_created_at=dispatch_created_at,
+    )
+    if not found.matched and found.indeterminate:
         return _process_scan_refusal(record, found)
     if not record.worktree.is_dir() and (found.matched or found.deleted):
         return EXIT_REFUSED, Refusal(
@@ -789,7 +928,12 @@ def stop(  # noqa: PLR0911 — the stop protocol preserves each typed terminal o
             return EXIT_REFUSED, (*_context(record, found), *cleanup_refusal.lines())
         return _nothing_running(record, found, cleanup_lines)
 
-    done = _stop_processes(record.worktree, found, machine)
+    done = _stop_processes(
+        record.worktree,
+        found,
+        machine,
+        dispatch_created_at=dispatch_created_at,
+    )
     return _stop_result(record, found, done)
 
 

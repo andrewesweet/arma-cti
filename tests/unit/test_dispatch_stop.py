@@ -18,6 +18,7 @@ under test is the kernel's and an arranged one could agree with a wrong reading 
 from __future__ import annotations
 
 import json
+import os
 import signal
 import subprocess
 import sys
@@ -318,6 +319,13 @@ def _unreadable(root: Path, pid: int, uid: int | None) -> None:
         )
 
 
+def _proc_stat(root: Path, pid: int, start_ticks: int) -> None:
+    """Give one arranged pid a parseable field 22 and the fake box a boot instant."""
+    (root / "stat").write_text("btime 1000\n", encoding="utf-8")
+    fields = ["S", *("0" for _ in range(18)), str(start_ticks)]
+    (root / str(pid) / "stat").write_text(f"{pid} (claude) {' '.join(fields)}\n", encoding="utf-8")
+
+
 def test_a_cwd_it_cannot_read_on_its_own_user_is_reported_unresolved(tmp_path: Path) -> None:
     """Could-not-look is its own result and never an empty tree (#625's cap ruling)."""
     _, target, _, _ = trees(tmp_path)
@@ -372,6 +380,35 @@ def test_a_procfs_that_cannot_be_listed_is_reported_not_looked_at(tmp_path: Path
     found = dispatch_stop.scan(target, dispatch_stop.Machine(procfs=absent, self_pid=999999))
     assert found.matched == ()
     assert found.proc_unreadable
+
+
+def test_a_preexisting_unreadable_process_is_outside_the_dispatch_scan(tmp_path: Path) -> None:
+    """A same-user hidden process older than the dispatch cannot be its agent."""
+    _, target, _, _ = trees(tmp_path)
+    fake = procfs(tmp_path, {65: str(target), 66: str(target)})
+    _unreadable(fake, 65, 1000)
+    _unreadable(fake, 66, 1000)
+    clock_ticks = int(os.sysconf("SC_CLK_TCK"))
+    _proc_stat(fake, 65, clock_ticks * 100)
+    _proc_stat(fake, 66, clock_ticks * 2000)
+
+    found = dispatch_stop.scan(
+        target,
+        dispatch_stop.Machine(procfs=fake, self_pid=999999, euid=1000),
+        dispatch_created_at=2000.0,
+    )
+
+    assert found.unresolved == 1
+
+
+def test_a_real_proc_scan_proves_empty_for_a_tree_with_no_process(tmp_path: Path) -> None:
+    """The real controller box's unrelated old processes do not make a new tree indeterminate."""
+    target = tmp_path / "unoccupied"
+    target.mkdir()
+
+    found = dispatch_stop.scan(target, dispatch_stop.Machine(), dispatch_created_at=time.time())
+
+    assert found.proven_empty
 
 
 # -------------------------------------------------------------------------- stopping
@@ -617,6 +654,27 @@ def test_a_process_scan_with_unreadable_cwd_refuses_before_signalling(
     assert found["class"] == "infra_unavailable"
     assert found["scan_unresolved"] == "1"
     assert killed == []
+    assert not (target_record.directory / "result.json").exists()
+
+
+def test_a_known_match_is_signalled_when_an_unrelated_scan_is_indeterminate(
+    tmp_path: Path,
+) -> None:
+    """Positive matches can be signalled; incomplete verification remains unproven."""
+    _, target, _, _ = trees(tmp_path)
+    fake = procfs(tmp_path, {61: str(target), 62: str(target)})
+    _unreadable(fake, 62, 1000)
+    killed: list[tuple[int, int]] = []
+    target_record = record(tmp_path, target)
+
+    code, printed = dispatch_stop.stop(target_record, machine(fake, killed, euid=1000))
+
+    found = lines(printed)
+    assert code == dispatch_stop.EXIT_FINDING
+    assert found["finding"] == "stop_unverified"
+    assert found["verified"] == "no"
+    assert found["result"] == "none"
+    assert killed == [(61, signal.SIGTERM)]
     assert not (target_record.directory / "result.json").exists()
 
 

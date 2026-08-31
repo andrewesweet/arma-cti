@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 import subprocess
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -504,7 +505,17 @@ def _dispatch_record(tmp_path: Path) -> None:
     """Stage one dispatch record over `d-1`, the shape a recovery look needs to find."""
     record = tmp_path / "dispatches" / "d-1"
     record.mkdir(parents=True)
-    (record / "dispatch.json").write_text('{"dispatch_id":"d-1","issue":1}\n', encoding="utf-8")
+    (record / "dispatch.json").write_text(
+        json.dumps(
+            {
+                "dispatch_id": "d-1",
+                "issue": 1,
+                "planned_at": datetime.now(tz=UTC).isoformat(),
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
 
 
 def _worktree_repo(tmp_path: Path) -> tuple[Path, Path]:
