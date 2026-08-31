@@ -988,6 +988,12 @@ def test_a_review_brief_carries_the_gate_report_and_distinguishes_negative_state
     assert "network refused" in unavailable
 
 
+def test_a_review_brief_defaults_to_an_unavailable_gate_report() -> None:
+    rendered = composed(seat=brief.derive_seat("review", "opus-high"))
+    assert "GATE REPORT UNAVAILABLE" in rendered
+    assert "GATE REPORT ABSENT" not in rendered
+
+
 def test_the_default_review_brief_carries_the_dispatcher_supplied_gate_report() -> None:
     identity = dispatch.Identity(
         dispatch_id="d-test",

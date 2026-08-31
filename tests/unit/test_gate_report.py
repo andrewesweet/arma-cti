@@ -30,6 +30,11 @@ def test_select_returns_the_newest_exactly_marked_report() -> None:
     assert gate_report.select([REPORT, quoted, newer]) == newer
 
 
+def test_select_requires_the_heading_on_the_body_first_line() -> None:
+    later_heading = "Reviewer prose\n### Implementer gate report — quoted prose\n"
+    assert gate_report.select([REPORT, later_heading]) == REPORT
+
+
 def test_fetch_carries_the_selected_body_verbatim() -> None:
     report = gate_report.fetch(641, fetch_comments=lambda _issue: payload("noise", REPORT))
     assert report == gate_report.GateReport(gate_report.CARRIED, body=REPORT)

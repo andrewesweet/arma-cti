@@ -21,9 +21,9 @@ if TYPE_CHECKING:
 
 
 # The implementer's required heading is the selector, not a loose search for ``just check``:
-# review prose can quote a report without becoming the report. It is anchored to a line so a
-# block quote or an inline mention cannot accidentally satisfy it.
-MARKER: Final = re.compile(r"^### Implementer gate report(?:[ \t]|$)", re.MULTILINE)
+# review prose can quote a report without becoming the report. It is anchored to the body's
+# first line so a later unquoted mention cannot accidentally satisfy it.
+MARKER: Final = re.compile(r"\A### Implementer gate report(?:[ \t]|\r?\n|$)")
 
 CARRIED: Final = "carried"
 ABSENT: Final = "absent"
@@ -40,7 +40,7 @@ class GateReport(NamedTuple):
 
 def select(comments: Iterable[str]) -> str | None:
     """Return the newest comment beginning with the implementer's report heading."""
-    carried = [body for body in comments if MARKER.search(body)]
+    carried = [body for body in comments if MARKER.match(body)]
     return carried[-1] if carried else None
 
 

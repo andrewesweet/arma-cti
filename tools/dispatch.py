@@ -5131,6 +5131,7 @@ def _materialize_disposable_plan(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0
     requested_base_sha: str,
     *,
     custom_brief: bool,
+    thread_report: gate_report.GateReport | None,
     writable_roots: tuple[Path, ...] | None,
 ) -> tuple[Plan | None, str, Refusal | None]:
     """Restore the selected review/recon base into an id-owned tree, failing closed."""
@@ -5321,7 +5322,7 @@ def _materialize_disposable_plan(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0
         disposable_worktree=True,
         worktree_ref=ref,
     )
-    rendered_brief = brief if custom_brief else default_brief(identity, path)
+    rendered_brief = brief if custom_brief else default_brief(identity, path, thread_report)
     return materialized, rendered_brief, None
 
 
@@ -5493,6 +5494,7 @@ def plan_dispatch(  # noqa: C901, PLR0911, PLR0912 — planning owns the ordered
             root,
             args.base_sha,
             custom_brief=bool(args.brief_file),
+            thread_report=thread_report,
             writable_roots=writable_roots,
         )
     return plan, brief, None
@@ -6246,7 +6248,11 @@ def answer_directly(args: argparse.Namespace) -> int | None:
 
 
 def prepare_gate_report_read(args: argparse.Namespace) -> None:
-    """Give the real planner a host-side thread reader for the default review brief."""
+    """Give review planning a host-side thread reader for the default brief.
+
+    A dry run intentionally performs this same bounded, read-only fetch: its output promises
+    the brief that a real dispatch would send, including the report available to the child.
+    """
     seat = SEATS.get(args.seat)
     if not args.brief_file and seat is not None and seat.reviews:
         args.gate_report_fetch = gate_report.fetch
@@ -6283,10 +6289,12 @@ def main(argv: list[str] | None = None, now: datetime | None = None) -> int:
     when = datetime.now(tz=UTC) if now is None else now
     args.materialize_worktree = not args.dry_run
     # A review child cannot read the issue thread under its forced `plan` containment. The
-    # host reads the gate report and lets `plan_dispatch` carry the result into the default
-    # brief. The callable is attached to the namespace rather than fetched here so refusal
-    # tests that replace the planner do not make a network call; the real planner invokes it
-    # only after the route has cleared its own refusal ladder.
+    # The host reads the gate report and lets `plan_dispatch` carry the result into the default
+    # brief. This is intentional under `--dry-run` too: the preview is the brief that would be
+    # sent, so it must include the same report or the preview would describe a different request.
+    # The callable is attached to the namespace rather than fetched here so refusal tests that
+    # replace the planner do not make a network call; the real planner invokes it only after
+    # the route has cleared its own refusal ladder.
     prepare_gate_report_read(args)
     plan, brief, refusal = plan_dispatch(args, main_checkout(Path.cwd()), when)
     if refusal is not None or plan is None:

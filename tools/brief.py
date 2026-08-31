@@ -998,10 +998,10 @@ class Briefing(NamedTuple):
     # gap, each under its own heading.
     escalation: escalation.Evaluation = escalation.NoFiring()
     # The implementer's gate report is read by the host dispatcher and carried into a review
-    # brief because the review child is forced into `plan` mode. Defaulting to a confirmed
-    # absence keeps ordinary implementer briefs unchanged; review composition supplies the
-    # fetched state explicitly.
-    gate_report: GateReport = GateReport(GATE_REPORT_ABSENT)
+    # brief because the review child is forced into `plan` mode. No caller constructing a
+    # Briefing has proved that a thread was read, so the default must remain unavailable; review
+    # composition supplies the fetched state explicitly.
+    gate_report: GateReport = GateReport(GATE_REPORT_UNAVAILABLE)
 
 
 def escalation_for(body: str, seat_name: str, repo: Path) -> escalation.Evaluation:
@@ -1444,7 +1444,7 @@ def main(  # noqa: PLR0913 — one keyword seam per external read, each injected
     gate = derive_gate(body, read_vocabulary(repo))
     handoff = read_handoff(args.issue)
     seat = derive_seat(args.seat, args.reviewing)
-    gate_report = gate_report_for(args.issue, seat, read_gate_report)
+    thread_report = gate_report_for(args.issue, seat, read_gate_report)
     rendered = compose(
         Briefing(
             issue=args.issue,
@@ -1457,7 +1457,7 @@ def main(  # noqa: PLR0913 — one keyword seam per external read, each injected
             reserved=reserved_surfaces(named_paths(body)),
             prior_work=work,
             handoff=handoff,
-            gate_report=gate_report,
+            gate_report=thread_report,
             escalation=escalation_for(body, seat.name, repo),
         )
     )
@@ -1479,7 +1479,7 @@ def main(  # noqa: PLR0913 — one keyword seam per external read, each injected
             " The brief says so; it does not render the absence.",
             file=sys.stderr,
         )
-    warn_gate_report_unavailable(args.issue, gate_report)
+    warn_gate_report_unavailable(args.issue, thread_report)
     if args.out:
         Path(args.out).expanduser().write_text(rendered, encoding="utf-8")
     else:

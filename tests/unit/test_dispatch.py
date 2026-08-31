@@ -2564,6 +2564,7 @@ def test_the_child_re_checks_the_credential_the_plan_already_checked(tmp_path: P
 
 def test_default_review_plan_carries_the_host_side_gate_report(tmp_path: Path) -> None:
     """#641: the child receives the thread read without needing `gh` itself."""
+    root, _reviewed_sha = review_repository(tmp_path, issue=322)
     report_body = (
         "### Implementer gate report — issue 322 at deadbee\n\n"
         "just check: 22 passed\n"
@@ -2582,9 +2583,11 @@ def test_default_review_plan_carries_the_host_side_gate_report(tmp_path: Path) -
 
     plan, brief_text, refusal = plan_for(
         tmp_path,
+        root=root,
         seat="review",
         reviewing="codex-sol-high",
         issue=322,
+        materialize_worktree=True,
         gate_report_fetch=staticmethod(read_gate_report),
     )
     assert refusal is None
@@ -2592,6 +2595,30 @@ def test_default_review_plan_carries_the_host_side_gate_report(tmp_path: Path) -
     assert seen == [322]
     assert report_body in brief_text
     assert "do not call `gh` to obtain that report" in brief_text
+
+
+def test_dry_run_review_plan_carries_the_report_it_would_send(tmp_path: Path) -> None:
+    """#641: preview deliberately reads the same report as a real review dispatch."""
+    report_body = "### Implementer gate report — preview\njust check: 22 passed\n"
+
+    def read_gate_report(_issue: int) -> dispatch.gate_report.GateReport:
+        return dispatch.gate_report.GateReport(
+            dispatch.gate_report.CARRIED,
+            body=report_body,
+        )
+
+    plan, brief_text, refusal = plan_for(
+        tmp_path,
+        seat="review",
+        reviewing="codex-sol-high",
+        issue=322,
+        dry_run=True,
+        gate_report_fetch=staticmethod(read_gate_report),
+    )
+
+    assert refusal is None
+    assert plan is not None
+    assert report_body in brief_text
 
 
 def test_review_delivery_posts_the_captured_report_once(tmp_path: Path) -> None:
