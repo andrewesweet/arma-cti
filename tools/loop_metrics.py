@@ -74,6 +74,7 @@ READY_SETPOINT: Final = 3
 WORKTREES_SETPOINT: Final = 0
 NO_LEDGER_SETPOINT: Final = 0
 UNRATIFIED_SETPOINT: Final = 0
+OPEN_FINDINGS_SETPOINT: Final = 2
 
 
 class DispatchRecord(NamedTuple):
@@ -99,6 +100,7 @@ class IndependentFinding(NamedTuple):
     identifier: str
     severity: str
     round_raised: int
+    is_open: bool = True
 
 
 class SelfFinding(NamedTuple):
@@ -393,7 +395,14 @@ def _parse_independent_findings(
             diagnostics.append(f"review issue={issue} status=ambiguous reason=duplicate_finding_id")
         else:
             seen.add(identifier)
-        findings.append(IndependentFinding(identifier, severity, int(round_raised)))
+        findings.append(
+            IndependentFinding(
+                identifier,
+                severity,
+                int(round_raised),
+                entry.get("adjudication") is None,
+            )
+        )
     return tuple(findings)
 
 
@@ -667,9 +676,18 @@ def resolve_window(
     return Window(low, high, explicit)
 
 
+def _proportion_failure(numerator: int, denominator: int) -> str | None:
+    """Name why a proportion cannot be calculated, keeping invalid counts distinct."""
+    if numerator < 0 or numerator > denominator:
+        return "inconsistent"
+    if denominator < MIN_OBSERVATIONS:
+        return "too_few"
+    return None
+
+
 def wilson_interval(numerator: int, denominator: int) -> Proportion | None:
-    """Return a two-sided 95% Wilson interval, or no ratio for no observations."""
-    if denominator < MIN_OBSERVATIONS or numerator < 0 or numerator > denominator:
+    """Return a two-sided 95% Wilson interval, or no ratio for invalid evidence."""
+    if _proportion_failure(numerator, denominator) is not None:
         return None
     n = float(denominator)
     p = numerator / n
@@ -683,6 +701,13 @@ def _proportion_text(name: str, numerator: int, denominator: int, *, extras: str
     """Render every ratio with numerator, denominator and an interval."""
     ratio = wilson_interval(numerator, denominator)
     if ratio is None:
+        failure = _proportion_failure(numerator, denominator)
+        if failure == "inconsistent":
+            return (
+                f"{name} status=inconsistent reason=numerator_out_of_range "
+                f"numerator={numerator} denominator={denominator}"
+                f"{f' {extras}' if extras else ''}"
+            )
         return (
             f"{name} status=too_few observed={denominator} needed={MIN_OBSERVATIONS} "
             f"numerator={numerator} denominator={denominator}"
@@ -1079,22 +1104,24 @@ def return_lines(dispatches: tuple[DispatchRecord, ...], window: Window) -> list
             review_counts.append(float(count))
     ratio = wilson_interval(returns, handovers)
     if ratio is None:
-        return [
-            (
+        failure = _proportion_failure(returns, handovers)
+        if failure == "inconsistent":
+            reason = "returns_exceed_handovers" if returns > handovers else "counts_out_of_range"
+            rate_line = (
+                f"return_rate status=inconsistent reason={reason} "
+                f"returns={returns} handovers={handovers}"
+            )
+        else:
+            rate_line = (
                 f"return_rate status=too_few observed={handovers} needed={MIN_OBSERVATIONS} "
                 f"returns={returns} handovers={handovers}"
-            ),
-            _mean_text(
-                "return_model", review_counts, extras="lambda=unrecorded residual=unrecorded"
-            ),
+            )
+        probability = returns / handovers if handovers > 0 and 0 <= returns <= handovers else None
+        return [
+            rate_line,
+            _return_model_line(review_counts, probability),
         ]
-    p = ratio.value
-    lam = math.inf if p >= 1.0 else -math.log1p(-p)
-    expected = math.inf if p >= 1.0 else 1.0 / (1.0 - p)
-    observed = sum(review_counts) / len(review_counts) if review_counts else math.nan
-    residual = (
-        observed - expected if math.isfinite(observed) and math.isfinite(expected) else math.nan
-    )
+
     return [
         _proportion_text(
             "return_rate",
@@ -1102,13 +1129,43 @@ def return_lines(dispatches: tuple[DispatchRecord, ...], window: Window) -> list
             handovers,
             extras=f"returns={returns} handovers={handovers}",
         ),
-        (
-            f"return_model lambda={lam:.6f} expected_reviews_geometric={expected:.6f} "
-            f"observed_reviews_mean={observed:.6f} residual={residual:.6f} "
-            f"observed_reviews_variance={pvariance(review_counts):.6f} "
-            f"observations={len(review_counts)} residual_basis=observed_minus_geometric"
-        ),
+        _return_model_line(review_counts, ratio.value),
     ]
+
+
+def _return_model_line(review_counts: list[float], probability: float | None) -> str:
+    """Render the geometric model, retaining its computable terms on rate failure."""
+    if probability is None:
+        return _mean_text(
+            "return_model", review_counts, extras="lambda=unrecorded residual=unrecorded"
+        )
+    p = probability
+    lam = math.inf if p >= 1.0 else -math.log1p(-p)
+    expected = math.inf if p >= 1.0 else 1.0 / (1.0 - p)
+    observed = sum(review_counts) / len(review_counts) if review_counts else math.nan
+    residual = (
+        observed - expected if math.isfinite(observed) and math.isfinite(expected) else math.nan
+    )
+    return (
+        f"return_model lambda={lam:.6f} expected_reviews_geometric={expected:.6f} "
+        f"observed_reviews_mean={observed:.6f} residual={residual:.6f} "
+        f"observed_reviews_variance={pvariance(review_counts):.6f} "
+        f"observations={len(review_counts)} residual_basis=observed_minus_geometric"
+    )
+
+
+def _open_findings_level(
+    loops: tuple[LoopRecord, ...],
+) -> tuple[int | None, int, int]:
+    """Return the maximum open-finding level and readable/excluded Work Item counts."""
+    readable = tuple(record for record in loops if record.independent_present)
+    excluded = len(loops) - len(readable)
+    if not readable:
+        return (0 if not loops else None), 0, excluded
+    levels = (
+        sum(finding.is_open for finding in record.independent_findings) for record in readable
+    )
+    return max(levels, default=0), len(readable), excluded
 
 
 def _reason_token(value: object) -> str:
@@ -1357,6 +1414,9 @@ def stock_lines(inputs: Inputs, repo: Path, window: Window) -> list[str]:
     runs, runs_excluded = _dispatch_stock(inputs.dispatches, window)
     ledger, ledger_excluded = _ledger_stock(inputs.dispatches, window)
     provisional, provisional_reason = _provisional_stock(repo)
+    open_findings, open_work_items, findings_excluded = _open_findings_level(
+        _selected_loops(inputs, window)
+    )
     return [
         (
             f"stock ready_work level={_level_text(ready.level)} setpoint=>={READY_SETPOINT} "
@@ -1374,6 +1434,15 @@ def stock_lines(inputs: Inputs, repo: Path, window: Window) -> list[str]:
             f"excluded_without_ended_at={runs_excluded} setpoint=unruled "
             f"status=unruled flow_creation={runs.flow_creation} "
             f"flow_clearing={runs.flow_clearing} trend={runs.trend} reason={runs.reason}"
+        ),
+        (
+            f"stock open_findings_per_work_item level={_level_text(open_findings)} "
+            f"setpoint=at_most_{OPEN_FINDINGS_SETPOINT} "
+            f"status={_maximum_setpoint_status(open_findings, OPEN_FINDINGS_SETPOINT)} "
+            f"aggregation=max_per_work_item work_items={open_work_items} "
+            f"excluded_without_independent_record={findings_excluded} "
+            "flow_creation=unrecorded flow_clearing=unrecorded trend=unrecorded "
+            "reason=review_loop_open_findings"
         ),
         (
             f"stock worktrees_owing_done level=unrecorded status=unrecorded "

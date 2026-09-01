@@ -1,3 +1,1 @@
-### Fixed
-
-- Loop metrics now preserve computable stock and self-review observations when records are incomplete, and name excluded evidence.
+<!-- Its entry was folded into changelog.d/602-loop-metrics-reader.md as an Added item. -->

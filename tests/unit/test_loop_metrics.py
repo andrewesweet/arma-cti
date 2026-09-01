@@ -486,6 +486,46 @@ def test_stock_status_uses_setpoint_and_retains_alarm(tmp_path: Path) -> None:
     assert "setpoint=at_most_0 alarm=20" in line
 
 
+def test_open_findings_stock_reports_maximum_against_its_setpoint(tmp_path: Path) -> None:
+    """The open-finding stock uses the highest readable Work Item level."""
+    loops = (
+        METRICS.LoopRecord(
+            1,
+            0,
+            (
+                METRICS.IndependentFinding("open-1", "low", 0),
+                METRICS.IndependentFinding("open-2", "low", 0),
+                METRICS.IndependentFinding("open-3", "low", 0),
+            ),
+            (),
+            self_review_present=False,
+        ),
+        METRICS.LoopRecord(
+            2,
+            0,
+            (
+                METRICS.IndependentFinding("open-4", "low", 0),
+                METRICS.IndependentFinding("closed", "low", 0, is_open=False),
+            ),
+            (),
+            self_review_present=False,
+        ),
+    )
+    inputs = METRICS.Inputs(dispatches=(), loops=loops, queue_rows=(), diagnostics=())
+
+    line = next(
+        line
+        for line in METRICS.stock_lines(
+            inputs, tmp_path, METRICS.Window(None, None, explicit=False)
+        )
+        if line.startswith("stock open_findings_per_work_item")
+    )
+
+    assert "level=3" in line
+    assert "setpoint=at_most_2 status=above_setpoint" in line
+    assert "aggregation=max_per_work_item work_items=2" in line
+
+
 def test_dismissal_matching_leaves_different_ids_unmatched() -> None:
     """A plausible reason cannot substitute for an identity the records do not carry."""
     record = METRICS.LoopRecord(
@@ -601,6 +641,44 @@ def test_return_model_counts_transitions_and_geometric_residual() -> None:
     assert "expected_reviews_geometric=2.000000" in lines[1]
     assert "observed_reviews_mean=2.000000" in lines[1]
     assert "residual=0.000000" in lines[1]
+
+
+def test_return_rate_names_inconsistent_window_counts() -> None:
+    """A window-truncated loop is inconsistent, not a too-few observation."""
+    dispatch_root = Path("dispatches")
+    records = (
+        ("i1", "implementer", 10),
+        ("r1", "review", 20),
+        ("i2", "implementer", 30),
+        ("r2", "review", 40),
+        ("i3", "implementer", 50),
+    )
+    dispatches = tuple(
+        METRICS.DispatchRecord(
+            dispatch_id=identifier,
+            issue=1,
+            seat=seat,
+            planned_at=float(minute),
+            result_state="readable",
+            result_started_at=None,
+            result_ended_at=None,
+            ledger_row=True,
+            ledger_materialised_at=None,
+            landed_sha=None,
+            landed_at=None,
+            path=dispatch_root / identifier,
+        )
+        for identifier, seat, minute in records
+    )
+
+    lines = METRICS.return_lines(dispatches, METRICS.Window(15.0, 60.0, explicit=True))
+
+    assert lines[0] == (
+        "return_rate status=inconsistent reason=returns_exceed_handovers returns=2 handovers=1"
+    )
+    assert "status=too_few" not in lines[0]
+    assert "return_model observations=1 mean=2.000000" in lines[1]
+    assert "lambda=unrecorded residual=unrecorded" in lines[1]
 
 
 def test_cli_is_read_only_and_exits_zero_for_empty_sources(
