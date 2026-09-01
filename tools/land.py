@@ -5,6 +5,11 @@ re-gate, `git push origin HEAD:main`, `git -C <main checkout> merge --ff-only
 origin/main`. #209 measured 220 `Bash` calls doing exactly that across 117 of
 214 agents, the second-widest hand loop in the project.
 
+The explicit `--resume` entry starts after the push for an already-landed tree:
+it reuses the merge, audit-post and close path without re-gating or pushing a
+second time. It exists for exit 2 recovery after the named merge command has
+already brought the main checkout current.
+
 The token case is real and secondary. The correctness case is that **a recipe
 cannot forget a step, and prose demonstrably does**:
 
@@ -25,15 +30,17 @@ cannot forget a step, and prose demonstrably does**:
 **The gate is inside the protocol, not beside it.** `just fast` runs after the
 rebase, unconditionally, on every landing that pushes anything. The tree is checked
 again after the gate, before any push, so a gate-side repair cannot leave newer working
-tree bytes behind a stale commit. There is no flag
-that skips it and there is deliberately no heuristic that decides it is
-unnecessary: "our surfaces were disjoint" is a judgement about *other* agents'
-commits which this tool cannot verify, and encoding it would be a gate bypass
-wearing a convenience wrapper. What the tool does instead is report the movement
+tree bytes behind a stale commit. There is no flag on a normal landing that skips it
+and there is deliberately no heuristic that decides it is unnecessary: "our surfaces
+were disjoint" is a judgement about *other* agents' commits which this tool cannot
+verify, and encoding it would be a gate bypass wearing a convenience wrapper.
+`--resume` is the separate exit-2 recovery entry: it accepts only work already on
+`origin/main`, whose gate and push were completed by the earlier run, and names the
+skipped gate explicitly. What a normal landing does instead is report the movement
 honestly — `rebase=replayed onto N new commits` or `rebase=already_current` — so
-the reader can see what the gate covered. The gate's output is not captured at
-all: it streams to the caller, so `gate_red` hands back the gate's own words
-rather than this tool's summary of them.
+the reader can see what the gate covered. The gate's output is not captured at all:
+it streams to the caller, so `gate_red` hands back the gate's own words rather than
+this tool's summary of them.
 
 **The second gate is the corpus, and it runs after the first** (#302,
 `tools/corpus_gate.py`). A landing whose real diff reaches an in-world surface
@@ -54,9 +61,11 @@ carrying its one adjudication. The rung reads what other tools wrote — #332's
 verdict exchange, #322's potential authors, #333's loop state — and refuses by
 name on every way those facts cannot be shown, including by absence: no
 verdict, an unreadable one, a verdict for another commit or item, an
-unadjudicated finding. Like the gate, there is no flag that skips it; the
-exemption table is the only diff that reaches a clearance without consulting a
-record, and it is inverted so unlisted means covered. It sits *before*
+unadjudicated finding. Like the gate, a normal landing has no flag that skips it;
+the separate `--resume` entry is only for the already-pushed, already-gated exit-2
+state and names this rung as not consulted. The exemption table is the only diff
+that reaches a clearance without consulting a record, and it is inverted so
+unlisted means covered. It sits *before*
 `just fast` because it costs a handful of file reads and an unreviewed landing
 should not burn a gate first.
 
@@ -188,6 +197,7 @@ exit code.
     merge_blocked_by_sandbox    the push landed, the ff-only merge did not run
     merge_not_fast_forward      the push landed, the main checkout cannot
                             fast-forward — it carries commits of its own
+    resume_not_ready       `--resume` found commits that are not on `origin/main`
     git_failed              any other git step, with git's own words
 
 Exit 0 is landed. Exit 1 is "nothing landed". Exit 2 is the pair above it: the
@@ -420,6 +430,19 @@ def classify_nothing_to_land(path: Path, ahead: int, main_behind: int | None) ->
         "Nothing was landed, because there was nothing to land: this tree carries no commit "
         f"{BASE} does not already have. If you meant to land work, check you committed it "
         "(`git log --oneline origin/main..HEAD`).",
+    )
+
+
+def classify_resume(path: Path, ahead: int) -> Refusal | None:
+    """Refuse post-push recovery unless this tree has no commit outside `origin/main`."""
+    if not ahead:
+        return None
+    return Refusal(
+        "resume_not_ready",
+        (f"worktree={path}", f"ahead={ahead} commits over {BASE}"),
+        "Post-push resume is only for work already on origin/main. Run "
+        "`just land --audit-file FILE` "
+        "to land commits still ahead of origin/main. Nothing was pushed.",
     )
 
 
@@ -1203,7 +1226,7 @@ def _merge_needed(here: Path, main: Path) -> bool:
     return branch != "main"
 
 
-def land(  # noqa: PLR0913 — the protocol's inputs, one parameter apiece
+def land(  # noqa: C901, PLR0911, PLR0913 — protocol ladder plus resumable entry
     root: Path,
     here: Path,
     *,
@@ -1214,6 +1237,7 @@ def land(  # noqa: PLR0913 — the protocol's inputs, one parameter apiece
     review: ReviewInputs | None = None,
     close: Close | None = None,
     audit: Audit | None = None,
+    resume: bool = False,
 ) -> Report:
     """Run the whole protocol, or refuse by name at the first rung that says no.
 
@@ -1223,6 +1247,8 @@ def land(  # noqa: PLR0913 — the protocol's inputs, one parameter apiece
     that the real ones are never reached. `None` means the real one, exactly as it
     does for `review`; a direct caller that supplies no audit body receives
     `audit_file_missing`, while the CLI requires `--audit-file` before it starts.
+    `resume=True` enters after the push: it requires no commits ahead of `origin/main`,
+    then reaches the same merge, audit-post and close path without running the gate.
     """
     status = read_status(git("status", "--porcelain", cwd=here))
     blocked = classify_tree(here, status, rebasing=rebase_in_progress(here))
@@ -1241,11 +1267,23 @@ def land(  # noqa: PLR0913 — the protocol's inputs, one parameter apiece
     ahead = _required_count(f"{BASE}..HEAD", cwd=here)
 
     main_behind = counted(f"HEAD..{BASE}", cwd=root) if _merge_needed(here, root) else 0
+    review_inputs = review or ReviewInputs(_issue_from(here))
+    if resume:
+        not_ready = classify_resume(here, ahead)
+        if not_ready is not None:
+            return Report.refused(not_ready)
+        return _resume_post_push(
+            root,
+            here,
+            review_inputs.issue,
+            close or close_issue,
+            audit or record_audit,
+        )
+
     idle = classify_nothing_to_land(here, ahead, main_behind)
     if idle is not None:
         return Report.refused(idle)
 
-    review_inputs = review or ReviewInputs(_issue_from(here))
     if dry_run:
         return _dry_run(root, here, ahead, incoming, corpus, lane, review_inputs)
 
@@ -1256,9 +1294,11 @@ def land(  # noqa: PLR0913 — the protocol's inputs, one parameter apiece
         if moved is not None:
             return moved
     else:
-        # Nothing to push: this is the re-run after a blocked merge. The gate is
-        # not skipped by a flag — there is simply nothing new being landed, and
-        # the outstanding step is the merge the last run could not make.
+        # Nothing to push: this is the legacy re-run after a blocked merge, while
+        # the main checkout is still stale. The gate is not skipped by a flag —
+        # there is simply nothing new being landed, and the outstanding step is
+        # the merge the last run could not make. The explicit `--resume` entry
+        # handles the same post-push half after that merge has already run.
         #
         # The routing, review and corpus rungs are named here as skipped, in the same
         # words the dry run's `_nothing_to_push_plan` uses, because this is the run that
@@ -1336,6 +1376,30 @@ def land(  # noqa: PLR0913 — the protocol's inputs, one parameter apiece
     return _merge(
         root, here, pushed, lines, review_inputs.issue, close or close_issue, audit or record_audit
     )
+
+
+def _resume_post_push(
+    root: Path,
+    here: Path,
+    issue: int | None,
+    close: Close,
+    audit: Audit,
+) -> Report:
+    """Resume the post-push half without repeating the gate, push or landing records."""
+    lines = [
+        f"worktree={here}",
+        "commits=0",
+        "resume=post_push",
+        "rebase=not_attempted reason=post_push_resume",
+        "gate=not_run reason=post_push_resume",
+        "routing=not_consulted reason=post_push_resume",
+        "review=not_consulted reason=post_push_resume",
+        "corpus=not_consulted reason=post_push_resume",
+    ]
+    pushed = _push(here, 0, lines)
+    if isinstance(pushed, Report):
+        return pushed
+    return _merge(root, here, pushed, lines, issue, close, audit)
 
 
 def stage(root: Path, here: Path, review: ReviewInputs | None = None) -> Report:  # noqa: PLR0911 — a ladder of named refusals
@@ -1618,11 +1682,12 @@ def _merge(  # noqa: PLR0913, PLR0917 — the merge's inputs, one parameter apie
     so closing there is defensible — but the exit code's own meaning is "a step is
     outstanding", and a closed issue is exactly how that step gets forgotten, which is
     ADR-0042's stale-hook window and the thing `merge_blocked_by_sandbox` was built to make
-    loud. Nothing is lost by waiting: the documented recovery is to run `just land` again,
-    that re-run takes the nothing-to-push branch straight back to this function, and it
-    closes then. So the issue closes exactly once the landing is complete, from one site,
-    and the open list means "something is outstanding" rather than "the push has not
-    happened" — the stronger reading for a queue.
+    loud. Nothing is lost by waiting: the documented recovery is to run the named merge command,
+    `just land --resume --audit-file FILE` enters this function even when the main checkout
+    is already current, and it closes then.
+    So the issue closes exactly once the landing is complete, from one site, and the open list
+    means "something is outstanding" rather than "the push has not happened" — the stronger
+    reading for a queue.
     """
     if not _merge_needed(here, root):
         lines.append(f"merge=not_needed reason=landed_from_the_main_checkout ({root})")
@@ -1844,19 +1909,21 @@ def _dry_run(  # noqa: PLR0913, PLR0917 — the plan's inputs, one parameter api
 def _nothing_to_push_plan(merge_step: str) -> tuple[str, ...]:
     """Plan the one state `land` handles by skipping the gate altogether.
 
-    `ahead == 0` past `classify_nothing_to_land` is the re-run after
-    `merge_blocked_by_sandbox`: the work is already on `origin/main`, so the landing
-    skips the rebase, the markers, the routing gate, the review rung, `just fast` and
-    the corpus alike, pushes nothing, and finishes the merge the last run could not
-    make. Each skipped rung is named with the reason the landing itself gives, rather
-    than left out — an omission here would read as a clearance for exactly the reason
-    `not_checked=` exists (#344, review round 1 claim 2).
+    `ahead == 0` past `classify_nothing_to_land` is the ordinary re-run while the
+    main checkout is stale after `merge_blocked_by_sandbox`. `--resume` reaches the
+    same post-push half even after that merge has already run: the work is already on
+    `origin/main`, so the landing skips the rebase, the markers, the routing gate, the
+    review rung, `just fast` and the corpus alike, pushes nothing, and finishes the
+    merge if it remains. Each skipped rung is named with the reason the landing itself
+    gives, rather than left out — an omission here would read as a clearance for exactly
+    the reason `not_checked=` exists (#344, review round 1 claim 2).
 
-    The merge step is a `str` and not an optional one, because reaching here at all
-    implies it exists: `ahead == 0` survives `classify_nothing_to_land` only when the
-    main checkout is behind, and that is what `_merge_needed` reports. Round 1 branched
-    on it regardless and the second arm was unreachable — invisible to `just mutation`
-    too, which plants only in what the tests execute (round 2 claim 4).
+    The merge step is a `str` and not an optional one for the ordinary re-run, because
+    reaching that path implies it exists: `ahead == 0` survives `classify_nothing_to_land`
+    only when the main checkout is behind, and that is what `_merge_needed` reports.
+    `--resume` does not use this plan; it has already entered the post-push half explicitly.
+    Round 1 branched on it regardless and the second arm was unreachable — invisible to
+    `just mutation` too, which plants only in what the tests execute (round 2 claim 4).
     """
     why = "reason=nothing_to_push"
     return (
@@ -1980,11 +2047,13 @@ def read_audit_body(path: Path | None) -> str | Refusal:
 
 
 def parse_args(argv: list[str] | None) -> argparse.Namespace:
-    """Parse the landing's evidence inputs and two non-landing modes, with no bypasses.
+    """Parse the landing's evidence inputs and three modes, with no bypasses.
 
     There is no `--no-gate`, no `--force`, and no way to name the refspec or the
     remote: those are #213's criterion 2 and the `git push origin main` trap,
-    and the surface that cannot express them is the mechanism.
+    and the surface that cannot express them is the mechanism. `--resume` is a
+    bounded recovery entry, not a normal-landing gate bypass: it accepts only a
+    tree with no commit left ahead of `origin/main` after the original push.
 
     `--corpus` is not an exception to that. It **names evidence**; it does not
     excuse the check. Every claim a named pool makes is verified against the
@@ -2008,6 +2077,11 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
         "--stage",
         action="store_true",
         help="rebase onto origin/main and stop, printing the SHA to have reviewed",
+    )
+    mode.add_argument(
+        "--resume",
+        action="store_true",
+        help="resume the post-push merge, audit post and close path",
     )
     parser.add_argument(
         "--corpus",
@@ -2072,6 +2146,7 @@ def _main_report(args: argparse.Namespace, audit: Audit | None) -> Report:
                 root,
                 here,
                 dry_run=args.dry_run,
+                resume=args.resume,
                 lane=os.environ.get("CTI_DISPATCH_LANE", CLAUDE_LANE),
                 corpus=args.corpus,
                 audit=audit,

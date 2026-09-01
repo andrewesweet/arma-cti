@@ -421,12 +421,22 @@ def test_a_landing_accepts_one_audit_file_while_non_landing_modes_accept_none() 
     audit_path = "/audit-records/audit.md"
     assert land.parse_args([]).audit_file is None
     assert land.parse_args(["--audit-file", audit_path]).audit_file == Path(audit_path)
+    assert land.parse_args(["--resume", "--audit-file", audit_path]).resume
     assert land.parse_args(["--dry-run"]).audit_file is None
     assert land.parse_args(["--stage"]).audit_file is None
 
     for mode in ("--dry-run", "--stage"):
         with pytest.raises(SystemExit):
             land.parse_args([mode, "--audit-file", audit_path])
+
+
+def test_resuming_and_non_landing_modes_are_mutually_exclusive(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    with pytest.raises(SystemExit):
+        land.parse_args(["--resume", "--dry-run"])
+
+    assert "not allowed with" in capsys.readouterr().err
 
 
 # ------------------------------------------------------------------- the push
@@ -1312,6 +1322,63 @@ def test_a_rerun_after_a_blocked_merge_finishes_the_merge_and_pushes_nothing(
     assert "gate=not_run reason=nothing_to_push" in report.lines
 
 
+def test_a_post_push_resume_finishes_after_the_main_checkout_is_already_current(
+    repo: tuple[Path, Path, Path],
+) -> None:
+    """#658: an exit-2 recovery remains usable after its named merge already ran."""
+    origin, main, here = repo
+    _commit(here, "feature.txt", "work\n")
+    _git("push", "origin", "HEAD:main", cwd=here)
+    landed = _tip(origin)
+    _git("merge", "--ff-only", "origin/main", cwd=main)
+    assert _git("rev-parse", "HEAD", cwd=main).strip() == landed
+
+    gate = _Gate()
+    audit = _Audit()
+    close = _Close()
+    report = land.land(
+        main,
+        here,
+        gate=gate,
+        resume=True,
+        audit=audit,
+        close=close,
+    )
+
+    assert report.code == 0
+    assert report.lines[0] == "ok=landed"
+    assert gate.calls == []
+    assert audit.calls == [(213, _git("rev-parse", "--short", "HEAD", cwd=here).strip())]
+    assert close.calls == [213]
+    assert any(line.startswith("audit_recorded=yes issue=213") for line in report.lines)
+    assert "issue_closed=yes issue=213" in "\n".join(report.lines)
+
+
+def test_post_push_resume_refuses_work_that_is_not_on_origin_main(
+    repo: tuple[Path, Path, Path],
+) -> None:
+    _origin, main, here = repo
+    _commit(here, "feature.txt", "work\n")
+    gate = _Gate()
+    audit = _Audit()
+    close = _Close()
+
+    report = land.land(
+        main,
+        here,
+        gate=gate,
+        resume=True,
+        audit=audit,
+        close=close,
+    )
+
+    assert report.code == land.EXIT_REFUSED
+    assert report.lines[0] == "refusal=resume_not_ready"
+    assert gate.calls == []
+    assert audit.calls == []
+    assert close.calls == []
+
+
 def test_a_diverged_main_checkout_reports_the_work_landed_and_the_merge_owed(
     repo: tuple[Path, Path, Path],
     tmp_path: Path,
@@ -1738,6 +1805,37 @@ def test_a_real_landings_refusal_is_an_error_and_goes_to_stderr(
     assert code == land.EXIT_REFUSED
     assert captured.out == ""
     assert "refusal=dirty_tree" in captured.err.splitlines()
+
+
+def test_the_resume_cli_enters_the_post_push_half(
+    repo: tuple[Path, Path, Path],
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    _origin, main, here = repo
+    _commit(here, "feature.txt", "work\n")
+    _git("push", "origin", "HEAD:main", cwd=here)
+    _git("merge", "--ff-only", "origin/main", cwd=main)
+    audit_file = tmp_path / "audit.md"
+    audit_file.write_text("criterion audit\n", encoding="utf-8")
+    monkeypatch.chdir(here)
+    monkeypatch.setattr(
+        land,
+        "record_audit",
+        lambda _issue, _sha, _body: land.AuditRecord("audit-reference", None),
+    )
+
+    code = land.main(["--resume", "--audit-file", str(audit_file)])
+
+    captured = capsys.readouterr()
+    assert code == 0, captured.err
+    assert captured.err == ""
+    assert "resume=post_push" in captured.out.splitlines()
+    assert any(
+        line.startswith("audit_recorded=yes issue=213") for line in captured.out.splitlines()
+    )
+    assert any(line.startswith("issue_closed=yes issue=213") for line in captured.out.splitlines())
 
 
 def test_a_dry_runs_refusal_decided_before_the_plan_is_on_stdout_too(
@@ -2456,10 +2554,10 @@ def test_the_rerun_that_finishes_a_blocked_merge_is_where_the_issue_closes(
     """The other half of the exit-2 decision: nothing is lost by not closing at exit 2.
 
     The documented recovery from `merge_blocked_by_sandbox` / `merge_not_fast_forward` is
-    to run `just land` again once the outstanding step can run, and that re-run takes the
-    nothing-to-push branch straight back to `_merge` — so the issue closes then, from the
-    one site, and the open list keeps meaning "a step is outstanding" until there is not
-    one (#439).
+    to run the named merge command, then `just land --resume --audit-file FILE`; the
+    resumable post-push half reaches `_merge` even when the merge already ran — so the
+    issue closes then, from the one site, and the open list keeps meaning "a step is
+    outstanding" until there is not one (#439).
     """
     origin, main, here = repo
     _commit(here, "feature.txt", "work\n")
