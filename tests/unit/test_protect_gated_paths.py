@@ -16,12 +16,14 @@ import subprocess
 from typing import TYPE_CHECKING
 
 import pytest
-from conftest import REPO, load_hook
+from conftest import REPO, load_hook, load_tool
 
 if TYPE_CHECKING:
     from pathlib import Path
 
 hook = load_hook("protect-gated-paths")
+gated_paths = load_tool("gated_paths")
+git_write_paths = load_tool("git_write_paths")
 
 GENERATED = "addons/main/generated/commands.hpp"
 SPEC = "tests/specs/campaign.yaml"
@@ -66,6 +68,99 @@ def linked_worktree_pair(tmp_path: Path) -> tuple[Path, Path]:
     assigned = tmp_path / "assigned-worktree"
     git(main, "worktree", "add", "-q", "--detach", str(assigned), "HEAD")
     return main, assigned
+
+
+# --- Git writes and shell cwd changes (#673) --------------------------------
+
+
+@pytest.mark.parametrize("command", ["git status", "git log --oneline", "git diff", "git push"])
+def test_known_git_reads_have_no_local_write_target(command: str) -> None:
+    segments = hook.read_command(command)
+    assert segments is not None
+    assert git_write_paths.git_write_paths(segments[0], REPO) == ()
+
+
+@pytest.mark.parametrize(
+    "command", ["git add tools/land.py", "git commit -m message", "git rebase origin/main"]
+)
+def test_common_in_tree_git_writes_keep_their_assigned_location(command: str) -> None:
+    segments = hook.read_command(command)
+    assert segments is not None
+    targets = git_write_paths.git_write_paths(segments[0], REPO)
+    assert targets == (str(REPO.resolve()),)
+
+
+def test_an_unknown_git_subcommand_is_unreadable() -> None:
+    assert git_write_paths.git_write_paths(["git", "future-subcommand"], REPO) is None
+
+
+@pytest.mark.parametrize(
+    "command",
+    ["git --unsupported-option restore tools/land.py", "git restore --pathspec-from-file=-"],
+)
+def test_an_unreadable_git_shape_is_refused(command: str) -> None:
+    segments = hook.read_command(command)
+    assert segments is not None
+    assert git_write_paths.git_write_paths(segments[0], REPO) is None
+
+
+def test_a_cd_with_an_unresolved_target_is_unreadable() -> None:
+    assert git_write_paths.changed_directory(["cd", "$OUTSIDE"], REPO) is None
+
+
+def test_git_location_flags_resolve_foreign_restore_targets(
+    tmp_path: Path,
+) -> None:
+    main, assigned = linked_worktree_pair(tmp_path)
+    target = main / "tools" / "land.py"
+    commands = (
+        ["git", "-C", str(main), "restore", "tools/land.py"],
+        [
+            "git",
+            f"--git-dir={main / '.git'}",
+            f"--work-tree={main}",
+            "restore",
+            "tools/land.py",
+        ],
+    )
+    for words in commands:
+        targets = git_write_paths.git_write_paths(words, assigned)
+        assert targets is not None
+        assert str(target) in targets
+        assert gated_paths.hook_denial(str(target), root=assigned) == gated_paths.FOREIGN_CHECKOUT
+
+
+def test_a_git_write_to_a_foreign_signoff_path_hits_both_rule_families(
+    tmp_path: Path,
+) -> None:
+    main, assigned = linked_worktree_pair(tmp_path)
+    target = main / "docs" / "adr" / "0067-example.md"
+    targets = git_write_paths.git_write_paths(
+        ["git", "-C", str(main), "restore", "docs/adr/0067-example.md"], assigned
+    )
+    assert targets is not None
+    assert str(target) in targets
+    assert gated_paths.signoff_gate("docs/adr/0067-example.md") is not None
+    assert gated_paths.hook_denial(str(target), root=assigned) == gated_paths.FOREIGN_CHECKOUT
+
+
+def test_a_cd_then_relative_write_resolves_against_new_directory(
+    tmp_path: Path,
+) -> None:
+    main, assigned = linked_worktree_pair(tmp_path)
+    changed = git_write_paths.changed_directory(["cd", str(main)], assigned)
+    assert changed == main.resolve()
+    target = changed / "tools" / "land.py"
+    assert gated_paths.hook_denial(str(target), root=assigned) == gated_paths.FOREIGN_CHECKOUT
+
+
+def test_a_cd_into_the_assigned_tree_keeps_relative_write_in_tree(
+    tmp_path: Path,
+) -> None:
+    main, assigned = linked_worktree_pair(tmp_path)
+    changed = git_write_paths.changed_directory(["cd", str(assigned)], main)
+    assert changed == assigned.resolve()
+    assert gated_paths.hook_denial(str(changed / "tools" / "land.py"), root=assigned) is None
 
 
 # --- write shapes onto a gated path are denied ------------------------------
