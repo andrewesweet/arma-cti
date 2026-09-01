@@ -1,11 +1,13 @@
-"""Read local write targets from a conservative subset of Git commands (#673).
+"""Read local write targets from a positive subset of Git commands (#673).
 
 The Bash hook already reads shell syntax, but it cannot treat every Git
 subcommand as a read or guess every pathspec safely. This module therefore
-keeps an explicit, known-incomplete enumeration. Known non-writing commands
-return an empty tuple; known writes return absolute repository/work-tree or
-path targets; an unknown subcommand, option shape, shell expansion, or
-pathspec-file source returns ``None`` so the caller can deny it.
+recognises only command and option shapes whose local destinations it can
+establish. Known non-writing commands return an empty tuple; known writes
+return absolute repository/work-tree or path targets; an unknown subcommand,
+option shape, shell expansion, or pathspec-file source returns ``None`` so the
+caller can deny it. In particular, configuration overrides are never skipped:
+the reader cannot prove a destination it has not resolved.
 
 Repository metadata is normally outside a linked worktree's directory. That
 is intentional: ordinary ``git add``, ``git commit`` and ``git rebase`` in the
@@ -84,7 +86,7 @@ _GLOBAL_FLAGS: Final = frozenset(
         "--noglob-pathspecs",
     }
 )
-_GLOBAL_VALUE_FLAGS: Final = frozenset({"--config-env", "--namespace", "--super-prefix"})
+_GLOBAL_VALUE_FLAGS: Final = frozenset({"--namespace", "--super-prefix"})
 _STANDALONE_READS: Final = frozenset({"--help", "--version", "-h"})
 
 _RESTORE_FLAGS: Final = frozenset(
@@ -147,7 +149,7 @@ class _Invocation(NamedTuple):
 
 def _resolve(value: str, base: Path) -> Path | None:
     """Resolve one path without guessing shell variables or command output."""
-    if not value or "\x00" in value or "$" in value or "`" in value:
+    if not value or "\x00" in value or "$" in value or "`" in value or value.startswith("~"):
         return None
     try:
         candidate = Path(value).expanduser()
@@ -165,7 +167,7 @@ def _path_operand(value: str, base: Path) -> Path | None:
     return _resolve(value, base)
 
 
-def _parse(  # noqa: C901, PLR0911, PLR0912, PLR0915 — one ordered option ladder fails closed
+def _parse(  # noqa: C901, PLR0911, PLR0912 — one ordered option ladder fails closed
     words: Sequence[str], cwd: Path
 ) -> _Invocation | None:
     """Resolve Git's location flags and identify its subcommand."""
@@ -221,12 +223,6 @@ def _parse(  # noqa: C901, PLR0911, PLR0912, PLR0915 — one ordered option ladd
             work_tree = _resolve(word.removeprefix("--work-tree="), base)
             if work_tree is None:
                 return None
-            index += 1
-        elif word == "-c":
-            if index + 1 >= len(words):
-                return None
-            index += 2
-        elif word.startswith("-c") and word != "-c":
             index += 1
         elif word in _GLOBAL_VALUE_FLAGS:
             if index + 1 >= len(words):
@@ -466,6 +462,24 @@ def _reset_targets(invocation: _Invocation) -> tuple[str, ...] | None:
     return _locations(invocation)
 
 
+def _apply_read(args: Sequence[str]) -> bool | None:
+    """Recognise only ``git apply``'s no-write check mode."""
+    seen_check = False
+    seen_operand = False
+    for arg in args:
+        if seen_operand:
+            continue
+        if arg == "--check" and not seen_operand:
+            seen_check = True
+        elif arg == "--":
+            seen_operand = True
+        elif arg.startswith("-"):
+            return None
+        else:
+            seen_operand = True
+    return True if seen_check else None
+
+
 def git_write_paths(  # noqa: C901, PLR0911, PLR0912 — command families form one ordered refusal ladder
     words: Sequence[str], cwd: Path
 ) -> tuple[str, ...] | None:
@@ -483,6 +497,10 @@ def git_write_paths(  # noqa: C901, PLR0911, PLR0912 — command families form o
     conditional = _conditional_read(invocation.subcommand, invocation.args)
     if conditional is True:
         return ()
+    if invocation.subcommand == "apply":
+        if _apply_read(invocation.args) is True:
+            return ()
+        return None
     if invocation.subcommand in _GIT_PATH_WRITES:
         if invocation.subcommand == "restore":
             return _restore_targets(invocation)
