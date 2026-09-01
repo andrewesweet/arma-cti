@@ -1,0 +1,112 @@
+--- a/.claude/hooks/protect-gated-paths.py
++++ b/.claude/hooks/protect-gated-paths.py
+@@ -11,7 +11,10 @@
+ * `tee`, `rm`, `touch`, `truncate` (and kin) naming one;
+ * `cp`/`mv`/`ln`/`install` whose *destination* is gated — copying a spec out
+   is a read and passes;
+-* `dd` with a gated `of=`.
++* `dd` with a gated `of=`;
++* a direct `git` write whose resolved work-tree, Git directory, or pathspec is
++  gated or belongs to another checkout; `git_write_paths.py` owns the
++  deliberately known-incomplete Git allowlist and its fail-closed default.
+ 
+ Read-shaped commands on the same paths (`cat`, `grep`, `diff`, `ls`, `sed`
+ without `-i`) pass, and a gated path inside quoted prose or a heredoc body is
+@@ -35,6 +38,7 @@
+ 
+ from edit_payload import edited_paths
+ from gated_paths import hook_denial
++from git_write_paths import changed_directory, git_write_paths
+ 
+ REPO = Path(__file__).resolve().parents[2]
+ 
+@@ -45,7 +49,7 @@
+ 
+ UNREADABLE = (
+     "Could not read this Bash command to check it for writes to gated paths"
+-    " (generated files, acceptance specs). Simplify the quoting and retry."
++    " or another repository checkout. Simplify the quoting and retry."
+ )
+ 
+ # Redirections that write their target. `<`-shaped ones read theirs.
+@@ -88,28 +92,43 @@
+     return targets, words
+ 
+ 
+-def _written_paths(tokens: list[str]) -> list[str]:
++def _shell_targets(paths: list[str], cwd: Path) -> list[str]:
++    """Resolve shell paths against the command's current working directory."""
++    targets: list[str] = []
++    for raw_path in paths:
++        path = Path(raw_path)
++        targets.append(str(path if path.is_absolute() else cwd / path))
++    return targets
++
++
++def _written_paths(tokens: list[str], cwd: Path) -> list[str] | None:
+     """Return every path this one command writes to, as far as it can be read."""
+     targets, words = _redirect_targets_and_words(without_assignments(tokens))
+     if not words:
+-        return targets
++        return _shell_targets(targets, cwd)
+     name = PurePosixPath(words[0]).name
+-    operands = [word for word in words[1:] if not word.startswith("-")]
+-    if name in _WRITES_OPERANDS:
+-        targets.extend(operands)
+-    elif name in _WRITES_DESTINATION:
+-        if operands:
+-            targets.append(operands[-1])
+-        for index, word in enumerate(words):
+-            if word == "-t" and index + 1 < len(words):
+-                targets.append(words[index + 1])
+-            elif word.startswith("--target-directory="):
+-                targets.append(word.removeprefix("--target-directory="))
+-    elif name in _EDITS_IN_PLACE and any(_is_in_place_flag(word) for word in words[1:]):
+-        targets.extend(operands)
+-    elif name == "dd":
+-        targets.extend(word.removeprefix("of=") for word in words[1:] if word.startswith("of="))
+-    return targets
++    if name == "git":
++        git_targets = git_write_paths(words, cwd)
++        if git_targets is None:
++            return None
++        targets.extend(git_targets)
++    else:
++        operands = [word for word in words[1:] if not word.startswith("-")]
++        if name in _WRITES_OPERANDS:
++            targets.extend(operands)
++        elif name in _WRITES_DESTINATION:
++            if operands:
++                targets.append(operands[-1])
++            for index, word in enumerate(words):
++                if word == "-t" and index + 1 < len(words):
++                    targets.append(words[index + 1])
++                elif word.startswith("--target-directory="):
++                    targets.append(word.removeprefix("--target-directory="))
++        elif name in _EDITS_IN_PLACE and any(_is_in_place_flag(word) for word in words[1:]):
++            targets.extend(operands)
++        elif name == "dd":
++            targets.extend(word.removeprefix("of=") for word in words[1:] if word.startswith("of="))
++    return _shell_targets(targets, cwd)
+ 
+ 
+ def bash_denial(command: str) -> str | None:
+@@ -117,9 +136,17 @@
+     segments = read_command(command)
+     if segments is None:
+         return UNREADABLE
++    cwd = REPO
+     for tokens in segments:
+-        for path in _written_paths(tokens):
++        paths = _written_paths(tokens, cwd)
++        if paths is None:
++            return UNREADABLE
++        for path in paths:
+             reason = _gated(path)
+             if reason is not None:
+                 return reason
++        _, words = _redirect_targets_and_words(without_assignments(tokens))
++        cwd = changed_directory(words, cwd)
++        if cwd is None:
++            return UNREADABLE
+     return None

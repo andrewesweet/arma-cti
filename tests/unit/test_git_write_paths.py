@@ -11,6 +11,7 @@ git_write_paths = load_tool("git_write_paths")
 
 ROOT = Path("/assigned/worktree")
 OTHER = Path("/other/checkout")
+HOOK_INTEGRATION_FIXTURE = Path(__file__).parents[1] / "fixtures" / "673-hook-integration.diff"
 
 
 @pytest.mark.parametrize(
@@ -180,3 +181,17 @@ def test_directory_changes_are_resolved_as_the_shell_resolves_them() -> None:
 )
 def test_unsupported_directory_changes_are_unreadable(words: list[str]) -> None:
     assert git_write_paths.changed_directory(words, ROOT) is None
+
+
+def test_hook_fixture_pins_public_reader_wiring() -> None:
+    fixture = HOOK_INTEGRATION_FIXTURE.read_text(encoding="utf-8")
+    for wiring in (
+        "from git_write_paths import changed_directory, git_write_paths",
+        "git_targets = git_write_paths(words, cwd)",
+        "cwd = changed_directory(words, cwd)",
+    ):
+        assert wiring in fixture
+
+    assert git_write_paths.git_write_paths(["git", "status"], ROOT) == ()
+    assert git_write_paths.git_write_paths(["git", "add", "tools/land.py"], ROOT) == (str(ROOT),)
+    assert git_write_paths.git_write_paths(["git", "future-subcommand"], ROOT) is None
