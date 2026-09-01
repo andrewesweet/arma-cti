@@ -962,6 +962,12 @@ watch-report *args:
 gate-clock-history:
     uv run python tools/gate_clock.py history
 
+# Read the loop metrics directly from durable dispatch, review, queue and acceptance
+# records (#602). This is a report only: no controller, dispatch or projection write.
+[positional-arguments]
+loop-metrics *args:
+    uv run python tools/loop_metrics.py "$@"
+
 # The recovery runbook's two computable procedures (#253, orchestration-design §4).
 # No Arma, no lock, no turn held open; both verbs are reads and neither writes
 # anything anywhere.

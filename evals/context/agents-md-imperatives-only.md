@@ -1,7 +1,7 @@
 # arma-cti working rules — imperatives only
 
 Derived from `AGENTS.md` at commit `f83f8c03` (2026-09-01), sha256
-`166e324624ff81905c308fd49200bc2dcc2e0cd75133cafd5cf248596d33bfa2`. The rule of
+`484d24cc09f3ca8350e51b1581487f47717134458d278d512bbcaf22ada0e067`. The rule of
 derivation: directive sentences only, taken from the **Contract** and **Working style**
 sections; the `_(validated ×N …)_` evidence annotations, every table, and narrative
 rationale are dropped. Refresh by hand when the underlying rules move materially. This

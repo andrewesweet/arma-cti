@@ -1,0 +1,1301 @@
+"""Read loop metrics from the dispatch and review records (#602).
+
+This is an on-demand report, not a controller capability.  It reads the durable
+dispatch records, per-issue review loops, materialised ledger rows and queue-depth
+samples.  It never opens a dispatch, writes a projection, contacts MLflow, or
+changes the records it reads.  A missing or damaged input is named as unknown and
+never quietly converted to zero.
+
+The self-review block is the version-2 shape introduced by #589.  Version-1 loop
+files remain valid input and explicitly contribute no self-review observations.
+Dismissal matching is deliberately conservative: an independent finding matches a
+dismissed self-review finding only when the two records carry the same non-empty
+finding id for the same issue, and exactly one independent finding carries it.
+The reader cannot infer that two differently named findings describe the same diff;
+those cases stay unmatched and are shown in the denominator's uncertainty range.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import math
+import os
+import subprocess
+import sys
+from collections import Counter, defaultdict
+from datetime import UTC, datetime
+from itertools import pairwise
+from pathlib import Path
+from statistics import pvariance
+from typing import Final, NamedTuple
+
+# ``tools/`` is a collection of standalone scripts.  Keep the existing queue and
+# acceptance readers available without turning the directory into a package.
+sys.path.insert(0, str(Path(__file__).parent))
+
+import acceptance
+import observatory
+
+REPO: Final = Path(__file__).resolve().parents[1]
+STATE_ROOT: Final = Path.home() / ".arma-cti"
+DEFAULT_DISPATCH_ROOT: Final = STATE_ROOT / "dispatches"
+DEFAULT_REVIEW_ROOT: Final = STATE_ROOT / "review"
+DEFAULT_QUEUE_ROOT: Final = STATE_ROOT / "queue"
+
+IMPLEMENTER: Final = "implementer"
+REVIEW: Final = "review"
+LOOP_SEATS: Final = frozenset({IMPLEMENTER, REVIEW})
+LOOP_VERSIONS: Final = frozenset({1, 2})
+SELF_REVIEW_VERSION: Final = 2
+SELF_REVIEW_ROUND_BUDGET: Final = 5
+WORTH_ADDRESSING: Final = "worth_addressing"
+NOT_WORTH_ADDRESSING: Final = "not_worth_addressing"
+SELF_CATEGORIES: Final = frozenset({WORTH_ADDRESSING, NOT_WORTH_ADDRESSING})
+PRE_EXISTING: Final = "pre_existing"
+INTRODUCED: Final = "introduced"
+SELF_ORIGINS: Final = frozenset({PRE_EXISTING, INTRODUCED})
+SEVERITIES: Final = ("critical", "high", "medium", "low")
+MIN_OBSERVATIONS: Final = 1
+WILSON_Z: Final = 1.959963984540054
+
+# These are the setpoints recorded in the frozen baseline and in fb42e18.  The
+# reader reports a setpoint only where the project has actually ruled one; it
+# does not invent targets for the other stocks.
+READY_SETPOINT: Final = 3
+WORKTREES_SETPOINT: Final = 0
+NO_LEDGER_SETPOINT: Final = 0
+UNRATIFIED_SETPOINT: Final = 0
+
+
+class DispatchRecord(NamedTuple):
+    """The durable fields needed from one dispatch directory."""
+
+    dispatch_id: str
+    issue: int
+    seat: str
+    planned_at: float
+    result_state: str
+    result_started_at: float | None
+    result_ended_at: float | None
+    ledger_row: bool
+    ledger_materialised_at: float | None
+    landed_sha: str | None
+    landed_at: float | None
+    path: Path
+
+
+class IndependentFinding(NamedTuple):
+    """One finding from the never-alone review loop."""
+
+    identifier: str
+    severity: str
+    round_raised: int
+
+
+class SelfFinding(NamedTuple):
+    """One #589 self-review finding, including dismissed findings."""
+
+    identifier: str
+    category: str
+    origin: str
+    round_raised: int
+
+
+class SelfRound(NamedTuple):
+    """One numbered self-review round."""
+
+    number: int
+    findings: tuple[SelfFinding, ...]
+
+
+class LoopRecord(NamedTuple):
+    """The independent findings and optional separate self-review block."""
+
+    issue: int
+    review_rounds: int
+    independent_findings: tuple[IndependentFinding, ...]
+    self_rounds: tuple[SelfRound, ...]
+    self_review_present: bool
+    self_converged_on: str = ""
+    self_failure: str = ""
+
+
+class Window(NamedTuple):
+    """An inclusive epoch window; ``None`` means the source has no timestamp."""
+
+    start: float | None
+    end: float | None
+    explicit: bool
+
+    def contains(self, value: float) -> bool:
+        """Answer whether a timestamp is inside this inclusive window."""
+        return (self.start is None or value >= self.start) and (
+            self.end is None or value <= self.end
+        )
+
+
+class Inputs(NamedTuple):
+    """All source reads, kept in memory so reporting performs no second read."""
+
+    dispatches: tuple[DispatchRecord, ...]
+    loops: tuple[LoopRecord, ...]
+    queue_rows: tuple[dict[str, object], ...]
+    diagnostics: tuple[str, ...]
+
+
+class Proportion(NamedTuple):
+    """A ratio and its 95% Wilson interval."""
+
+    numerator: int
+    denominator: int
+    value: float
+    lower: float
+    upper: float
+
+
+def _is_number(value: object) -> bool:
+    """Accept finite JSON numbers but not booleans."""
+    return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
+
+
+def _read_object(path: Path, diagnostics: list[str], label: str) -> dict[str, object] | None:
+    """Read one JSON object and name damage without turning it into a zero."""
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        diagnostics.append(f"{label} status=absent path={path}")
+        return None
+    except (OSError, json.JSONDecodeError) as error:
+        diagnostics.append(f"{label} status=unreadable path={path} reason={error}")
+        return None
+    if not isinstance(raw, dict):
+        diagnostics.append(f"{label} status=unreadable path={path} reason=not_an_object")
+        return None
+    return raw
+
+
+def parse_timestamp(value: object) -> float | None:
+    """Parse an epoch or timezone-aware ISO timestamp without guessing a zone."""
+    if _is_number(value):
+        return float(value)
+    if not isinstance(value, str) or not value:
+        return None
+    try:
+        parsed = datetime.fromisoformat(value)
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        return None
+    return parsed.timestamp()
+
+
+def format_timestamp(value: float | None) -> str:
+    """Render a source boundary in a stable UTC representation."""
+    if value is None:
+        return "unrecorded"
+    return datetime.fromtimestamp(value, UTC).isoformat().replace("+00:00", "Z")
+
+
+def _positive_int(value: object) -> int | None:
+    """Read a positive integer field without coercing malformed data."""
+    if not isinstance(value, int) or isinstance(value, bool) or value <= 0:
+        return None
+    return value
+
+
+def _nonnegative_int(value: object) -> int | None:
+    """Read a non-negative integer field without coercing malformed data."""
+    if not isinstance(value, int) or isinstance(value, bool) or value < 0:
+        return None
+    return value
+
+
+def _read_result(
+    dispatch_dir: Path, diagnostics: list[str], dispatch_id: str
+) -> tuple[str, float | None, float | None]:
+    """Read a result closeout, preserving missing and damaged as different states."""
+    path = dispatch_dir / "result.json"
+    if not path.exists():
+        return "absent", None, None
+    document = _read_object(path, diagnostics, f"result dispatch={dispatch_id}")
+    if document is None:
+        return "unreadable", None, None
+    started = parse_timestamp(document.get("started_at"))
+    ended = parse_timestamp(document.get("ended_at"))
+    if document.get("started_at") is not None and started is None:
+        diagnostics.append(f"result dispatch={dispatch_id} field=started_at status=unreadable")
+    if document.get("ended_at") is not None and ended is None:
+        diagnostics.append(f"result dispatch={dispatch_id} field=ended_at status=unreadable")
+    return "readable", started, ended
+
+
+def _ledger_fields(  # noqa: PLR0911 — each typed absence is a distinct durable fact
+    dispatch_dir: Path, diagnostics: list[str], dispatch_id: str, issue: int
+) -> tuple[bool, float | None, str | None, float | None]:
+    """Read the optional materialised row and its landing join."""
+    path = dispatch_dir / "ledger.json"
+    if not path.exists():
+        return False, None, None, None
+    document = _read_object(path, diagnostics, f"ledger dispatch={dispatch_id}")
+    if document is None:
+        return False, None, None, None
+    stored_id = document.get("dispatch_id")
+    if stored_id is not None and stored_id != dispatch_id:
+        diagnostics.append(
+            f"ledger dispatch={dispatch_id} status=unreadable reason=dispatch_id_mismatch"
+        )
+        return False, None, None, None
+    stored_issue = document.get("issue")
+    if stored_issue is not None and stored_issue != issue:
+        diagnostics.append(f"ledger dispatch={dispatch_id} status=unreadable reason=issue_mismatch")
+        return False, None, None, None
+    materialised = parse_timestamp(document.get("materialised_at"))
+    if document.get("materialised_at") is not None and materialised is None:
+        diagnostics.append(f"ledger dispatch={dispatch_id} field=materialised_at status=unreadable")
+
+    gate = document.get("gate")
+    if not isinstance(gate, dict) or gate.get("outcome") != "landed":
+        return True, materialised, None, None
+    landed = gate.get("landed")
+    if not isinstance(landed, dict):
+        diagnostics.append(f"ledger dispatch={dispatch_id} status=unreadable reason=landed_shape")
+        return True, materialised, None, None
+    sha = landed.get("sha")
+    if not isinstance(sha, str) or not sha:
+        diagnostics.append(f"ledger dispatch={dispatch_id} status=unreadable reason=landed_sha")
+        return True, materialised, None, None
+    landed_at = parse_timestamp(landed.get("landed_at"))
+    if landed_at is None:
+        landed_at = parse_timestamp(gate.get("landed_at"))
+    return True, materialised, sha, landed_at
+
+
+def read_dispatches(root: Path, diagnostics: list[str]) -> tuple[DispatchRecord, ...]:
+    """Read all dispatch plans and their local result/ledger companions."""
+    if not root.exists():
+        diagnostics.append(f"dispatch_source status=absent path={root}")
+        return ()
+    try:
+        entries = tuple(sorted(root.iterdir(), key=lambda path: path.name))
+    except OSError as error:
+        diagnostics.append(f"dispatch_source status=unreadable path={root} reason={error}")
+        return ()
+    records: list[DispatchRecord] = []
+    for dispatch_dir in entries:
+        if not dispatch_dir.is_dir():
+            continue
+        plan_path = dispatch_dir / "dispatch.json"
+        document = _read_object(plan_path, diagnostics, f"dispatch path={plan_path}")
+        if document is None:
+            continue
+        dispatch_id = document.get("dispatch_id")
+        issue = _positive_int(document.get("issue"))
+        seat = document.get("seat")
+        planned_at = parse_timestamp(document.get("planned_at"))
+        if not isinstance(dispatch_id, str) or not dispatch_id:
+            diagnostics.append(f"dispatch path={plan_path} status=unreadable reason=dispatch_id")
+            continue
+        if issue is None:
+            diagnostics.append(f"dispatch={dispatch_id} status=unreadable reason=issue")
+            continue
+        if not isinstance(seat, str) or not seat:
+            diagnostics.append(f"dispatch={dispatch_id} status=unreadable reason=seat")
+            continue
+        if planned_at is None:
+            diagnostics.append(f"dispatch={dispatch_id} status=unreadable reason=planned_at")
+            continue
+        result_state, started, ended = _read_result(dispatch_dir, diagnostics, dispatch_id)
+        ledger, materialised, landed_sha, landed_at = _ledger_fields(
+            dispatch_dir, diagnostics, dispatch_id, issue
+        )
+        records.append(
+            DispatchRecord(
+                dispatch_id,
+                issue,
+                seat,
+                planned_at,
+                result_state,
+                started,
+                ended,
+                ledger,
+                materialised,
+                landed_sha,
+                landed_at,
+                dispatch_dir,
+            )
+        )
+    records.sort(key=lambda record: (record.planned_at, record.dispatch_id))
+    diagnostics.append(f"dispatch_source status=readable path={root} records={len(records)}")
+    return tuple(records)
+
+
+def _parse_independent_findings(
+    raw: object, issue: int, diagnostics: list[str]
+) -> tuple[IndependentFinding, ...] | None:
+    """Read the v1/v2 independent finding list."""
+    if not isinstance(raw, list):
+        diagnostics.append(f"review issue={issue} status=unreadable reason=findings")
+        return None
+    findings: list[IndependentFinding] = []
+    seen: set[str] = set()
+    for entry in raw:
+        if not isinstance(entry, dict):
+            diagnostics.append(f"review issue={issue} status=unreadable reason=finding_shape")
+            return None
+        identifier = entry.get("id")
+        severity = entry.get("severity")
+        round_raised = entry.get("round_raised")
+        if (
+            not isinstance(identifier, str)
+            or not identifier
+            or not isinstance(severity, str)
+            or severity not in SEVERITIES
+            or _nonnegative_int(round_raised) is None
+        ):
+            diagnostics.append(f"review issue={issue} status=unreadable reason=finding_fields")
+            return None
+        if identifier in seen:
+            diagnostics.append(
+                f"review issue={issue} status=unreadable reason=duplicate_finding_id"
+            )
+            return None
+        seen.add(identifier)
+        findings.append(IndependentFinding(identifier, severity, int(round_raised)))
+    return tuple(findings)
+
+
+def _parse_self_rounds(  # noqa: C901, PLR0911 — one fail-closed ladder for the stored schema
+    raw: object, issue: int, diagnostics: list[str]
+) -> tuple[SelfRound, ...] | None:
+    """Read the exact #589 nested rounds, including only actual findings."""
+    if not isinstance(raw, list) or len(raw) > SELF_REVIEW_ROUND_BUDGET:
+        diagnostics.append(f"review issue={issue} status=unreadable reason=self_rounds")
+        return None
+    rounds: list[SelfRound] = []
+    seen: set[str] = set()
+    for expected, raw_round in enumerate(raw, start=1):
+        if not isinstance(raw_round, dict) or raw_round.get("number") != expected:
+            diagnostics.append(f"review issue={issue} status=unreadable reason=self_round_number")
+            return None
+        raw_findings = raw_round.get("findings", [])
+        raw_refutations = raw_round.get("refutations", [])
+        if not isinstance(raw_findings, list) or not isinstance(raw_refutations, list):
+            diagnostics.append(f"review issue={issue} status=unreadable reason=self_round_lists")
+            return None
+        findings: list[SelfFinding] = []
+        for entry in raw_findings:
+            if not isinstance(entry, dict):
+                diagnostics.append(
+                    f"review issue={issue} status=unreadable reason=self_finding_shape"
+                )
+                return None
+            identifier = entry.get("id")
+            category = entry.get("category")
+            origin = entry.get("origin")
+            round_raised = entry.get("round_raised")
+            if (
+                not isinstance(identifier, str)
+                or not identifier
+                or not isinstance(category, str)
+                or category not in SELF_CATEGORIES
+                or not isinstance(origin, str)
+                or origin not in SELF_ORIGINS
+                or not isinstance(entry.get("reason"), str)
+                or not entry["reason"]
+                or _nonnegative_int(round_raised) != expected
+            ):
+                diagnostics.append(
+                    f"review issue={issue} status=unreadable reason=self_finding_fields"
+                )
+                return None
+            if identifier in seen:
+                diagnostics.append(
+                    f"review issue={issue} status=unreadable reason=self_duplicate_id"
+                )
+                return None
+            seen.add(identifier)
+            findings.append(SelfFinding(identifier, category, origin, expected))
+        # Refutations are evidence, not findings.  Validate their stable identity
+        # and stamp so malformed refutations cannot quietly become findings.
+        for entry in raw_refutations:
+            if not isinstance(entry, dict):
+                diagnostics.append(
+                    f"review issue={issue} status=unreadable reason=refutation_shape"
+                )
+                return None
+            identifier = entry.get("id")
+            if (
+                not isinstance(identifier, str)
+                or not identifier
+                or not isinstance(entry.get("reason"), str)
+                or not entry["reason"]
+                or _nonnegative_int(entry.get("round_raised")) != expected
+            ):
+                diagnostics.append(
+                    f"review issue={issue} status=unreadable reason=refutation_fields"
+                )
+                return None
+            if identifier in seen:
+                diagnostics.append(
+                    f"review issue={issue} status=unreadable reason=self_duplicate_id"
+                )
+                return None
+            seen.add(identifier)
+        rounds.append(SelfRound(expected, tuple(findings)))
+    return tuple(rounds)
+
+
+def _parse_loop(  # noqa: C901, PLR0911, PLR0912 — v1/v2 validation keeps the schema boundary together
+    path: Path, diagnostics: list[str]
+) -> LoopRecord | None:
+    """Read one review loop, accepting v1 and the #589 v2 extension."""
+    document = _read_object(path, diagnostics, f"review path={path}")
+    if document is None:
+        return None
+    issue = _positive_int(document.get("issue"))
+    version = document.get("version")
+    rounds = _nonnegative_int(document.get("review_rounds"))
+    if issue is None or version not in LOOP_VERSIONS or rounds is None:
+        diagnostics.append(f"review path={path} status=unreadable reason=loop_header")
+        return None
+    findings = _parse_independent_findings(document.get("findings"), issue, diagnostics)
+    if findings is None:
+        return None
+    if any(finding.round_raised > rounds for finding in findings):
+        diagnostics.append(f"review issue={issue} status=unreadable reason=round_out_of_range")
+        return None
+    self_rounds: tuple[SelfRound, ...] = ()
+    self_present = False
+    converged_on = ""
+    failure = ""
+    # Version 1 predates the block.  A stray key on a v1 record is ignored by
+    # the #589 reader too; it cannot be evidence of a block that version never wrote.
+    self_review = document.get("self_review")
+    if version == SELF_REVIEW_VERSION and self_review is not None:
+        self_present = True
+        if not isinstance(self_review, dict):
+            diagnostics.append(f"review issue={issue} status=unreadable reason=self_review_shape")
+            return None
+        parsed_rounds = _parse_self_rounds(self_review.get("rounds"), issue, diagnostics)
+        if parsed_rounds is None:
+            return None
+        converged_on = self_review.get("converged_on", "")
+        failure = self_review.get("failure", "")
+        if (
+            not isinstance(converged_on, str)
+            or not isinstance(failure, str)
+            or (converged_on and failure)
+        ):
+            diagnostics.append(f"review issue={issue} status=unreadable reason=self_closed_state")
+            return None
+        if failure and failure not in {"discovery-dominated", "injection-dominated"}:
+            diagnostics.append(f"review issue={issue} status=unreadable reason=self_failure")
+            return None
+        if failure and (
+            len(parsed_rounds) != SELF_REVIEW_ROUND_BUDGET
+            or any(
+                not any(f.category == WORTH_ADDRESSING for f in attempt.findings)
+                for attempt in parsed_rounds
+            )
+        ):
+            diagnostics.append(f"review issue={issue} status=unreadable reason=self_failure_state")
+            return None
+        if converged_on and (
+            not parsed_rounds
+            or any(f.category == WORTH_ADDRESSING for f in parsed_rounds[-1].findings)
+        ):
+            diagnostics.append(f"review issue={issue} status=unreadable reason=self_convergence")
+            return None
+        raw_gate_fixes = self_review.get("gate_fixes", [])
+        if not isinstance(raw_gate_fixes, list):
+            diagnostics.append(f"review issue={issue} status=unreadable reason=self_gate_fixes")
+            return None
+        covered = {converged_on} if converged_on else set()
+        for entry in raw_gate_fixes:
+            if not isinstance(entry, dict):
+                diagnostics.append(
+                    f"review issue={issue} status=unreadable reason=self_gate_fix_fields"
+                )
+                return None
+            sha = entry.get("sha")
+            reason = entry.get("reason")
+            if (
+                not isinstance(sha, str)
+                or not sha
+                or not isinstance(reason, str)
+                or not reason
+                or sha in covered
+            ):
+                diagnostics.append(
+                    f"review issue={issue} status=unreadable reason=self_gate_fix_fields"
+                )
+                return None
+            covered.add(sha)
+        if raw_gate_fixes and not converged_on:
+            diagnostics.append(f"review issue={issue} status=unreadable reason=self_gate_fix_state")
+            return None
+        self_rounds = parsed_rounds
+    return LoopRecord(issue, rounds, findings, self_rounds, self_present, converged_on, failure)
+
+
+def read_loops(root: Path, diagnostics: list[str]) -> tuple[LoopRecord, ...]:
+    """Read all per-issue loop files and count absent roots as an empty view."""
+    if not root.exists():
+        diagnostics.append(f"review_source status=absent path={root}")
+        return ()
+    try:
+        paths = tuple(sorted(root.glob("*/loop.json")))
+    except OSError as error:
+        diagnostics.append(f"review_source status=unreadable path={root} reason={error}")
+        return ()
+    records: list[LoopRecord] = []
+    for path in paths:
+        record = _parse_loop(path, diagnostics)
+        if record is not None:
+            records.append(record)
+    records.sort(key=lambda record: record.issue)
+    diagnostics.append(f"review_source status=readable path={root} records={len(records)}")
+    return tuple(records)
+
+
+def read_queue_rows(root: Path, diagnostics: list[str]) -> tuple[dict[str, object], ...]:
+    """Reuse the canonical queue-depth reader without rebuilding its store."""
+    if not root.exists():
+        diagnostics.append(f"queue_source status=absent path={root}")
+        return ()
+    try:
+        rows, malformed = observatory.read_queue_depths(root)
+    except OSError as error:
+        diagnostics.append(f"queue_source status=unreadable path={root} reason={error}")
+        return ()
+    for source, count in sorted(malformed.items()):
+        diagnostics.append(f"queue_source status=unreadable source={source} records={count}")
+    diagnostics.append(f"queue_source status=readable path={root} records={len(rows)}")
+    return tuple(dict(row) for row in rows)
+
+
+def read_inputs(dispatch_root: Path, review_root: Path, queue_root: Path) -> Inputs:
+    """Read every source once; all later calculations consume this snapshot."""
+    diagnostics: list[str] = []
+    dispatches = read_dispatches(dispatch_root, diagnostics)
+    loops = read_loops(review_root, diagnostics)
+    queue_rows = read_queue_rows(queue_root, diagnostics)
+    return Inputs(dispatches, loops, queue_rows, tuple(diagnostics))
+
+
+def observed_times(inputs: Inputs) -> tuple[float, ...]:
+    """Collect timestamps present in the snapshot for the default window."""
+    times: list[float] = []
+    for dispatch in inputs.dispatches:
+        times.append(dispatch.planned_at)
+        times.extend(
+            value
+            for value in (dispatch.result_started_at, dispatch.result_ended_at)
+            if value is not None
+        )
+        times.extend(
+            value
+            for value in (dispatch.ledger_materialised_at, dispatch.landed_at)
+            if value is not None
+        )
+    for row in inputs.queue_rows:
+        value = row.get("sampled_at")
+        if _is_number(value):
+            times.append(float(value))
+    return tuple(times)
+
+
+def resolve_window(
+    inputs: Inputs, start: float | None, end: float | None, *, explicit: bool
+) -> Window:
+    """Resolve an explicit boundary or the reproducible min/max source window."""
+    times = observed_times(inputs)
+    low = start if start is not None else min(times, default=None)
+    high = end if end is not None else max(times, default=None)
+    return Window(low, high, explicit)
+
+
+def wilson_interval(numerator: int, denominator: int) -> Proportion | None:
+    """Return a two-sided 95% Wilson interval, or no ratio for no observations."""
+    if denominator < MIN_OBSERVATIONS or numerator < 0 or numerator > denominator:
+        return None
+    n = float(denominator)
+    p = numerator / n
+    z2 = WILSON_Z * WILSON_Z
+    centre = (p + z2 / (2 * n)) / (1 + z2 / n)
+    half = WILSON_Z * math.sqrt(p * (1 - p) / n + z2 / (4 * n * n)) / (1 + z2 / n)
+    return Proportion(numerator, denominator, p, max(0.0, centre - half), min(1.0, centre + half))
+
+
+def _proportion_text(name: str, numerator: int, denominator: int, *, extras: str = "") -> str:
+    """Render every ratio with numerator, denominator and an interval."""
+    ratio = wilson_interval(numerator, denominator)
+    if ratio is None:
+        return (
+            f"{name} status=too_few observed={denominator} needed={MIN_OBSERVATIONS} "
+            f"numerator={numerator} denominator={denominator}"
+            f"{f' {extras}' if extras else ''}"
+        )
+    suffix = f" {extras}" if extras else ""
+    return (
+        f"{name} numerator={numerator} denominator={denominator} ratio={ratio.value:.6f} "
+        f"interval=[{ratio.lower:.6f},{ratio.upper:.6f}] confidence=95%{suffix}"
+    )
+
+
+def _mean_text(name: str, values: list[float], *, extras: str = "") -> str:
+    """Render a mean and population variance, naming an empty observation set."""
+    if not values:
+        return f"{name} status=too_few observed=0 needed={MIN_OBSERVATIONS}{extras}"
+    suffix = f" {extras}" if extras else ""
+    return (
+        f"{name} observations={len(values)} mean={sum(values) / len(values):.6f} "
+        f"variance={pvariance(values):.6f} variance_basis=population{suffix}"
+    )
+
+
+def _selected_loops(inputs: Inputs, window: Window) -> tuple[LoopRecord, ...]:
+    """Select loops by issue dispatch time because loop files carry no timestamp."""
+    if not window.explicit:
+        return inputs.loops
+    issues = {
+        dispatch.issue for dispatch in inputs.dispatches if window.contains(dispatch.planned_at)
+    }
+    return tuple(record for record in inputs.loops if record.issue in issues)
+
+
+def _selected_dispatches(inputs: Inputs, window: Window) -> tuple[DispatchRecord, ...]:
+    """Select dispatch events whose own plan timestamp is in the window."""
+    return tuple(dispatch for dispatch in inputs.dispatches if window.contains(dispatch.planned_at))
+
+
+def _loop_sequences(
+    dispatches: tuple[DispatchRecord, ...], window: Window
+) -> dict[int, tuple[str, ...]]:
+    """Reduce implementer/review dispatches to seat transitions per issue."""
+    grouped: defaultdict[int, list[str]] = defaultdict(list)
+    for dispatch in dispatches:
+        if dispatch.seat in LOOP_SEATS and window.contains(dispatch.planned_at):
+            grouped[dispatch.issue].append(dispatch.seat)
+    sequences: dict[int, tuple[str, ...]] = {}
+    for issue, seats in grouped.items():
+        reduced: list[str] = []
+        for seat in seats:
+            if not reduced or reduced[-1] != seat:
+                reduced.append(seat)
+        sequences[issue] = tuple(reduced)
+    return sequences
+
+
+def injection_lines(loops: tuple[LoopRecord, ...]) -> list[str]:
+    """Report introduced versus pre-existing self findings per round and aggregate."""
+    per_round: defaultdict[int, Counter[str]] = defaultdict(Counter)
+    aggregate: Counter[str] = Counter()
+    self_records = 0
+    for record in loops:
+        if not record.self_review_present:
+            continue
+        self_records += 1
+        for attempt in record.self_rounds:
+            per_round.setdefault(attempt.number, Counter())
+            for finding in attempt.findings:
+                per_round[attempt.number][finding.origin] += 1
+                aggregate[finding.origin] += 1
+    if self_records == 0:
+        return [
+            (
+                "injection_rate status=too_few observed=0 needed=1 "
+                "self_review_records=0 excluded_without_self_review="
+                f"{sum(not record.self_review_present for record in loops)}"
+            )
+        ]
+    lines = []
+    for number in sorted(per_round):
+        tally = per_round[number]
+        lines.append(
+            _proportion_text(
+                f"injection_rate round={number}",
+                tally[INTRODUCED],
+                tally[INTRODUCED] + tally[PRE_EXISTING],
+                extras="origin=introduced_vs_pre_existing",
+            )
+        )
+    lines.append(
+        _proportion_text(
+            "injection_rate aggregate",
+            aggregate[INTRODUCED],
+            aggregate[INTRODUCED] + aggregate[PRE_EXISTING],
+            extras=f"self_review_records={self_records}",
+        )
+    )
+    return lines
+
+
+def catch_fraction(loops: tuple[LoopRecord, ...]) -> tuple[Proportion | None, int, int]:
+    """Compute self worth-addressing over self worth-addressing plus independent findings."""
+    self_worth = 0
+    independent = 0
+    for record in loops:
+        if not record.self_review_present:
+            continue
+        self_worth += sum(
+            finding.category == WORTH_ADDRESSING
+            for attempt in record.self_rounds
+            for finding in attempt.findings
+        )
+        independent += len(record.independent_findings)
+    denominator = self_worth + independent
+    return wilson_interval(self_worth, denominator), self_worth, denominator
+
+
+def dismissal_match_counts(
+    loops: tuple[LoopRecord, ...],
+) -> tuple[int, int, int, int, tuple[str, ...]]:
+    """Match dismissed self findings by exact unique id within the same issue.
+
+    A different id is not a match, even when its reason or severity looks similar:
+    the records do not carry a safe line-level or semantic fingerprint.  Duplicate
+    independent ids are ambiguous and remain outside the decidable denominator.
+    """
+    misses = 0
+    dismissed = 0
+    unmatched = 0
+    ambiguous = 0
+    unmatched_ids: list[str] = []
+    for record in loops:
+        if not record.self_review_present:
+            continue
+        independent_by_id: defaultdict[str, list[IndependentFinding]] = defaultdict(list)
+        for finding in record.independent_findings:
+            independent_by_id[finding.identifier].append(finding)
+        for attempt in record.self_rounds:
+            for finding in attempt.findings:
+                if finding.category != NOT_WORTH_ADDRESSING:
+                    continue
+                dismissed += 1
+                matches = independent_by_id[finding.identifier]
+                if len(matches) == 1:
+                    misses += 1
+                elif len(matches) > 1:
+                    ambiguous += 1
+                    unmatched_ids.append(f"{record.issue}:{finding.identifier}:ambiguous")
+                else:
+                    unmatched += 1
+                    unmatched_ids.append(f"{record.issue}:{finding.identifier}")
+    return misses, dismissed, unmatched, ambiguous, tuple(unmatched_ids)
+
+
+def _catch_text(loops: tuple[LoopRecord, ...]) -> tuple[str, str]:
+    """Return the catch line and a compact copy for the findings line beside it."""
+    ratio, numerator, denominator = catch_fraction(loops)
+    if ratio is None:
+        text = _proportion_text(
+            "catch_fraction",
+            numerator,
+            denominator,
+            extras="bound=upper_bound reason=no_self_review_or_findings",
+        )
+        return text, "catch_fraction_status=too_few"
+    text = _proportion_text(
+        "catch_fraction",
+        numerator,
+        denominator,
+        extras=(
+            "bound=upper_bound caveat=self_review_may_raise_a_class_the_reviewer_would_not "
+            "matching=not_used"
+        ),
+    )
+    return text, (
+        f"catch_fraction_ratio={ratio.value:.6f} "
+        f"catch_fraction_interval=[{ratio.lower:.6f},{ratio.upper:.6f}] "
+        "catch_fraction_bound=upper_bound"
+    )
+
+
+def dismissal_lines(loops: tuple[LoopRecord, ...]) -> list[str]:
+    """Render dismissal misses, decidability and the matching limitation."""
+    misses, dismissed, unmatched, ambiguous, unmatched_ids = dismissal_match_counts(loops)
+    decidable = misses
+    # A unique exact match is the only decidable dismissal.  Ambiguous entries are
+    # kept out of the ratio just like unmatched entries, and both bounds remain visible.
+    lines = [
+        (
+            "dismissal_matching=exact_nonempty_id_same_work_item_unique_independent_match "
+            "different_ids=unmatched semantic_or_line_inference=not_available "
+            "duplicate_ids=ambiguous"
+        ),
+        _proportion_text(
+            "dismissal_misses",
+            misses,
+            dismissed,
+            extras=(
+                f"bound=lower_bound dismissed={dismissed} decidable={decidable} "
+                f"unmatched={unmatched} "
+                f"ambiguous={ambiguous} possible_range="
+                f"[{(misses / dismissed if dismissed else 0.0):.6f},"
+                f"{((misses + unmatched + ambiguous) / dismissed if dismissed else 0.0):.6f}]"
+            ),
+        ),
+    ]
+    if unmatched_ids:
+        lines.append("dismissal_unmatched=" + ",".join(unmatched_ids))
+    return lines
+
+
+def findings_lines(
+    loops: tuple[LoopRecord, ...], dispatches: tuple[DispatchRecord, ...], window: Window
+) -> list[str]:
+    """Report findings per independent review and severity mix beside catch fraction."""
+    catch_line, catch_copy = _catch_text(loops)
+    reviews_by_issue: Counter[int] = Counter(
+        dispatch.issue
+        for dispatch in dispatches
+        if dispatch.seat == REVIEW and window.contains(dispatch.planned_at)
+    )
+    findings_by_issue: Counter[int] = Counter(
+        record.issue for record in loops for _ in record.independent_findings
+    )
+    reviews = sum(reviews_by_issue.values())
+    findings = sum(findings_by_issue.values())
+    per_issue = [findings_by_issue[issue] / count for issue, count in reviews_by_issue.items()]
+    lines = [catch_line]
+    if reviews:
+        lines.append(
+            f"findings_per_independent_review reviews={reviews} findings={findings} "
+            f"mean={findings / reviews:.6f} variance={pvariance(per_issue):.6f} "
+            f"variance_basis=population {catch_copy}"
+        )
+    else:
+        lines.append(
+            f"findings_per_independent_review status=too_few observed={reviews} "
+            f"needed={MIN_OBSERVATIONS} findings={findings} {catch_copy}"
+        )
+    counts = Counter(
+        finding.severity for record in loops for finding in record.independent_findings
+    )
+    total = sum(counts.values())
+    lines.extend(
+        _proportion_text(
+            f"severity_mix severity={severity}",
+            counts[severity],
+            total,
+            extras="findings=independent",
+        )
+        for severity in SEVERITIES
+    )
+    return lines
+
+
+def clean_round_lines(loops: tuple[LoopRecord, ...]) -> list[str]:
+    """Report the first clean self-review round distribution."""
+    clean_rounds: list[int] = []
+    for record in loops:
+        if not record.self_review_present or not record.self_converged_on:
+            continue
+        if record.self_rounds and not any(
+            finding.category == WORTH_ADDRESSING for finding in record.self_rounds[-1].findings
+        ):
+            clean_rounds.append(record.self_rounds[-1].number)
+    if not clean_rounds:
+        return [
+            (
+                "clean_round_distribution status=too_few observed=0 needed=1 "
+                "self_review_records=0_or_no_clean_round"
+            )
+        ]
+    counts = Counter(clean_rounds)
+    denominator = len(clean_rounds)
+    return [
+        _proportion_text(
+            f"clean_round_distribution round={number}",
+            counts[number],
+            denominator,
+            extras=f"clean_observations={denominator}",
+        )
+        for number in sorted(counts)
+    ]
+
+
+def _landing_times(
+    dispatches: tuple[DispatchRecord, ...], repo: Path, diagnostics: list[str]
+) -> dict[int, float]:
+    """Join landed ledger SHAs to commit timestamps, caching each SHA read."""
+    cache: dict[str, float | None] = {}
+    result: dict[int, float] = {}
+    for dispatch in dispatches:
+        if dispatch.landed_sha is None:
+            continue
+        landed_at = dispatch.landed_at
+        if landed_at is None:
+            if dispatch.landed_sha not in cache:
+                cache[dispatch.landed_sha] = _commit_timestamp(repo, dispatch.landed_sha)
+            landed_at = cache[dispatch.landed_sha]
+            if landed_at is None:
+                diagnostics.append(
+                    f"landing issue={dispatch.issue} sha={dispatch.landed_sha} status=unrecorded"
+                )
+        if landed_at is not None:
+            result[dispatch.issue] = max(result.get(dispatch.issue, landed_at), landed_at)
+    return result
+
+
+def _commit_timestamp(repo: Path, sha: str) -> float | None:
+    """Read a commit date without changing the repository."""
+    try:
+        completed = subprocess.run(  # noqa: S603 — fixed git argv; SHA is one validated data word
+            ["git", "show", "-s", "--format=%cI", sha],  # noqa: S607 — git resolves off PATH by design
+            cwd=repo,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=5.0,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    if completed.returncode != 0:
+        return None
+    return parse_timestamp(completed.stdout.strip())
+
+
+def cycle_lines(
+    dispatches: tuple[DispatchRecord, ...], repo: Path, window: Window, diagnostics: list[str]
+) -> list[str]:
+    """Report dispatch-to-landed time per issue, with no timestamp fabrication."""
+    starts: dict[int, float] = {}
+    for dispatch in dispatches:
+        if window.contains(dispatch.planned_at):
+            starts[dispatch.issue] = min(
+                starts.get(dispatch.issue, dispatch.planned_at), dispatch.planned_at
+            )
+    landings = _landing_times(dispatches, repo, diagnostics)
+    values = [
+        landed - starts[issue]
+        for issue, landed in landings.items()
+        if issue in starts
+        and landed >= starts[issue]
+        and (not window.explicit or window.contains(landed))
+    ]
+    return [_mean_text("cycle_time_per_work_item", values, extras="unit=seconds")]
+
+
+def return_lines(dispatches: tuple[DispatchRecord, ...], window: Window) -> list[str]:
+    """Report handover return probability, lambda and the geometric residual."""
+    sequences = _loop_sequences(dispatches, window)
+    handovers = 0
+    returns = 0
+    review_counts: list[float] = []
+    for sequence in sequences.values():
+        handovers += sum(a == IMPLEMENTER and b == REVIEW for a, b in pairwise(sequence))
+        returns += sum(a == REVIEW and b == IMPLEMENTER for a, b in pairwise(sequence))
+        count = sequence.count(REVIEW)
+        if count:
+            review_counts.append(float(count))
+    ratio = wilson_interval(returns, handovers)
+    if ratio is None:
+        return [
+            (
+                f"return_rate status=too_few observed={handovers} needed={MIN_OBSERVATIONS} "
+                f"returns={returns} handovers={handovers}"
+            ),
+            _mean_text(
+                "return_model", review_counts, extras="lambda=unrecorded residual=unrecorded"
+            ),
+        ]
+    p = ratio.value
+    lam = math.inf if p >= 1.0 else -math.log1p(-p)
+    expected = math.inf if p >= 1.0 else 1.0 / (1.0 - p)
+    observed = sum(review_counts) / len(review_counts) if review_counts else math.nan
+    residual = (
+        observed - expected if math.isfinite(observed) and math.isfinite(expected) else math.nan
+    )
+    return [
+        _proportion_text(
+            "return_rate",
+            returns,
+            handovers,
+            extras=f"returns={returns} handovers={handovers}",
+        ),
+        (
+            f"return_model lambda={lam:.6f} expected_reviews_geometric={expected:.6f} "
+            f"observed_reviews_mean={observed:.6f} residual={residual:.6f} "
+            f"observed_reviews_variance={pvariance(review_counts):.6f} "
+            f"observations={len(review_counts)} residual_basis=observed_minus_geometric"
+        ),
+    ]
+
+
+def _queue_stock(
+    rows: tuple[dict[str, object], ...], queue: str, window: Window
+) -> tuple[str, str, str, str]:
+    """Return end level, sampled creation/clearing flows, trend and reason."""
+    dated = sorted(
+        (
+            (float(row["sampled_at"]), row)
+            for row in rows
+            if row.get("queue") == queue and _is_number(row.get("sampled_at"))
+        ),
+        key=lambda item: item[0],
+    )
+    if not dated:
+        return "unrecorded", "unrecorded", "unrecorded", "no_durable_sample"
+    end = [item for item in dated if window.end is None or item[0] <= window.end]
+    if not end:
+        return "unrecorded", "unrecorded", "unrecorded", "no_sample_at_window_end"
+    end_at, end_row = end[-1]
+    count = end_row.get("count") if end_row.get("state") == "counted" else None
+    if not isinstance(count, int) or isinstance(count, bool):
+        return (
+            "unrecorded",
+            "unrecorded",
+            "unrecorded",
+            str(end_row.get("count_reason", "unrecorded")),
+        )
+    before = [item for item in dated if window.start is None or item[0] <= window.start]
+    baseline = before[-1] if before else end[0]
+    samples = [
+        item
+        for item in dated
+        if (window.start is None or item[0] >= window.start) and item[0] <= end_at
+    ]
+    baseline_count = baseline[1].get("count")
+    counts: list[int] = []
+    if isinstance(baseline_count, int) and not isinstance(baseline_count, bool):
+        counts.append(baseline_count)
+    counts.extend(
+        int(item[1]["count"])
+        for item in samples
+        if item[1].get("state") == "counted"
+        and isinstance(item[1].get("count"), int)
+        and not isinstance(item[1].get("count"), bool)
+        and item != baseline
+    )
+    if not counts:
+        return str(count), "unrecorded", "unrecorded", "no_counted_sample_in_window"
+    increases = sum(max(after - before_count, 0) for before_count, after in pairwise(counts))
+    decreases = sum(max(before_count - after, 0) for before_count, after in pairwise(counts))
+    trend = count - baseline_count if isinstance(baseline_count, int) else "unrecorded"
+    return str(count), f"{increases}/{decreases}", str(trend), "basis=queue_depth_deltas"
+
+
+def _dispatch_stock(
+    dispatches: tuple[DispatchRecord, ...], window: Window
+) -> tuple[int | None, str, str, str]:
+    """Read active dispatches at the window end and its creation/clearing flows."""
+    end = window.end
+    candidates = [dispatch for dispatch in dispatches if end is None or dispatch.planned_at <= end]
+    unknown = any(dispatch.result_state == "unreadable" for dispatch in candidates)
+    # A result file is the dispatcher's closeout, including a stopped or pre-lane
+    # refusal result whose ended_at is intentionally absent.  Only a missing result
+    # is therefore in flight; using a missing timestamp here would resurrect closed
+    # dispatches as active work.
+    active = [dispatch for dispatch in candidates if dispatch.result_state == "absent"]
+    if unknown:
+        level: int | None = None
+        reason = "unreadable_result_prevents_active_level"
+    else:
+        level = len(active)
+        reason = "derived_from_result_file_presence"
+    created = sum(window.contains(dispatch.planned_at) for dispatch in dispatches)
+    cleared = sum(
+        dispatch.result_ended_at is not None and window.contains(dispatch.result_ended_at)
+        for dispatch in dispatches
+    )
+    if level is None:
+        return None, str(created), str(cleared), reason
+    start = window.start
+    if start is None:
+        trend = "unrecorded"
+    else:
+        before = [
+            dispatch
+            for dispatch in dispatches
+            if dispatch.planned_at <= start and dispatch.result_state == "absent"
+        ]
+        trend = str(level - len(before))
+    return level, str(created), str(cleared), trend
+
+
+def _provisional_stock(repo: Path) -> tuple[int | None, str]:
+    """Count unique unratified provisional terms through the canonical acceptance linter."""
+    try:
+        lint = acceptance.lint_repository(repo)
+    except (OSError, ValueError, TypeError):
+        return None, "acceptance_source_unreadable"
+    terms = {term for report in lint.reports for term in report.unratified}
+    return len(terms), "basis=current_repository_snapshot_acceptance_lint"
+
+
+def stock_lines(inputs: Inputs, repo: Path, window: Window) -> list[str]:
+    """Render end-window stock levels separately from their flows."""
+    ready, ready_flows, ready_trend, ready_reason = _queue_stock(
+        inputs.queue_rows, "ready_work", window
+    )
+    level, created, cleared, trend = _dispatch_stock(inputs.dispatches, window)
+    provisional, provisional_reason = _provisional_stock(repo)
+    ready_status = (
+        "unrecorded"
+        if ready == "unrecorded"
+        else "below_setpoint"
+        if int(ready) < READY_SETPOINT
+        else "observed"
+    )
+    missing_at_end = sum(
+        not dispatch.ledger_row
+        for dispatch in inputs.dispatches
+        if window.end is None or dispatch.planned_at <= window.end
+    )
+    missing_at_start = sum(
+        not dispatch.ledger_row
+        for dispatch in inputs.dispatches
+        if window.start is not None and dispatch.planned_at <= window.start
+    )
+    materialised = sum(
+        dispatch.ledger_materialised_at is not None
+        and window.contains(dispatch.ledger_materialised_at)
+        for dispatch in inputs.dispatches
+    )
+    missing_trend = (
+        str(missing_at_end - missing_at_start) if window.start is not None else "unrecorded"
+    )
+    return [
+        (
+            f"stock ready_work level={ready} setpoint=>={READY_SETPOINT} "
+            f"status={ready_status} alarm=below_{READY_SETPOINT} "
+            f"flow_creation={ready_flows.split('/')[0]} flow_clearing={ready_flows.split('/')[-1]} "
+            f"trend={ready_trend} reason={ready_reason}"
+        ),
+        (
+            "stock blocked_work level=unrecorded setpoint=unruled flow_creation=unrecorded "
+            "flow_clearing=unrecorded trend=unrecorded "
+            "reason=no_blocked_membership_record_in_durable_queue_source"
+        ),
+        (
+            f"stock runs_in_flight level={level if level is not None else 'unrecorded'} "
+            f"setpoint=unruled flow_creation={created} flow_clearing={cleared} trend={trend} "
+            "reason=derived_from_dispatch_result_closeouts"
+        ),
+        (
+            f"stock worktrees_owing_done level=unrecorded setpoint=at_most_{WORKTREES_SETPOINT} "
+            "alarm=3 "
+            "flow_creation=unrecorded flow_clearing=unrecorded trend=unrecorded "
+            "reason=local_records_do_not_attest_tracker_closed_and_exact_worktree_done"
+        ),
+        (
+            f"stock dispatches_without_ledger level={missing_at_end} "
+            f"setpoint=at_most_{NO_LEDGER_SETPOINT} alarm=20 flow_creation="
+            f"{sum(window.contains(dispatch.planned_at) for dispatch in inputs.dispatches)} "
+            f"flow_clearing={materialised} trend={missing_trend} "
+            "reason=level_is_current_presence_and_flows_are_recorded_materialisations"
+        ),
+        (
+            "stock unratified_provisional_terms "
+            f"level={provisional if provisional is not None else 'unrecorded'} "
+            f"setpoint=at_most_{UNRATIFIED_SETPOINT} alarm=5 flow_creation=unrecorded "
+            f"flow_clearing=unrecorded trend=unrecorded reason={provisional_reason}"
+        ),
+    ]
+
+
+def delivery_gap_lines() -> list[str]:
+    """State the two quality measures that current canonical records cannot answer."""
+    return [
+        (
+            "delivery_gap_quality scope=audit status=unrecorded "
+            "reason=durable_audit_gap_field_not_present outside_loop_metrics=yes"
+        ),
+        (
+            "delivery_gap_quality scope=post_landing_review status=unrecorded "
+            "reason=durable_post_landing_gap_field_not_present outside_loop_metrics=yes"
+        ),
+    ]
+
+
+def report_lines(inputs: Inputs, repo: Path, window: Window) -> tuple[str, ...]:
+    """Build the complete report without mutating any source."""
+    selected_loops = _selected_loops(inputs, window)
+    selected_dispatches = _selected_dispatches(inputs, window)
+    boundary = (
+        f"start={format_timestamp(window.start)} end={format_timestamp(window.end)} "
+        f"basis={'explicit' if window.explicit else 'all_durable_source_timestamps'}"
+    )
+    diagnostics = list(inputs.diagnostics)
+    lines = [
+        "loop_metrics schema=cti.loop-metrics/1 read_only=yes gates=no controller=no mlflow=no",
+        f"window {boundary}",
+        "loop_time=review_loop_files_have_no_timestamps; explicit_windows_select_by_issue_dispatch",
+        f"observations dispatches={len(selected_dispatches)} review_loops={len(selected_loops)}",
+        *injection_lines(selected_loops),
+        *dismissal_lines(selected_loops),
+        *findings_lines(selected_loops, selected_dispatches, window),
+        *clean_round_lines(selected_loops),
+        *cycle_lines(inputs.dispatches, repo, window, diagnostics),
+        *return_lines(inputs.dispatches, window),
+        *stock_lines(inputs, repo, window),
+        *delivery_gap_lines(),
+        (
+            "metric_scope self_review=injection,catch,dismissal,clean_round; "
+            "independent_review=findings,severity,return; no_self_review_is_not_zero"
+        ),
+    ]
+    lines.extend(diagnostics)
+    return tuple(lines)
+
+
+def _cli_timestamp(value: str) -> float:
+    """Argparse converter for an epoch or timezone-aware ISO boundary."""
+    parsed = parse_timestamp(value)
+    if parsed is None:
+        message = "use a finite epoch or timezone-aware ISO-8601 timestamp"
+        raise argparse.ArgumentTypeError(message)
+    return parsed
+
+
+def parse_args(argv: list[str] | None) -> argparse.Namespace:
+    """Parse the read-only command's optional source roots and window."""
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--start", type=_cli_timestamp, default=None, help="inclusive ISO-8601 or epoch boundary"
+    )
+    parser.add_argument(
+        "--end", type=_cli_timestamp, default=None, help="inclusive ISO-8601 or epoch boundary"
+    )
+    parser.add_argument(
+        "--dispatch-root",
+        type=Path,
+        default=Path(os.environ.get("CTI_DISPATCH_DIR", str(DEFAULT_DISPATCH_ROOT))),
+    )
+    parser.add_argument(
+        "--review-root",
+        type=Path,
+        default=Path(os.environ.get("CTI_REVIEW_DIR", str(DEFAULT_REVIEW_ROOT))),
+    )
+    parser.add_argument(
+        "--queue-root",
+        type=Path,
+        default=Path(os.environ.get("CTI_QUEUE_DIR", str(DEFAULT_QUEUE_ROOT))),
+    )
+    parser.add_argument("--repo", type=Path, default=REPO)
+    return parser.parse_args(argv)
+
+
+def main(argv: list[str] | None = None) -> int:
+    """Print the report and exit zero; metric values never gate a caller."""
+    args = parse_args(argv)
+    inputs = read_inputs(args.dispatch_root, args.review_root, args.queue_root)
+    if args.start is not None and args.end is not None and args.start > args.end:
+        print("window status=unreadable reason=start_after_end")  # noqa: T201 — command output
+        return 0
+    window = resolve_window(
+        inputs,
+        args.start,
+        args.end,
+        explicit=args.start is not None or args.end is not None,
+    )
+    for line in report_lines(inputs, args.repo, window):
+        print(line)  # noqa: T201 — command output
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
