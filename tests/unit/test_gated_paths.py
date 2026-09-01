@@ -677,7 +677,7 @@ def test_an_approval_survives_a_clean_rebase_over_an_unrelated_same_path_edit(
     )
 
 
-def test_an_approval_does_not_cover_a_change_main_s_edit_displaced(tmp_path: Path) -> None:
+def test_adopting_main_s_competing_resolution_orphans_the_approval(tmp_path: Path) -> None:
     """Adopting main's competing resolution of the same hunk orphans the approval."""
     repo = repository(tmp_path)
     store = tmp_path / "approvals"
