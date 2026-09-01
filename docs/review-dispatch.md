@@ -54,10 +54,11 @@ Six things, and the dispatch record carries four of them by construction:
   comments before launching the forced-read-only child and carries the newest comment whose
   first line begins with the marker `### Implementer gate report` into the review brief. An
   optional suffix may follow the marker after a space, so a round or SHA can identify the
-  paste without changing which marker selects it. The comment body is reproduced verbatim up
-  to the 8,000-character transport bound; a longer body ends with the named marker
-  `GATE REPORT TRUNCATED`, so the reviewer can spot-check it without calling `gh` and can see
-  when the carried report is incomplete. The paste must carry `just check`,
+  paste without changing which marker selects it. The carried comment characters are a bounded
+  verbatim prefix; a longer body ends with the named marker `GATE REPORT TRUNCATED`, and a
+  closing fence may be added before it if the carried prefix would otherwise leave a fenced
+  block open. The reviewer can spot-check it without calling `gh` and can see when the carried
+  report is incomplete. The paste must carry `just check`,
   `just unit` **and** `just mutation` **with their result counts**, including `just
   mutation`'s own `mutation smoke: run was sampled` (fewer than every planted candidate
   reached a verdict) or `mutation smoke: run was exhaustive` (every planted candidate

@@ -83,6 +83,8 @@ def _bounded_body(body: str) -> str:
         closing_fence = "\n```"
         prefix_limit -= len(closing_fence)
         prefix = body[:prefix_limit]
+        if prefix.count("```") % 2 == 0:
+            closing_fence = ""
     return prefix + closing_fence + suffix
 
 

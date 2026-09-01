@@ -107,3 +107,14 @@ def test_render_closes_a_fence_before_the_truncation_marker() -> None:
 
     assert carried_body.count("```") % 2 == 0
     assert carried_body.endswith(f"\n```\n\n{gate_report.CARRIED_TRUNCATION_MARKER}")
+
+
+def test_render_rechecks_fence_parity_after_reslicing_for_a_closing_fence() -> None:
+    suffix = f"\n\n{gate_report.CARRIED_TRUNCATION_MARKER}"
+    prefix_limit = gate_report.CARRIED_CAP - len(suffix)
+    body = "x" * (prefix_limit - 3) + "```" + "tail" * (len(suffix) + 1)
+
+    carried_body = gate_report.render(655, gate_report.GateReport(gate_report.CARRIED, body))[-1]
+
+    assert carried_body == body[: prefix_limit - len("\n```")] + suffix
+    assert carried_body.count("```") % 2 == 0
