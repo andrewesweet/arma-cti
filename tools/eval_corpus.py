@@ -194,7 +194,7 @@ VARIANT_FIELDS: Final[tuple[ContractField, ...]] = (
     ContractField(
         "derived_from",
         False,
-        "object with repo_file and sha256 pin for a frozen reduction; stale source refuses",
+        "object with repo_file and sha256 pin for a frozen reduction; stale source marks its case",
     ),
 )
 
@@ -314,12 +314,15 @@ class CaseState(StrEnum):
     are counted separately and make an otherwise passing case visible as incomplete.
     A rate exists only when every repeat completed, even when some completed answers
     were unclassified. Infrastructure and harness failures remain typed not-a-result;
-    `quarantined` carries the `flake_quarantine` discipline.
+    `quarantined` carries the `flake_quarantine` discipline. A stale frozen-context pin
+    marks its case without running trials against an untrusted reduction, while unrelated
+    cases continue and the report carries the expected and observed digests.
     """
 
     WITHIN_TOLERANCE = "within_tolerance"
     UNCLASSIFIED = "unclassified"
     QUARANTINED = "quarantined"
+    CONTEXT_PIN_STALE = "context_pin_stale"
     BUDGET_STOPPED = "budget_stopped"
     OUTSIDE_TOLERANCE = "outside_tolerance"
     INFRA_UNAVAILABLE = "infra_unavailable"
@@ -339,6 +342,7 @@ CASE_SEVERITY: Final[dict[CaseState, int]] = {
     CaseState.WITHIN_TOLERANCE: 0,
     CaseState.UNCLASSIFIED: 1,
     CaseState.QUARANTINED: 1,
+    CaseState.CONTEXT_PIN_STALE: 1,
     CaseState.BUDGET_STOPPED: 2,
     CaseState.OUTSIDE_TOLERANCE: 3,
     CaseState.INFRA_UNAVAILABLE: 4,
@@ -883,8 +887,9 @@ def load_corpus(corpus_dir: Path, repo_root: Path) -> tuple[list[Task], dict[str
     return tasks, load_manifest(corpus_dir)
 
 
-def verify_context_pins(tasks: list[Task], repo_root: Path) -> None:
-    """Verify frozen reductions against live sources at corpus-run preflight."""
+def verify_context_pins(tasks: list[Task], repo_root: Path) -> dict[str, tuple[str, ...]]:
+    """Return stale frozen-context cases while refusing malformed pin inputs."""
+    stale: dict[str, tuple[str, ...]] = {}
     for task in tasks:
         for variant in task.variants:
             source_value = variant.derived_from_repo_file
@@ -904,15 +909,14 @@ def verify_context_pins(tasks: list[Task], repo_root: Path) -> None:
                 raise EvalRefusalError("input_invalid", (f"derived_from_missing={source_value}",))
             observed_sha256 = sha256_file(source_path)
             if observed_sha256 != expected_sha256:
-                raise EvalRefusalError(
-                    "context_pin_stale",
-                    (
-                        f"variant={task.id}/{variant.id}",
-                        f"source={source_value}",
-                        f"expected={expected_sha256}",
-                        f"observed={observed_sha256}",
-                    ),
+                case_id = f"{task.id}/{variant.id}"
+                stale[case_id] = (
+                    f"context_pin_stale variant={case_id}",
+                    f"source={source_value}",
+                    f"expected={expected_sha256}",
+                    f"observed={observed_sha256}",
                 )
+    return stale
 
 
 def _configuration_pins(document: dict[str, object], path: Path) -> tuple[str | None, str | None]:
@@ -1975,6 +1979,26 @@ def aggregate_case(
     return result
 
 
+def context_pin_stale_case(
+    configuration_name: str,
+    task: Task,
+    variant: Variant,
+    details: tuple[str, ...],
+) -> CaseResult:
+    """Represent a stale frozen context without grading trials from that context."""
+    return CaseResult(
+        configuration=configuration_name,
+        case_id=f"{task.id}/{variant.id}",
+        state=CaseState.CONTEXT_PIN_STALE,
+        task_id=task.id,
+        task_provenance=task.provenance,
+        variant_id=variant.id,
+        expected_class=task.expected_class,
+        tolerance=task.tolerance,
+        details=list(details),
+    )
+
+
 def currency_cost(configuration: Configuration, usage: dict[str, float]) -> float | None:
     """Return the run's currency cost, only when the configuration declared its prices."""
     if configuration.unit_costs is None:
@@ -1992,6 +2016,7 @@ def run_configuration(
     repo_root: Path,
     graders: dict[str, Grader],
     toolchain: Toolchain | None = None,
+    stale_context_pins: dict[str, tuple[str, ...]] | None = None,
 ) -> tuple[list[CaseResult], dict[str, float]]:
     """Run every case of every task under one configuration and total its cost."""
     config_dir = run_dir / "configurations" / configuration.name
@@ -2008,6 +2033,12 @@ def run_configuration(
     for task in tasks:
         for variant in task.variants:
             case_id = f"{task.id}/{variant.id}"
+            stale_details = None if stale_context_pins is None else stale_context_pins.get(case_id)
+            if stale_details is not None:
+                results.append(
+                    context_pin_stale_case(configuration.name, task, variant, stale_details)
+                )
+                continue
             case_dir = config_dir / case_id.replace("/", "__")
             trials: list[TrialOutcome] = []
             usage: dict[str, float] = {
@@ -2336,6 +2367,10 @@ def render_contract() -> str:
         "never from a trial workspace, whose path never reaches the harness child. A hash",
         "that does not match refuses the run before any trial; a class outside the task's",
         "`classes` is a harness failure, not a graded outcome.",
+        "A frozen context whose derived source digest is stale is recorded as a",
+        "`context_pin_stale` case with expected and observed digests; that case gets no",
+        "trials, and unrelated cases continue. It is a non-zero case state, not a run",
+        "refusal.",
         "",
         "=== Verdict and exit codes ===",
         "A trial stopped by its budget, and an infrastructure failure, are recorded as",
@@ -2354,7 +2389,7 @@ def render_contract() -> str:
     lines.extend(
         [
             f"  {REFUSAL_EXIT}  (refusal before any trial: input_invalid, grader_hash_mismatch,",
-            "       context_pin_stale, pin_mismatch, run_dir_exists — never a verdict)",
+            "       pin_mismatch, run_dir_exists — never a verdict)",
             "",
             "=== Materialized case ===",
             *(_field_block(CASE_FIELDS)),
@@ -2421,7 +2456,6 @@ def prepare_run(
         raise EvalRefusalError("input_invalid", ("duplicate_configuration_name=",))
     _sandbox_binary()
     tasks, manifest = load_corpus(args.corpus, ROOT)
-    verify_context_pins(tasks, ROOT)
     for task in tasks:
         verify_grader_hash(task.grader, task.grader_sha256)
     for configuration in configurations:
@@ -2440,7 +2474,8 @@ def run_prepared(
     tasks: list[Task],
     manifest: dict[str, object],
 ) -> int:
-    """Run inputs that passed the no-trial validation phase."""
+    """Run inputs that passed validation, reporting stale pins as case states."""
+    stale_context_pins = verify_context_pins(tasks, ROOT)
     toolchains = {
         configuration.name: resolve_toolchain(configuration, ROOT)
         for configuration in configurations
@@ -2451,13 +2486,23 @@ def run_prepared(
         for configuration in configurations:
             for task in tasks:
                 for variant in task.variants:
+                    case_id = f"{task.id}/{variant.id}"
+                    stale_details = stale_context_pins.get(case_id)
+                    stale_status = (
+                        f" status={CaseState.CONTEXT_PIN_STALE.value}"
+                        if stale_details is not None
+                        else ""
+                    )
                     print_plan(
-                        f"config={configuration.name} case={task.id}/{variant.id}"
+                        f"config={configuration.name} case={case_id}"
                         f" repeats={task.repeats} tolerance={task.tolerance}"
                         f" expected={task.expected_class}"
-                        f" budget={effective_budget(task, configuration)}"
+                        f" budget={effective_budget(task, configuration)}{stale_status}"
                         f" toolchain_sha256={toolchains[configuration.name].sha256}"
                     )
+                    if stale_details is not None:
+                        for detail in stale_details:
+                            print_plan(f"  {detail}")
         for line in power_statement(independent_cases, min_cases):
             print_plan(line)
         return 0
@@ -2480,7 +2525,13 @@ def run_prepared(
     totals: dict[str, dict[str, float]] = {}
     for configuration in configurations:
         results, config_totals = run_configuration(
-            tasks, configuration, run_dir, ROOT, graders, toolchains[configuration.name]
+            tasks,
+            configuration,
+            run_dir,
+            ROOT,
+            graders,
+            toolchains[configuration.name],
+            stale_context_pins,
         )
         per_configuration[configuration.name] = results
         totals[configuration.name] = config_totals

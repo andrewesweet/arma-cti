@@ -38,12 +38,17 @@ Variants are the ablation arms: each variant seeds the trial workspace's context
 The `full` arm reads its repository source at run time. A frozen reduction declares its
 derivation source as `derived_from.repo_file` plus a sha256. Task loading records that
 declaration without coupling ordinary unit tests to the mutable source; the corpus-run
-preflight compares the pin with the live source and reports and refuses
-`context_pin_stale` before any trial when they differ, including the expected and
-observed digests. This keeps the comparison on one known source instead of silently
-pairing a live document with an older reduction. A materialized case names the selected
-configuration and variant; variants are correlated arms of one task, not independent
-observations.
+preflight compares the pin with the live source and records a mismatched frozen case as
+`context_pin_stale`, including the expected and observed digests. That case receives no
+trials from its stale reduction, while unaffected cases continue. The run completes and
+its report makes the stale pin visible as a non-zero case state, so staleness is never
+silently ignored. No refresh is needed to obtain this report; a frozen reduction remains
+ineligible for a passing case until its reviewed content and digest are updated. If it is
+refreshed, the runner checks the digest mechanically and the independent reviewer checks
+the reduction against its source before landing. This keeps the comparison on one known
+source instead of silently pairing a live document with an older reduction. A materialized
+case names the selected configuration and variant; variants are correlated arms of one
+task, not independent observations.
 
 ## Verdicts, not results
 
@@ -65,7 +70,9 @@ observations.
   wrong-class result; quarantine therefore ranks below a budget stop by design.
 - A trial stopped by budget, and an infrastructure failure, type as exactly that —
   never a failed configuration.
-- The run's exit code is the worst class present; refusals before any trial exit 6.
+- The run's exit code is the worst class present; a stale frozen-context pin is a
+  non-zero `context_pin_stale` case state, while malformed inputs and other integrity
+  failures still refuse before any trial and exit 6.
 
 ## Statistics, derived
 

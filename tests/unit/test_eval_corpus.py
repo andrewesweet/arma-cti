@@ -158,12 +158,12 @@ def _run(
     return exit_code, runs_root
 
 
-def test_frozen_variant_loads_but_corpus_preflight_reports_a_stale_source(
+def test_stale_frozen_variant_does_not_refuse_the_whole_corpus_run(
     tmp_path: Path,
     capsys: pytest.CaptureFixture[str],
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """A moved source is reported by a corpus run, not by ordinary task loading."""
+    """An AGENTS.md edit leaves stale context visible while other tasks still run."""
     corpus = tmp_path / "evals" / "corpus"
     corpus.mkdir(parents=True)
     source = tmp_path / "repo" / "AGENTS.md"
@@ -183,12 +183,16 @@ def test_frozen_variant_loads_but_corpus_preflight_reports_a_stale_source(
             }
         ],
     )
+    _write_task(corpus, task_id="unaffected", repeats=1)
     source.write_text("source after\n", encoding="utf-8")
     tasks, _manifest = eval_corpus.load_corpus(corpus, source.parent)
     assert tasks[0].variants[0].derived_from_sha256 == source_sha256
     config = _write_config(corpus, "a", "GOOD answer")
     monkeypatch.setattr(eval_corpus, "ROOT", source.parent)
-    monkeypatch.setattr(eval_corpus, "_sandbox_binary", lambda: source.parent / "bwrap")
+    sandbox = shutil.which("bwrap")
+    if sandbox is None:
+        pytest.skip("bubblewrap (`bwrap`) is required for pipeline tests")
+    monkeypatch.setattr(eval_corpus, "_sandbox_binary", lambda: sandbox)
     exit_code = eval_corpus.main(
         [
             "--corpus",
@@ -199,11 +203,20 @@ def test_frozen_variant_loads_but_corpus_preflight_reports_a_stale_source(
             str(tmp_path / "runs"),
         ]
     )
-    assert exit_code == eval_corpus.REFUSAL_EXIT
-    error = capsys.readouterr().err
-    assert "refused=context_pin_stale stage=before any trial" in error
-    assert f"expected={source_sha256}" in error
-    assert f"observed={eval_corpus.sha256_file(source)}" in error
+    assert exit_code != eval_corpus.REFUSAL_EXIT
+    assert capsys.readouterr().err == ""
+    run_dir = next((tmp_path / "runs").iterdir())
+    report = run_dir / "report.txt"
+    body = report.read_text(encoding="utf-8")
+    assert "case=t1/frozen task=t1 config=a variant=frozen" in body
+    assert "status=context_pin_stale" in body
+    assert f"expected={source_sha256}" in body
+    assert f"observed={eval_corpus.sha256_file(source)}" in body
+    assert "case=unaffected/v1 task=unaffected config=a variant=v1" in body
+    assert "status=within_tolerance" in body
+    assert "worst_class=context_pin_stale exit=1" in body
+    assert not (run_dir / "configurations" / "a" / "t1__frozen").exists()
+    assert list((run_dir / "configurations" / "a" / "unaffected__v1").glob("trial-*/record.json"))
 
 
 def test_passing_corpus_exits_zero(tmp_path: Path) -> None:
