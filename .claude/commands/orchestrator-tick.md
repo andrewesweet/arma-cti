@@ -54,7 +54,7 @@ Brief a reviewer to read the test reports rather than re-run the suite. Do not p
 - `just land --audit-file FILE`, the audit written outside the worktree.
 - Add `--corpus POOL` where the diff reaches an in-world surface (`docs/agents/orchestration.md`, "The landing half").
 - Read the printed `ok=landed`, `gate_review=` and exit status.
-- On exit 2: run the `merge_command=` it names, then run `just land --resume --audit-file FILE` to complete the post-push half even when that merge already made the main checkout current. Never close by hand from exit 2; exit 2 remains an incomplete landing, not success.
+- On exit 2: run the `merge_command=` it names, then rerun `just land --audit-file FILE`. Never close by hand from exit 2.
 - After the landing, run the post-landing review — its own pass, not a re-entry into section 1:
   - `just dispatch --seat review --issue N --reviewing P --base-sha <landed sha>`. Pass no
     `--brief-file` (human ruling of 2026-08-30, #643; `docs/review-dispatch.md`).

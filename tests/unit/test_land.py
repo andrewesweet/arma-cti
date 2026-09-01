@@ -504,6 +504,7 @@ def test_a_merge_that_could_not_run_is_blocked_by_sandbox_and_names_the_command(
     refusal = land.classify_merge(_MAIN, "abc1234", None, "PermissionError: sandbox denied")
     assert _kind(refusal) == "merge_blocked_by_sandbox"
     assert "merge_command=git -C /home/a/repo merge --ff-only origin/main" in _text(refusal)
+    assert "just land --resume --audit-file FILE" in _text(refusal)
     assert "pushed=abc1234 origin/main" in _text(refusal)
     assert "THE WORK IS LANDED" in _text(refusal)
 
@@ -520,6 +521,7 @@ def test_a_diverged_main_checkout_is_named_apart_from_a_blocked_one() -> None:
         _MAIN, "abc1234", 1, "fatal: Not possible to fast-forward, aborting."
     )
     assert _kind(refusal) == "merge_not_fast_forward"
+    assert "just land --resume --audit-file FILE" in _text(refusal)
     assert "commits of its own" in _text(refusal)
 
 

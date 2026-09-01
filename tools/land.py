@@ -194,10 +194,10 @@ exit code.
     review_finding_mismatch the loop's record of a finding disagrees with the
                             verdict that reported it
     not_fast_forward        the remote moved under the push
+    resume_not_ready        `--resume` found commits that are not on `origin/main`
     merge_blocked_by_sandbox    the push landed, the ff-only merge did not run
     merge_not_fast_forward      the push landed, the main checkout cannot
                             fast-forward — it carries commits of its own
-    resume_not_ready       `--resume` found commits that are not on `origin/main`
     git_failed              any other git step, with git's own words
 
 Exit 0 is landed. Exit 1 is "nothing landed". Exit 2 is the pair above it: the
@@ -748,15 +748,18 @@ def classify_merge(main: Path, pushed: str, code: int | None, stderr: str) -> Re
             (f"pushed={pushed} {BASE}", f"main_checkout={main}", named, f"stderr={stderr.strip()}"),
             "THE WORK IS LANDED on origin/main; the main checkout is stale and cannot simply "
             "fast-forward, because it carries commits of its own. Someone must reconcile it by "
-            "hand — a stale main checkout is where ADR-0042's stale-hook window comes from (#130).",
+            "hand, then run `just land --resume --audit-file FILE` to complete the post-push "
+            "audit and close the issue — a stale main checkout is where ADR-0042's stale-hook "
+            "window comes from (#130).",
         )
     return Refusal(
         "merge_blocked_by_sandbox",
         (f"pushed={pushed} {BASE}", f"main_checkout={main}", named, f"detail={stderr.strip()}"),
         "THE WORK IS LANDED on origin/main; the merge into the main checkout did not run. "
-        "Hand the command above to the orchestrator and say so in your report — do not report "
-        "this landing as complete. A stale main checkout is where ADR-0042's stale-hook window "
-        "comes from (#130), and it is why this is not a success exit.",
+        "Hand the command above to the orchestrator, then run `just land --resume --audit-file "
+        "FILE` after it succeeds to complete the post-push audit and close the issue; do not "
+        "report this landing as complete. A stale main checkout is where ADR-0042's stale-hook "
+        "window comes from (#130), and it is why this is not a success exit.",
     )
 
 
