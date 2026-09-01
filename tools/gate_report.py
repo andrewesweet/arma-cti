@@ -9,6 +9,7 @@ exists to prevent.
 
 from __future__ import annotations
 
+import re
 from typing import TYPE_CHECKING, Final, NamedTuple
 
 import handoff_fetch
@@ -31,6 +32,7 @@ CARRIED_TRUNCATION_MARKER: Final = (
     "[GATE REPORT TRUNCATED — comment continued beyond carried bound; "
     "remaining comment content was not carried.]"
 )
+_BACKTICK_RUN: Final = re.compile(r"`+")
 
 CARRIED: Final = "carried"
 ABSENT: Final = "absent"
@@ -71,6 +73,14 @@ def fetch(issue: int, fetch_comments: Fetch = handoff_fetch.fetch_comments) -> G
 HEADING: Final = "## Implementer's gate report — supplied by the dispatcher"
 
 
+def _closing_fence(prefix: str) -> str:
+    """Return a closer for an odd number of backtick runs in ``prefix``."""
+    runs = _BACKTICK_RUN.findall(prefix)
+    if not runs or len(runs) % 2 == 0:
+        return ""
+    return "\n" + "`" * max(map(len, runs))
+
+
 def _bounded_body(body: str) -> str:
     """Bound a carried body and close a cut-open fenced block before the marker."""
     if len(body) <= CARRIED_CAP:
@@ -78,13 +88,11 @@ def _bounded_body(body: str) -> str:
     suffix = f"\n\n{CARRIED_TRUNCATION_MARKER}"
     prefix_limit = CARRIED_CAP - len(suffix)
     prefix = body[:prefix_limit]
-    closing_fence = ""
-    if prefix.count("```") % 2:
-        closing_fence = "\n```"
+    closing_fence = _closing_fence(prefix)
+    if closing_fence:
         prefix_limit -= len(closing_fence)
         prefix = body[:prefix_limit]
-        if prefix.count("```") % 2 == 0:
-            closing_fence = ""
+        closing_fence = _closing_fence(prefix)
     return prefix + closing_fence + suffix
 
 

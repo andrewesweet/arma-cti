@@ -118,3 +118,17 @@ def test_render_rechecks_fence_parity_after_reslicing_for_a_closing_fence() -> N
 
     assert carried_body == body[: prefix_limit - len("\n```")] + suffix
     assert carried_body.count("```") % 2 == 0
+
+
+def test_render_closes_a_four_backtick_fence_with_matching_width() -> None:
+    body = "````text\n" + "x" * gate_report.CARRIED_CAP
+    carried_body = gate_report.render(669, gate_report.GateReport(gate_report.CARRIED, body))[-1]
+
+    assert carried_body.endswith(f"\n````\n\n{gate_report.CARRIED_TRUNCATION_MARKER}")
+
+
+def test_render_closes_a_six_backtick_fence_with_matching_width() -> None:
+    body = "``````text\n" + "x" * gate_report.CARRIED_CAP
+    carried_body = gate_report.render(669, gate_report.GateReport(gate_report.CARRIED, body))[-1]
+
+    assert carried_body.endswith(f"\n``````\n\n{gate_report.CARRIED_TRUNCATION_MARKER}")
