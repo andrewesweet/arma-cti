@@ -34,6 +34,7 @@ def _dispatch(  # noqa: PLR0913 — fixture fields mirror the durable dispatch s
     minute: int,
     *,
     ledger: dict[str, object] | None = None,
+    ended_minute: int | None = None,
 ) -> None:
     """Arrange a dispatch plan, a completed result and an optional ledger row."""
     directory = root / identifier
@@ -50,7 +51,7 @@ def _dispatch(  # noqa: PLR0913 — fixture fields mirror the durable dispatch s
         directory / "result.json",
         {
             "started_at": _at(minute),
-            "ended_at": _at(minute + 1),
+            "ended_at": _at(minute + 1 if ended_minute is None else ended_minute),
             "outcome": "ok",
         },
     )
@@ -137,6 +138,216 @@ def test_v2_metrics_keep_self_and_independent_loops_separate(tmp_path: Path) -> 
     assert "return_rate numerator=0 denominator=2" in joined
     assert "return_model lambda=0.000000" in joined
     assert "no_self_review_is_not_zero" in joined
+
+
+def test_malformed_self_review_keeps_independent_metrics(tmp_path: Path) -> None:
+    """An unreadable self block does not erase the independent half of a loop."""
+    dispatch_root = tmp_path / "dispatches"
+    review_root = tmp_path / "review"
+    _dispatch(dispatch_root, "i20", 20, "implementer", 0)
+    _dispatch(dispatch_root, "r20", 20, "review", 2)
+    _write(
+        review_root / "20" / "loop.json",
+        {
+            "version": 2,
+            "issue": 20,
+            "review_rounds": 0,
+            "findings": [{"id": "independent", "severity": "high", "round_raised": 0}],
+            "self_review": {"rounds": "not-a-list"},
+        },
+    )
+
+    inputs = METRICS.read_inputs(dispatch_root, review_root, tmp_path / "queue")
+    lines = METRICS.report_lines(
+        inputs, tmp_path, METRICS.resolve_window(inputs, None, None, explicit=False)
+    )
+    joined = "\n".join(lines)
+
+    assert len(inputs.loops) == 1
+    assert inputs.loops[0].independent_present is True
+    assert inputs.loops[0].self_review_present is False
+    assert "findings_per_independent_review reviews=1 findings=1" in joined
+    assert "severity_mix severity=high numerator=1 denominator=1" in joined
+    assert "injection_rate status=too_few" in joined
+    assert "review issue=20 status=unreadable reason=self_rounds" in joined
+
+
+def test_malformed_independent_findings_keeps_self_metrics(tmp_path: Path) -> None:
+    """An unreadable independent block does not erase the self-review half."""
+    review_root = tmp_path / "review"
+    _write(
+        review_root / "22" / "loop.json",
+        {
+            "version": 2,
+            "issue": 22,
+            "review_rounds": 0,
+            "findings": "not-a-list",
+            "self_review": {
+                "rounds": [
+                    {
+                        "number": 1,
+                        "findings": [
+                            {
+                                "id": "own-fix",
+                                "category": "worth_addressing",
+                                "origin": "introduced",
+                                "reason": "the local fix exposed it",
+                                "round_raised": 1,
+                            }
+                        ],
+                        "refutations": [],
+                    }
+                ]
+            },
+        },
+    )
+
+    inputs = METRICS.read_inputs(tmp_path / "dispatches", review_root, tmp_path / "queue")
+    lines = METRICS.report_lines(
+        inputs, tmp_path, METRICS.resolve_window(inputs, None, None, explicit=False)
+    )
+    joined = "\n".join(lines)
+
+    assert len(inputs.loops) == 1
+    assert inputs.loops[0].independent_present is False
+    assert inputs.loops[0].self_review_present is True
+    assert "injection_rate aggregate numerator=1 denominator=1" in joined
+    assert "findings_per_independent_review status=too_few" in joined
+    assert "review issue=22 status=unreadable reason=findings" in joined
+
+
+def test_duplicate_independent_ids_are_reported_as_ambiguous(tmp_path: Path) -> None:
+    """Duplicate independent identities remain evidence and make matching ambiguous."""
+    review_root = tmp_path / "review"
+    _write(
+        review_root / "21" / "loop.json",
+        {
+            "version": 2,
+            "issue": 21,
+            "review_rounds": 0,
+            "findings": [
+                {"id": "same", "severity": "high", "round_raised": 0},
+                {"id": "same", "severity": "low", "round_raised": 0},
+            ],
+            "self_review": {
+                "rounds": [
+                    {
+                        "number": 1,
+                        "findings": [
+                            {
+                                "id": "same",
+                                "category": "not_worth_addressing",
+                                "origin": "pre_existing",
+                                "reason": "dismissed",
+                                "round_raised": 1,
+                            }
+                        ],
+                        "refutations": [],
+                    }
+                ]
+            },
+        },
+    )
+
+    inputs = METRICS.read_inputs(tmp_path / "dispatches", review_root, tmp_path / "queue")
+    record = inputs.loops[0]
+
+    assert len(record.independent_findings) == 2
+    assert METRICS.dismissal_match_counts((record,)) == (0, 1, 0, 1, ("21:same:ambiguous",))
+    assert "duplicate_ids=ambiguous" in "\n".join(METRICS.dismissal_lines((record,)))
+    assert any("duplicate_finding_id" in diagnostic for diagnostic in inputs.diagnostics)
+
+
+def test_findings_population_uses_reviews_inside_the_window() -> None:
+    """A loop outside the selected review population cannot inflate its mean or mix."""
+    loops = tuple(
+        METRICS.LoopRecord(
+            issue,
+            0,
+            (METRICS.IndependentFinding(f"finding-{issue}", severity, 0),),
+            (),
+            self_review_present=False,
+        )
+        for issue, severity in ((30, "high"), (31, "low"))
+    )
+    dispatches = tuple(
+        METRICS.DispatchRecord(
+            dispatch_id=f"review-{issue}",
+            issue=issue,
+            seat="review",
+            planned_at=planned_at,
+            result_state="readable",
+            result_started_at=None,
+            result_ended_at=None,
+            ledger_row=True,
+            ledger_materialised_at=None,
+            landed_sha=None,
+            landed_at=None,
+            path=Path(),
+        )
+        for issue, planned_at in ((30, 5.0), (31, 15.0))
+    )
+
+    lines = METRICS.findings_lines(loops, dispatches, METRICS.Window(0.0, 10.0, explicit=True))
+    joined = "\n".join(lines)
+
+    assert "findings_per_independent_review reviews=1 findings=1" in joined
+    assert "severity_mix severity=high numerator=1 denominator=1" in joined
+    assert "severity_mix severity=low numerator=0 denominator=1" in joined
+
+
+def test_historic_stock_levels_use_end_timestamps_and_are_reproducible(tmp_path: Path) -> None:
+    """A historic end reads active and materialised state at that boundary."""
+    dispatch_root = tmp_path / "dispatches"
+    _dispatch(
+        dispatch_root,
+        "late-close",
+        40,
+        "implementer",
+        0,
+        ended_minute=10,
+        ledger={"materialised_at": _at(10)},
+    )
+    _dispatch(dispatch_root, "early-close", 41, "review", 2, ended_minute=3)
+    inputs = METRICS.read_inputs(dispatch_root, tmp_path / "review", tmp_path / "queue")
+    window = METRICS.Window(0.0, METRICS.parse_timestamp(_at(5)), explicit=True)
+
+    first = METRICS.report_lines(inputs, tmp_path, window)
+    second = METRICS.report_lines(inputs, tmp_path, window)
+    joined = "\n".join(first)
+
+    assert "stock runs_in_flight level=1" in joined
+    assert "stock dispatches_without_ledger level=2" in joined
+    assert first == second
+
+
+def test_stock_lines_report_blocked_queue_and_ruled_alarm_statuses(tmp_path: Path) -> None:
+    """Stock output names the canonical blocked queue and evaluates every alarm."""
+    inputs = METRICS.Inputs(
+        dispatches=(),
+        loops=(),
+        queue_rows=(
+            {"sampled_at": 1.0, "queue": "ready_work", "state": "counted", "count": 2},
+            {"sampled_at": 1.0, "queue": "dispatch_slot", "state": "counted", "count": 4},
+        ),
+        diagnostics=(),
+    )
+
+    lines = METRICS.stock_lines(inputs, tmp_path, METRICS.Window(0.0, 2.0, explicit=True))
+    joined = "\n".join(lines)
+
+    assert "stock ready_work level=2 setpoint=>=3 status=below_alarm" in joined
+    assert (
+        "stock blocked_work level=4 setpoint=unruled status=unruled source=dispatch_slot" in joined
+    )
+    assert "stock worktrees_owing_done level=unrecorded" in joined
+    assert "status=unrecorded" in next(line for line in lines if "worktrees_owing_done" in line)
+    assert "stock dispatches_without_ledger level=0" in joined
+    assert "status=observed" in next(line for line in lines if "dispatches_without_ledger" in line)
+    assert "status=observed" in next(
+        line for line in lines if "unratified_provisional_terms" in line
+    )
+    assert "reason=basis=" not in joined
 
 
 def test_dismissal_matching_leaves_different_ids_unmatched() -> None:
@@ -286,4 +497,10 @@ def test_cli_is_read_only_and_exits_zero_for_empty_sources(
     assert "injection_rate status=too_few" in captured.out
     assert "delivery_gap_quality scope=audit" in captured.out
     assert "stock ready_work" in captured.out
+    assert (
+        "cycle_time_per_work_item status=too_few observed=0 needed=1 unit=seconds" in captured.out
+    )
+    assert (
+        "return_model status=too_few observed=0 needed=1 lambda=unrecorded residual=unrecorded"
+    ) in captured.out
     assert before == after
