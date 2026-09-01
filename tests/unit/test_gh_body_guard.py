@@ -123,10 +123,16 @@ def test_backticked_body_is_literal_when_sent_through_a_body_file(tmp_path: Path
         "gh issue close 675 -c=plain",
         "gh issue close 675 -cplain",
         "gh issue close 675 --comment=plain",
+        "gh pr review 12 --body plain",
+        "gh pr merge 12 --body plain",
+        "gh pr revert 12 --body plain",
+        "gh discussion create --body plain",
+        "gh api repos/o/r/issues/1/comments -F body=plain",
+        "gh api repos/o/r/issues/1/comments -f body=plain",
         "gh future-command --body plain",
     ],
 )
-def test_inline_body_is_refused_without_enumerating_gh_subcommands(command: str) -> None:
+def test_inline_body_is_refused_for_body_shaped_gh_commands(command: str) -> None:
     denial = gh_body_guard.denial(command)
     assert denial == gh_body_guard.INLINE_BODY
 
@@ -138,7 +144,14 @@ def test_inline_body_is_refused_without_enumerating_gh_subcommands(command: str)
         "gh issue comment 675 --body-file=-",
         "gh issue comment 675 -F comment.md",
         "gh issue comment 675 -Fcomment.md",
-        "gh issue close 675 --comment-file comment.md",
+        "gh issue edit 675 --body-file body.md",
+        "gh pr edit 12 -F body.md",
+        "gh pr review 12 -F review.md",
+        "gh pr merge 12 --body-file merge.md",
+        "gh pr revert 12 --body-file revert.md",
+        "gh discussion create -F discussion.md",
+        "gh api repos/o/r/issues/1/comments --input comment.json",
+        "gh api repos/o/r/issues/1/comments -F body=@comment.md",
         "gh pr create --title title --body-file /tmp/comment.md",
     ],
 )
@@ -154,6 +167,10 @@ def test_complete_body_file_forms_are_allowed(command: str) -> None:
         "gh issue close 675 --commentary template.md",
         "gh issue comment 675 --body-from-stdin",
         "gh issue comment 675 -Z body",
+        "gh future-command -F comment.md",
+        "gh future-command -f body=plain",
+        "gh api repos/o/r/issues/1/comments -F body=@",
+        "gh api repos/o/r/issues/1/comments -F malformed",
     ],
 )
 def test_unknown_body_options_are_refused_fail_closed(command: str) -> None:
@@ -167,10 +184,12 @@ def test_unknown_body_options_are_refused_fail_closed(command: str) -> None:
         "gh issue comment 675 --body-file",
         "gh issue comment 675 --body-file=",
         "gh issue close 675 --comment",
-        "gh issue close 675 --comment-file",
-        "gh issue close 675 --comment-file=",
         "gh issue comment 675 -F",
         "gh issue comment 675 -F=",
+        "gh api repos/o/r/issues/1/comments -F",
+        "gh api repos/o/r/issues/1/comments -f",
+        "gh api repos/o/r/issues/1/comments --field",
+        "gh api repos/o/r/issues/1/comments --input",
         'gh issue comment 675 --body "unterminated',
     ],
 )
@@ -185,6 +204,51 @@ def test_inline_body_wins_over_a_file_backed_body_option() -> None:
 
 def test_comment_output_option_is_not_a_body_option() -> None:
     assert gh_body_guard.denial("gh issue view 675 --comments") is None
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        "gh issue list -L 50",
+        "gh repo view -R o/r",
+        "gh repo view -b main",
+        "gh issue develop 675 -b main",
+        "gh issue list --limit 50",
+        "gh repo view --repo o/r",
+    ],
+)
+def test_non_body_commands_allow_unrelated_flags(command: str) -> None:
+    assert gh_body_guard.denial(command) is None
+
+
+def test_a_known_body_command_still_refuses_an_unknown_short_flag() -> None:
+    assert gh_body_guard.denial("gh issue comment 675 -Z value") == gh_body_guard.UNREADABLE
+
+
+def test_a_known_short_flag_on_pull_request_create_is_not_a_body() -> None:
+    assert gh_body_guard.denial("gh pr create -f") is None
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        "gh pr review 12 --comment",
+        "gh discussion create -c category",
+    ],
+)
+def test_command_specific_short_flags_are_not_body_options(command: str) -> None:
+    assert gh_body_guard.denial(command) is None
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        "gh issue comment 675 --title title",
+        "gh api repos/o/r/issues/1/comments --hostname github.example",
+    ],
+)
+def test_unrelated_long_options_are_not_body_options(command: str) -> None:
+    assert gh_body_guard.denial(command) is None
 
 
 @pytest.mark.parametrize(
