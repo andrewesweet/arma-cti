@@ -77,6 +77,7 @@ COLLECTOR_USER: Final = "otelcol-contrib"
 ZAI_KEY_NAME: Final = "ZAI_API_KEY"
 TAP_BASENAME: Final = "quota_tap.sh"
 BWRAP_BINARY: Final = "bwrap"
+SAFE_SYSTEM_PATH: Final = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 # The GLM Coding Plan's published caps: prompts per five-hour window and per
 # seven days, per tier. Off-peak usage is charged at 50%; peak is Mon-Fri
@@ -791,6 +792,14 @@ def probe_binary(name: str, local_bin: Path) -> Probe:
     return Probe(present=False, detail=f"not on PATH and not at {local_bin / name}")
 
 
+def probe_sandbox_binary() -> Probe:
+    """Resolve bubblewrap with the exact search path the eval runner uses."""
+    found = shutil.which(BWRAP_BINARY, path=os.environ.get("PATH", SAFE_SYSTEM_PATH))
+    if found:
+        return Probe(present=True, detail=str(Path(found).resolve()))
+    return Probe(present=False, detail=f"{BWRAP_BINARY} not resolvable on the eval runner PATH")
+
+
 def probe_credentials(path: Path) -> tuple[Probe, Probe]:
     """Read the credentials file's mode, and whether it carries a z.ai key.
 
@@ -901,7 +910,7 @@ def gather(layout: Layout) -> Facts:
     credentials, zai_key = probe_credentials(layout.credentials)
     return Facts(
         gitleaks=probe_binary("gitleaks", layout.local_bin),
-        bubblewrap=probe_binary(BWRAP_BINARY, layout.local_bin),
+        bubblewrap=probe_sandbox_binary(),
         codex_cli=probe_binary("codex", layout.local_bin),
         credentials=credentials,
         zai_key=zai_key,
@@ -936,6 +945,7 @@ def _state(probe: Probe) -> str:
 
 SUDO_ACTION: Final = "just prereqs sudo-script, then a human runs it"
 CODEX_ACTION: Final = "just prereqs tools --codex, then `codex login` (human)"
+BWRAP_ACTION: Final = "sudo apt-get install bubblewrap"
 
 
 def evaluate(facts: Facts) -> tuple[Item, ...]:
@@ -946,7 +956,7 @@ def evaluate(facts: Facts) -> tuple[Item, ...]:
             "bubblewrap",
             facts.bubblewrap,
             "617",
-            "Install the bubblewrap package (`bwrap`) before running the eval corpus",
+            BWRAP_ACTION,
             False,
         ),
         ("credentials_file", facts.credentials, "225", "just prereqs credentials", False),

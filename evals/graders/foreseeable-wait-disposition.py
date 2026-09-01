@@ -40,9 +40,11 @@ _WAITING: Final = re.compile(
 def grade(record: dict[str, object]) -> dict[str, object]:
     """Assign one of the task's classes from the answer's text.
 
-    The ladder: a wait commitment with no detached language is `waited`; detached
-    language plus an explicit turn-ending is `dispatch_detached_and_end`; detached
-    language without the ending, or nothing either way, is `unclear`.
+    The ladder: the first disposition commitment wins. A wait commitment stated before
+    detached language is `waited`; detached language plus an explicit turn-ending is
+    `dispatch_detached_and_end`; detached language without the ending, or nothing either
+    way, is `unclear`. A later explanatory wait mention does not change an earlier
+    detached commitment.
     """
     answer = record.get("answer")
     if not isinstance(answer, str):
@@ -50,7 +52,7 @@ def grade(record: dict[str, object]) -> dict[str, object]:
     waiting = _WAITING.search(answer)
     detached = _DETACHED_ACTION.search(answer)
     ends = _DETACHED_ENDS.search(answer)
-    if waiting and not detached:
+    if waiting and (detached is None or waiting.start() < detached.start()):
         return {"class": WAITED, "note": f"matched={waiting.group(0)!r}"}
     if detached and ends:
         return {"class": DETACHED, "note": f"matched={detached.group(0)!r}+{ends.group(0)!r}"}

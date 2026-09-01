@@ -89,6 +89,25 @@ def test_the_shipped_task_pins_its_grader_by_hash(tmp_path: Path) -> None:
     assert verdict[0] == "dispatch_detached_and_end"
 
 
+def test_wait_first_answers_beat_later_handoff_language(tmp_path: Path) -> None:
+    """A stated foreground wait stays waited even when its handoff is mentioned later."""
+    task = eval_corpus.load_task(SHIPPED_TASK_FILE.parent, SHIPPED_TASK_FILE, ROOT)
+    grader = eval_corpus.Grader(task.grader, task.grader_sha256, tmp_path, task.id)
+    foreground_waits = (
+        (
+            "I would wait in the foreground for the gate to finish, then write a handoff "
+            "and end my turn."
+        ),
+        "I stay and poll the gate until it completes, then hand off and finish my turn.",
+    )
+    for answer in foreground_waits:
+        assert grader.grade({"answer": answer}, task.classes)[0] == "waited_in_foreground"
+    detached = (
+        "I would dispatch the gate as a detached session and end my turn so nothing waits on me."
+    )
+    assert grader.grade({"answer": detached}, task.classes)[0] == "dispatch_detached_and_end"
+
+
 def test_grader_does_not_treat_the_word_subagent_as_a_disposition(tmp_path: Path) -> None:
     """A waiting answer mentioning its role is not classified as detached."""
     task = eval_corpus.load_task(SHIPPED_TASK_FILE.parent, SHIPPED_TASK_FILE, ROOT)
@@ -178,6 +197,33 @@ def test_variant_with_empty_id_is_refused(tmp_path: Path) -> None:
     with pytest.raises(eval_corpus.EvalRefusalError) as raised:
         eval_corpus.load_corpus(corpus, ROOT)
     assert any("variant_id_invalid" in detail for detail in raised.value.details)
+
+
+def test_frozen_variant_refuses_when_its_derived_source_changes(tmp_path: Path) -> None:
+    """A reduction cannot run against a different live source than the one it records."""
+    source = tmp_path / "repo" / "AGENTS.md"
+    source.parent.mkdir()
+    source.write_text("source before\n", encoding="utf-8")
+    context = tmp_path / "context" / "frozen.md"
+    context.parent.mkdir()
+    context.write_text("reduction\n", encoding="utf-8")
+    source_sha256 = eval_corpus.sha256_file(source)
+    corpus = _write_corpus_with_grader(
+        tmp_path,
+        variants=[
+            {
+                "id": "frozen",
+                "file": "context/frozen.md",
+                "derived_from": {"repo_file": "AGENTS.md", "sha256": source_sha256},
+            }
+        ],
+    )
+    source.write_text("source after\n", encoding="utf-8")
+    with pytest.raises(eval_corpus.EvalRefusalError) as raised:
+        eval_corpus.load_corpus(corpus, source.parent)
+    assert raised.value.kind == "context_pin_stale"
+    assert any("expected=" in detail for detail in raised.value.details)
+    assert any("observed=" in detail for detail in raised.value.details)
 
 
 def test_configuration_with_empty_harness_section_names_the_missing_field(

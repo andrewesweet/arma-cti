@@ -759,6 +759,20 @@ def test_missing_bubblewrap_names_the_eval_pipeline_dependency() -> None:
     assert "state=missing" in line
     assert "617" in line
     assert "bubblewrap" in line
+    assert "action=sudo apt-get install bubblewrap" in line
+
+
+def test_bubblewrap_probe_does_not_accept_a_local_binary_runner_cannot_resolve(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The prerequisite follows the eval runner's PATH, not its unrelated local fallback."""
+    local_bin = tmp_path / ".local" / "bin"
+    local_bin.mkdir(parents=True)
+    local_bwrap = local_bin / prereqs.BWRAP_BINARY
+    local_bwrap.write_text("not a real executable", encoding="utf-8")
+    local_bwrap.chmod(0o755)
+    monkeypatch.setenv("PATH", str(tmp_path / "empty-path"))
+    assert prereqs.probe_sandbox_binary().present is False
 
 
 def test_no_action_defaults_to_check() -> None:

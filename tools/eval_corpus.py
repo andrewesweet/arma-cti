@@ -189,6 +189,11 @@ VARIANT_FIELDS: Final[tuple[ContractField, ...]] = (
     ContractField("id", True, "variant identity, unique within its task"),
     ContractField("file", False, "corpus stimulus copied into the trial workspace"),
     ContractField("repo_file", False, "repository stimulus copied at run time and hash recorded"),
+    ContractField(
+        "derived_from",
+        False,
+        "object with repo_file and sha256 pin for a frozen reduction; stale source refuses",
+    ),
 )
 
 BUDGET_FIELDS: Final[tuple[ContractField, ...]] = (
@@ -403,6 +408,8 @@ class Variant:
     id: str
     file: Path | None  # corpus file copied into the workspace as the arm's context
     repo_file: str | None  # repository file copied at run time, its hash recorded
+    derived_from_repo_file: str | None = None  # source of a frozen reduction
+    derived_from_sha256: str | None = None  # digest pinned for that source
 
 
 @dataclass(frozen=True)
@@ -712,6 +719,50 @@ def load_manifest(corpus_dir: Path) -> dict[str, object]:
     return document
 
 
+def _derived_source(
+    entry: dict[str, object],
+    path: Path,
+    variant_id: str,
+    context: Path | None,
+    repo_path: str | None,
+    repo_root: Path,
+) -> tuple[str | None, str | None]:
+    """Validate a frozen reduction's pinned repository source, if it has one."""
+    derived_value = entry.get("derived_from")
+    if derived_value is None:
+        return None, None
+    if not isinstance(derived_value, dict):
+        raise EvalRefusalError(
+            "input_invalid", (f"derived_from_not_an_object={path.name}.{variant_id}",)
+        )
+    if context is None or repo_path is not None:
+        raise EvalRefusalError(
+            "input_invalid", (f"derived_from_requires_frozen_file={path.name}.{variant_id}")
+        )
+    source_value = _string(derived_value, "repo_file", f"{path.name}.{variant_id}.derived_from")
+    source_path = _confined_path(
+        repo_root, source_value, f"{path.name}.{variant_id}.derived_from.repo_file"
+    )
+    if not source_path.is_file():
+        raise EvalRefusalError("input_invalid", (f"derived_from_missing={source_value}",))
+    expected_sha256 = _sha256(
+        _required(derived_value, "sha256", f"{path.name}.{variant_id}.derived_from"),
+        f"{path.name}.{variant_id}.derived_from.sha256",
+    )
+    observed_sha256 = sha256_file(source_path)
+    if observed_sha256 != expected_sha256:
+        raise EvalRefusalError(
+            "context_pin_stale",
+            (
+                f"variant={path.name}.{variant_id}",
+                f"source={source_value}",
+                f"expected={expected_sha256}",
+                f"observed={observed_sha256}",
+            ),
+        )
+    return source_value, expected_sha256
+
+
 def _variants(document: dict[str, object], path: Path, repo_root: Path) -> tuple[Variant, ...]:
     """Read the task's arms; a task with none stated has one context-free arm."""
     raw = document.get("variants")
@@ -768,7 +819,10 @@ def _variants(document: dict[str, object], path: Path, repo_root: Path) -> tuple
             raise EvalRefusalError(
                 "input_invalid", (f"repo_file_not_a_path={path.name}.{variant_id}",)
             )
-        variants.append(Variant(variant_id, context, repo_path))
+        derived_repo_path, derived_sha256 = _derived_source(
+            entry, path, variant_id, context, repo_path, repo_root
+        )
+        variants.append(Variant(variant_id, context, repo_path, derived_repo_path, derived_sha256))
     return tuple(variants)
 
 
@@ -1228,6 +1282,7 @@ def seed_workspace(
         "prompt_file": TRIAL_FILE,
         "context": None,
         "context_sha256": None,
+        "context_pin": None,
     }
     if variant.file is not None:
         target = workspace / variant.file.name
@@ -1236,6 +1291,14 @@ def seed_workspace(
             "prompt_file": TRIAL_FILE,
             "context": variant.file.name,
             "context_sha256": sha256_file(variant.file),
+            "context_pin": (
+                {
+                    "repo_file": variant.derived_from_repo_file,
+                    "sha256": variant.derived_from_sha256,
+                }
+                if variant.derived_from_repo_file is not None
+                else None
+            ),
         }
     if variant.repo_file is not None:
         source = repo_root / variant.repo_file
@@ -1245,6 +1308,7 @@ def seed_workspace(
             "prompt_file": TRIAL_FILE,
             "context": Path(variant.repo_file).name,
             "context_sha256": sha256_file(source),
+            "context_pin": None,
         }
     return seeded
 
@@ -2227,7 +2291,7 @@ def render_contract() -> str:
     lines.extend(
         [
             f"  {REFUSAL_EXIT}  (refusal before any trial: input_invalid, grader_hash_mismatch,",
-            "       pin_mismatch, run_dir_exists — never a verdict)",
+            "       context_pin_stale, pin_mismatch, run_dir_exists — never a verdict)",
             "",
             "=== Materialized case ===",
             *(_field_block(CASE_FIELDS)),

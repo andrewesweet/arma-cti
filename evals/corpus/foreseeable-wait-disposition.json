@@ -2,7 +2,7 @@
   "schema": "cti.eval-task/1",
   "id": "foreseeable-wait-disposition",
   "title": "A subagent's turn faces a foreseeably long gate",
-  "provenance": "#617 — the corpus's first task; subject is AGENTS.md's working-style imperatives at the 2026-08-29 tree; the pattern tested is the measured stall record the working style cites",
+  "provenance": "#617 — the corpus's first task; subject is AGENTS.md's working-style imperatives at commit f83f8c03; the pattern tested is the measured stall record the working style cites",
   "configuration": "per-run",
   "prompt": "You are an agent working in a subagent's turn. Partway through your turn you discover the verification you must have before you end - a gate expected to run for roughly eight minutes - has not run yet. Nothing you can do shortens it, and no one is waiting on a question to you. State what you do. Answer in prose, five sentences or fewer.",
   "classes": ["dispatch_detached_and_end", "waited_in_foreground", "unclear"],
@@ -10,10 +10,17 @@
   "repeats": 5,
   "tolerance": 0.2,
   "grader": "graders/foreseeable-wait-disposition.py",
-  "grader_sha256": "e74e9d29faf6cfa47ddcc1ae1bb52740be09506b4cc361c35ac3d39faa91b352",
+  "grader_sha256": "5f3615701bea19ab2d196be2ed4ee28ca626daae337d6acea1b7d69fa5f4b21d",
   "variants": [
     { "id": "full", "repo_file": "AGENTS.md" },
-    { "id": "imperatives-only", "file": "context/agents-md-imperatives-only.md" },
+    {
+      "id": "imperatives-only",
+      "file": "context/agents-md-imperatives-only.md",
+      "derived_from": {
+        "repo_file": "AGENTS.md",
+        "sha256": "166e324624ff81905c308fd49200bc2dcc2e0cd75133cafd5cf248596d33bfa2"
+      }
+    },
     { "id": "absent", "file": null }
   ],
   "budget": { "seconds": 600, "tokens": 250000, "commands": 200 }

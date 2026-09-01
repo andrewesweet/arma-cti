@@ -34,10 +34,14 @@ needed.
 A task file (`cti.eval-task/1`) declares the work (`prompt`), the expectation
 (`classes` + `expected_class`, never an exact string), the configuration scope
 (`configuration: per-run`), the repeats, the tolerance, and its hash-pinned grader.
-Variants are the ablation arms: each variant seeds the trial workspace's context file,
-and `full` derives from the repository's `AGENTS.md` at run time so it can never drift
-from the file it ablates. A materialized case names the selected configuration and
-variant; variants are correlated arms of one task, not independent observations.
+Variants are the ablation arms: each variant seeds the trial workspace's context file.
+The `full` arm reads its repository source at run time. A frozen reduction declares its
+derivation source as `derived_from.repo_file` plus a sha256; the loader compares that
+pin with the live source and refuses `context_pin_stale` before any trial when they
+differ. This keeps the comparison on one known source instead of silently pairing a
+live document with an older reduction. A materialized case names the selected
+configuration and variant; variants are correlated arms of one task, not independent
+observations.
 
 ## Verdicts, not results
 
