@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import os
 import sys
-from dataclasses import dataclass, field, replace
+from dataclasses import MISSING, dataclass, field, fields, replace
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, NoReturn, Protocol, cast, runtime_checkable
@@ -67,6 +67,13 @@ WORK_RUN_OPTIONAL_FIELDS: Final = frozenset(
         "delivery_conflict",
     }
 )
+# A standalone delivery is an observation of progress, not a source of
+# scheduling authority.  These are the Work Run fields whose values can
+# release a scheduling slot when sourced authoritatively; the delivery reader
+# resets the whole set in one data-driven operation.  A future slot-releasing
+# field joins this set and automatically receives the same boundary treatment,
+# rather than gaining another per-field clear.
+DELIVERY_SCHEDULING_FIELDS: Final = frozenset({"landed_sha", "recovery_kind", "result_published"})
 DEBT_FIELDS: Final = frozenset({"issue", "path"})
 DEBT_OPTIONAL_FIELDS: Final = frozenset({"work_item_key"})
 BAR_FIELDS: Final = frozenset({"key", "kind"})
@@ -520,7 +527,7 @@ class DispatchDeliveryFactCollector:
 
 
 def _read_delivery(path: Path) -> policy.WorkRunFact:
-    """Read one strict typed delivery envelope without publication authority."""
+    """Read one strict typed delivery envelope without scheduling authority."""
     try:
         raw = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, UnicodeError, json.JSONDecodeError) as error:
@@ -537,14 +544,28 @@ def _read_delivery(path: Path) -> policy.WorkRunFact:
     run = _fact(value, "work_runs", path)
     if run.dispatch_id is None or run.dispatch_id != path.parent.name:
         _fact_fail(f"source={path}: delivery dispatch_id")
+    delivery_conflict = run.delivery_conflict or policy.delivery_identity_conflict(run)
+    run = _without_delivery_scheduling_authority(run)
     return replace(
         run,
         state=policy.derived_work_run_state(run),
-        # Only this reader's result.json observation may publish a result;
-        # delivery.json may carry the field for compatibility but cannot assert it.
-        result_published=False,
-        delivery_conflict=run.delivery_conflict or policy.delivery_identity_conflict(run),
+        delivery_conflict=delivery_conflict,
     )
+
+
+def _without_delivery_scheduling_authority(run: policy.WorkRunFact) -> policy.WorkRunFact:
+    """Reset every slot-releasing field to its Work Run default at the boundary."""
+    defaults: dict[str, object] = {}
+    for specification in fields(run):
+        if specification.name not in DELIVERY_SCHEDULING_FIELDS:
+            continue
+        if specification.default is not MISSING:
+            defaults[specification.name] = specification.default
+        else:
+            if specification.default_factory is MISSING:
+                raise TypeError(specification.name)
+            defaults[specification.name] = specification.default_factory()
+    return replace(run, **defaults)
 
 
 def _read_result_delivery(path: Path) -> policy.WorkRunFact | None:

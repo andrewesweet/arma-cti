@@ -232,6 +232,63 @@ def test_standalone_delivery_cannot_publish_a_result_or_release_a_slot(tmp_path:
     assert policy.live_work_runs(facts) == observed
 
 
+def test_standalone_delivery_recovery_kind_cannot_release_a_slot(tmp_path: Path) -> None:
+    record = tmp_path / "dispatches" / "d-1"
+    record.mkdir(parents=True)
+    delivery = {
+        "schema": ports.DELIVERY_SCHEMA,
+        "work_run": {
+            "key": "run-1",
+            "state": "non_result",
+            "work_item_key": "item-1",
+            "dispatch_id": "d-1",
+            "failure_class": "quota_exhausted",
+            "recovery_kind": "lost_work",
+        },
+    }
+    (record / "delivery.json").write_text(json.dumps(delivery) + "\n", encoding="utf-8")
+
+    observed = ports.DispatchDeliveryFactCollector(tmp_path / "dispatches").collect(())
+    facts = policy.ControlFacts(None, (), (), (), observed, wip_limit=1)
+
+    assert observed[0].recovery_kind is None
+    assert policy.live_work_runs(facts) == observed
+
+
+def test_standalone_delivery_landed_sha_cannot_reach_completion(tmp_path: Path) -> None:
+    record = tmp_path / "dispatches" / "d-1"
+    record.mkdir(parents=True)
+    sha = "a" * 40
+    delivery = {
+        "schema": ports.DELIVERY_SCHEMA,
+        "work_run": {
+            "key": "run-1",
+            "state": "running",
+            "work_item_key": "item-1",
+            "dispatch_id": "d-1",
+            "issue": 1,
+            "candidate_sha": sha,
+            "reviewed_sha": sha,
+            "review_status": "cleared",
+            "review_dispatch_id": "review-1",
+            "adjudication_sha": sha,
+            "adjudication_status": "cleared",
+            "gate_sha": sha,
+            "gate_status": "passed",
+            "landed_sha": sha,
+            "close_evidence_sha": sha,
+        },
+    }
+    (record / "delivery.json").write_text(json.dumps(delivery) + "\n", encoding="utf-8")
+
+    observed = ports.DispatchDeliveryFactCollector(tmp_path / "dispatches").collect(())
+    facts = policy.ControlFacts(None, (), (), (), observed, wip_limit=1)
+
+    assert observed[0].landed_sha is None
+    assert observed[0].state == "gated"
+    assert policy.live_work_runs(facts) == observed
+
+
 def test_dispatch_delivery_collector_rejects_delivery_bound_to_another_dispatch(
     tmp_path: Path,
 ) -> None:
