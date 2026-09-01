@@ -733,7 +733,7 @@ def _derived_source(
     repo_path: str | None,
     repo_root: Path,
 ) -> tuple[str | None, str | None]:
-    """Validate a frozen reduction's pinned repository source, if it has one."""
+    """Read a frozen reduction's pinned repository source, if it has one."""
     derived_value = entry.get("derived_from")
     if derived_value is None:
         return None, None
@@ -746,26 +746,11 @@ def _derived_source(
             "input_invalid", (f"derived_from_requires_frozen_file={path.name}.{variant_id}",)
         )
     source_value = _string(derived_value, "repo_file", f"{path.name}.{variant_id}.derived_from")
-    source_path = _confined_path(
-        repo_root, source_value, f"{path.name}.{variant_id}.derived_from.repo_file"
-    )
-    if not source_path.is_file():
-        raise EvalRefusalError("input_invalid", (f"derived_from_missing={source_value}",))
+    _confined_path(repo_root, source_value, f"{path.name}.{variant_id}.derived_from.repo_file")
     expected_sha256 = _sha256(
         _required(derived_value, "sha256", f"{path.name}.{variant_id}.derived_from"),
         f"{path.name}.{variant_id}.derived_from.sha256",
     )
-    observed_sha256 = sha256_file(source_path)
-    if observed_sha256 != expected_sha256:
-        raise EvalRefusalError(
-            "context_pin_stale",
-            (
-                f"variant={path.name}.{variant_id}",
-                f"source={source_value}",
-                f"expected={expected_sha256}",
-                f"observed={observed_sha256}",
-            ),
-        )
     return source_value, expected_sha256
 
 
@@ -888,6 +873,38 @@ def load_corpus(corpus_dir: Path, repo_root: Path) -> tuple[list[Task], dict[str
     if len(set(ids)) != len(ids):
         raise EvalRefusalError("input_invalid", (f"duplicate_task_id={corpus_dir}",))
     return tasks, load_manifest(corpus_dir)
+
+
+def verify_context_pins(tasks: list[Task], repo_root: Path) -> None:
+    """Verify frozen reductions against live sources at corpus-run preflight."""
+    for task in tasks:
+        for variant in task.variants:
+            source_value = variant.derived_from_repo_file
+            expected_sha256 = variant.derived_from_sha256
+            if source_value is None:
+                continue
+            if expected_sha256 is None:
+                raise EvalRefusalError(
+                    "input_invalid", (f"derived_from_sha256_missing={task.id}.{variant.id}",)
+                )
+            source_path = _confined_path(
+                repo_root,
+                source_value,
+                f"{task.id}.{variant.id}.derived_from.repo_file",
+            )
+            if not source_path.is_file():
+                raise EvalRefusalError("input_invalid", (f"derived_from_missing={source_value}",))
+            observed_sha256 = sha256_file(source_path)
+            if observed_sha256 != expected_sha256:
+                raise EvalRefusalError(
+                    "context_pin_stale",
+                    (
+                        f"variant={task.id}/{variant.id}",
+                        f"source={source_value}",
+                        f"expected={expected_sha256}",
+                        f"observed={observed_sha256}",
+                    ),
+                )
 
 
 def _configuration_pins(document: dict[str, object], path: Path) -> tuple[str | None, str | None]:
@@ -2387,6 +2404,7 @@ def prepare_run(
         raise EvalRefusalError("input_invalid", ("duplicate_configuration_name=",))
     _sandbox_binary()
     tasks, manifest = load_corpus(args.corpus, ROOT)
+    verify_context_pins(tasks, ROOT)
     for task in tasks:
         verify_grader_hash(task.grader, task.grader_sha256)
     for configuration in configurations:

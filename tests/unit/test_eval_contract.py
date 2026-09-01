@@ -266,33 +266,6 @@ def test_variant_refusal_details_are_single_item_tuples(tmp_path: Path) -> None:
     assert derived_raised.value.details == ("derived_from_requires_frozen_file=t.json.v",)
 
 
-def test_frozen_variant_refuses_when_its_derived_source_changes(tmp_path: Path) -> None:
-    """A reduction cannot run against a different live source than the one it records."""
-    source = tmp_path / "repo" / "AGENTS.md"
-    source.parent.mkdir()
-    source.write_text("source before\n", encoding="utf-8")
-    context = tmp_path / "context" / "frozen.md"
-    context.parent.mkdir()
-    context.write_text("reduction\n", encoding="utf-8")
-    source_sha256 = eval_corpus.sha256_file(source)
-    corpus = _write_corpus_with_grader(
-        tmp_path,
-        variants=[
-            {
-                "id": "frozen",
-                "file": "context/frozen.md",
-                "derived_from": {"repo_file": "AGENTS.md", "sha256": source_sha256},
-            }
-        ],
-    )
-    source.write_text("source after\n", encoding="utf-8")
-    with pytest.raises(eval_corpus.EvalRefusalError) as raised:
-        eval_corpus.load_corpus(corpus, source.parent)
-    assert raised.value.kind == "context_pin_stale"
-    assert any("expected=" in detail for detail in raised.value.details)
-    assert any("observed=" in detail for detail in raised.value.details)
-
-
 def test_configuration_with_empty_harness_section_names_the_missing_field(
     tmp_path: Path,
 ) -> None:

@@ -158,6 +158,54 @@ def _run(
     return exit_code, runs_root
 
 
+def test_frozen_variant_loads_but_corpus_preflight_reports_a_stale_source(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A moved source is reported by a corpus run, not by ordinary task loading."""
+    corpus = tmp_path / "evals" / "corpus"
+    corpus.mkdir(parents=True)
+    source = tmp_path / "repo" / "AGENTS.md"
+    source.parent.mkdir()
+    source.write_text("source before\n", encoding="utf-8")
+    context = corpus.parent / "context" / "frozen.md"
+    context.parent.mkdir()
+    context.write_text("reduction\n", encoding="utf-8")
+    source_sha256 = eval_corpus.sha256_file(source)
+    _write_task(
+        corpus,
+        variants=[
+            {
+                "id": "frozen",
+                "file": "context/frozen.md",
+                "derived_from": {"repo_file": "AGENTS.md", "sha256": source_sha256},
+            }
+        ],
+    )
+    source.write_text("source after\n", encoding="utf-8")
+    tasks, _manifest = eval_corpus.load_corpus(corpus, source.parent)
+    assert tasks[0].variants[0].derived_from_sha256 == source_sha256
+    config = _write_config(corpus, "a", "GOOD answer")
+    monkeypatch.setattr(eval_corpus, "ROOT", source.parent)
+    monkeypatch.setattr(eval_corpus, "_sandbox_binary", lambda: source.parent / "bwrap")
+    exit_code = eval_corpus.main(
+        [
+            "--corpus",
+            str(corpus),
+            "--configuration",
+            str(config),
+            "--runs-root",
+            str(tmp_path / "runs"),
+        ]
+    )
+    assert exit_code == eval_corpus.REFUSAL_EXIT
+    error = capsys.readouterr().err
+    assert "refused=context_pin_stale stage=before any trial" in error
+    assert f"expected={source_sha256}" in error
+    assert f"observed={eval_corpus.sha256_file(source)}" in error
+
+
 def test_passing_corpus_exits_zero(tmp_path: Path) -> None:
     """A corpus whose cases meet their expectation has a within-tolerance status."""
     corpus = tmp_path / "evals" / "corpus"
