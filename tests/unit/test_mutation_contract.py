@@ -86,6 +86,20 @@ def test_the_contract_renders_policy_values_and_reasoned_exemptions() -> None:
         assert reason in rendered
 
 
+def test_the_contract_renders_all_gate_run_classifications() -> None:
+    rendered = mutation_smoke.render_contract()
+
+    expected = {
+        "sampled": "mutation smoke: run was sampled",
+        "exhaustive": "mutation smoke: run was exhaustive",
+        "no-target": "mutation smoke: nothing added or changed against <base>",
+    }
+    for name, output in expected.items():
+        assert f"`{name}`: `{output}`" in rendered
+    assert "A completed gate run with valid selection emits exactly one classification." in rendered
+    assert "Missing classification is not `no-target`" in rendered
+
+
 def test_the_contract_labels_narration_and_points_to_failure_classes() -> None:
     rendered = mutation_smoke.render_contract()
 

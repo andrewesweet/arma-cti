@@ -593,6 +593,24 @@ def _append_reasoned_entries(lines: list[str], name: str, entries: dict[str, str
     lines.extend(f"    {path} — {reason}" for path, reason in entries.items())
 
 
+# Gate-level output classes. Keep exact output and meaning beside the code that emits them;
+# `render_contract()` is the reader-facing export used by documents and briefings.
+MUTATION_CLASSIFICATIONS: Final[dict[str, tuple[str, str]]] = {
+    "sampled": (
+        "mutation smoke: run was sampled",
+        "fewer than every planted candidate reached a verdict",
+    ),
+    "exhaustive": (
+        "mutation smoke: run was exhaustive",
+        "every planted candidate reached a verdict",
+    ),
+    "no-target": (
+        "mutation smoke: nothing added or changed against {base}",
+        "no mutation target was selected for this diff",
+    ),
+}
+
+
 def render_contract() -> str:
     """Render the mutation-smoke policy from the constants that enforce it."""
     lines = [
@@ -602,6 +620,15 @@ def render_contract() -> str:
         "The values below are read from the enforcing constants; this output has",
         "no separately maintained policy figures. The command only reads and",
         "renders: it does not run the smoke, gate a landing, or write anything.",
+        "",
+        "=== Run classifications (derived) ===",
+        *(
+            f"  `{name}`: `{output.format(base='<base>')}` — {meaning}"
+            for name, (output, meaning) in MUTATION_CLASSIFICATIONS.items()
+        ),
+        "  A completed gate run with valid selection emits exactly one classification.",
+        "  Missing classification is not `no-target`; it means the run was skipped,",
+        "  refused, or failed to classify.",
         "",
         "=== Mutable source roots (derived) ===",
         f"  Python  `PRODUCT_ROOTS`: {_format_paths(PRODUCT_ROOTS)}",
@@ -2303,10 +2330,8 @@ def _report_selection(
 def _report_sampling(*, sampled: bool, refused: bool) -> None:
     """State the completed run's coverage without calling a refusal a result."""
     if not refused:
-        print(  # noqa: T201 — stdout text IS this gate's output
-            f"mutation smoke: run was {'sampled' if sampled else 'exhaustive'}",
-            flush=True,
-        )
+        classification = "sampled" if sampled else "exhaustive"
+        print(MUTATION_CLASSIFICATIONS[classification][0], flush=True)  # noqa: T201 — stdout text IS this gate's output
 
 
 def _record(root: Path, targets: list[str], args: argparse.Namespace) -> int:
@@ -2494,7 +2519,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901, PLR0911 — the r
     # empty set is the run's whole answer, and this exit stays as cheap as it was.
     if not targets and not rust and not unmeasured(introduced, set()):
         print(  # noqa: T201 — stdout text IS this gate's output
-            f"mutation smoke: nothing added or changed against {args.base}",
+            MUTATION_CLASSIFICATIONS["no-target"][0].format(base=args.base),
             flush=True,
         )
         return 0
@@ -2520,7 +2545,10 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901, PLR0911 — the r
     _report_selection(introduced, unnamed, survey=args.report, refused=bool(refused))
     if refused and not args.report:
         return 2
-    _report_sampling(sampled=sampled, refused=bool(refused))
+    # An unmeasured product module can leave target set empty while still reding the gate.
+    # That is not an exhaustive mutation run: no classification is the finding in this case.
+    if targets or rust:
+        _report_sampling(sampled=sampled, refused=bool(refused))
     if (red or unnamed) and not args.report:
         print(  # noqa: T201
             f"{red} subject(s) did not notice the code changing. Strengthen the "

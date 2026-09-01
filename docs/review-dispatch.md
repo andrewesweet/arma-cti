@@ -59,15 +59,15 @@ Six things, and the dispatch record carries four of them by construction:
   closing fence may be added before it if the carried prefix would otherwise leave a fenced
   block open. The reviewer can spot-check it without calling `gh` and can see when the carried
   report is incomplete. The paste must carry `just check`,
-  `just unit` **and** `just mutation` **with their result counts**, including `just
-  mutation`'s own `mutation smoke: run was sampled` (fewer than every planted candidate
-  reached a verdict) or `mutation smoke: run was exhaustive` (every planted candidate
-  reached a verdict) line verbatim — unconditionally, not only where a kill rate is quoted
-  (#421): #344's
+  `just unit` **and** `just mutation` **with their result counts**, including the gate-level
+  mutation classification that `just mutation` emits — `sampled`, `exhaustive` or `no-target`
+  — verbatim; `no-target` is a completed result, not silence; the exact output forms and
+  meanings live in `just mutation --rules`'s `=== Run classifications (derived) ===` section
+  — unconditionally, not only where a kill rate is quoted (#421): #344's
   round-2 review found an exhaustive 91% hiding behind a
   reported `rate=100%`, because the sample missed both survivors on the line the round had
   just added. A paste that is absent, thinner than that, silent on counts, or silent on
-  sampled-or-exhaustive is a finding — the reviewer reports it as an observation rather
+  mutation classification is a finding — the reviewer reports it as an observation rather
   than running anything. A thread read that succeeds but finds no comment carrying the marker
   is rendered as **GATE REPORT ABSENT** — that establishes only marker absence, and an unmarked
   report may still exist on the thread; a thread that the dispatcher cannot obtain is rendered
@@ -603,12 +603,13 @@ deliberately thin and is wrong for this seat — it tells the agent to do the is
     (human ruling 2026-08-14 on #353, as clarified 2026-08-20 on #449). The
     implementer's pasted gate output on the issue thread is your gate record: it
     must carry `just check`, `just unit` and `just mutation` with their result
-    counts, including `just mutation`'s own `mutation smoke: run was sampled` (fewer
-    than every planted candidate reached a verdict) or `mutation smoke: run was
-    exhaustive` (every planted candidate reached a verdict) line verbatim —
+    counts, including the gate-level mutation classification that `just mutation`
+    emits — `sampled`, `exhaustive` or `no-target` — verbatim; `no-target` is a
+    completed result, not silence; the exact output forms and meanings live in
+    `just mutation --rules`'s `=== Run classifications (derived) ===` section —
     unconditionally, not only where a kill rate is quoted (#421). A paste absent,
-    thinner than that, silent on counts, or silent on sampled-or-exhaustive is a
-    finding — report it as an observation rather than running the gate yourself.
+    thinner than that, silent on counts, or silent on the mutation classification
+    is a finding — report it as an observation rather than running the gate yourself.
 
     A `changelog.d/` fragment is reviewed as a claim, not as prose: every
     sentence is checked against the diff exactly as a code comment is, and a

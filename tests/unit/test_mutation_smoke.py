@@ -252,12 +252,17 @@ def test_a_dropped_candidate_makes_the_run_sampled(
 
 
 @pytest.mark.parametrize("sampled", [False, True])
-def test_the_sampling_line_agrees_with_the_composed_brief(
+def test_the_sampling_line_has_a_contract_entry(
     sampled: bool,  # noqa: FBT001 — parametrised false and true arms are the subject
     capsys,  # noqa: ANN001 — pytest's own fixture type adds nothing here
 ) -> None:
     smoke_tool._report_sampling(sampled=sampled, refused=False)  # noqa: SLF001
-    assert capsys.readouterr().out.strip() in brief_tool.MUTATION_SAMPLING_PASTE_RULE
+    output = capsys.readouterr().out.strip()
+    assert output in {
+        smoke_tool.MUTATION_CLASSIFICATIONS["sampled"][0],
+        smoke_tool.MUTATION_CLASSIFICATIONS["exhaustive"][0],
+    }
+    assert "just mutation --rules" in brief_tool.MUTATION_CLASSIFICATION_PASTE_RULE
 
 
 def test_a_refused_run_states_no_sampling_result(capsys) -> None:  # noqa: ANN001
@@ -1181,14 +1186,17 @@ def test_a_new_module_with_no_test_module_reds_the_gate(tmp_path: Path, capsys) 
     (tmp_path / "tools").mkdir()
     (tmp_path / "tools" / "new.py").write_text("x = 1\n")
     assert smoke_tool.main(["--root", str(tmp_path), "--base", "main"]) == 1
-    assert "RED tools/new.py no_test_module:" in capsys.readouterr().out
+    out = capsys.readouterr().out
+    assert "RED tools/new.py no_test_module:" in out
+    assert "mutation smoke:" not in out
 
 
-def test_an_empty_run_states_no_sampling_result(tmp_path: Path, capsys) -> None:  # noqa: ANN001
+def test_an_empty_run_states_no_target_classification(tmp_path: Path, capsys) -> None:  # noqa: ANN001
     _repo(tmp_path)
     assert smoke_tool.main(["--root", str(tmp_path), "--base", "main"]) == 0
     out = capsys.readouterr().out
     assert "mutation smoke: nothing added or changed against main" in out
+    assert out.count("mutation smoke:") == 1
     assert "run was sampled" not in out
     assert "run was exhaustive" not in out
 

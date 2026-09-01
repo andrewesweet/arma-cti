@@ -1435,7 +1435,7 @@ def test_an_implementer_briefing_is_asked_for_the_paste_the_review_reads() -> No
     assert "implementer's gate report" in rendered
     assert "`just check`, `just unit`, `just mutation`" in rendered
     assert "each with its result counts" in rendered
-    assert brief.MUTATION_SAMPLING_PASTE_RULE in rendered
+    assert brief.MUTATION_CLASSIFICATION_PASTE_RULE in rendered
     assert "unconditionally" in rendered
     assert "not the closing audit" in rendered
 
@@ -1507,7 +1507,7 @@ def test_the_lander_gets_distinct_review_gate_report_and_rung_owned_close_audit(
         assert "file outside the worktree" in rendered, name
         assert "no existing thread comment can substitute" in rendered, name
         assert "never the body's completeness, accuracy or quality" in rendered, name
-        assert brief.MUTATION_SAMPLING_PASTE_RULE in rendered, name
+        assert brief.MUTATION_CLASSIFICATION_PASTE_RULE in rendered, name
 
 
 def test_a_writable_seat_the_registry_does_not_name_lander_is_left_off_the_landing() -> None:
@@ -1529,11 +1529,11 @@ def test_a_writable_seat_the_registry_does_not_name_lander_is_left_off_the_landi
         assert "leave #251 open — never close it" in rendered, name
 
 
-def test_review_dispatch_docs_carry_the_same_sampling_paste_rule_twice() -> None:
+def test_review_dispatch_docs_carry_the_same_classification_paste_rule_twice() -> None:
     documented = " ".join(
         (REPO / "docs" / "review-dispatch.md").read_text(encoding="utf-8").split()
     )
-    rule = " ".join(brief.MUTATION_SAMPLING_PASTE_RULE.split())
+    rule = " ".join(brief.MUTATION_CLASSIFICATION_PASTE_RULE.split())
     assert documented.count(rule) == 2
 
 

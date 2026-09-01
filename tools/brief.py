@@ -818,10 +818,11 @@ FLAKE_NONE: Final = (
 # mutation output and no sampled-versus-exhaustive statement. A reviewer told the gate is
 # not theirs and given no numbers has been disarmed rather than redirected: the counts and
 # the classification are required unconditionally. That requirement is untouched by #449.
-MUTATION_SAMPLING_PASTE_RULE: Final = (
-    "`just mutation`'s own `mutation smoke: run was sampled` (fewer than every planted"
-    " candidate reached a verdict) or `mutation smoke: run was exhaustive` (every planted"
-    " candidate reached a verdict) line verbatim"
+MUTATION_CLASSIFICATION_PASTE_RULE: Final = (
+    "the gate-level mutation classification that `just mutation` emits — `sampled`,"
+    " `exhaustive` or `no-target` — verbatim; `no-target` is a completed result, not silence;"
+    " the exact output forms and meanings live in `just mutation --rules`'s"
+    " `=== Run classifications (derived) ===` section"
 )
 # #496 moves delivery to the unsandboxed dispatcher without moving judgement there. The
 # reviewer owns every byte between the final response's exact report markers; the harness owns
@@ -835,9 +836,9 @@ REVIEW_GATE_RULE: Final = (
     " for review-specific checks the issue explicitly requires, but do not re-run the"
     " implementer's suite. The pasted gate report remains the review's gate record and must"
     " carry `just check`, `just unit` and `just mutation` with their result counts, including "
-    f"{MUTATION_SAMPLING_PASTE_RULE} (#344) — unconditionally."
-    " A paste that is absent, thinner than that, silent on counts, or silent on"
-    " sampled-or-exhaustive is a finding — report it rather than running the implementer's"
+    f"{MUTATION_CLASSIFICATION_PASTE_RULE} (#344) — unconditionally."
+    " A paste that is absent, thinner than that, silent on counts, or silent on the"
+    " mutation classification is a finding — report it rather than running the implementer's"
     " gate yourself (#421). The dispatcher supplies the thread read in the gate-report"
     " section below; do not call `gh` to obtain that record."
 )
@@ -884,7 +885,7 @@ RUNG_CLOSE_RULE: Final = (
 THREAD_GATE_REPORT_RULE: Final = (
     "Before review, post on #{issue}'s thread the implementer's gate report — `just check`,"
     " `just unit`, `just mutation`, each with its result counts —"
-    f" including {MUTATION_SAMPLING_PASTE_RULE} (#344, #421:"
+    f" including {MUTATION_CLASSIFICATION_PASTE_RULE} (#344, #421:"
     " unconditionally, never only where a kill rate is quoted). Begin the comment's first line"
     f" with the marker `{gate_report.MARKER}`; an optional suffix may follow after a space."
     " That paste is the"
