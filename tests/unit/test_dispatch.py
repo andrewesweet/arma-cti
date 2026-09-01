@@ -2751,6 +2751,45 @@ def test_default_review_plan_carries_the_host_side_gate_report(tmp_path: Path) -
     assert "do not call `gh` to obtain that report" in brief_text
 
 
+def test_default_review_brief_distinguishes_pre_and_post_landing_passes(
+    tmp_path: Path,
+) -> None:
+    """#670: the dispatcher tells a post-landing reviewer what pass it is."""
+    pre_root, _base_sha = review_repository(tmp_path / "pre", issue=670)
+    (pre_root / "reviewed.txt").write_text("reviewed\n", encoding="utf-8")
+    dispatch.git("add", "reviewed.txt", cwd=pre_root)
+    dispatch.git("commit", "-qm", "test: reviewed change", cwd=pre_root)
+    pre_sha = dispatch.git("rev-parse", "HEAD", cwd=pre_root).strip()
+    dispatch.git("push", "-q", "origin", "HEAD:refs/heads/issue-670", cwd=pre_root)
+    dispatch.git("fetch", "-q", "origin", cwd=pre_root)
+
+    post_root, _reviewed_sha, post_sha, _review_root = rebased_review_repository(
+        tmp_path / "post", issue=670
+    )
+    pre_identity = dispatch.Identity(
+        dispatch_id="d-pre",
+        lane="claude-native",
+        profile="opus-high",
+        seat="review",
+        issue=670,
+        base_sha=pre_sha,
+    )
+    post_identity = pre_identity._replace(dispatch_id="d-post", base_sha=post_sha)
+
+    pre_brief = dispatch.default_brief(pre_identity, pre_root)
+    post_brief = dispatch.default_brief(post_identity, post_root)
+
+    assert post_brief != pre_brief
+    assert "This is the post-landing review, not a duplicate dispatch." in post_brief
+    assert "This is the post-landing review, not a duplicate dispatch." not in pre_brief
+    assert "the only remaining catch for a real finding an arbiter dismissed" in post_brief
+    assert "a defect becomes a new `needs-triage` issue" in post_brief
+    assert "an observation becomes a comment on the reviewed issue" in post_brief
+    assert "a claim not upheld is recorded on the reviewed issue as checked and not upheld" in (
+        post_brief
+    )
+
+
 def test_dry_run_review_plan_carries_the_report_it_would_send(tmp_path: Path) -> None:
     """#641: preview deliberately reads the same report as a real review dispatch."""
     report_body = "### Implementer gate report — preview\njust check: 22 passed\n"

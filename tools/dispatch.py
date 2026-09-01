@@ -3325,6 +3325,15 @@ REVIEW_DELIVERY_PROTOCOL: Final = (
     " loop advance or retry (#496, #599)."
 )
 
+POST_LANDING_REVIEW_PROTOCOL: Final = (
+    "This is the post-landing review, not a duplicate dispatch. The change is already on"
+    " `origin/main`, so no landing decision rides on this pass. It is retained as the only"
+    " remaining catch for a real finding an arbiter dismissed. Route findings as follows: a"
+    " defect becomes a new `needs-triage` issue naming the reviewed issue and SHA; an"
+    " observation becomes a comment on the reviewed issue; a claim not upheld is recorded on"
+    " the reviewed issue as checked and not upheld."
+)
+
 
 def default_brief(
     identity: Identity,
@@ -3338,10 +3347,12 @@ def default_brief(
     contract. The single-shot contract is the one operational rule a thin brief cannot
     omit, because a dispatched session has no second turn to recover from missing it.
 
-    The one line that varies is the gate line. A forced `plan` seat still cannot affect a
-    landing, and the dated human ruling says that review and recon do not re-run the
-    implementer's gate; the disposable tree is a containment capability, not a revision of
-    that instruction. `Seat.judgement_only` is the predicate for the no-gate arm.
+    The gate line varies by seat, and a review brief additionally carries a dispatcher-derived
+    post-landing paragraph when its reviewed SHA is already on ``origin/main``. A forced
+    `plan` seat still cannot affect a landing, and the dated human ruling says that review and
+    recon do not re-run the implementer's gate; the disposable tree is a containment
+    capability, not a revision of that instruction. `Seat.judgement_only` is the predicate for
+    the no-gate arm.
     """
     judgement_only = SEATS[identity.seat].judgement_only
     gate_line = (
@@ -3365,6 +3376,10 @@ def default_brief(
             f" `{gate_report.MARKER}`; an optional suffix may follow after a space."
         )
     )
+    post_landing = (
+        POST_LANDING_REVIEW_PROTOCOL if is_post_landing_review(identity, worktree) else ""
+    )
+    post_landing_spacing = "\n\n" if post_landing else ""
     rendered = (
         f"You are the {identity.seat} seat, dispatched as {identity.dispatch_id} on the "
         f"{identity.lane} lane under profile {identity.profile}.\n\n"
@@ -3372,6 +3387,7 @@ def default_brief(
         f"Worktree: {worktree}\n"
         f"Base SHA: {identity.base_sha}\n"
         f"Issue: #{identity.issue}\n\n"
+        f"{post_landing}{post_landing_spacing}"
         f"Read CLAUDE.md, then `gh issue view {identity.issue}`, and do that issue's "
         f"work in the worktree above and nowhere else. The issue's acceptance criteria "
         f"are the contract. {gate_line}\n"
@@ -3415,6 +3431,23 @@ def git(*args: str, cwd: Path) -> str:
     except OSError:
         return ""
     return done.stdout.strip() if done.returncode == 0 else ""
+
+
+def is_post_landing_review(identity: Identity, worktree: Path) -> bool:
+    """Derive a review's post-landing phase from its SHA and ``origin/main`` (#670).
+
+    The caller supplies the reviewed SHA, not a phase declaration. A review is the
+    post-landing pass when that SHA is reachable from the dispatcher's ``origin/main``;
+    pre-landing review commits are still ahead of that ref. An unreadable ref or commit
+    returns ``False`` rather than inventing a phase, keeping the pre-landing brief unchanged.
+    """
+    seat = SEATS.get(identity.seat)
+    if seat is None or not seat.reviews or not identity.base_sha:
+        return False
+    reviewed_sha = git("rev-parse", identity.base_sha, cwd=worktree)
+    if not reviewed_sha:
+        return False
+    return git("merge-base", reviewed_sha, "origin/main", cwd=worktree) == reviewed_sha
 
 
 def _every_worktree(cwd: Path) -> tuple[Path, ...]:
