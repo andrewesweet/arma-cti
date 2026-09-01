@@ -96,4 +96,14 @@ def test_render_bounds_a_carried_body_with_a_named_truncation_marker() -> None:
     carried_body = rendered[-1]
     assert len(carried_body) <= gate_report.CARRIED_CAP
     assert carried_body.endswith(gate_report.CARRIED_TRUNCATION_MARKER)
+    assert "first 8,000 characters carried" not in gate_report.CARRIED_TRUNCATION_MARKER
     assert body not in carried_body
+
+
+def test_render_closes_a_fence_before_the_truncation_marker() -> None:
+    body = "```text\n" + "x" * gate_report.CARRIED_CAP + "\n```\n"
+    rendered = gate_report.render(655, gate_report.GateReport(gate_report.CARRIED, body))
+    carried_body = rendered[-1]
+
+    assert carried_body.count("```") % 2 == 0
+    assert carried_body.endswith(f"\n```\n\n{gate_report.CARRIED_TRUNCATION_MARKER}")

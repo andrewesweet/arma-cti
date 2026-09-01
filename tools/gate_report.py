@@ -28,7 +28,7 @@ MARKER: Final = "### Implementer gate report"
 # review brief, and make any omitted tail visible so it cannot read as a complete report.
 CARRIED_CAP: Final = 8_000
 CARRIED_TRUNCATION_MARKER: Final = (
-    f"[GATE REPORT TRUNCATED — first {CARRIED_CAP:,} characters carried; "
+    "[GATE REPORT TRUNCATED — comment continued beyond carried bound; "
     "remaining comment content was not carried.]"
 )
 
@@ -72,11 +72,18 @@ HEADING: Final = "## Implementer's gate report — supplied by the dispatcher"
 
 
 def _bounded_body(body: str) -> str:
-    """Bound a carried body and state when the comment tail was not transported."""
+    """Bound a carried body and close a cut-open fenced block before the marker."""
     if len(body) <= CARRIED_CAP:
         return body
     suffix = f"\n\n{CARRIED_TRUNCATION_MARKER}"
-    return body[: CARRIED_CAP - len(suffix)] + suffix
+    prefix_limit = CARRIED_CAP - len(suffix)
+    prefix = body[:prefix_limit]
+    closing_fence = ""
+    if prefix.count("```") % 2:
+        closing_fence = "\n```"
+        prefix_limit -= len(closing_fence)
+        prefix = body[:prefix_limit]
+    return prefix + closing_fence + suffix
 
 
 def render(issue: int, report: GateReport) -> list[str]:
@@ -91,7 +98,8 @@ def render(issue: int, report: GateReport) -> list[str]:
             "",
             (
                 "The dispatcher read this comment from the issue thread; its bounded body follows"
-                " verbatim. A truncation marker means the comment continued beyond the bound."
+                " verbatim, with a closing fence added if truncation cut one open. A truncation"
+                " marker means the comment continued beyond the bound."
             ),
             "",
             _bounded_body(report.body),

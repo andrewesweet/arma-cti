@@ -1385,7 +1385,7 @@ def _note_brief_arrival(issue: int, seat_name: str) -> None:
 def gate_report_for(
     issue: int, seat: Seat, read_gate_report: Callable[[int], GateReport]
 ) -> GateReport:
-    """Read a thread report only for a review brief; other seats keep the unavailable default."""
+    """Read a thread report only for review; other seats retain a non-rendered default."""
     return read_gate_report(issue) if seat.reviews else GateReport(GATE_REPORT_UNAVAILABLE)
 
 
@@ -1398,6 +1398,12 @@ def warn_gate_report_unavailable(issue: int, report: GateReport) -> None:
         " The brief says so; it does not render the absence.",
         file=sys.stderr,
     )
+
+
+def warn_gate_report_for_seat(issue: int, seat: Seat, report: GateReport) -> None:
+    """Warn about an unavailable report only when this seat requested the thread read."""
+    if seat.reviews:
+        warn_gate_report_unavailable(issue, report)
 
 
 def main(  # noqa: PLR0913 — one keyword seam per external read, each injected independently in tests
@@ -1480,7 +1486,7 @@ def main(  # noqa: PLR0913 — one keyword seam per external read, each injected
             " The brief says so; it does not render the absence.",
             file=sys.stderr,
         )
-    warn_gate_report_unavailable(args.issue, thread_report)
+    warn_gate_report_for_seat(args.issue, seat, thread_report)
     if args.out:
         Path(args.out).expanduser().write_text(rendered, encoding="utf-8")
     else:

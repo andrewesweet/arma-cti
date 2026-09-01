@@ -1040,6 +1040,53 @@ def test_non_review_gate_report_lookup_defaults_to_unavailable() -> None:
     assert report.state == brief.GATE_REPORT_UNAVAILABLE
 
 
+def test_non_review_brief_does_not_warn_about_its_unread_gate_report(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    out = tmp_path / "brief.md"
+    code = brief.main(
+        ["251", "--seat", "implementer", "--out", str(out)],
+        read_issue=lambda _issue, _repo: {
+            "number": 251,
+            "title": "t",
+            "body": "rewrite tools/land.py",
+            "state": "OPEN",
+        },
+        read_open=lambda _repo: [],
+        read_handoff=no_handoff,
+        read_gate_report=lambda _issue: pytest.fail("non-review seat must not read the thread"),
+        repo=REPO,
+    )
+    assert code == 0
+    assert "gate_report=unavailable" not in capsys.readouterr().err
+
+
+def test_review_brief_warns_when_its_gate_report_is_unavailable(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    out = tmp_path / "brief.md"
+    code = brief.main(
+        ["251", "--seat", "review", "--reviewing", "opus-low", "--out", str(out)],
+        read_issue=lambda _issue, _repo: {
+            "number": 251,
+            "title": "t",
+            "body": "rewrite tools/land.py",
+            "state": "OPEN",
+        },
+        read_open=lambda _repo: [],
+        read_handoff=no_handoff,
+        read_gate_report=lambda _issue: brief.GateReport(
+            brief.GATE_REPORT_UNAVAILABLE, detail="comments endpoint refused"
+        ),
+        repo=REPO,
+    )
+    assert code == 0
+    assert capsys.readouterr().err == (
+        "[brief] gate_report=unavailable for #251: comments endpoint refused"
+        " The brief says so; it does not render the absence.\n"
+    )
+
+
 def test_main_composes_a_carried_handoff_through_the_seam(tmp_path: Path) -> None:
     out = tmp_path / "brief.md"
     code = brief.main(
