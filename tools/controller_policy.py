@@ -16,8 +16,7 @@ BLOCKED_EXTERNAL: Final = "blocked_external"
 NO_ELIGIBLE_WORK_ITEM: Final = "no_eligible_work_item"
 
 # These vocabularies are intentionally local to the pure reducer.  The delivery
-# protocol may add richer states later, but an unrecognized state is not trusted
-# to release a scheduling slot by this scheduling slice.
+# protocol may add richer states later.
 OPEN_WORK_ITEM_STATES: Final = frozenset({"open", "ready"})
 COMPLETE_WORK_ITEM_STATES: Final = frozenset(
     {"complete", "completed", "closed", "done", "landed", "satisfied"}
@@ -276,14 +275,8 @@ def live_work_runs(facts: ControlFacts) -> tuple[WorkRunFact, ...]:
                 and run.recovery_kind not in RECOVERY_RELAUNCH_KINDS
                 and not run.result_published
             )
-            or _unknown_work_run_state_holds_slot(run)
         )
     )
-
-
-def _unknown_work_run_state_holds_slot(run: WorkRunFact) -> bool:
-    """Keep an unrecognized workflow state from releasing scheduling capacity."""
-    return run.state not in LIVE_WORK_RUN_STATES | {LANDED, NON_RESULT}
 
 
 def occupied_capacity(facts: ControlFacts) -> int:

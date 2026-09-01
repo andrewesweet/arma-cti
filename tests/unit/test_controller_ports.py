@@ -289,56 +289,6 @@ def test_standalone_delivery_landed_sha_cannot_reach_completion(tmp_path: Path) 
     assert policy.live_work_runs(facts) == observed
 
 
-@pytest.mark.parametrize("state", ["complete", "done", "finished"])
-def test_standalone_delivery_non_live_state_cannot_release_a_slot(
-    tmp_path: Path, state: str
-) -> None:
-    record = tmp_path / "dispatches" / "d-1"
-    record.mkdir(parents=True)
-    delivery = {
-        "schema": ports.DELIVERY_SCHEMA,
-        "work_run": {
-            "key": "run-1",
-            "state": state,
-            "work_item_key": "item-1",
-            "dispatch_id": "d-1",
-        },
-    }
-    (record / "delivery.json").write_text(json.dumps(delivery) + "\n", encoding="utf-8")
-
-    observed = ports.DispatchDeliveryFactCollector(tmp_path / "dispatches").collect(())
-    facts = policy.ControlFacts(None, (), (), (), observed, wip_limit=1)
-
-    assert observed[0].state == state
-    assert policy.live_work_runs(facts) == observed
-
-
-def test_delivery_scheduling_field_must_resolve_to_a_work_run_field(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    record = tmp_path / "dispatches" / "d-1"
-    record.mkdir(parents=True)
-    delivery = {
-        "schema": ports.DELIVERY_SCHEMA,
-        "work_run": {
-            "key": "run-1",
-            "state": "running",
-            "dispatch_id": "d-1",
-        },
-    }
-    (record / "delivery.json").write_text(json.dumps(delivery) + "\n", encoding="utf-8")
-    monkeypatch.setattr(
-        ports,
-        "DELIVERY_SCHEDULING_FIELDS",
-        ports.DELIVERY_SCHEDULING_FIELDS | {"not_a_work_run_field"},
-    )
-
-    with pytest.raises(
-        ports.FactCollectionError, match=r"delivery scheduling field.*not_a_work_run_field"
-    ):
-        ports.DispatchDeliveryFactCollector(tmp_path / "dispatches").collect(())
-
-
 def test_dispatch_delivery_collector_rejects_delivery_bound_to_another_dispatch(
     tmp_path: Path,
 ) -> None:

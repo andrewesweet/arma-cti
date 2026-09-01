@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import os
 import sys
-from dataclasses import MISSING, dataclass, field, fields, replace
+from dataclasses import dataclass, field, replace
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, NoReturn, Protocol, cast, runtime_checkable
@@ -67,15 +67,6 @@ WORK_RUN_OPTIONAL_FIELDS: Final = frozenset(
         "delivery_conflict",
     }
 )
-# A standalone delivery is an observation of progress, not a source of
-# scheduling authority.  These are the Work Run fields whose values can
-# release a scheduling slot when sourced authoritatively; the delivery reader
-# resets the whole set in one data-driven operation.  `state` is handled by the
-# policy instead: its raw value remains visible to recovery, while unrecognized
-# values fail closed as live.  A future slot-releasing
-# field joins this set and automatically receives the same boundary treatment,
-# rather than gaining another per-field clear.
-DELIVERY_SCHEDULING_FIELDS: Final = frozenset({"landed_sha", "recovery_kind", "result_published"})
 DEBT_FIELDS: Final = frozenset({"issue", "path"})
 DEBT_OPTIONAL_FIELDS: Final = frozenset({"work_item_key"})
 BAR_FIELDS: Final = frozenset({"key", "kind"})
@@ -551,33 +542,19 @@ def _read_delivery(path: Path) -> policy.WorkRunFact:
     return replace(
         run,
         state=policy.derived_work_run_state(run),
+        # Only this reader's result.json observation may publish a result;
+        # delivery.json may carry the field for compatibility but cannot assert it.
+        result_published=False,
         delivery_conflict=delivery_conflict,
     )
 
 
 def _without_delivery_scheduling_authority(run: policy.WorkRunFact) -> policy.WorkRunFact:
-    """Reset every slot-releasing field to a safe value at the boundary."""
-    specifications = {specification.name: specification for specification in fields(run)}
-    unknown = sorted(DELIVERY_SCHEDULING_FIELDS - specifications.keys())
-    if unknown:
-        _fact_fail(f"delivery scheduling field={unknown[0]!r} is not a WorkRunFact field")
-    defaults: dict[str, object] = {}
-    for field_name in DELIVERY_SCHEDULING_FIELDS:
-        if field_name == "state":
-            defaults[field_name] = (
-                run.state
-                if run.state in policy.LIVE_WORK_RUN_STATES
-                else policy.RECORDED_LAUNCH_STATE
-            )
-            continue
-        specification = specifications[field_name]
-        if specification.default is not MISSING:
-            defaults[field_name] = specification.default
-        elif specification.default_factory is not MISSING:
-            defaults[field_name] = specification.default_factory()
-        else:
-            _fact_fail(f"delivery scheduling field={field_name!r} has no safe default")
-    return replace(run, **defaults)
+    """Clear the two delivery fields individually at the boundary."""
+    # These clears are per-field; which delivery fields carry scheduling authority at
+    # all is open and held by #671, which carries both reviews' evidence and is ranked
+    # with #629.
+    return replace(run, landed_sha=None, recovery_kind=None)
 
 
 def _read_result_delivery(path: Path) -> policy.WorkRunFact | None:

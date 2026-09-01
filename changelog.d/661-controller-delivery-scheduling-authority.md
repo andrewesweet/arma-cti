@@ -1,5 +1,5 @@
 ### Fixed
 
-- Standalone `delivery.json` observations no longer release scheduling slots through
-  publication, recovery, or landing fields; those fields are reset at the delivery
-  boundary. (#661)
+- Standalone `delivery.json` observations cannot release a scheduling slot through
+  `recovery_kind` or reach the completion branch through `landed_sha`. Which delivery
+  fields carry scheduling authority remains open and is held by #671. (#661)

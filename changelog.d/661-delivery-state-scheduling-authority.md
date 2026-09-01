@@ -1,5 +1,4 @@
-### Fixed
+### Removed
 
-- Standalone `delivery.json` observations with an unrecognized Work Run state
-  no longer release scheduling slots, and an unregistered scheduling field now
-  refuses at the delivery boundary. (#661)
+- The unsupported general delivery-scheduling rule from #661 is not shipped; the
+  question of which delivery fields carry scheduling authority remains open under #671.
