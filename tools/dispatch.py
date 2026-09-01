@@ -5704,25 +5704,9 @@ def unreadable_record_refusal(record: Path, unreadable: Exception) -> Refusal:
     )
 
 
-LINUX_REALTIME_COARSE_CLOCK: Final[int] = 5
-
-
 def _clock_point() -> tuple[int, datetime]:
-    """Capture one filesystem-comparable nanosecond stamp and its UTC rendering.
-
-    Linux assigns file mtimes from ``CLOCK_REALTIME_COARSE`` while ``time.time_ns``
-    reads the precise realtime clock. The coarse clock can lag the precise one
-    briefly, which could place a child-created plan just before this window's start.
-    Read the filesystem's clock on Linux and retain the precise fallback elsewhere.
-    """
-    try:
-        stamp = (
-            time.clock_gettime_ns(LINUX_REALTIME_COARSE_CLOCK)
-            if sys.platform.startswith("linux")
-            else time.time_ns()
-        )
-    except (AttributeError, OSError, ValueError):
-        stamp = time.time_ns()
+    """Capture one nanosecond stamp and its UTC rendering."""
+    stamp = time.time_ns()
     return stamp, datetime.fromtimestamp(stamp / 1_000_000_000, tz=UTC)
 
 

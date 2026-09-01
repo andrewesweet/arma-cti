@@ -417,8 +417,8 @@ def _normalised_diff(diff: str) -> str:
     return "".join(lines)
 
 
-def diff_id_of(cwd: Path, sha: str) -> str | Refusal:
-    """Return the exact diff identity of `origin/main...<sha>` — the range `just land` lands.
+def diff_id_of(cwd: Path, sha: str, *, base: str = worktree.BASE) -> str | Refusal:
+    """Return the exact diff identity of `<base>...<sha>` — `origin/main` by default.
 
     The one home of the range and of the normalisation, so the record at `record`
     time and the comparison at landing cannot each keep a version of either:
@@ -439,15 +439,18 @@ def diff_id_of(cwd: Path, sha: str) -> str | Refusal:
     a binary change is returned tagged `BINARY_DIFF_TAG` and `satisfies` refuses to
     carry it across a moved SHA. A diff identity is a claim about the change, never
     about whether the rebase that produced it was clean — that half is the recorded
-    links' (`carried_by_clean_rebase`), and the two are checked together. The limit
-    is `DIFF_ID_LIMIT`'s and is printed wherever a clearance rides it.
+    links' (`carried_by_clean_rebase`), and the two are checked together. The carry
+    dispatcher may supply the rebase link's recorded base when `origin/main` already
+    contains the landed SHA; the default remains the range `just land` lands at
+    record and landing time. The limit is `DIFF_ID_LIMIT`'s and is printed wherever
+    a clearance rides it.
 
     Fail-closed on the one way this could not run — git's own failure — as
     `diff_id_unreadable`, because a check that could not run is not a check that
     passed (#41).
     """
     try:
-        diff = worktree.git("diff", "--unified=0", f"{worktree.BASE}...{sha}", cwd=cwd)
+        diff = worktree.git("diff", "--unified=0", f"{base}...{sha}", cwd=cwd)
     except worktree.GitError as failure:
         return Refusal(
             "diff_id_unreadable",
@@ -608,7 +611,25 @@ def carried_by_clean_rebase(links: tuple[RebaseLink, ...], from_sha: str, to_sha
     return to_sha in reached
 
 
-def review_ref_carry_refusal(
+def _terminal_rebase_link(
+    links: tuple[RebaseLink, ...], from_sha: str, to_sha: str
+) -> RebaseLink | None:
+    """Return the unique recorded link that produced the carried-to SHA, if there is one.
+
+    A chain may contain more than one clean replay before the post-landing dispatch. The
+    final link's base is the one that does not already contain the carried-to commit, so
+    both identity reads can survive the landing push. Ambiguous or incomplete records
+    refuse rather than choosing a base a caller could not prove.
+    """
+    candidates = tuple(
+        link
+        for link in links
+        if link.after == to_sha and carried_by_clean_rebase(links, from_sha, link.before)
+    )
+    return candidates[0] if len(candidates) == 1 else None
+
+
+def review_ref_carry_refusal(  # noqa: PLR0911 — each refusal names one fail-closed carry rung
     cwd: Path,
     issue: int,
     ref_sha: str,
@@ -620,9 +641,11 @@ def review_ref_carry_refusal(
     The review dispatcher normally restores the exchange ref itself. A landing rebase can
     leave that ref at the reviewed commit while its requested SHA is the clean replay on
     ``origin/main``. This is the same carry rule as ``satisfies``: the recorded rebase chain
-    proves how the SHA moved, and the exact diff identities prove what moved. A failed check
-    keeps the dispatcher's historical ``review_ref_sha_mismatch`` refusal rather than turning
-    an altered or unproven ref into a dispatch.
+    proves how the SHA moved, and the exact diff identities prove what moved. The identity
+    comparison uses the final recorded rebase base, because the current ``origin/main`` may
+    already contain the requested SHA after the landing push. A failed check keeps the
+    dispatcher's historical ``review_ref_sha_mismatch`` refusal rather than turning an
+    altered or unproven ref into a dispatch.
     """
     links = read_rebases(review_root, issue)
     if isinstance(links, Refusal):
@@ -634,8 +657,26 @@ def review_ref_carry_refusal(
             " against a different commit.",
         )
 
-    reviewed_id = diff_id_of(cwd, ref_sha)
-    requested_id = diff_id_of(cwd, requested_sha)
+    clean_rebase = carried_by_clean_rebase(links, ref_sha, requested_sha)
+    identity_base = worktree.BASE
+    if clean_rebase:
+        terminal = _terminal_rebase_link(links, ref_sha, requested_sha)
+        if terminal is None:
+            return Refusal(
+                "review_ref_sha_mismatch",
+                (
+                    f"reviewed_sha={ref_sha}",
+                    f"requested_sha={requested_sha}",
+                    "clean_rebase=recorded but no unique final rebase base was found",
+                ),
+                "The review ref does not hold the requested reviewed SHA. The recorded"
+                " clean-rebase chain does not identify one final base for the identity"
+                " comparison; re-exchange and obtain a fresh review.",
+            )
+        identity_base = terminal.base
+
+    reviewed_id = diff_id_of(cwd, ref_sha, base=identity_base)
+    requested_id = diff_id_of(cwd, requested_sha, base=identity_base)
     if isinstance(reviewed_id, Refusal) or isinstance(requested_id, Refusal):
         found: tuple[str, ...] = (f"reviewed_sha={ref_sha}", f"requested_sha={requested_sha}")
         if isinstance(reviewed_id, Refusal):
@@ -662,7 +703,7 @@ def review_ref_carry_refusal(
             " diff is not carried across a rebase; re-exchange and obtain a fresh review.",
         )
 
-    if not carried_by_clean_rebase(links, ref_sha, requested_sha):
+    if not clean_rebase:
         return Refusal(
             "review_ref_sha_mismatch",
             (

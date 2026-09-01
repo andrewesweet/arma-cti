@@ -175,8 +175,10 @@ def rebased_review_repository(
 
     The remote starts with a reviewed commit on the issue ref, then ``origin/main`` advances
     on an unrelated file. Rebasing the reviewed branch produces a different landed SHA while
-    preserving the diff. The altered arrangement keeps the recorded link but changes the
-    landed diff, so the materializer must not treat an identity mismatch as a clean carry.
+    preserving the diff, and the landed SHA is pushed to ``origin/main`` as ``just land``
+    does before the post-landing review is dispatched. The altered arrangement keeps the
+    recorded link but changes the landed diff, so the materializer must not treat an identity
+    mismatch as a clean carry.
     """
     root = git_worktree(tmp_path, name="rebased-review-repo")
     (root / "config").mkdir()
@@ -217,6 +219,9 @@ def rebased_review_repository(
         dispatch.git("add", "reviewed.txt", cwd=root)
         dispatch.git("commit", "-qm", "test: alter landed change", cwd=root)
         landed_sha = dispatch.git("rev-parse", "HEAD", cwd=root).strip()
+    dispatch.git("push", "-q", "origin", "HEAD:refs/heads/main", cwd=root)
+    dispatch.git("fetch", "-q", "origin", cwd=root)
+    assert dispatch.git("rev-parse", "origin/main", cwd=root).strip() == landed_sha
 
     review_root = tmp_path / "review-state"
     if record_rebase:
