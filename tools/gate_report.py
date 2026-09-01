@@ -32,7 +32,9 @@ CARRIED_TRUNCATION_MARKER: Final = (
     "[GATE REPORT TRUNCATED — comment continued beyond carried bound; "
     "remaining comment content was not carried.]"
 )
-_BACKTICK_RUN: Final = re.compile(r"`+")
+# CommonMark permits up to three spaces before a fence. Runs elsewhere on a line are inline
+# delimiters and do not change fenced-block state.
+_FENCE_START: Final = re.compile(r"(?m)^ {0,3}(`{3,})")
 
 CARRIED: Final = "carried"
 ABSENT: Final = "absent"
@@ -74,11 +76,18 @@ HEADING: Final = "## Implementer's gate report — supplied by the dispatcher"
 
 
 def _closing_fence(prefix: str) -> str:
-    """Return a closer for an odd number of backtick runs in ``prefix``."""
-    runs = _BACKTICK_RUN.findall(prefix)
-    if not runs or len(runs) % 2 == 0:
+    """Return a closer when ``prefix`` leaves a backtick fence open."""
+    opener_width: int | None = None
+    for run in _FENCE_START.finditer(prefix):
+        width = len(run.group(1))
+        if opener_width is None:
+            opener_width = width
+        elif width >= opener_width:
+            opener_width = None
+
+    if opener_width is None:
         return ""
-    return "\n" + "`" * max(map(len, runs))
+    return "\n" + "`" * opener_width
 
 
 def _bounded_body(body: str) -> str:

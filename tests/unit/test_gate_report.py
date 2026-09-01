@@ -112,7 +112,7 @@ def test_render_closes_a_fence_before_the_truncation_marker() -> None:
 def test_render_rechecks_fence_parity_after_reslicing_for_a_closing_fence() -> None:
     suffix = f"\n\n{gate_report.CARRIED_TRUNCATION_MARKER}"
     prefix_limit = gate_report.CARRIED_CAP - len(suffix)
-    body = "x" * (prefix_limit - 3) + "```" + "tail" * (len(suffix) + 1)
+    body = "x" * (prefix_limit - len("\n```")) + "\n```" + "tail" * (len(suffix) + 1)
 
     carried_body = gate_report.render(655, gate_report.GateReport(gate_report.CARRIED, body))[-1]
 
@@ -132,3 +132,21 @@ def test_render_closes_a_six_backtick_fence_with_matching_width() -> None:
     carried_body = gate_report.render(669, gate_report.GateReport(gate_report.CARRIED, body))[-1]
 
     assert carried_body.endswith(f"\n``````\n\n{gate_report.CARRIED_TRUNCATION_MARKER}")
+
+
+def test_render_closes_a_fence_when_truncation_cuts_an_inline_span() -> None:
+    body = "```text\n" + "x" * (gate_report.CARRIED_CAP - 200) + " `just check" + "y" * 500
+
+    carried_body = gate_report.render(669, gate_report.GateReport(gate_report.CARRIED, body))[-1]
+
+    assert carried_body.endswith(f"\n```\n\n{gate_report.CARRIED_TRUNCATION_MARKER}")
+
+
+def test_render_ignores_odd_inline_backtick_runs_without_a_fence() -> None:
+    body = "prose `one` and ``two`` then `unfinished" + "x" * gate_report.CARRIED_CAP
+    suffix = f"\n\n{gate_report.CARRIED_TRUNCATION_MARKER}"
+    prefix_limit = gate_report.CARRIED_CAP - len(suffix)
+
+    carried_body = gate_report.render(669, gate_report.GateReport(gate_report.CARRIED, body))[-1]
+
+    assert carried_body == body[:prefix_limit] + suffix
