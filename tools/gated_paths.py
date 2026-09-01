@@ -138,6 +138,7 @@ ADR_SIGNOFF_GATE: Final = PathGate(
 )
 
 OBSERVATORY_SUMMARY_PATH: Final = "docs/observatory/landed-issues.md"
+FOREIGN_CHECKOUT: Final = "Write target resolves inside another repository checkout."
 
 
 # One path authority. ``deny_at_write`` preserves the hook contract AGENTS.md states:
@@ -284,6 +285,47 @@ def gates_for_path(path: str, *, root: Path | None = None) -> tuple[PathGate, ..
     return tuple(gate for gate in PATH_GATES if gate.matches(normalised))
 
 
+def _repository_root(worktree: Path) -> Path | None:
+    """Return linked worktree's main checkout, or ``None`` when Git metadata is unreadable."""
+    try:
+        worktree = worktree.resolve(strict=False)
+        git_path = worktree / ".git"
+        if git_path.is_dir():
+            return worktree
+        marker = git_path.read_text(encoding="utf-8").strip()
+        if not marker.startswith("gitdir:"):
+            return None
+        gitdir = Path(marker.removeprefix("gitdir:").strip())
+        if not gitdir.is_absolute():
+            gitdir = worktree / gitdir
+        return gitdir.resolve(strict=False).parent.parent.parent
+    except (OSError, RuntimeError, UnicodeError):
+        return None
+
+
+def _foreign_checkout(path: str, root: Path) -> bool:
+    """Return whether a write target leaves its worktree for this repository's checkout."""
+    try:
+        worktree = root.resolve(strict=False)
+        candidate = Path(path)
+        if not candidate.is_absolute():
+            candidate = worktree / candidate
+        resolved = candidate.resolve(strict=False)
+        if resolved.is_relative_to(worktree):
+            return False
+    except (OSError, RuntimeError):
+        return True
+
+    repository = _repository_root(root)
+    if repository is None:
+        return False
+    try:
+        resolved.relative_to(repository.resolve(strict=False))
+    except (OSError, RuntimeError, ValueError):
+        return False
+    return True
+
+
 def signoff_gate(path: str, *, root: Path | None = None) -> PathGate | None:
     """Return the sign-off rule for ``path``, or ``None``."""
     return next(
@@ -293,7 +335,13 @@ def signoff_gate(path: str, *, root: Path | None = None) -> PathGate | None:
 
 
 def hook_denial(path: str, *, root: Path | None = None) -> str | None:
-    """Return the immediate hook denial for ``path``, or ``None``."""
+    """Return the immediate hook denial for ``path``, or ``None``.
+
+    The hook is the write boundary, so an absolute target outside its assigned worktree
+    must be denied even when it is not one of the repository's sign-off paths (#666).
+    """
+    if root is not None and _foreign_checkout(path, root):
+        return FOREIGN_CHECKOUT
     return next(
         (gate.reason for gate in gates_for_path(path, root=root) if gate.deny_at_write),
         None,

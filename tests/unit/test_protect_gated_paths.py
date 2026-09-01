@@ -192,6 +192,20 @@ def test_editing_an_ungated_file_is_allowed(monkeypatch: pytest.MonkeyPatch) -> 
     assert call(monkeypatch, stdin) == 0
 
 
+def test_an_absolute_target_outside_the_assigned_worktree_is_denied(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """#666: an absolute main-checkout target must not escape this worktree's hook."""
+    target = str(REPO.parents[2] / "main-checkout-probe.md")
+    patch = f"*** Begin Patch\n*** Update File: {target}\n@@\n-before\n+after\n*** End Patch\n"
+
+    assert (
+        call(monkeypatch, json.dumps({"tool_name": "apply_patch", "tool_input": {"patch": patch}}))
+        == 2
+    )
+    assert bash(monkeypatch, f"touch {target}") == 2
+
+
 # --- the stdin contract fails closed (#94 findings 1-2) ----------------------
 
 
