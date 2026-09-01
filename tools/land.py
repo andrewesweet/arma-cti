@@ -92,12 +92,13 @@ only tracker state.
 
 Three properties make the tracker calls safe on the serial landing path: each is
 bounded (`GH_CALL_TIMEOUT_S`, which kills the `gh` child at its deadline — #425's
-shape); neither can fail the
-landing, since the work is already on `origin/main` and the issue's state is
-bookkeeping, so every way it can go wrong is the non-fatal `issue_closed=no
-reason=…` line and the landing still exits 0; and both are seams (`audit`,
-`close`) rather than hard-wired calls, so the unit tier substitutes them and
-never reaches GitHub.
+shape); neither can fail a normal landing, since the work is already on
+`origin/main` and the issue's state is bookkeeping, so every way it can go wrong
+is the non-fatal `issue_closed=no reason=…` line and that landing still exits 0;
+on `--resume`, an audit-post failure returns `EXIT_LANDED_INCOMPLETE` because
+posting is the outstanding completion step; and both are seams (`audit`, `close`)
+rather than hard-wired calls, so the unit tier substitutes them and never reaches
+GitHub.
 
 **The close depends on an audit record this invocation writes** (#499, replacing
 #461's content scan). `--audit-file` supplies one complete criterion audit. After
@@ -201,7 +202,8 @@ exit code.
     git_failed              any other git step, with git's own words
 
 Exit 0 is landed. Exit 1 is "nothing landed". Exit 2 is the pair above it: the
-work **is** on `origin/main` and a step is outstanding — a distinction an
+work **is** on `origin/main` and a step is outstanding — including an audit post
+that failed on `--resume` — a distinction an
 orchestrator can act on without parsing prose, and never a success exit (#213's
 criterion 4). A `--dry-run` lands nothing whatever it finds, so its exit carries its
 verdict instead: 0 where no rung it could consult refused, 1 for **any** refusal, the
@@ -935,6 +937,13 @@ class AuditRecord(NamedTuple):
     reason: str | None
 
 
+class CloseResult(NamedTuple):
+    """The close lines plus whether this invocation obtained an audit receipt."""
+
+    lines: tuple[str, ...]
+    audit_recorded: bool
+
+
 def record_audit(issue: int, sha: str, body: str | None = None) -> AuditRecord:
     """Post one supplied audit body and return its provenance-bearing receipt.
 
@@ -1402,7 +1411,7 @@ def _resume_post_push(
     pushed = _push(here, 0, lines)
     if isinstance(pushed, Report):
         return pushed
-    return _merge(root, here, pushed, lines, issue, close, audit)
+    return _merge(root, here, pushed, lines, issue, close, audit, resume=True)
 
 
 def stage(root: Path, here: Path, review: ReviewInputs | None = None) -> Report:  # noqa: PLR0911 — a ladder of named refusals
@@ -1670,6 +1679,8 @@ def _merge(  # noqa: PLR0913, PLR0917 — the merge's inputs, one parameter apie
     issue: int | None,
     close: Close,
     audit: Audit,
+    *,
+    resume: bool = False,
 ) -> Report:
     """Fast-forward the main checkout, and make a merge that did not run loud.
 
@@ -1694,34 +1705,51 @@ def _merge(  # noqa: PLR0913, PLR0917 — the merge's inputs, one parameter apie
     """
     if not _merge_needed(here, root):
         lines.append(f"merge=not_needed reason=landed_from_the_main_checkout ({root})")
-        return _landed(lines, issue, pushed, close, audit)
+        return _landed(lines, issue, pushed, close, audit, resume=resume)
     code, stderr = _run(merge_argv(root), cwd=root)
     outstanding = classify_merge(root, pushed, code, stderr)
     if outstanding is not None:
         return Report((*lines, *outstanding.lines()), EXIT_LANDED_INCOMPLETE)
     lines.append(f"merge=fast-forwarded {root} to {pushed}")
-    return _landed(lines, issue, pushed, close, audit)
+    return _landed(lines, issue, pushed, close, audit, resume=resume)
 
 
-def _landed(lines: list[str], issue: int | None, pushed: str, close: Close, audit: Audit) -> Report:
-    """Close the landed issue and return the one report that says `ok=landed`.
+def _landed(  # noqa: PLR0913 — landing and close seams plus resume state are distinct inputs
+    lines: list[str],
+    issue: int | None,
+    pushed: str,
+    close: Close,
+    audit: Audit,
+    *,
+    resume: bool = False,
+) -> Report:
+    """Close the landed issue and report completion or an outstanding audit post.
 
     Both success branches come through here rather than each closing for itself, so
     "landed" and "closed" are one condition and cannot drift apart the way a value
     computed twice can (#422).
+
+    A normal landing keeps tracker failures non-fatal because its work has just reached
+    `origin/main`. A resume has no push or gate to protect: when its audit post fails,
+    it returns `EXIT_LANDED_INCOMPLETE` and does not claim `ok=landed`.
     """
-    lines.extend(_close_lines(issue, pushed, close, audit))
+    result = _close_lines(issue, pushed, close, audit)
+    lines.extend(result.lines)
+    if resume and not result.audit_recorded:
+        return Report(tuple(lines), EXIT_LANDED_INCOMPLETE)
     return Report(("ok=landed", *lines), 0)
 
 
-def _close_lines(issue: int | None, pushed: str, close: Close, audit: Audit) -> tuple[str, ...]:
+def _close_lines(issue: int | None, pushed: str, close: Close, audit: Audit) -> CloseResult:
     """Record the supplied audit, close the issue, and report both acts.
 
-    Nothing here can fail the landing. The seams' own failures come back as reasons, and
-    the `except` blocks catch what a *future* seam might raise instead — because the cost
-    of being wrong about that is a traceback out of `main`, which catches only `GitError`,
-    on a run whose work is already on `origin/main`. A lander told the landing failed
-    when it did not is worse than a lander told the tracker could not be reached.
+    On a normal landing, nothing here can fail the landing. The seams' own failures come
+    back as reasons, and the `except` blocks catch what a *future* seam might raise instead
+    — because the cost of being wrong about that is a traceback out of `main`, which catches
+    only `GitError`, on a run whose work is already on `origin/main`. A lander told the
+    landing failed when it did not is worse than a lander told the tracker could not be
+    reached. `_landed` applies the resume-specific audit failure code after this function
+    reports whether a receipt was obtained.
 
     An issue this tree cannot name is the same non-fatal line. It is reachable: the review
     rung refuses `review_issue_unknown` on a tree that is not an `issue-<n>` one, but only
@@ -1734,9 +1762,12 @@ def _close_lines(issue: int | None, pushed: str, close: Close, audit: Audit) -> 
     the record exists and only the state-changing close call failed.
     """
     if issue is None:
-        return (
-            "audit_recorded=no reason=issue_unknown not_verified=content_or_quality",
-            "issue_closed=no reason=issue_unknown (this tree is not an `issue-<n>` worktree)",
+        return CloseResult(
+            lines=(
+                "audit_recorded=no reason=issue_unknown not_verified=content_or_quality",
+                "issue_closed=no reason=issue_unknown (this tree is not an `issue-<n>` worktree)",
+            ),
+            audit_recorded=False,
         )
     try:
         receipt = audit(issue, pushed)
@@ -1746,16 +1777,19 @@ def _close_lines(issue: int | None, pushed: str, close: Close, audit: Audit) -> 
             reason=f"gh_unrunnable {type(unexpected).__name__}: {_one_line(str(unexpected))}",
         )
     if receipt.reason is not None:
-        return (
-            (
-                f"audit_recorded=no issue={issue} reason={receipt.reason}"
-                " not_verified=content_or_quality"
+        return CloseResult(
+            lines=(
+                (
+                    f"audit_recorded=no issue={issue} reason={receipt.reason}"
+                    " not_verified=content_or_quality"
+                ),
+                (
+                    f"issue_closed=no issue={issue} reason=audit_not_recorded"
+                    " (the closing rung records only an audit it posts itself; no existing"
+                    " thread comment can substitute)"
+                ),
             ),
-            (
-                f"issue_closed=no issue={issue} reason=audit_not_recorded"
-                " (the closing rung records only an audit it posts itself; no existing"
-                " thread comment can substitute)"
-            ),
+            audit_recorded=False,
         )
     audit_line = (
         f"audit_recorded=yes issue={issue} reference={receipt.reference}"
@@ -1766,8 +1800,14 @@ def _close_lines(issue: int | None, pushed: str, close: Close, audit: Audit) -> 
     except Exception as unexpected:  # noqa: BLE001 — see the docstring: never fail the landing
         reason = f"gh_unrunnable {type(unexpected).__name__}: {_one_line(str(unexpected))}"
     if reason is None:
-        return audit_line, f"issue_closed=yes issue={issue} sha={pushed}"
-    return audit_line, f"issue_closed=no issue={issue} reason={reason}"
+        return CloseResult(
+            lines=(audit_line, f"issue_closed=yes issue={issue} sha={pushed}"),
+            audit_recorded=True,
+        )
+    return CloseResult(
+        lines=(audit_line, f"issue_closed=no issue={issue} reason={reason}"),
+        audit_recorded=True,
+    )
 
 
 def _review_plan(

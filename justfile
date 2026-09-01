@@ -565,7 +565,9 @@ worktree *args:
 #                                refusal goes to stderr (#344)
 #   just land --resume --audit-file <file>
 #                                the post-push half after exit 2, once the work is
-#                                already on origin/main; it lands nothing
+#                                already on origin/main; it pushes nothing and re-gates
+#                                nothing; it completes the post-push audit and close
+#                                path
 #
 # `just land --stage` is the protocol's first step, and it lands nothing: it
 # rebases onto fetched origin/main, stops, and prints the SHA a review must bind.
@@ -586,9 +588,9 @@ worktree *args:
 # It never reads existing comments, so no quoted recipe name can stand in for the
 # record it wrote (#499). `audit_recorded=yes` verifies only the posting call — not
 # the body's completeness, accuracy or quality — and the output says so. `--stage`
-# and `--dry-run` land nothing, so neither accepts an audit file. `--resume` also
-# lands nothing: it accepts an audit file only to complete the post-push audit and
-# close path after the already-pushed work is on origin/main.
+# and `--dry-run` land nothing, so neither accepts an audit file. `--resume` pushes
+# nothing and re-gates nothing; it accepts an audit file to complete the post-push
+# audit and close path after the already-pushed work is on origin/main.
 #
 # `--dry-run`'s plan qualifies the push whenever the rebase will move the SHA a
 # verdict binds: `would_not_run=... reason=review_sha_will_move`. That reason is a
@@ -635,7 +637,8 @@ worktree *args:
 # rebase_conflict, gate_red, gate_blocked, corpus_owed, corpus_not_pass,
 # corpus_check_unreadable, not_fast_forward, resume_not_ready, git_failed), 2 is the work IS on
 # origin/main and a step is outstanding (merge_blocked_by_sandbox,
-# merge_not_fast_forward). Nothing here resolves, aborts, resets or tidies on a
+# merge_not_fast_forward, or a `--resume` audit post that did not record). Nothing here resolves,
+# aborts, resets or tidies on a
 # refusal path.
 [positional-arguments]
 land *args:

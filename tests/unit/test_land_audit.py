@@ -132,7 +132,9 @@ def test_an_unreadable_audit_file_refuses_before_repository_resolution(
     assert "refusal=audit_file_unreadable" in capsys.readouterr().err
 
 
+@pytest.mark.parametrize("argv", [[], ["--resume"]], ids=["landing", "resume"])
 def test_a_missing_audit_argument_is_a_named_pre_landing_refusal(
+    argv: list[str],
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
@@ -143,7 +145,7 @@ def test_a_missing_audit_argument_is_a_named_pre_landing_refusal(
 
     monkeypatch.setattr(land, "git", repository_was_touched)
 
-    code = land.main([])
+    code = land.main(argv)
 
     captured = capsys.readouterr()
     assert code == land.EXIT_REFUSED
@@ -191,15 +193,16 @@ def test_unowned_thread_comments_cannot_replace_a_failed_rung_post(
 
     monkeypatch.setattr(land.subprocess, "run", tracker)
 
-    lines = land._close_lines(  # noqa: SLF001 — production close decision is the subject
+    result = land._close_lines(  # noqa: SLF001 — production close decision is the subject
         499,
         "abc1234",
         land.close_issue,
         lambda issue, sha: land.record_audit(issue, sha, _AUDIT_BODY),
     )
 
-    assert lines[0].startswith("audit_recorded=no issue=499 reason=gh_refused")
-    assert lines[1].startswith("issue_closed=no issue=499 reason=audit_not_recorded")
+    assert result.lines[0].startswith("audit_recorded=no issue=499 reason=gh_refused")
+    assert result.lines[1].startswith("issue_closed=no issue=499 reason=audit_not_recorded")
+    assert not result.audit_recorded
     assert calls == [["gh", "issue", "comment", "499", "--body-file", "-"]]
 
 

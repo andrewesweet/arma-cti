@@ -1356,6 +1356,36 @@ def test_a_post_push_resume_finishes_after_the_main_checkout_is_already_current(
     assert "issue_closed=yes issue=213" in "\n".join(report.lines)
 
 
+def test_post_push_resume_reports_landed_incomplete_when_audit_post_fails(
+    repo: tuple[Path, Path, Path],
+) -> None:
+    """A resume has no landing left to protect from a tracker failure (#658)."""
+    _origin, main, here = repo
+    _commit(here, "feature.txt", "work\n")
+    _git("push", "origin", "HEAD:main", cwd=here)
+    _git("merge", "--ff-only", "origin/main", cwd=main)
+
+    audit = _Audit(reason="gh_timeout")
+    close = _Close()
+    report = land.land(
+        main,
+        here,
+        gate=_Gate(),
+        resume=True,
+        audit=audit,
+        close=close,
+    )
+
+    assert report.code == land.EXIT_LANDED_INCOMPLETE
+    assert "ok=landed" not in report.lines
+    assert (
+        "audit_recorded=no issue=213 reason=gh_timeout not_verified=content_or_quality"
+        in report.lines
+    )
+    assert any(line.startswith("issue_closed=no issue=213") for line in report.lines)
+    assert close.calls == []
+
+
 def test_post_push_resume_refuses_work_that_is_not_on_origin_main(
     repo: tuple[Path, Path, Path],
 ) -> None:
