@@ -1196,6 +1196,41 @@ def test_carried_by_clean_rebase_walks_a_chain_and_stops_where_none_was_recorded
     assert not review_exchange.carried_by_clean_rebase(links, THIRD_SHA, SHA)
 
 
+def test_terminal_rebase_link_selects_terminal_base_for_staged_then_landed_chain() -> None:
+    """Staged then landed records two clean rebases before post-landing review dispatch."""
+    terminal_sha = "f" * 40
+    terminal_link = review_exchange.RebaseLink(
+        OTHER_SHA, terminal_sha, "d" * 40, "2026-08-18T11:00:00+00:00"
+    )
+    links = (
+        review_exchange.RebaseLink(SHA, OTHER_SHA, THIRD_SHA, "2026-08-18T10:00:00+00:00"),
+        terminal_link,
+    )
+
+    selected = review_exchange._terminal_rebase_link(  # noqa: SLF001 — #674 requires direct branch coverage
+        links, SHA, terminal_sha
+    )
+
+    assert selected is not None
+    assert selected.base == "d" * 40
+
+
+def test_terminal_rebase_link_refuses_a_duplicated_after() -> None:
+    """A duplicated terminal ``after`` makes recorded staged-then-landed provenance ambiguous."""
+    terminal_sha = "f" * 40
+    links = (
+        review_exchange.RebaseLink(SHA, OTHER_SHA, THIRD_SHA, "2026-08-18T10:00:00+00:00"),
+        review_exchange.RebaseLink(OTHER_SHA, terminal_sha, "d" * 40, "2026-08-18T11:00:00+00:00"),
+        review_exchange.RebaseLink(SHA, terminal_sha, "1" * 40, "2026-08-18T12:00:00+00:00"),
+    )
+
+    selected = review_exchange._terminal_rebase_link(  # noqa: SLF001 — #674 requires direct branch coverage
+        links, SHA, terminal_sha
+    )
+
+    assert selected is None
+
+
 def test_scan_collects_verdicts_and_names_the_unreadable(tmp_path: Path) -> None:
     root = tmp_path / "dispatches"
     dispatch_dir(root, "d-1")
