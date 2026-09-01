@@ -520,7 +520,7 @@ class DispatchDeliveryFactCollector:
 
 
 def _read_delivery(path: Path) -> policy.WorkRunFact:
-    """Read one strict typed delivery envelope."""
+    """Read one strict typed delivery envelope without publication authority."""
     try:
         raw = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, UnicodeError, json.JSONDecodeError) as error:
@@ -540,6 +540,9 @@ def _read_delivery(path: Path) -> policy.WorkRunFact:
     return replace(
         run,
         state=policy.derived_work_run_state(run),
+        # Only this reader's result.json observation may publish a result;
+        # delivery.json may carry the field for compatibility but cannot assert it.
+        result_published=False,
         delivery_conflict=run.delivery_conflict or policy.delivery_identity_conflict(run),
     )
 

@@ -209,6 +209,29 @@ def test_dispatch_delivery_collector_reads_typed_candidate_evidence(tmp_path: Pa
     assert observed[0].delivery_conflict is False
 
 
+def test_standalone_delivery_cannot_publish_a_result_or_release_a_slot(tmp_path: Path) -> None:
+    record = tmp_path / "dispatches" / "d-1"
+    record.mkdir(parents=True)
+    delivery = {
+        "schema": ports.DELIVERY_SCHEMA,
+        "work_run": {
+            "key": "run-1",
+            "state": "non_result",
+            "work_item_key": "item-1",
+            "dispatch_id": "d-1",
+            "failure_class": "quota_exhausted",
+            "result_published": True,
+        },
+    }
+    (record / "delivery.json").write_text(json.dumps(delivery) + "\n", encoding="utf-8")
+
+    observed = ports.DispatchDeliveryFactCollector(tmp_path / "dispatches").collect(())
+    facts = policy.ControlFacts(None, (), (), (), observed, wip_limit=1)
+
+    assert observed[0].result_published is False
+    assert policy.live_work_runs(facts) == observed
+
+
 def test_dispatch_delivery_collector_rejects_delivery_bound_to_another_dispatch(
     tmp_path: Path,
 ) -> None:
