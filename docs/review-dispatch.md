@@ -52,9 +52,12 @@ Six things, and the dispatch record carries four of them by construction:
 - **the implementer's pasted gate output** — the gate record the 2026-08-14 ruling puts in
   the review's hands in place of a gate run (#353). The host dispatcher reads the issue
   comments before launching the forced-read-only child and carries the newest comment whose
-  first line is the exact heading `### Implementer gate report` into the review brief. The
-  comment body is reproduced verbatim, so the reviewer can spot-check it without calling
-  `gh`. The paste must carry `just check`,
+  first line begins with the marker `### Implementer gate report` into the review brief. An
+  optional suffix may follow the marker after a space, so a round or SHA can identify the
+  paste without changing which marker selects it. The comment body is reproduced verbatim up
+  to the 8,000-character transport bound; a longer body ends with the named marker
+  `GATE REPORT TRUNCATED`, so the reviewer can spot-check it without calling `gh` and can see
+  when the carried report is incomplete. The paste must carry `just check`,
   `just unit` **and** `just mutation` **with their result counts**, including `just
   mutation`'s own `mutation smoke: run was sampled` (fewer than every planted candidate
   reached a verdict) or `mutation smoke: run was exhaustive` (every planted candidate
@@ -64,9 +67,10 @@ Six things, and the dispatch record carries four of them by construction:
   reported `rate=100%`, because the sample missed both survivors on the line the round had
   just added. A paste that is absent, thinner than that, silent on counts, or silent on
   sampled-or-exhaustive is a finding — the reviewer reports it as an observation rather
-  than running anything. A thread read that succeeds but finds no marked comment is rendered
-  as **GATE REPORT ABSENT**; a thread that the dispatcher cannot obtain is rendered as
-  **GATE REPORT UNAVAILABLE**. The latter is an inability to obtain the record, not evidence
+  than running anything. A thread read that succeeds but finds no comment carrying the marker
+  is rendered as **GATE REPORT ABSENT** — that establishes only marker absence, and an unmarked
+  report may still exist on the thread; a thread that the dispatcher cannot obtain is rendered
+  as **GATE REPORT UNAVAILABLE**. The latter is an inability to obtain the record, not evidence
   that it is absent, and the reviewer reports those states distinctly;
 - **a worktree at `origin/main`** — `just worktree add issue-<n>`. The reviewed SHA is reached
   with `git show`, and the tree's own head is recorded, because a citation into a landing that

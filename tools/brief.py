@@ -885,8 +885,9 @@ THREAD_GATE_REPORT_RULE: Final = (
     "Before review, post on #{issue}'s thread the implementer's gate report — `just check`,"
     " `just unit`, `just mutation`, each with its result counts —"
     f" including {MUTATION_SAMPLING_PASTE_RULE} (#344, #421:"
-    " unconditionally, never only where a kill rate is quoted). Begin the comment with the"
-    " exact heading `### Implementer gate report`. That paste is the"
+    " unconditionally, never only where a kill rate is quoted). Begin the comment's first line"
+    f" with the marker `{gate_report.MARKER}`; an optional suffix may follow after a space."
+    " That paste is the"
     " review's gate record (#449), so it is owed before the branch is handed over. It is"
     " not the closing audit and no words inside it satisfy the closing rung (#499)."
 )
@@ -1384,8 +1385,8 @@ def _note_brief_arrival(issue: int, seat_name: str) -> None:
 def gate_report_for(
     issue: int, seat: Seat, read_gate_report: Callable[[int], GateReport]
 ) -> GateReport:
-    """Read a thread report only for a review brief; other seats keep the quiet default."""
-    return read_gate_report(issue) if seat.reviews else GateReport(GATE_REPORT_ABSENT)
+    """Read a thread report only for a review brief; other seats keep the unavailable default."""
+    return read_gate_report(issue) if seat.reviews else GateReport(GATE_REPORT_UNAVAILABLE)
 
 
 def warn_gate_report_unavailable(issue: int, report: GateReport) -> None:

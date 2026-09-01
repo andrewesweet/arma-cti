@@ -9,7 +9,6 @@ exists to prevent.
 
 from __future__ import annotations
 
-import re
 from typing import TYPE_CHECKING, Final, NamedTuple
 
 import handoff_fetch
@@ -20,10 +19,18 @@ if TYPE_CHECKING:
     Fetch = Callable[[int], str]
 
 
-# The implementer's required heading is the selector, not a loose search for ``just check``:
-# review prose can quote a report without becoming the report. It is anchored to the body's
-# first line so a later unquoted mention cannot accidentally satisfy it.
-MARKER: Final = re.compile(r"\A### Implementer gate report(?:[ \t]|\r?\n|$)")
+# The implementer's required marker is the selector, not a loose search for ``just check``:
+# review prose can quote a report without becoming the report. Selection accepts this literal at
+# the body's first line, with optional whitespace and a descriptive suffix after it.
+MARKER: Final = "### Implementer gate report"
+
+# The issue thread is untrusted prompt input. Keep a carried report from consuming an unbounded
+# review brief, and make any omitted tail visible so it cannot read as a complete report.
+CARRIED_CAP: Final = 8_000
+CARRIED_TRUNCATION_MARKER: Final = (
+    f"[GATE REPORT TRUNCATED — first {CARRIED_CAP:,} characters carried; "
+    "remaining comment content was not carried.]"
+)
 
 CARRIED: Final = "carried"
 ABSENT: Final = "absent"
@@ -31,21 +38,27 @@ UNAVAILABLE: Final = "unavailable"
 
 
 class GateReport(NamedTuple):
-    """The newest report, a confirmed absence, or why the thread could not be read."""
+    """The newest marked report, a successful marker miss, or why the thread could not be read."""
 
     state: str
     body: str = ""
     detail: str = ""
 
 
+def _starts_with_marker(body: str) -> bool:
+    """Say whether the comment's first line begins with the shared marker."""
+    first_line = body.partition("\n")[0].removesuffix("\r")
+    return first_line == MARKER or first_line.startswith((f"{MARKER} ", f"{MARKER}\t"))
+
+
 def select(comments: Iterable[str]) -> str | None:
-    """Return the newest comment beginning with the implementer's report heading."""
-    carried = [body for body in comments if MARKER.match(body)]
+    """Return the newest comment whose first line begins with the implementer's marker."""
+    carried = [body for body in comments if _starts_with_marker(body)]
     return carried[-1] if carried else None
 
 
 def fetch(issue: int, fetch_comments: Fetch = handoff_fetch.fetch_comments) -> GateReport:
-    """Read one issue's comments and preserve carried, absent and unavailable states."""
+    """Read one issue's comments and preserve carried, marker-absent and unavailable states."""
     try:
         report = select(handoff_fetch.bodies(fetch_comments(issue)))
     except handoff_fetch.FetchError as failure:
@@ -58,27 +71,41 @@ def fetch(issue: int, fetch_comments: Fetch = handoff_fetch.fetch_comments) -> G
 HEADING: Final = "## Implementer's gate report — supplied by the dispatcher"
 
 
+def _bounded_body(body: str) -> str:
+    """Bound a carried body and state when the comment tail was not transported."""
+    if len(body) <= CARRIED_CAP:
+        return body
+    suffix = f"\n\n{CARRIED_TRUNCATION_MARKER}"
+    return body[: CARRIED_CAP - len(suffix)] + suffix
+
+
 def render(issue: int, report: GateReport) -> list[str]:
     """Render one report state without turning unavailable into absent.
 
-    A carried body is inserted unchanged. A thin carried body remains carried so the reviewer
-    can identify the missing fields as a finding under the existing review gate contract.
+    A carried body is bounded and a thin carried body remains carried so the reviewer can identify
+    missing fields as a finding under the existing review gate contract.
     """
     if report.state == CARRIED:
         return [
             HEADING,
             "",
-            "The dispatcher read this comment from the issue thread; its body follows verbatim.",
+            (
+                "The dispatcher read this comment from the issue thread; its bounded body follows"
+                " verbatim. A truncation marker means the comment continued beyond the bound."
+            ),
             "",
-            report.body,
+            _bounded_body(report.body),
         ]
     if report.state == ABSENT:
         return [
             "## Implementer's gate report",
-            f"**GATE REPORT ABSENT — no marked report was found on #{issue}'s issue thread.**",
             (
-                "The thread was read successfully; this is a confirmed missing record, not an "
-                "unavailable read."
+                f"**GATE REPORT ABSENT — no comment carrying the required marker `{MARKER}` was "
+                f"found on #{issue}'s issue thread.**"
+            ),
+            (
+                "The thread was read successfully; an unmarked report may exist on the thread. "
+                "This is not confirmation that no report exists."
             ),
         ]
     if report.state == UNAVAILABLE:

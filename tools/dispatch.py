@@ -3359,7 +3359,11 @@ def default_brief(
             )
         )
         if judgement_only
-        else "Run `just fast` after every edit."
+        else (
+            f"Run `just fast` after every edit. Before review, post the implementer's gate report"
+            f" on #{identity.issue}'s issue thread. Begin its first line with the marker"
+            f" `{gate_report.MARKER}`; an optional suffix may follow after a space."
+        )
     )
     rendered = (
         f"You are the {identity.seat} seat, dispatched as {identity.dispatch_id} on the "

@@ -1011,6 +1011,35 @@ def test_the_default_review_brief_carries_the_dispatcher_supplied_gate_report() 
     assert A_GATE_REPORT in rendered
 
 
+def test_the_default_implementer_brief_requires_the_shared_gate_report_marker() -> None:
+    identity = dispatch.Identity(
+        dispatch_id="d-test",
+        lane="claude-native",
+        profile="opus-high",
+        seat="implementer",
+        issue=655,
+        base_sha="deadbee",
+    )
+    rendered = dispatch.default_brief(identity, REPO / ".claude" / "worktrees" / "issue-655")
+    assert f"first line with the marker `{dispatch.gate_report.MARKER}`" in rendered
+
+
+def test_gate_report_marker_is_shared_by_instruction_and_document() -> None:
+    marker = brief.gate_report.MARKER
+    document = (REPO / "docs" / "review-dispatch.md").read_text(encoding="utf-8")
+    assert f"`{marker}`" in brief.THREAD_GATE_REPORT_RULE
+    assert f"`{marker}`" in document
+
+
+def test_non_review_gate_report_lookup_defaults_to_unavailable() -> None:
+    report = brief.gate_report_for(
+        655,
+        brief.derive_seat("implementer", "opus-high"),
+        lambda _issue: pytest.fail("non-review seat must not read the thread"),
+    )
+    assert report.state == brief.GATE_REPORT_UNAVAILABLE
+
+
 def test_main_composes_a_carried_handoff_through_the_seam(tmp_path: Path) -> None:
     out = tmp_path / "brief.md"
     code = brief.main(
