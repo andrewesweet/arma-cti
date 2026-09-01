@@ -52,6 +52,7 @@ brief = load_tool("brief")
 gate_clock = load_tool("gate_clock")
 readiness = load_tool("readiness")
 routing_policy = load_tool("routing_policy")
+review_exchange = load_tool("review_exchange")
 queue_policy = load_tool("queue_policy")
 
 SEAM = REPO / "tools" / "dispatch.sh"
@@ -161,6 +162,75 @@ def review_repository(tmp_path: Path, issue: int = 600) -> tuple[Path, str]:
     for ref in ("main", f"issue-{issue}"):
         dispatch.git("push", "-q", "origin", f"HEAD:refs/heads/{ref}", cwd=root)
     return root, sha
+
+
+def rebased_review_repository(
+    tmp_path: Path,
+    *,
+    issue: int = 600,
+    altered: bool = False,
+    record_rebase: bool = True,
+) -> tuple[Path, str, str, Path]:
+    """Make a stale review ref and a landed commit linked by a recorded rebase.
+
+    The remote starts with a reviewed commit on the issue ref, then ``origin/main`` advances
+    on an unrelated file. Rebasing the reviewed branch produces a different landed SHA while
+    preserving the diff. The altered arrangement keeps the recorded link but changes the
+    landed diff, so the materializer must not treat an identity mismatch as a clean carry.
+    """
+    root = git_worktree(tmp_path, name="rebased-review-repo")
+    (root / "config").mkdir()
+    shutil.copyfile(REPO / "CONTEXT.md", root / "CONTEXT.md")
+    shutil.copyfile(
+        REPO / "config" / "dispatch-routing-policy.json",
+        root / "config" / "dispatch-routing-policy.json",
+    )
+    dispatch.git("add", "CONTEXT.md", "config", cwd=root)
+    dispatch.git("commit", "-qm", "test: add review inputs", cwd=root)
+    origin = tmp_path / "rebased-review-origin.git"
+    dispatch.git("init", "-q", "--bare", str(origin), cwd=tmp_path)
+    dispatch.git("remote", "add", "origin", str(origin), cwd=root)
+    dispatch.git("push", "-q", "origin", "HEAD:refs/heads/main", cwd=root)
+    dispatch.git("fetch", "-q", "origin", cwd=root)
+
+    dispatch.git("checkout", "-q", "-b", "review", cwd=root)
+    (root / "reviewed.txt").write_text("reviewed\n", encoding="utf-8")
+    dispatch.git("add", "reviewed.txt", cwd=root)
+    dispatch.git("commit", "-qm", "test: reviewed change", cwd=root)
+    reviewed_sha = dispatch.git("rev-parse", "HEAD", cwd=root).strip()
+    dispatch.git("push", "-q", "origin", f"HEAD:refs/heads/issue-{issue}", cwd=root)
+
+    dispatch.git("checkout", "-q", "-b", "upstream", "origin/main", cwd=root)
+    (root / "upstream.txt").write_text("unrelated\n", encoding="utf-8")
+    dispatch.git("add", "upstream.txt", cwd=root)
+    dispatch.git("commit", "-qm", "test: advance main", cwd=root)
+    upstream_sha = dispatch.git("rev-parse", "HEAD", cwd=root).strip()
+    dispatch.git("push", "-q", "origin", "HEAD:refs/heads/main", cwd=root)
+    dispatch.git("fetch", "-q", "origin", cwd=root)
+
+    dispatch.git("checkout", "-q", "review", cwd=root)
+    dispatch.git("rebase", "origin/main", cwd=root)
+    landed_sha = dispatch.git("rev-parse", "HEAD", cwd=root).strip()
+    assert landed_sha != reviewed_sha
+    if altered:
+        (root / "reviewed.txt").write_text("altered\n", encoding="utf-8")
+        dispatch.git("add", "reviewed.txt", cwd=root)
+        dispatch.git("commit", "-qm", "test: alter landed change", cwd=root)
+        landed_sha = dispatch.git("rev-parse", "HEAD", cwd=root).strip()
+
+    review_root = tmp_path / "review-state"
+    if record_rebase:
+        review_exchange.record_rebase(
+            review_root,
+            issue,
+            review_exchange.RebaseLink(
+                reviewed_sha,
+                landed_sha,
+                upstream_sha,
+                "2026-09-01T10:00:00+00:00",
+            ),
+        )
+    return root, reviewed_sha, landed_sha, review_root
 
 
 def fake_claude(tmp_path: Path) -> Path:
@@ -480,6 +550,85 @@ def test_a_review_ref_sha_mismatch_refuses_and_removes_the_provisional_tree(
     assert f"reviewed_sha={reviewed_sha}" in refusal.found
     worktree_root = root / ".claude" / "worktrees"
     assert not list(worktree_root.glob("dispatch-*"))
+
+
+def test_a_review_accepts_a_clean_rebase_but_refuses_an_altered_diff(
+    tmp_path: Path,
+) -> None:
+    """A post-landing review may use the landed SHA only when #417's two facts hold."""
+    root, _reviewed_sha, landed_sha, review_root = rebased_review_repository(tmp_path)
+    plan, _brief, refusal = plan_for(
+        tmp_path,
+        root=root,
+        issue=600,
+        lane="claude-native",
+        profile="opus-low",
+        seat="review",
+        reviewing="opus-high",
+        base_sha=landed_sha,
+        review_root=str(review_root),
+        materialize_worktree=True,
+    )
+
+    assert refusal is None, refusal
+    assert plan is not None
+    try:
+        assert dispatch.git("rev-parse", "HEAD", cwd=plan.worktree).strip() == landed_sha
+        assert plan.identity.base_sha == landed_sha
+        assert plan.worktree_ref == landed_sha
+    finally:
+        cleanup_refusal, _cleanup = dispatch._cleanup_plan_worktree(plan)  # noqa: SLF001
+        assert cleanup_refusal is None
+        dispatch._remove_provisional_owner(plan.record)  # noqa: SLF001
+
+    altered_root, _reviewed_sha, altered_sha, altered_review_root = rebased_review_repository(
+        tmp_path / "altered", altered=True
+    )
+    altered_plan, _brief, altered_refusal = plan_for(
+        tmp_path / "altered",
+        root=altered_root,
+        issue=600,
+        lane="claude-native",
+        profile="opus-low",
+        seat="review",
+        reviewing="opus-high",
+        base_sha=altered_sha,
+        review_root=str(altered_review_root),
+        materialize_worktree=True,
+    )
+
+    assert altered_plan is None
+    assert altered_refusal is not None
+    assert altered_refusal.kind == "review_ref_sha_mismatch"
+    assert any("diff_id=mismatch" in item for item in altered_refusal.found)
+
+
+def test_a_review_refuses_a_moved_sha_without_a_recorded_clean_rebase(
+    tmp_path: Path,
+) -> None:
+    """Matching content cannot carry a hand-resolved replay into a review."""
+    root, _reviewed_sha, landed_sha, review_root = rebased_review_repository(
+        tmp_path, record_rebase=False
+    )
+    plan, _brief, refusal = plan_for(
+        tmp_path,
+        root=root,
+        issue=600,
+        lane="claude-native",
+        profile="opus-low",
+        seat="review",
+        reviewing="opus-high",
+        base_sha=landed_sha,
+        review_root=str(review_root),
+        materialize_worktree=True,
+    )
+
+    assert plan is None
+    assert refusal is not None
+    assert refusal.kind == "review_ref_sha_mismatch"
+    assert "clean_rebase=no recorded chain connects the reviewed commit to this one" in (
+        refusal.found
+    )
 
 
 def test_forced_plan_seats_run_gates_only_with_disposable_containment() -> None:

@@ -608,6 +608,88 @@ def carried_by_clean_rebase(links: tuple[RebaseLink, ...], from_sha: str, to_sha
     return to_sha in reached
 
 
+def review_ref_carry_refusal(
+    cwd: Path,
+    issue: int,
+    ref_sha: str,
+    requested_sha: str,
+    review_root: Path,
+) -> Refusal | None:
+    """Refuse a moved review ref unless #417's provenance and identity both match.
+
+    The review dispatcher normally restores the exchange ref itself. A landing rebase can
+    leave that ref at the reviewed commit while its requested SHA is the clean replay on
+    ``origin/main``. This is the same carry rule as ``satisfies``: the recorded rebase chain
+    proves how the SHA moved, and the exact diff identities prove what moved. A failed check
+    keeps the dispatcher's historical ``review_ref_sha_mismatch`` refusal rather than turning
+    an altered or unproven ref into a dispatch.
+    """
+    links = read_rebases(review_root, issue)
+    if isinstance(links, Refusal):
+        return Refusal(
+            "review_ref_sha_mismatch",
+            (f"reviewed_sha={ref_sha}", f"requested_sha={requested_sha}", *links.found),
+            "The review ref does not hold the requested reviewed SHA. Its move is not"
+            " backed by a readable clean-rebase record, so do not dispatch a reviewer"
+            " against a different commit.",
+        )
+
+    reviewed_id = diff_id_of(cwd, ref_sha)
+    requested_id = diff_id_of(cwd, requested_sha)
+    if isinstance(reviewed_id, Refusal) or isinstance(requested_id, Refusal):
+        found: tuple[str, ...] = (f"reviewed_sha={ref_sha}", f"requested_sha={requested_sha}")
+        if isinstance(reviewed_id, Refusal):
+            found += ("reviewed_diff_id=unreadable", *reviewed_id.found)
+        if isinstance(requested_id, Refusal):
+            found += ("requested_diff_id=unreadable", *requested_id.found)
+        return Refusal(
+            "review_ref_sha_mismatch",
+            found,
+            "The review ref does not hold the requested reviewed SHA. The diff identity"
+            " comparison could not run, so do not dispatch a reviewer against a different"
+            " commit.",
+        )
+
+    if reviewed_id.startswith(BINARY_DIFF_TAG) or requested_id.startswith(BINARY_DIFF_TAG):
+        return Refusal(
+            "review_ref_sha_mismatch",
+            (
+                f"reviewed_sha={ref_sha}",
+                f"requested_sha={requested_sha}",
+                f"binary=reviewed={reviewed_id} requested={requested_id}",
+            ),
+            "The review ref does not hold the requested reviewed SHA. A moved binary"
+            " diff is not carried across a rebase; re-exchange and obtain a fresh review.",
+        )
+
+    if not carried_by_clean_rebase(links, ref_sha, requested_sha):
+        return Refusal(
+            "review_ref_sha_mismatch",
+            (
+                f"reviewed_sha={ref_sha}",
+                f"requested_sha={requested_sha}",
+                f"diff_id={'match' if reviewed_id == requested_id else 'mismatch'}",
+                "clean_rebase=no recorded chain connects the reviewed commit to this one",
+            ),
+            "The review ref does not hold the requested reviewed SHA. Matching content"
+            " alone cannot prove a clean replay; re-exchange and obtain a fresh review.",
+        )
+
+    if reviewed_id != requested_id:
+        return Refusal(
+            "review_ref_sha_mismatch",
+            (
+                f"reviewed_sha={ref_sha}",
+                f"requested_sha={requested_sha}",
+                f"diff_id=mismatch reviewed={reviewed_id} requested={requested_id}",
+                "clean_rebase=recorded (the diff changed under it)",
+            ),
+            "The review ref does not hold the requested reviewed SHA. The recorded clean"
+            " replay changed the diff, so re-exchange and obtain a fresh review.",
+        )
+    return None
+
+
 # --------------------------------------------------------------------- the findings
 
 

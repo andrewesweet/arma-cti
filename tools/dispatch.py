@@ -5133,15 +5133,18 @@ def _materialize_disposable_plan(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0
     brief: str,
     root: Path,
     requested_base_sha: str,
+    review_root: Path,
     *,
     custom_brief: bool,
     thread_report: gate_report.GateReport | None,
     writable_roots: tuple[Path, ...] | None,
 ) -> tuple[Plan | None, str, Refusal | None]:
     """Restore the selected review/recon base into an id-owned tree, failing closed."""
-    ref = review_exchange.review_ref(plan.identity.issue)
+    review_ref = review_exchange.review_ref(plan.identity.issue)
+    ref = review_ref
     path = root / worktree_tool.WORKTREES / f"dispatch-{plan.identity.dispatch_id}"
     restore_from_commit = False
+    exchanged_sha: str | None = None
     if plan.record.exists():
         return (
             None,
@@ -5190,6 +5193,47 @@ def _materialize_disposable_plan(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0
                 failure_class="infra_unavailable",
             ),
         )
+    if plan.identity.seat == "review" and requested_base_sha:
+        try:
+            exchanged_sha = worktree_tool.remote_ref_sha(root, review_ref)
+        except worktree_tool.GitError as failure:
+            return (
+                None,
+                "",
+                Refusal(
+                    "disposable_worktree_create_failed",
+                    (
+                        f"worktree={path}",
+                        f"ref={review_ref}",
+                        f"command=git {' '.join(failure.args_run)}",
+                        f"stderr={failure.stderr}",
+                    ),
+                    "The review ref could not be read. Nothing was dispatched; inspect the git "
+                    "error and retry only after the ref is readable.",
+                    failure_class="infra_unavailable",
+                ),
+            )
+        if exchanged_sha is not None and requested_base_sha != exchanged_sha:
+            carry_refusal = review_exchange.review_ref_carry_refusal(
+                root,
+                plan.identity.issue,
+                exchanged_sha,
+                requested_base_sha,
+                review_root,
+            )
+            if carry_refusal is not None:
+                return (
+                    None,
+                    "",
+                    Refusal(
+                        carry_refusal.kind,
+                        (f"worktree={path}", f"ref={review_ref}", *carry_refusal.found),
+                        carry_refusal.action,
+                        failure_class="infra_unavailable",
+                    ),
+                )
+            ref = requested_base_sha
+            restore_from_commit = True
     if plan.identity.seat == "recon":
         try:
             review_sha = worktree_tool.remote_ref_sha(root, ref)
@@ -5277,6 +5321,37 @@ def _materialize_disposable_plan(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0
             "above; nothing was dispatched.",
         )
     created = True
+
+    if restore_from_commit and exchanged_sha is not None:
+        try:
+            current_exchanged_sha = worktree_tool.remote_ref_sha(root, review_ref)
+        except worktree_tool.GitError as failure:
+            return failed(
+                "review_ref_sha_mismatch",
+                (
+                    f"worktree={path}",
+                    f"ref={review_ref}",
+                    f"reviewed_sha={exchanged_sha}",
+                    f"requested_sha={requested_base_sha}",
+                    f"command=git {' '.join(failure.args_run)}",
+                    f"stderr={failure.stderr}",
+                ),
+                "The review ref changed while its clean-rebase carry was being checked. "
+                "Do not dispatch a reviewer against a different commit; re-run the exchange.",
+            )
+        if current_exchanged_sha != exchanged_sha:
+            return failed(
+                "review_ref_sha_mismatch",
+                (
+                    f"worktree={path}",
+                    f"ref={review_ref}",
+                    f"reviewed_sha={exchanged_sha}",
+                    f"requested_sha={requested_base_sha}",
+                    f"resolved={current_exchanged_sha or 'no'}",
+                ),
+                "The review ref changed while its clean-rebase carry was being checked. "
+                "Do not dispatch a reviewer against a different commit; re-run the exchange.",
+            )
 
     try:
         ref_sha = worktree_tool.git("rev-parse", "HEAD", cwd=path).strip()
@@ -5497,6 +5572,7 @@ def plan_dispatch(  # noqa: C901, PLR0911, PLR0912 — planning owns the ordered
             brief,
             root,
             args.base_sha,
+            Path(args.review_root).expanduser(),
             custom_brief=bool(args.brief_file),
             thread_report=thread_report,
             writable_roots=writable_roots,
@@ -5628,9 +5704,25 @@ def unreadable_record_refusal(record: Path, unreadable: Exception) -> Refusal:
     )
 
 
+LINUX_REALTIME_COARSE_CLOCK: Final[int] = 5
+
+
 def _clock_point() -> tuple[int, datetime]:
-    """Capture one filesystem-comparable nanosecond stamp and its UTC rendering."""
-    stamp = time.time_ns()
+    """Capture one filesystem-comparable nanosecond stamp and its UTC rendering.
+
+    Linux assigns file mtimes from ``CLOCK_REALTIME_COARSE`` while ``time.time_ns``
+    reads the precise realtime clock. The coarse clock can lag the precise one
+    briefly, which could place a child-created plan just before this window's start.
+    Read the filesystem's clock on Linux and retain the precise fallback elsewhere.
+    """
+    try:
+        stamp = (
+            time.clock_gettime_ns(LINUX_REALTIME_COARSE_CLOCK)
+            if sys.platform.startswith("linux")
+            else time.time_ns()
+        )
+    except (AttributeError, OSError, ValueError):
+        stamp = time.time_ns()
     return stamp, datetime.fromtimestamp(stamp / 1_000_000_000, tz=UTC)
 
 
