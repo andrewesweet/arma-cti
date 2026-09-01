@@ -1206,7 +1206,12 @@ def _dispatch_level_evidence(
         _dispatch_active_at(dispatch, boundary, historical=historical) for dispatch in candidates
     )
     known = tuple(state for state in states if state is not None)
-    level = None if not known else sum(state is True for state in known)
+    if not states:
+        level = 0
+    elif not known:
+        level = None
+    else:
+        level = sum(state is True for state in known)
     return DispatchLevel(level, len(states) - len(known))
 
 
@@ -1259,7 +1264,9 @@ def _ledger_present_at(
     return dispatch.ledger_materialised_at <= boundary
 
 
-def _ledger_stock(dispatches: tuple[DispatchRecord, ...], window: Window) -> StockReading:
+def _ledger_stock(
+    dispatches: tuple[DispatchRecord, ...], window: Window
+) -> tuple[StockReading, int]:
     """Read missing ledger rows at the window end and their materialisation flows."""
     # Match dispatch stock: a derived window end is still the report's snapshot.
     historical_end = window.end is not None
@@ -1272,11 +1279,14 @@ def _ledger_stock(dispatches: tuple[DispatchRecord, ...], window: Window) -> Sto
         _ledger_present_at(dispatch, window.end, historical=historical_end)
         for dispatch in candidates
     )
-    level = (
-        None
-        if any(value is None for value in presence)
-        else sum(value is False for value in presence)
-    )
+    known = tuple(value for value in presence if value is not None)
+    if not presence:
+        level = 0
+    elif not known:
+        level = None
+    else:
+        level = sum(value is False for value in known)
+    excluded = len(presence) - len(known)
     reason = (
         "derived_from_ledger_materialisation_timestamps"
         if historical_end
@@ -1297,16 +1307,18 @@ def _ledger_stock(dispatches: tuple[DispatchRecord, ...], window: Window) -> Sto
         _ledger_present_at(dispatch, start, historical=historical_start)
         for dispatch in start_candidates
     )
-    start_level = (
-        None
-        if any(value is None for value in start_presence)
-        else sum(value is False for value in start_presence)
-    )
+    known_at_start = tuple(value for value in start_presence if value is not None)
+    if not start_presence:
+        start_level = 0
+    elif not known_at_start:
+        start_level = None
+    else:
+        start_level = sum(value is False for value in known_at_start)
     if level is None or start is None or start_level is None:
         trend = "unrecorded"
     else:
         trend = str(level - start_level)
-    return StockReading(level, str(created), str(cleared), trend, reason)
+    return StockReading(level, str(created), str(cleared), trend, reason), excluded
 
 
 def _provisional_stock(repo: Path) -> tuple[int | None, str]:
@@ -1326,11 +1338,11 @@ def _minimum_alarm_status(level: int | None, threshold: int) -> str:
     return "below_alarm" if level < threshold else "observed"
 
 
-def _maximum_alarm_status(level: int | None, threshold: int) -> str:
-    """Evaluate a ruled upper-bound alarm without turning unknown into zero."""
+def _maximum_setpoint_status(level: int | None, threshold: int) -> str:
+    """Evaluate a ruled upper-bound setpoint without turning unknown into zero."""
     if level is None:
         return "unrecorded"
-    return "above_alarm" if level > threshold else "observed"
+    return "above_setpoint" if level > threshold else "at_setpoint"
 
 
 def _level_text(level: int | None) -> str:
@@ -1343,7 +1355,7 @@ def stock_lines(inputs: Inputs, repo: Path, window: Window) -> list[str]:
     ready = _queue_stock(inputs.queue_rows, "ready_work", window)
     blocked = _queue_stock(inputs.queue_rows, "dispatch_slot", window)
     runs, runs_excluded = _dispatch_stock(inputs.dispatches, window)
-    ledger = _ledger_stock(inputs.dispatches, window)
+    ledger, ledger_excluded = _ledger_stock(inputs.dispatches, window)
     provisional, provisional_reason = _provisional_stock(repo)
     return [
         (
@@ -1371,7 +1383,8 @@ def stock_lines(inputs: Inputs, repo: Path, window: Window) -> list[str]:
         ),
         (
             f"stock dispatches_without_ledger level={_level_text(ledger.level)} "
-            f"status={_maximum_alarm_status(ledger.level, NO_LEDGER_SETPOINT)} "
+            f"excluded_without_materialised_at={ledger_excluded} "
+            f"status={_maximum_setpoint_status(ledger.level, NO_LEDGER_SETPOINT)} "
             f"setpoint=at_most_{NO_LEDGER_SETPOINT} alarm=20 "
             f"flow_creation={ledger.flow_creation} flow_clearing={ledger.flow_clearing} "
             f"trend={ledger.trend} reason={ledger.reason}"
@@ -1379,7 +1392,7 @@ def stock_lines(inputs: Inputs, repo: Path, window: Window) -> list[str]:
         (
             "stock unratified_provisional_terms "
             f"level={provisional if provisional is not None else 'unrecorded'} "
-            f"status={_maximum_alarm_status(provisional, UNRATIFIED_SETPOINT)} "
+            f"status={_maximum_setpoint_status(provisional, UNRATIFIED_SETPOINT)} "
             f"setpoint=at_most_{UNRATIFIED_SETPOINT} alarm=5 flow_creation=unrecorded "
             f"flow_clearing=unrecorded trend=unrecorded reason={provisional_reason}"
         ),

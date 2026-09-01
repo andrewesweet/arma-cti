@@ -370,6 +370,38 @@ def test_runs_in_flight_counts_known_endings_and_names_missing_ones(tmp_path: Pa
     assert "excluded_without_ended_at=1" in line
 
 
+def test_empty_dispatch_source_reports_zero_stock_levels(tmp_path: Path) -> None:
+    """An empty dispatch source has known zero levels and no excluded evidence."""
+    inputs = METRICS.Inputs(dispatches=(), loops=(), queue_rows=(), diagnostics=())
+    lines = METRICS.stock_lines(inputs, tmp_path, METRICS.Window(0.0, 2.0, explicit=True))
+
+    runs = next(line for line in lines if line.startswith("stock runs_in_flight"))
+    ledger = next(line for line in lines if line.startswith("stock dispatches_without_ledger"))
+
+    assert "level=0 excluded_without_ended_at=0" in runs
+    assert "level=0 excluded_without_materialised_at=0" in ledger
+
+
+def test_dispatches_without_ledger_counts_known_rows_and_names_missing_timestamps(
+    tmp_path: Path,
+) -> None:
+    """An incomplete ledger timestamp does not erase known missing-row evidence."""
+    dispatch_root = tmp_path / "dispatches"
+    _dispatch(dispatch_root, "missing-row", 44, "implementer", 0)
+    _dispatch(dispatch_root, "missing-materialised", 45, "review", 1, ledger={})
+    inputs = METRICS.read_inputs(dispatch_root, tmp_path / "review", tmp_path / "queue")
+    window = METRICS.Window(0.0, METRICS.parse_timestamp(_at(2)), explicit=True)
+
+    line = next(
+        line
+        for line in METRICS.stock_lines(inputs, tmp_path, window)
+        if line.startswith("stock dispatches_without_ledger")
+    )
+
+    assert "level=1" in line
+    assert "excluded_without_materialised_at=1" in line
+
+
 def test_queue_stock_requires_a_counted_non_boolean_baseline() -> None:
     """Uncounted and boolean baseline values cannot create queue flow or trend."""
     reading = METRICS._queue_stock(  # noqa: SLF001 — pin the baseline evidence guard
@@ -410,15 +442,17 @@ def test_stock_lines_report_blocked_queue_and_ruled_alarm_statuses(tmp_path: Pat
     assert "stock worktrees_owing_done level=unrecorded" in joined
     assert "status=unrecorded" in next(line for line in lines if "worktrees_owing_done" in line)
     assert "stock dispatches_without_ledger level=0" in joined
-    assert "status=observed" in next(line for line in lines if "dispatches_without_ledger" in line)
-    assert "status=observed" in next(
+    assert "status=at_setpoint" in next(
+        line for line in lines if "dispatches_without_ledger" in line
+    )
+    assert "status=at_setpoint" in next(
         line for line in lines if "unratified_provisional_terms" in line
     )
     assert "reason=basis=" not in joined
 
 
-def test_stock_alarm_uses_setpoint_not_displayed_alarm(tmp_path: Path) -> None:
-    """An above-setpoint stock stays alarming even when its displayed alarm is higher."""
+def test_stock_status_uses_setpoint_and_retains_alarm(tmp_path: Path) -> None:
+    """An above-setpoint stock names the setpoint status despite a higher alarm."""
     inputs = METRICS.Inputs(
         dispatches=(
             METRICS.DispatchRecord(
@@ -448,7 +482,7 @@ def test_stock_alarm_uses_setpoint_not_displayed_alarm(tmp_path: Path) -> None:
     )
 
     assert "level=1" in line
-    assert "status=above_alarm" in line
+    assert "status=above_setpoint" in line
     assert "setpoint=at_most_0 alarm=20" in line
 
 
