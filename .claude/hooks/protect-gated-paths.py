@@ -35,6 +35,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools"))
 
 from edit_payload import edited_paths
 from gated_paths import hook_denial
+from gh_body_guard import denial as gh_body_denial
 
 REPO = Path(__file__).resolve().parents[2]
 
@@ -114,6 +115,9 @@ def _written_paths(tokens: list[str]) -> list[str]:
 
 def bash_denial(command: str) -> str | None:
     """Return why this Bash command is denied, or `None` to allow it."""
+    body_reason = gh_body_denial(command)
+    if body_reason is not None:
+        return body_reason
     segments = read_command(command)
     if segments is None:
         return UNREADABLE
