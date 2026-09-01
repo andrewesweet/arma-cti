@@ -101,11 +101,24 @@ def _shell_targets(paths: list[str], cwd: Path) -> list[str]:
     return targets
 
 
-def _written_paths(tokens: list[str], cwd: Path) -> list[str] | None:
+def _has_unreadable_wrapper(tokens: list[str], words: list[str]) -> bool:
+    """Refuse wrappers that can move Git's destination outside the argv shape."""
+    if not words:
+        return False
+    name = PurePosixPath(words[0]).name
+    return name == "env" or (name == "git" and tokens != without_assignments(tokens))
+
+
+def _written_paths(  # noqa: C901, PLR0912 — shell and Git write classes share one fail-closed classifier
+    tokens: list[str], cwd: Path
+) -> list[str] | None:
     """Return every path this one command writes to, as far as it can be read."""
-    targets, words = _redirect_targets_and_words(without_assignments(tokens))
+    stripped = without_assignments(tokens)
+    targets, words = _redirect_targets_and_words(stripped)
     if not words:
         return _shell_targets(targets, cwd)
+    if _has_unreadable_wrapper(tokens, words):
+        return None
     name = PurePosixPath(words[0]).name
     if name == "git":
         git_targets = git_write_paths(words, cwd)
