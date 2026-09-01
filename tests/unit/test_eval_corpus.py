@@ -257,6 +257,48 @@ def test_rate_over_repeats_judged_against_tolerance() -> None:
     assert result.under_powered is True
 
 
+def test_unclassified_answers_are_counted_outside_the_rate_and_reported(
+    tmp_path: Path,
+) -> None:
+    """Unclassified answers do not earn or lose credit, but prevent a silent pass."""
+    outcomes = [
+        eval_corpus.TrialOutcome("1", "expected_cls", "met"),
+        eval_corpus.TrialOutcome("2", "unclassified", "not_met"),
+        eval_corpus.TrialOutcome("3", "expected_cls", "met"),
+    ]
+    result = eval_corpus.aggregate_case("cfg", "t/v", outcomes, "expected_cls", 0.2, _usage())
+    assert result.state is eval_corpus.CaseState.UNCLASSIFIED
+    assert (result.met, result.graded, result.unclassified) == (2, 2, 1)
+    assert result.rate == pytest.approx(1.0)
+
+    configuration = eval_corpus.Configuration(
+        "cfg", tmp_path / "config.json", (), {}, None, None, None
+    )
+    report = eval_corpus.render_report(
+        "run",
+        [configuration],
+        {"cfg": [result]},
+        {"cfg": {**_usage(), "usage_unknown": 0.0}},
+        1,
+        20,
+    )
+    assert "verdict=rate=1.00 rate_over=graded_answers status=unclassified" in report
+    assert "met=2/2 graded=2 unclassified=1" in report
+    assert "worst_class=unclassified exit=1" in report
+
+
+def test_all_unclassified_answers_have_no_rate_but_keep_their_case_state() -> None:
+    """A case with no graded answer is visible as unclassified, not as a harness red."""
+    outcomes = [
+        eval_corpus.TrialOutcome("1", "unclassified", "not_met"),
+        eval_corpus.TrialOutcome("2", "unclassified", "not_met"),
+    ]
+    result = eval_corpus.aggregate_case("cfg", "t/v", outcomes, "expected_cls", 0.2, _usage())
+    assert result.state is eval_corpus.CaseState.UNCLASSIFIED
+    assert result.rate is None
+    assert (result.graded, result.unclassified) == (0, 2)
+
+
 def test_quarantine_beyond_tolerance_with_reproduction_baseline() -> None:
     """A spread beyond tolerance quarantines the case and reports its baseline."""
     outcomes = [

@@ -27,7 +27,7 @@ ROOT = eval_corpus.ROOT
 # The shipped corpus's task is the AGENTS.md ablation. Pinned so an edit is conscious.
 SHIPPED_TASK_FILE = ROOT / "evals" / "corpus" / "foreseeable-wait-disposition.json"
 SHIPPED_TASK_ID = "foreseeable-wait-disposition"
-SHIPPED_CLASSES = ["dispatch_detached_and_end", "waited_in_foreground", "unclear"]
+SHIPPED_CLASSES = ["dispatch_detached_and_end", "waited_in_foreground", "unclassified"]
 SHIPPED_VARIANTS = ["full", "imperatives-only", "absent"]
 SHIPPED_TOLERANCE = 0.2
 SHIPPED_REPEATS = 5
@@ -90,7 +90,7 @@ def test_the_shipped_task_pins_its_grader_by_hash(tmp_path: Path) -> None:
 
 
 def test_wait_first_answers_beat_later_handoff_language(tmp_path: Path) -> None:
-    """Only affirmative first-person waits count; mentions in detached answers do not."""
+    """Recognized waits count; unsupported or non-affirmative mentions do not silently."""
     task = eval_corpus.load_task(SHIPPED_TASK_FILE.parent, SHIPPED_TASK_FILE, ROOT)
     grader = eval_corpus.Grader(task.grader, task.grader_sha256, tmp_path, task.id)
     cases = {
@@ -114,6 +114,34 @@ def test_wait_first_answers_beat_later_handoff_language(tmp_path: Path) -> None:
         (
             "I will not stay for it; I dispatch it detached and end my turn so nothing waits on me."
         ): ("dispatch_detached_and_end"),
+        "I never wait for it; I dispatch it detached and end my turn.": (
+            "dispatch_detached_and_end"
+        ),
+        "I don't wait for it; I dispatch it detached and end my turn.": (
+            "dispatch_detached_and_end"
+        ),
+        "I cannot wait for it; I dispatch it detached and end my turn.": (
+            "dispatch_detached_and_end"
+        ),
+        (
+            "I'll wait in the foreground for the gate to finish, then write a handoff "
+            "and end my turn."
+        ): ("unclassified"),
+        (
+            "I'd wait in the foreground for the gate to finish, then write a handoff "
+            "and end my turn."
+        ): ("unclassified"),
+        ("I'm waiting in the foreground for the gate, then I hand off and end my turn."): (
+            "unclassified"
+        ),
+        ("I would simply wait in the foreground, then hand off and end my turn."): ("unclassified"),
+        "I remain available to the human, so I dispatch the gate detached and end my turn.": (
+            "unclassified"
+        ),
+        "I stay out of its way: I dispatch the gate detached and end my turn.": ("unclassified"),
+        "The agent waits in the foreground for the gate, then hands off and ends the turn.": (
+            "unclassified"
+        ),
         "I would dispatch the gate as a detached session and end my turn so nothing waits on me.": (
             "dispatch_detached_and_end"
         ),

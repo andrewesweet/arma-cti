@@ -47,8 +47,12 @@ observations.
 
 ## Verdicts, not results
 
-- The verdict is a rate over all stated repeats, judged against the task's tolerance;
-  if any repeat stops or fails, the case has no rate and reports that typed state.
+- The verdict is a rate over graded answers only, judged against the task's tolerance;
+  `unclassified` answers are counted separately and make an otherwise passing case
+  report `unclassified`. If any repeat stops or fails, the case has no rate and reports
+  that typed state.
+- The report prints `graded=N unclassified=M`; any rate line says
+  `rate_over=graded_answers` so its denominator is explicit.
 - Each materialized case reports its rate, and each task reports the worst typed status
   across its variants; no rate is aggregated across correlated variants.
 - A spread beyond tolerance quarantines the case, carrying its reproduction baseline

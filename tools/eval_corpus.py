@@ -8,11 +8,12 @@ names a corpus and one or two configurations and gets a typed verdict per case, 
 task-by-task comparison, and the cost of the run.
 
 The subject is stochastic and the harness treats it that way. A trial is one sample; a
-task's verdict is a rate over its repeats, judged against its tolerance. Four rules are
+task's verdict is a rate over its graded answers, judged against its tolerance, with
+unclassified answers reported separately. Four rules are
 load-bearing rather than decorative:
 
 - a task states its expected outcome as a **class**, its repeats and its tolerance; the
-  verdict is a rate over the repeats, never a layout. What a failure class means is
+  verdict is a rate over graded answers, never a layout. What a failure class means is
   AGENTS.md's table's to say; this runner types outcomes, it does not restate semantics;
 - a case whose outcomes spread beyond its tolerance is **quarantined with its
   reproduction baseline** — `flake_quarantine`'s discipline, applied to a stochastic
@@ -89,6 +90,7 @@ RUN_SCHEMA: Final = "cti.eval-run/1"
 CONFIGURATION_SCHEMA: Final = "cti.eval-configuration/1"
 TRIAL_RECORD_SCHEMA: Final = "cti.eval-trial-record/1"
 GRADER_ENTRY: Final = "grade"
+UNCLASSIFIED: Final = "unclassified"
 TASK_CONFIGURATION_SCOPE: Final = "per-run"
 USAGE_RECORD: Final = "usage.json"
 SANDBOX_WORKSPACE: Final = "/work"
@@ -307,14 +309,16 @@ CONTRACT_REGISTRIES: Final[tuple[tuple[str, tuple[ContractField, ...]], ...]] = 
 class CaseState(StrEnum):
     """How a case's rate is classified.
 
-    A case's verdict is its **rate** — `met` over all stated repeats, judged against
-    the task's tolerance — and this enum is only that rate's status. A rate exists only
-    when every repeat graded: a case the budget touched has no verdict. Infrastructure
-    and harness failures remain typed not-a-result; `quarantined` carries the
-    `flake_quarantine` discipline.
+    A case's verdict is its **rate** — `met` over the graded repeats, judged against
+    the task's tolerance — and this enum is that rate's status. `unclassified` answers
+    are counted separately and make an otherwise passing case visible as incomplete.
+    A rate exists only when every repeat completed, even when some completed answers
+    were unclassified. Infrastructure and harness failures remain typed not-a-result;
+    `quarantined` carries the `flake_quarantine` discipline.
     """
 
     WITHIN_TOLERANCE = "within_tolerance"
+    UNCLASSIFIED = "unclassified"
     QUARANTINED = "quarantined"
     BUDGET_STOPPED = "budget_stopped"
     OUTSIDE_TOLERANCE = "outside_tolerance"
@@ -327,6 +331,7 @@ class CaseState(StrEnum):
 # the names shared with the failure-class table keep their table meaning, never redefined.
 CASE_SEVERITY: Final[dict[CaseState, int]] = {
     CaseState.WITHIN_TOLERANCE: 0,
+    CaseState.UNCLASSIFIED: 1,
     CaseState.QUARANTINED: 1,
     CaseState.BUDGET_STOPPED: 2,
     CaseState.OUTSIDE_TOLERANCE: 3,
@@ -515,6 +520,7 @@ class CaseResult:
     rate: float | None = None
     met: int = 0
     graded: int = 0
+    unclassified: int = 0
     budget_stops: int = 0
     not_a_result: int = 0
     classes_seen: dict[str, int] = field(default_factory=dict)
@@ -1803,7 +1809,10 @@ def _collect_trial_states(trials: list[TrialOutcome], result: CaseResult) -> tup
             result.details.append(f"trial={trial.index} {state.value} {trial.detail}")
         elif state in (TrialState.MET, TrialState.NOT_MET):
             key = trial.graded_class or "?"
-            result.classes_seen[key] = result.classes_seen.get(key, 0) + 1
+            if key == UNCLASSIFIED:
+                result.unclassified += 1
+            else:
+                result.classes_seen[key] = result.classes_seen.get(key, 0) + 1
         else:
             result.not_a_result += 1
             result.details.append(f"trial={trial.index} {state.value} not graded")
@@ -1863,8 +1872,8 @@ def aggregate_case(
     any trial types the whole case not-a-result — never a failed configuration — and no
     rate is computed at all, because a partial measurement is not a measurement. Then a
     spread beyond tolerance quarantines the case with its reproduction baseline. Only a
-    case whose trials agree within tolerance is judged on its rate, and a case the
-    budget ended before it graded anything is a budget stop, never a fail.
+    case whose graded trials agree within tolerance is judged on its rate, and a case
+    the budget ended before it graded anything is a budget stop, never a fail.
     """
     task_id = task.id if task is not None else case_id.split("/", maxsplit=1)[0]
     variant_id = variant.id if variant is not None else case_id.rsplit("/", maxsplit=1)[-1]
@@ -1898,31 +1907,45 @@ def aggregate_case(
         result.details.append(
             f"budget_stops={result.budget_stops} graded={result.graded} — no complete rate"
         )
-    elif result.graded != len(trials):
+    elif result.graded + result.unclassified != len(trials):
         result.state = CaseState.UNTYPED_HARNESS_FAILURE
-        result.details.append(f"graded={result.graded} repeats={len(trials)}")
+        result.details.append(
+            f"graded={result.graded} unclassified={result.unclassified} repeats={len(trials)}"
+        )
     if result.state is not CaseState.WITHIN_TOLERANCE:
         return result
     result.met = result.classes_seen.get(expected_class, 0)
     if result.graded == 0:
-        result.state = CaseState.UNTYPED_HARNESS_FAILURE
-        result.details.append("graded=0 — no observation, no verdict")
+        if result.unclassified:
+            result.state = CaseState.UNCLASSIFIED
+            result.details.append(
+                f"graded=0 unclassified={result.unclassified} — no rate over graded answers"
+            )
+        else:
+            result.state = CaseState.UNTYPED_HARNESS_FAILURE
+            result.details.append("graded=0 — no observation, no verdict")
         return result
     disagreement = 1.0 - max(result.classes_seen.values()) / result.graded
     if disagreement > tolerance:
         result.state = CaseState.QUARANTINED
         _quarantine_baseline(result, trials, task_id, variant_id, configuration_name, toolchain)
         return result
-    result.rate = result.met / len(trials)
-    result.under_powered = half_width(len(trials)) > tolerance
-    result.state = (
+    result.rate = result.met / result.graded
+    result.under_powered = half_width(result.graded) > tolerance
+    rate_state = (
         CaseState.WITHIN_TOLERANCE
         if result.rate >= 1.0 - tolerance
         else CaseState.OUTSIDE_TOLERANCE
     )
+    result.state = (
+        CaseState.UNCLASSIFIED
+        if result.unclassified and rate_state is CaseState.WITHIN_TOLERANCE
+        else rate_state
+    )
     result.details.append(
-        f"verdict_rate={result.rate:.2f} met={result.met}/{len(trials)}"
-        f" tolerance={tolerance} half_width={percentage(half_width(len(trials)))}"
+        f"verdict_rate={result.rate:.2f} over=graded_answers met={result.met}/{result.graded}"
+        f" unclassified={result.unclassified} tolerance={tolerance}"
+        f" half_width={percentage(half_width(result.graded))}"
     )
     return result
 
@@ -2148,7 +2171,11 @@ def render_report(
             )
     for configuration in configurations:
         for result in per_configuration[configuration.name]:
-            verdict = f"rate={result.rate:.2f}" if result.rate is not None else "unavailable"
+            verdict = (
+                f"rate={result.rate:.2f} rate_over=graded_answers"
+                if result.rate is not None
+                else "unavailable"
+            )
             power = (
                 "not_applicable"
                 if result.rate is None
@@ -2159,7 +2186,8 @@ def render_report(
                 f" config={result.configuration} variant={result.variant_id}"
                 f" expected={result.expected_class} tolerance={result.tolerance}"
                 f" verdict={verdict} status={result.state.value}"
-                f" met={result.met}/{result.graded} budget_stops={result.budget_stops}"
+                f" met={result.met}/{result.graded} graded={result.graded}"
+                f" unclassified={result.unclassified} budget_stops={result.budget_stops}"
                 f" not_a_result={result.not_a_result}"
                 f" under_powered={power}"
             )
@@ -2280,7 +2308,8 @@ def render_contract() -> str:
         "",
         "=== Verdict and exit codes ===",
         "A trial stopped by its budget, and an infrastructure failure, are recorded as",
-        "exactly that. A case verdict is a rate over all its stated repeats; a spread beyond the",
+        "exactly that. A case verdict is a rate over graded answers only;",
+        "`unclassified` answers are counted separately, and a spread beyond the",
         "task's tolerance quarantines it with its reproduction baseline. The run's exit",
         "code is the worst class present. What a failure class *means* — including for",
         "the names this runner shares with AGENTS.md's failure-class table — is the",
