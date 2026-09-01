@@ -10,7 +10,7 @@
   "repeats": 5,
   "tolerance": 0.2,
   "grader": "graders/foreseeable-wait-disposition.py",
-  "grader_sha256": "5f3615701bea19ab2d196be2ed4ee28ca626daae337d6acea1b7d69fa5f4b21d",
+  "grader_sha256": "54ecec98fd37296785ce8fe4bd28a4dd558481806f1b394c0175bf8a6b7c4dc8",
   "variants": [
     { "id": "full", "repo_file": "AGENTS.md" },
     {

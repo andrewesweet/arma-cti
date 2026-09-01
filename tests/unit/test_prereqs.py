@@ -27,6 +27,7 @@ from typing import Any
 import pytest
 from conftest import REPO, load_tool
 
+eval_corpus = load_tool("eval_corpus")
 prereqs = load_tool("prereqs")
 
 COLLECTOR_FIXTURE = REPO / "tests" / "fixtures" / "otelcol" / "config.yaml"
@@ -760,6 +761,11 @@ def test_missing_bubblewrap_names_the_eval_pipeline_dependency() -> None:
     assert "617" in line
     assert "bubblewrap" in line
     assert "action=sudo apt-get install bubblewrap" in line
+
+
+def test_eval_and_prereq_sandbox_paths_stay_identical() -> None:
+    """The prerequisite and runner must keep one safe executable search path."""
+    assert prereqs.SAFE_SYSTEM_PATH == eval_corpus.SAFE_SYSTEM_PATH
 
 
 def test_bubblewrap_probe_does_not_accept_a_local_binary_runner_cannot_resolve(

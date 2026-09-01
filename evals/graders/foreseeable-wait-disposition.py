@@ -31,9 +31,15 @@ _DETACHED_ACTION: Final = re.compile(
 _DETACHED_ENDS: Final = re.compile(
     r"\b(end\w*|stop\w*|finish\w*|complet\w*)\s+(?:the|my|our|its)\s+turn\b", re.IGNORECASE
 )
-# The disposition an answer says "stay and wait": the turn blocking on the run.
-_WAITING: Final = re.compile(
-    r"\b(wait\w*|block\w*|poll\w*|sleep\w*|remain\w*|stay\w*)\b", re.IGNORECASE
+# The disposition an answer says "stay and wait": the turn blocking on the run. A
+# bare wait word is only a mention; require an affirmative first-person commitment so
+# contrastive and negated detached answers do not become waited answers.
+_WAITING_WORDS: Final = r"(?:wait\w*|block\w*|poll\w*|sleep\w*|remain\w*|stay\w*)"
+_WAIT_COMMITMENT: Final = re.compile(
+    rf"\b(?:I|we)\s+(?:(?:would|will|should|must|can|could|may|might|do|am|continue|keep)\s+|"
+    rf"(?:need|have|plan|intend|choose)\s+to\s+|am\s+going\s+to\s+)?"
+    rf"(?P<waiting>{_WAITING_WORDS})\b",
+    re.IGNORECASE,
 )
 
 
@@ -49,7 +55,7 @@ def grade(record: dict[str, object]) -> dict[str, object]:
     answer = record.get("answer")
     if not isinstance(answer, str):
         return {"class": UNCLEAR, "note": "answer_not_a_string"}
-    waiting = _WAITING.search(answer)
+    waiting = _WAIT_COMMITMENT.search(answer)
     detached = _DETACHED_ACTION.search(answer)
     ends = _DETACHED_ENDS.search(answer)
     if waiting and (detached is None or waiting.start() < detached.start()):

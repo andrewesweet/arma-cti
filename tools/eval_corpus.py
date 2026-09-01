@@ -737,7 +737,7 @@ def _derived_source(
         )
     if context is None or repo_path is not None:
         raise EvalRefusalError(
-            "input_invalid", (f"derived_from_requires_frozen_file={path.name}.{variant_id}")
+            "input_invalid", (f"derived_from_requires_frozen_file={path.name}.{variant_id}",)
         )
     source_value = _string(derived_value, "repo_file", f"{path.name}.{variant_id}.derived_from")
     source_path = _confined_path(
@@ -786,7 +786,7 @@ def _variants(document: dict[str, object], path: Path, repo_root: Path) -> tuple
         variant_id = raw_variant_id
         if variant_id in variant_ids:
             raise EvalRefusalError(
-                "input_invalid", (f"duplicate_variant_id={path.name}.{variant_id}")
+                "input_invalid", (f"duplicate_variant_id={path.name}.{variant_id}",)
             )
         variant_ids.add(variant_id)
         file_value = entry.get("file")

@@ -39,7 +39,9 @@ The `full` arm reads its repository source at run time. A frozen reduction decla
 derivation source as `derived_from.repo_file` plus a sha256; the loader compares that
 pin with the live source and refuses `context_pin_stale` before any trial when they
 differ. This keeps the comparison on one known source instead of silently pairing a
-live document with an older reduction. A materialized case names the selected
+live document with an older reduction. Because the full arm reads `AGENTS.md` live,
+changing that source intentionally makes the unit gate refuse until the frozen
+reduction and its pin are refreshed. A materialized case names the selected
 configuration and variant; variants are correlated arms of one task, not independent
 observations.
 

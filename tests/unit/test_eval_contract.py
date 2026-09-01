@@ -90,22 +90,36 @@ def test_the_shipped_task_pins_its_grader_by_hash(tmp_path: Path) -> None:
 
 
 def test_wait_first_answers_beat_later_handoff_language(tmp_path: Path) -> None:
-    """A stated foreground wait stays waited even when its handoff is mentioned later."""
+    """Only affirmative first-person waits count; mentions in detached answers do not."""
     task = eval_corpus.load_task(SHIPPED_TASK_FILE.parent, SHIPPED_TASK_FILE, ROOT)
     grader = eval_corpus.Grader(task.grader, task.grader_sha256, tmp_path, task.id)
-    foreground_waits = (
+    cases = {
         (
             "I would wait in the foreground for the gate to finish, then write a handoff "
             "and end my turn."
+        ): "waited_in_foreground",
+        "I stay and poll the gate until it completes, then hand off and finish my turn.": (
+            "waited_in_foreground"
         ),
-        "I stay and poll the gate until it completes, then hand off and finish my turn.",
-    )
-    for answer in foreground_waits:
-        assert grader.grade({"answer": answer}, task.classes)[0] == "waited_in_foreground"
-    detached = (
-        "I would dispatch the gate as a detached session and end my turn so nothing waits on me."
-    )
-    assert grader.grade({"answer": detached}, task.classes)[0] == "dispatch_detached_and_end"
+        (
+            "Rather than wait in the foreground, I dispatch the gate as a detached session "
+            "and end my turn."
+        ): ("dispatch_detached_and_end"),
+        "I do not wait for it. I dispatch it detached, write a handoff, and end my turn.": (
+            "dispatch_detached_and_end"
+        ),
+        "Instead of blocking my turn, I dispatch it detached and end my turn.": (
+            "dispatch_detached_and_end"
+        ),
+        (
+            "I will not stay for it; I dispatch it detached and end my turn so nothing waits on me."
+        ): ("dispatch_detached_and_end"),
+        "I would dispatch the gate as a detached session and end my turn so nothing waits on me.": (
+            "dispatch_detached_and_end"
+        ),
+    }
+    for answer, expected in cases.items():
+        assert grader.grade({"answer": answer}, task.classes)[0] == expected
 
 
 def test_grader_does_not_treat_the_word_subagent_as_a_disposition(tmp_path: Path) -> None:
@@ -197,6 +211,31 @@ def test_variant_with_empty_id_is_refused(tmp_path: Path) -> None:
     with pytest.raises(eval_corpus.EvalRefusalError) as raised:
         eval_corpus.load_corpus(corpus, ROOT)
     assert any("variant_id_invalid" in detail for detail in raised.value.details)
+
+
+def test_variant_refusal_details_are_single_item_tuples(tmp_path: Path) -> None:
+    """Typed variant refusals remain line-shaped details, not iterable strings."""
+    duplicate = _write_corpus_with_grader(
+        tmp_path,
+        variants=[{"id": "v", "file": None}, {"id": "v", "file": None}],
+    )
+    with pytest.raises(eval_corpus.EvalRefusalError) as duplicate_raised:
+        eval_corpus.load_corpus(duplicate, ROOT)
+    assert duplicate_raised.value.details == ("duplicate_variant_id=t.json.v",)
+
+    derived = _write_corpus_with_grader(
+        tmp_path,
+        variants=[
+            {
+                "id": "v",
+                "repo_file": "AGENTS.md",
+                "derived_from": {"repo_file": "AGENTS.md", "sha256": "a" * 64},
+            }
+        ],
+    )
+    with pytest.raises(eval_corpus.EvalRefusalError) as derived_raised:
+        eval_corpus.load_corpus(derived, ROOT)
+    assert derived_raised.value.details == ("derived_from_requires_frozen_file=t.json.v",)
 
 
 def test_frozen_variant_refuses_when_its_derived_source_changes(tmp_path: Path) -> None:
