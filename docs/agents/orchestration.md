@@ -32,10 +32,10 @@ to the one gated surface. No gate ceased in the split (`b3f3a23`, 2026-08-09); w
 changed is which name is the source, and this document's references were reconciled
 to it under #367.
 
-GitHub bodies composed by this seat follow `docs/agents/issue-tracker.md`: write the
-body to a file and pass `--body-file`, never inline `--body`. The rule includes the
-orchestrator's own comments; the shell can execute Markdown backticks before `gh`
-receives an inline body.
+GitHub bodies composed by this seat use a file-backed CLI option: write the body to a
+file and pass `--body-file` (or its command-specific file-backed equivalent), never an
+inline body option. The rule includes the orchestrator's own comments; the shell can
+execute Markdown backticks before `gh` receives an inline body.
 
 ## The seat and its model
 

@@ -90,7 +90,7 @@ def test_backticked_body_is_literal_when_sent_through_a_body_file(tmp_path: Path
         encoding="utf-8",
     )
 
-    unsafe = f'gh issue comment 675 --body "A literal shell fragment: `touch {marker}`"'
+    unsafe = f'gh issue comment 675 -b "A literal shell fragment: `touch {marker}`"'
     denial = gh_body_guard.denial(unsafe)
     assert denial is not None
 
@@ -112,9 +112,17 @@ def test_backticked_body_is_literal_when_sent_through_a_body_file(tmp_path: Path
     "command",
     [
         'gh issue comment 675 --body "plain body"',
+        'gh issue comment 675 -b "plain body"',
+        "gh issue comment 675 -b=plain",
+        "gh issue comment 675 -bplain",
         'gh issue create --title title --body "plain body"',
         'gh pr comment 12 --body "plain body"',
         'gh pr create --title title --body="plain body"',
+        'gh issue close 675 --comment "plain body"',
+        'gh issue close 675 -c "plain body"',
+        "gh issue close 675 -c=plain",
+        "gh issue close 675 -cplain",
+        "gh issue close 675 --comment=plain",
         "gh future-command --body plain",
     ],
 )
@@ -128,6 +136,9 @@ def test_inline_body_is_refused_without_enumerating_gh_subcommands(command: str)
     [
         "gh issue comment 675 --body-file comment.md",
         "gh issue comment 675 --body-file=-",
+        "gh issue comment 675 -F comment.md",
+        "gh issue comment 675 -Fcomment.md",
+        "gh issue close 675 --comment-file comment.md",
         "gh pr create --title title --body-file /tmp/comment.md",
     ],
 )
@@ -138,14 +149,42 @@ def test_complete_body_file_forms_are_allowed(command: str) -> None:
 @pytest.mark.parametrize(
     "command",
     [
+        "gh issue comment 675 --body-template template.md",
+        "gh issue close 675 --comment-template template.md",
+        "gh issue close 675 --commentary template.md",
+        "gh issue comment 675 --body-from-stdin",
+        "gh issue comment 675 -Z body",
+    ],
+)
+def test_unknown_body_options_are_refused_fail_closed(command: str) -> None:
+    assert gh_body_guard.denial(command) == gh_body_guard.UNREADABLE
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
         "gh issue comment 675 --body",
         "gh issue comment 675 --body-file",
         "gh issue comment 675 --body-file=",
+        "gh issue close 675 --comment",
+        "gh issue close 675 --comment-file",
+        "gh issue close 675 --comment-file=",
+        "gh issue comment 675 -F",
+        "gh issue comment 675 -F=",
         'gh issue comment 675 --body "unterminated',
     ],
 )
 def test_incomplete_body_commands_are_refused_fail_closed(command: str) -> None:
     assert gh_body_guard.denial(command) == gh_body_guard.UNREADABLE
+
+
+def test_inline_body_wins_over_a_file_backed_body_option() -> None:
+    command = "gh issue comment 675 --body-file comment.md --body inline"
+    assert gh_body_guard.denial(command) == gh_body_guard.INLINE_BODY
+
+
+def test_comment_output_option_is_not_a_body_option() -> None:
+    assert gh_body_guard.denial("gh issue view 675 --comments") is None
 
 
 @pytest.mark.parametrize(
@@ -159,6 +198,18 @@ def test_incomplete_body_commands_are_refused_fail_closed(command: str) -> None:
 )
 def test_common_wrappers_cannot_hide_an_inline_body(command: str) -> None:
     assert gh_body_guard.denial(command) == gh_body_guard.INLINE_BODY
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        "env --unknown gh issue comment 675 --body-file comment.md",
+        "command --unknown gh issue comment 675 --body-file comment.md",
+        "exec --unknown gh issue comment 675 --body-file comment.md",
+    ],
+)
+def test_unreadable_known_wrappers_are_refused(command: str) -> None:
+    assert gh_body_guard.denial(command) == gh_body_guard.UNREADABLE
 
 
 def test_a_gh_phrase_inside_another_command_is_not_an_invocation() -> None:
@@ -192,7 +243,7 @@ def test_integrated_hook_refuses_inline_body_with_file_remedy(tmp_path: Path) ->
     scratch, _target, _baseline = stage_integrated_hook(tmp_path)
     done = run_integrated_hook(
         scratch,
-        'gh issue comment 168 --body "never sed -i tests/specs/campaign.yaml by hand"',
+        'gh issue comment 168 -b "never sed -i tests/specs/campaign.yaml by hand"',
     )
     assert done.returncode == 2
     assert "--body-file" in done.stderr
