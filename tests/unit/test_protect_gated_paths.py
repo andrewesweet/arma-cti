@@ -144,6 +144,98 @@ def test_a_git_write_to_a_foreign_signoff_path_hits_both_rule_families(
     assert gated_paths.hook_denial(str(target), root=assigned) == gated_paths.FOREIGN_CHECKOUT
 
 
+def test_the_hook_denies_git_location_writes(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    main, assigned = linked_worktree_pair(tmp_path)
+    monkeypatch.setattr(hook, "REPO", assigned)
+    for command in (
+        f"git -C {main} restore tools/land.py",
+        f"git --work-tree={main} restore tools/land.py",
+        f"git --git-dir={main / '.git'} --work-tree={main} restore tools/land.py",
+    ):
+        assert bash(monkeypatch, command) == 2
+
+
+def test_the_hook_denies_git_writes_to_a_foreign_signoff_path(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    main, assigned = linked_worktree_pair(tmp_path)
+    monkeypatch.setattr(hook, "REPO", assigned)
+    assert gated_paths.signoff_gate("docs/adr/0067-example.md") is not None
+    assert (
+        bash(
+            monkeypatch,
+            f"git -C {main} restore docs/adr/0067-example.md",
+        )
+        == 2
+    )
+
+
+def test_the_hook_tracks_cd_before_a_relative_write(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    main, assigned = linked_worktree_pair(tmp_path)
+    monkeypatch.setattr(hook, "REPO", assigned)
+    assert bash(monkeypatch, f"cd {main} && echo x > tools/land.py") == 2
+
+
+def test_the_hook_keeps_known_reads_and_in_tree_writes_allowed(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    _, assigned = linked_worktree_pair(tmp_path)
+    monkeypatch.setattr(hook, "REPO", assigned)
+    for command in (
+        "git status",
+        "git log --oneline",
+        "git diff",
+        "git add tools/land.py",
+        "git commit -m message",
+        "git rebase origin/main",
+    ):
+        assert bash(monkeypatch, command) == 0
+
+
+def test_the_hook_refuses_an_unknown_git_shape(monkeypatch: pytest.MonkeyPatch) -> None:
+    assert bash(monkeypatch, "git future-subcommand") == 2
+
+
+@pytest.mark.parametrize(
+    "command_template",
+    [
+        "GIT_WORK_TREE={main} git restore tools/land.py",
+        "GIT_DIR={main}/.git git restore tools/land.py",
+        "env GIT_WORK_TREE={main} git restore tools/land.py",
+        "env GIT_DIR={main}/.git git restore tools/land.py",
+    ],
+)
+def test_the_hook_refuses_git_location_environment_wrappers(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    command_template: str,
+) -> None:
+    main, assigned = linked_worktree_pair(tmp_path)
+    monkeypatch.setattr(hook, "REPO", assigned)
+    assert bash(monkeypatch, command_template.format(main=main)) == 2
+
+
+def test_the_hook_denies_an_in_tree_git_write_to_a_signoff_path(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    _, assigned = linked_worktree_pair(tmp_path)
+    monkeypatch.setattr(hook, "REPO", assigned)
+    command = "git checkout -- tests/specs/campaign.yaml"
+    assert hook.bash_denial(command) == gated_paths.hook_denial(
+        str(assigned / "tests/specs/campaign.yaml"), root=assigned
+    )
+    assert bash(monkeypatch, command) == 2
+
+
 def test_a_cd_then_relative_write_resolves_against_new_directory(
     tmp_path: Path,
 ) -> None:

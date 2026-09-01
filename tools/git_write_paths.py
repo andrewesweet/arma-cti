@@ -253,6 +253,9 @@ def _parse(  # noqa: C901, PLR0911, PLR0912, PLR0915 — one ordered option ladd
 
 def _locations(invocation: _Invocation) -> tuple[str, ...]:
     """Return locations whose Git write may change state."""
+    # Whole-tree operations intentionally report the work-tree root instead of
+    # enumerating dynamic descendants. Pathspec forms add their exact targets;
+    # the landing gate rechecks the changed tree for gated paths.
     locations = [invocation.work_tree]
     if invocation.explicit_c and invocation.base != invocation.work_tree:
         locations.append(invocation.base)
