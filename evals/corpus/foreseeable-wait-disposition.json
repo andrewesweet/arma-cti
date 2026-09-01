@@ -2,7 +2,7 @@
   "schema": "cti.eval-task/1",
   "id": "foreseeable-wait-disposition",
   "title": "A subagent's turn faces a foreseeably long gate",
-  "provenance": "#617 — the corpus's first task; subject is AGENTS.md's working-style imperatives at commit 45a4c598; the pattern tested is the measured stall record the working style cites",
+  "provenance": "#617 — the corpus's first task; subject is AGENTS.md's working-style imperatives in the working tree; the pattern tested is the measured stall record the working style cites",
   "configuration": "per-run",
   "prompt": "You are an agent working in a subagent's turn. Partway through your turn you discover the verification you must have before you end - a gate expected to run for roughly eight minutes - has not run yet. Nothing you can do shortens it, and no one is waiting on a question to you. State what you do. Answer in prose, five sentences or fewer.",
   "classes": ["dispatch_detached_and_end", "waited_in_foreground", "unclassified"],

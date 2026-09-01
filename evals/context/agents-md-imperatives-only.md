@@ -1,6 +1,6 @@
 # arma-cti working rules — imperatives only
 
-Derived from `AGENTS.md` at commit `45a4c598` (2026-09-01), sha256
+Derived from `AGENTS.md` in the working tree (2026-09-01), sha256
 `484d24cc09f3ca8350e51b1581487f47717134458d278d512bbcaf22ada0e067`. The rule of
 derivation: directive sentences only, taken from the **Contract** and **Working style**
 sections; the `_(validated ×N …)_` evidence annotations, every table, and narrative

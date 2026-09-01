@@ -35,6 +35,7 @@ def _dispatch(  # noqa: PLR0913 — fixture fields mirror the durable dispatch s
     *,
     ledger: dict[str, object] | None = None,
     ended_minute: int | None = None,
+    omit_ended_at: bool = False,
 ) -> None:
     """Arrange a dispatch plan, a completed result and an optional ledger row."""
     directory = root / identifier
@@ -47,14 +48,10 @@ def _dispatch(  # noqa: PLR0913 — fixture fields mirror the durable dispatch s
             "planned_at": _at(minute),
         },
     )
-    _write(
-        directory / "result.json",
-        {
-            "started_at": _at(minute),
-            "ended_at": _at(minute + 1 if ended_minute is None else ended_minute),
-            "outcome": "ok",
-        },
-    )
+    result: dict[str, object] = {"started_at": _at(minute), "outcome": "ok"}
+    if not omit_ended_at:
+        result["ended_at"] = _at(minute + 1 if ended_minute is None else ended_minute)
+    _write(directory / "result.json", result)
     if ledger is not None:
         _write(directory / "ledger.json", ledger)
 
@@ -128,13 +125,22 @@ def test_v2_metrics_keep_self_and_independent_loops_separate(tmp_path: Path) -> 
     joined = "\n".join(lines)
 
     assert "injection_rate aggregate numerator=1 denominator=2" in joined
+    injection = next(line for line in lines if line.startswith("injection_rate aggregate"))
+    assert "self_review_records=1 excluded_without_self_review=1" in injection
+    assert "excluded_work_items=issue:11" in injection
     assert "catch_fraction numerator=1 denominator=3" in joined
     assert "bound=upper_bound" in joined
+    catch = next(line for line in lines if line.startswith("catch_fraction "))
+    assert "excluded_without_self_review=1 excluded_work_items=issue:11" in catch
     assert "dismissal_misses numerator=1 denominator=1" in joined
+    dismissal = next(line for line in lines if line.startswith("dismissal_misses "))
+    assert "excluded_without_self_review=1 excluded_work_items=issue:11" in dismissal
     assert "dismissal_matching=exact_nonempty_id_same_work_item_unique_independent_match" in joined
     assert "findings_per_independent_review reviews=2 findings=3" in joined
     assert "severity_mix severity=medium numerator=1 denominator=3" in joined
     assert "clean_round_distribution round=2 numerator=1 denominator=1" in joined
+    clean = next(line for line in lines if line.startswith("clean_round_distribution "))
+    assert "excluded_without_self_review=1 excluded_work_items=issue:11" in clean
     assert "return_rate numerator=0 denominator=2" in joined
     assert "return_model lambda=0.000000" in joined
     assert "no_self_review_is_not_zero" in joined
@@ -168,8 +174,33 @@ def test_malformed_self_review_keeps_independent_metrics(tmp_path: Path) -> None
     assert inputs.loops[0].self_review_present is False
     assert "findings_per_independent_review reviews=1 findings=1" in joined
     assert "severity_mix severity=high numerator=1 denominator=1" in joined
-    assert "injection_rate status=too_few" in joined
+    assert "excluded_without_self_review=1 excluded_work_items=issue:20" in next(
+        line for line in lines if line.startswith("injection_rate ")
+    )
+    assert "excluded_without_self_review=1 excluded_work_items=issue:20" in next(
+        line for line in lines if line.startswith("catch_fraction ")
+    )
+    assert "excluded_without_self_review=1 excluded_work_items=issue:20" in next(
+        line for line in lines if line.startswith("dismissal_misses ")
+    )
+    assert "excluded_without_self_review=1 excluded_work_items=issue:20" in next(
+        line for line in lines if line.startswith("clean_round_distribution ")
+    )
     assert "review issue=20 status=unreadable reason=self_rounds" in joined
+
+
+def test_self_review_exclusion_names_are_bounded() -> None:
+    """A complete exclusion count stays readable when many Work Items lack self-review."""
+    loops = tuple(
+        METRICS.LoopRecord(issue, 0, (), (), self_review_present=False) for issue in range(1, 26)
+    )
+
+    line = METRICS.injection_lines(loops)[0]
+
+    assert "excluded_without_self_review=25" in line
+    assert "excluded_work_items=issue:1,issue:2,issue:3" in line
+    assert "excluded_work_items_omitted=5" in line
+    assert "issue:21" not in line
 
 
 def test_malformed_independent_findings_keeps_self_metrics(tmp_path: Path) -> None:
@@ -321,6 +352,42 @@ def test_historic_stock_levels_use_end_timestamps_and_are_reproducible(tmp_path:
     assert first == second
 
 
+def test_runs_in_flight_counts_known_endings_and_names_missing_ones(tmp_path: Path) -> None:
+    """An incomplete result does not erase the stock level computed from known endings."""
+    dispatch_root = tmp_path / "dispatches"
+    _dispatch(dispatch_root, "known", 42, "implementer", 0, ended_minute=3)
+    _dispatch(dispatch_root, "missing-end", 43, "review", 1, omit_ended_at=True)
+    inputs = METRICS.read_inputs(dispatch_root, tmp_path / "review", tmp_path / "queue")
+    window = METRICS.Window(0.0, METRICS.parse_timestamp(_at(2)), explicit=True)
+
+    line = next(
+        line
+        for line in METRICS.stock_lines(inputs, tmp_path, window)
+        if line.startswith("stock runs_in_flight")
+    )
+
+    assert "level=1" in line
+    assert "excluded_without_ended_at=1" in line
+
+
+def test_queue_stock_requires_a_counted_non_boolean_baseline() -> None:
+    """Uncounted and boolean baseline values cannot create queue flow or trend."""
+    reading = METRICS._queue_stock(  # noqa: SLF001 — pin the baseline evidence guard
+        (
+            {"sampled_at": 1.0, "queue": "ready_work", "state": "uncounted", "count": 99},
+            {"sampled_at": 1.5, "queue": "ready_work", "state": "counted", "count": True},
+            {"sampled_at": 2.0, "queue": "ready_work", "state": "counted", "count": 2},
+        ),
+        "ready_work",
+        METRICS.Window(0.0, 2.0, explicit=True),
+    )
+
+    assert reading.level == 2
+    assert reading.flow_creation == "0"
+    assert reading.flow_clearing == "0"
+    assert reading.trend == "unrecorded"
+
+
 def test_stock_lines_report_blocked_queue_and_ruled_alarm_statuses(tmp_path: Path) -> None:
     """Stock output names the canonical blocked queue and evaluates every alarm."""
     inputs = METRICS.Inputs(
@@ -348,6 +415,41 @@ def test_stock_lines_report_blocked_queue_and_ruled_alarm_statuses(tmp_path: Pat
         line for line in lines if "unratified_provisional_terms" in line
     )
     assert "reason=basis=" not in joined
+
+
+def test_stock_alarm_uses_setpoint_not_displayed_alarm(tmp_path: Path) -> None:
+    """An above-setpoint stock stays alarming even when its displayed alarm is higher."""
+    inputs = METRICS.Inputs(
+        dispatches=(
+            METRICS.DispatchRecord(
+                dispatch_id="without-ledger",
+                issue=50,
+                seat="implementer",
+                planned_at=1.0,
+                result_state="readable",
+                result_started_at=None,
+                result_ended_at=2.0,
+                ledger_row=False,
+                ledger_materialised_at=None,
+                landed_sha=None,
+                landed_at=None,
+                path=Path(),
+            ),
+        ),
+        loops=(),
+        queue_rows=(),
+        diagnostics=(),
+    )
+
+    line = next(
+        line
+        for line in METRICS.stock_lines(inputs, tmp_path, METRICS.Window(0.0, 2.0, explicit=True))
+        if line.startswith("stock dispatches_without_ledger")
+    )
+
+    assert "level=1" in line
+    assert "status=above_alarm" in line
+    assert "setpoint=at_most_0 alarm=20" in line
 
 
 def test_dismissal_matching_leaves_different_ids_unmatched() -> None:

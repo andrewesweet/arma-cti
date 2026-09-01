@@ -65,6 +65,7 @@ SEVERITIES: Final = ("critical", "high", "medium", "low")
 # interval carries the uncertainty rather than hiding the observation as absent.
 MIN_OBSERVATIONS: Final = 1
 WILSON_Z: Final = 1.959963984540054
+EXCLUDED_WORK_ITEM_LIMIT: Final = 20
 
 # These are the setpoints recorded in the frozen baseline and in fb42e18.  The
 # reader reports a setpoint only where the project has actually ruled one; it
@@ -178,6 +179,13 @@ class StockReading(NamedTuple):
     flow_clearing: str
     trend: str
     reason: str
+
+
+class DispatchLevel(NamedTuple):
+    """One in-flight level plus dispatches excluded from its evidence."""
+
+    level: int | None
+    excluded: int
 
 
 def _is_number(value: object) -> bool:
@@ -699,6 +707,20 @@ def _mean_text(name: str, values: list[float], *, extras: str = "") -> str:
     )
 
 
+def _self_review_exclusion_text(loops: tuple[LoopRecord, ...]) -> str:
+    """Name every absent self-review count, bounding the displayed issue list."""
+    excluded = tuple(
+        f"issue:{record.issue}"
+        for record in sorted(loops, key=lambda record: record.issue)
+        if not record.self_review_present
+    )
+    visible = excluded[:EXCLUDED_WORK_ITEM_LIMIT]
+    omitted = len(excluded) - len(visible)
+    names = ",".join(visible) if visible else "none"
+    omitted_text = f" excluded_work_items_omitted={omitted}" if omitted else ""
+    return f"excluded_without_self_review={len(excluded)} excluded_work_items={names}{omitted_text}"
+
+
 def _selected_loops(inputs: Inputs, window: Window) -> tuple[LoopRecord, ...]:
     """Select loops by issue dispatch time because loop files carry no timestamp."""
     if not window.explicit:
@@ -746,12 +768,12 @@ def injection_lines(loops: tuple[LoopRecord, ...]) -> list[str]:
             for finding in attempt.findings:
                 per_round[attempt.number][finding.origin] += 1
                 aggregate[finding.origin] += 1
+    exclusions = _self_review_exclusion_text(loops)
     if self_records == 0:
         return [
             (
                 "injection_rate status=too_few observed=0 needed=1 "
-                "self_review_records=0 excluded_without_self_review="
-                f"{sum(not record.self_review_present for record in loops)}"
+                f"self_review_records=0 {exclusions}"
             )
         ]
     lines = []
@@ -770,7 +792,7 @@ def injection_lines(loops: tuple[LoopRecord, ...]) -> list[str]:
             "injection_rate aggregate",
             aggregate[INTRODUCED],
             aggregate[INTRODUCED] + aggregate[PRE_EXISTING],
-            extras=f"self_review_records={self_records}",
+            extras=f"self_review_records={self_records} {exclusions}",
         )
     )
     return lines
@@ -833,12 +855,13 @@ def dismissal_match_counts(
 def _catch_text(loops: tuple[LoopRecord, ...]) -> tuple[str, str]:
     """Return the catch line and a compact copy for the findings line beside it."""
     ratio, numerator, denominator = catch_fraction(loops)
+    exclusions = _self_review_exclusion_text(loops)
     if ratio is None:
         text = _proportion_text(
             "catch_fraction",
             numerator,
             denominator,
-            extras="bound=upper_bound reason=no_self_review_or_findings",
+            extras=f"bound=upper_bound reason=no_self_review_or_findings {exclusions}",
         )
         return text, "catch_fraction_status=too_few"
     text = _proportion_text(
@@ -847,7 +870,7 @@ def _catch_text(loops: tuple[LoopRecord, ...]) -> tuple[str, str]:
         denominator,
         extras=(
             "bound=upper_bound caveat=self_review_may_raise_a_class_the_reviewer_would_not "
-            "matching=not_used"
+            f"matching=not_used {exclusions}"
         ),
     )
     return text, (
@@ -861,6 +884,7 @@ def dismissal_lines(loops: tuple[LoopRecord, ...]) -> list[str]:
     """Render dismissal misses, decidability and the matching limitation."""
     misses, dismissed, unmatched, ambiguous, unmatched_ids = dismissal_match_counts(loops)
     decidable = misses
+    exclusions = _self_review_exclusion_text(loops)
     # A unique exact match is the only decidable dismissal.  Ambiguous entries are
     # kept out of the ratio just like unmatched entries, and both bounds remain visible.
     lines = [
@@ -878,7 +902,8 @@ def dismissal_lines(loops: tuple[LoopRecord, ...]) -> list[str]:
                 f"unmatched={unmatched} "
                 f"ambiguous={ambiguous} possible_range="
                 f"[{(misses / dismissed if dismissed else 0.0):.6f},"
-                f"{((misses + unmatched + ambiguous) / dismissed if dismissed else 0.0):.6f}]"
+                f"{((misses + unmatched + ambiguous) / dismissed if dismissed else 0.0):.6f}] "
+                f"{exclusions}"
             ),
         ),
     ]
@@ -950,6 +975,7 @@ def findings_lines(
 def clean_round_lines(loops: tuple[LoopRecord, ...]) -> list[str]:
     """Report the first clean self-review round distribution."""
     clean_rounds: list[int] = []
+    exclusions = _self_review_exclusion_text(loops)
     for record in loops:
         if not record.self_review_present or not record.self_converged_on:
             continue
@@ -961,7 +987,7 @@ def clean_round_lines(loops: tuple[LoopRecord, ...]) -> list[str]:
         return [
             (
                 "clean_round_distribution status=too_few observed=0 needed=1 "
-                "self_review_records=0_or_no_clean_round"
+                f"self_review_records=0_or_no_clean_round {exclusions}"
             )
         ]
     counts = Counter(clean_rounds)
@@ -971,7 +997,7 @@ def clean_round_lines(loops: tuple[LoopRecord, ...]) -> list[str]:
             f"clean_round_distribution round={number}",
             counts[number],
             denominator,
-            extras=f"clean_observations={denominator}",
+            extras=f"clean_observations={denominator} {exclusions}",
         )
         for number in sorted(counts)
     ]
@@ -1130,9 +1156,11 @@ def _queue_stock(rows: tuple[dict[str, object], ...], queue: str, window: Window
         for item in dated
         if (window.start is None or item[0] >= window.start) and item[0] <= end_at
     ]
-    baseline_count = baseline[1].get("count")
+    baseline_count = baseline[1].get("count") if baseline[1].get("state") == "counted" else None
+    if not isinstance(baseline_count, int) or isinstance(baseline_count, bool):
+        baseline_count = None
     counts: list[int] = []
-    if isinstance(baseline_count, int) and not isinstance(baseline_count, bool):
+    if baseline_count is not None:
         counts.append(baseline_count)
     counts.extend(
         int(item[1]["count"])
@@ -1148,7 +1176,7 @@ def _queue_stock(rows: tuple[dict[str, object], ...], queue: str, window: Window
         )
     increases = sum(max(after - before_count, 0) for before_count, after in pairwise(counts))
     decreases = sum(max(before_count - after, 0) for before_count, after in pairwise(counts))
-    trend = count - baseline_count if isinstance(baseline_count, int) else "unrecorded"
+    trend = count - baseline_count if baseline_count is not None else "unrecorded"
     return StockReading(count, str(increases), str(decreases), str(trend), "queue_depth_deltas")
 
 
@@ -1167,27 +1195,37 @@ def _dispatch_active_at(
     return dispatch.result_ended_at > boundary
 
 
-def _dispatch_level_at(
+def _dispatch_level_evidence(
     dispatches: tuple[DispatchRecord, ...], boundary: float | None, *, historical: bool
-) -> int | None:
-    """Count in-flight dispatches at a boundary, preserving an unbounded result as unknown."""
+) -> DispatchLevel:
+    """Count known in-flight states while naming excluded incomplete evidence."""
     candidates = tuple(
         dispatch for dispatch in dispatches if boundary is None or dispatch.planned_at <= boundary
     )
     states = tuple(
         _dispatch_active_at(dispatch, boundary, historical=historical) for dispatch in candidates
     )
-    if any(state is None for state in states):
-        return None
-    return sum(state is True for state in states)
+    known = tuple(state for state in states if state is not None)
+    level = None if not known else sum(state is True for state in known)
+    return DispatchLevel(level, len(states) - len(known))
 
 
-def _dispatch_stock(dispatches: tuple[DispatchRecord, ...], window: Window) -> StockReading:
+def _dispatch_level_at(
+    dispatches: tuple[DispatchRecord, ...], boundary: float | None, *, historical: bool
+) -> int | None:
+    """Count known in-flight states without discarding a partial level."""
+    return _dispatch_level_evidence(dispatches, boundary, historical=historical).level
+
+
+def _dispatch_stock(
+    dispatches: tuple[DispatchRecord, ...], window: Window
+) -> tuple[StockReading, int]:
     """Read in-flight dispatches at the window end and their event flows."""
     # A resolved end is an as-of boundary even when the caller omitted ``--end``;
     # using the current result-file state would make ``--start`` non-reproducible.
     historical_end = window.end is not None
-    level = _dispatch_level_at(dispatches, window.end, historical=historical_end)
+    end_level = _dispatch_level_evidence(dispatches, window.end, historical=historical_end)
+    level = end_level.level
     reason = (
         "derived_from_result_end_timestamps"
         if historical_end
@@ -1205,7 +1243,7 @@ def _dispatch_stock(dispatches: tuple[DispatchRecord, ...], window: Window) -> S
         trend = "unrecorded"
     else:
         trend = str(level - start_level)
-    return StockReading(level, str(created), str(cleared), trend, reason)
+    return StockReading(level, str(created), str(cleared), trend, reason), end_level.excluded
 
 
 def _ledger_present_at(
@@ -1304,7 +1342,7 @@ def stock_lines(inputs: Inputs, repo: Path, window: Window) -> list[str]:
     """Render end-window stock levels separately from their flows."""
     ready = _queue_stock(inputs.queue_rows, "ready_work", window)
     blocked = _queue_stock(inputs.queue_rows, "dispatch_slot", window)
-    runs = _dispatch_stock(inputs.dispatches, window)
+    runs, runs_excluded = _dispatch_stock(inputs.dispatches, window)
     ledger = _ledger_stock(inputs.dispatches, window)
     provisional, provisional_reason = _provisional_stock(repo)
     return [
@@ -1320,7 +1358,8 @@ def stock_lines(inputs: Inputs, repo: Path, window: Window) -> list[str]:
             f"flow_clearing={blocked.flow_clearing} trend={blocked.trend} reason={blocked.reason}"
         ),
         (
-            f"stock runs_in_flight level={_level_text(runs.level)} setpoint=unruled "
+            f"stock runs_in_flight level={_level_text(runs.level)} "
+            f"excluded_without_ended_at={runs_excluded} setpoint=unruled "
             f"status=unruled flow_creation={runs.flow_creation} "
             f"flow_clearing={runs.flow_clearing} trend={runs.trend} reason={runs.reason}"
         ),
@@ -1332,7 +1371,7 @@ def stock_lines(inputs: Inputs, repo: Path, window: Window) -> list[str]:
         ),
         (
             f"stock dispatches_without_ledger level={_level_text(ledger.level)} "
-            f"status={_maximum_alarm_status(ledger.level, 20)} "
+            f"status={_maximum_alarm_status(ledger.level, NO_LEDGER_SETPOINT)} "
             f"setpoint=at_most_{NO_LEDGER_SETPOINT} alarm=20 "
             f"flow_creation={ledger.flow_creation} flow_clearing={ledger.flow_clearing} "
             f"trend={ledger.trend} reason={ledger.reason}"
@@ -1340,7 +1379,7 @@ def stock_lines(inputs: Inputs, repo: Path, window: Window) -> list[str]:
         (
             "stock unratified_provisional_terms "
             f"level={provisional if provisional is not None else 'unrecorded'} "
-            f"status={_maximum_alarm_status(provisional, 5)} "
+            f"status={_maximum_alarm_status(provisional, UNRATIFIED_SETPOINT)} "
             f"setpoint=at_most_{UNRATIFIED_SETPOINT} alarm=5 flow_creation=unrecorded "
             f"flow_clearing=unrecorded trend=unrecorded reason={provisional_reason}"
         ),
