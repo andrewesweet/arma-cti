@@ -15,10 +15,11 @@ import json
 import subprocess
 from typing import TYPE_CHECKING
 
+import pytest
 from conftest import REPO, load_hook
 
 if TYPE_CHECKING:
-    import pytest
+    from pathlib import Path
 
 hook = load_hook("protect-gated-paths")
 
@@ -37,6 +38,34 @@ def bash(monkeypatch: pytest.MonkeyPatch, command: str) -> int:
         monkeypatch,
         json.dumps({"tool_name": "Bash", "tool_input": {"command": command}}),
     )
+
+
+def git(repo: Path, *args: str) -> None:
+    """Run fixture Git, with any failure visible in the assertion."""
+    completed = subprocess.run(  # noqa: S603 — fixture Git argv only
+        ["git", *args],  # noqa: S607 — Git resolves from the test toolchain
+        cwd=repo,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert completed.returncode == 0, completed.stderr
+
+
+def linked_worktree_pair(tmp_path: Path) -> tuple[Path, Path]:
+    """Create a disposable main and linked worktree pair."""
+    main = tmp_path / "main-checkout"
+    main.mkdir()
+    git(main, "init", "-q", "-b", "main")
+    git(main, "config", "user.email", "test@example.invalid")
+    git(main, "config", "user.name", "test")
+    (main / "ordinary.txt").write_text("before\n", encoding="utf-8")
+    git(main, "add", "ordinary.txt")
+    git(main, "commit", "-q", "-m", "base")
+
+    assigned = tmp_path / "assigned-worktree"
+    git(main, "worktree", "add", "-q", "--detach", str(assigned), "HEAD")
+    return main, assigned
 
 
 # --- write shapes onto a gated path are denied ------------------------------
@@ -194,9 +223,12 @@ def test_editing_an_ungated_file_is_allowed(monkeypatch: pytest.MonkeyPatch) -> 
 
 def test_an_absolute_target_outside_the_assigned_worktree_is_denied(
     monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
 ) -> None:
-    """#666: an absolute main-checkout target must not escape this worktree's hook."""
-    target = str(REPO.parents[2] / "main-checkout-probe.md")
+    """#666: an absolute main target is denied from any checkout layout."""
+    main, assigned = linked_worktree_pair(tmp_path)
+    monkeypatch.setattr(hook, "REPO", assigned)
+    target = str(main / "main-checkout-probe.md")
     patch = f"*** Begin Patch\n*** Update File: {target}\n@@\n-before\n+after\n*** End Patch\n"
 
     assert (
@@ -204,6 +236,46 @@ def test_an_absolute_target_outside_the_assigned_worktree_is_denied(
         == 2
     )
     assert bash(monkeypatch, f"touch {target}") == 2
+
+
+def test_a_custom_gitdir_still_identifies_the_main_checkout(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    """A non-standard metadata location must not make a main target safe."""
+    main = tmp_path / "main-checkout"
+    common_git = main / ".git"
+    common_git.mkdir(parents=True)
+    (common_git / "HEAD").write_text("ref: refs/heads/main\n", encoding="utf-8")
+
+    assigned = tmp_path / "assigned-worktree"
+    assigned.mkdir()
+    metadata = tmp_path / "metadata" / "nested" / "worktrees" / "issue-666"
+    metadata.mkdir(parents=True)
+    (metadata / "commondir").write_text(f"{common_git}\n", encoding="utf-8")
+    (assigned / ".git").write_text(f"gitdir: {metadata}\n", encoding="utf-8")
+
+    monkeypatch.setattr(hook, "REPO", assigned)
+    assert bash(monkeypatch, f"touch {main / 'main-checkout-probe.md'}") == 2
+
+
+@pytest.mark.parametrize("git_state", ["malformed_marker", "missing_head"])
+def test_unreadable_git_metadata_denies_even_an_assigned_target(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    git_state: str,
+) -> None:
+    """Unknown checkout metadata must not silently disable containment."""
+    assigned = tmp_path / "assigned-worktree"
+    assigned.mkdir()
+    git_path = assigned / ".git"
+    if git_state == "malformed_marker":
+        git_path.write_text("not a gitdir marker\n", encoding="utf-8")
+    else:
+        git_path.mkdir()
+
+    monkeypatch.setattr(hook, "REPO", assigned)
+    assert bash(monkeypatch, f"touch {assigned / 'ordinary.txt'}") == 2
 
 
 # --- the stdin contract fails closed (#94 findings 1-2) ----------------------

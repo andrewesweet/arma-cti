@@ -285,22 +285,62 @@ def gates_for_path(path: str, *, root: Path | None = None) -> tuple[PathGate, ..
     return tuple(gate for gate in PATH_GATES if gate.matches(normalised))
 
 
+def _read_git_metadata_path(path: Path, *, prefix: str = "") -> Path | None:
+    """Read one non-empty path from a Git metadata file, or ``None`` if malformed."""
+    lines = path.read_text(encoding="utf-8").splitlines()
+    if len(lines) != 1:
+        return None
+    value = lines[0]
+    if prefix:
+        if not value.startswith(prefix):
+            return None
+        value = value.removeprefix(prefix).strip()
+    else:
+        value = value.strip()
+    return Path(value) if value else None
+
+
+def _linked_repository_root(worktree: Path, git_path: Path) -> Path | None:
+    """Resolve a linked worktree's common Git directory without assuming its layout."""
+    gitdir = _read_git_metadata_path(git_path, prefix="gitdir:")
+    if gitdir is None:
+        return None
+    if not gitdir.is_absolute():
+        gitdir = worktree / gitdir
+    gitdir = gitdir.resolve(strict=False)
+    if not gitdir.is_dir():
+        return None
+
+    common_dir = _read_git_metadata_path(gitdir / "commondir")
+    if common_dir is None:
+        return None
+    if not common_dir.is_absolute():
+        common_dir = gitdir / common_dir
+    common_dir = common_dir.resolve(strict=False)
+    if not common_dir.is_dir():
+        return None
+    head = (common_dir / "HEAD").read_text(encoding="utf-8")
+    return common_dir.parent.resolve(strict=False) if head.strip() else None
+
+
+def _repository_root_unchecked(worktree: Path) -> Path | None:
+    """Resolve repository metadata, allowing the caller to handle read failures."""
+    worktree = worktree.resolve(strict=False)
+    git_path = worktree / ".git"
+    if git_path.is_dir():
+        head = (git_path / "HEAD").read_text(encoding="utf-8")
+        return worktree if head.strip() else None
+    return _linked_repository_root(worktree, git_path)
+
+
 def _repository_root(worktree: Path) -> Path | None:
     """Return linked worktree's main checkout, or ``None`` when Git metadata is unreadable."""
     try:
-        worktree = worktree.resolve(strict=False)
-        git_path = worktree / ".git"
-        if git_path.is_dir():
-            return worktree
-        marker = git_path.read_text(encoding="utf-8").strip()
-        if not marker.startswith("gitdir:"):
-            return None
-        gitdir = Path(marker.removeprefix("gitdir:").strip())
-        if not gitdir.is_absolute():
-            gitdir = worktree / gitdir
-        return gitdir.resolve(strict=False).parent.parent.parent
-    except (OSError, RuntimeError, UnicodeError):
+        result = _repository_root_unchecked(worktree)
+    except (OSError, RuntimeError, UnicodeError, ValueError):
         return None
+    else:
+        return result
 
 
 def _foreign_checkout(path: str, root: Path) -> bool:
@@ -311,19 +351,18 @@ def _foreign_checkout(path: str, root: Path) -> bool:
         if not candidate.is_absolute():
             candidate = worktree / candidate
         resolved = candidate.resolve(strict=False)
+        repository = _repository_root(worktree)
+        if repository is None:
+            # #666/#94: unreadable or malformed Git metadata cannot prove containment safe.
+            return True
+        repository = repository.resolve(strict=False)
         if resolved.is_relative_to(worktree):
             return False
+        return resolved.is_relative_to(repository)
     except (OSError, RuntimeError):
         return True
-
-    repository = _repository_root(root)
-    if repository is None:
-        return False
-    try:
-        resolved.relative_to(repository.resolve(strict=False))
-    except (OSError, RuntimeError, ValueError):
-        return False
-    return True
+    except ValueError:
+        return True
 
 
 def signoff_gate(path: str, *, root: Path | None = None) -> PathGate | None:
