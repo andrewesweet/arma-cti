@@ -201,5 +201,6 @@
 |659|01dd65b6deb94089dc2edacca53c868342b2ffcd|journal|9|3|8129|claude-native,codex|C2.10182|U|N|
 |660|0a28dd9ab226042a53f17e55704cb6184400c68c|journal|3|0|1224|claude-native,codex|C0.47946|U|N|
 |662|e16f6bc5811f72d2b1d6a5347166421b3dc6467d|journal|3|0|1849|claude-native,codex|C0.590023|U|N|
+|666|0aa3589dd2c11cf8d170390f54eb8d06d6082ff2|journal|7|1|7687|codex,zai|N|U|U|
 |667|eb7962b484b5a5b84e190343b2819bf7486d7669|journal|3|0|1132|claude-native,codex|C0.400113|U|N|
 |669|d70d53308410640f821897995a0b1e94a248e702|journal|5|1|2851|claude-native,codex|C1.01268|U|N|
