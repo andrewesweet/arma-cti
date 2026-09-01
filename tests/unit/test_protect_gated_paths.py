@@ -175,8 +175,8 @@ def test_redirecting_a_read_of_a_spec_elsewhere_is_allowed() -> None:
     assert hook.bash_denial(f"grep given {SPEC} > /tmp/hits.txt") is None
 
 
-def test_a_gated_path_inside_a_quoted_string_is_prose() -> None:
-    assert hook.bash_denial(f'gh issue comment 168 --body "never sed -i {SPEC} by hand"') is None
+def test_a_gated_path_inside_non_gh_quoted_prose_is_allowed() -> None:
+    assert hook.bash_denial(f'printf "%s" "never sed -i {SPEC} by hand"') is None
 
 
 def test_a_gated_path_in_a_heredoc_body_is_prose() -> None:

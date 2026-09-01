@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import json
 import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -14,6 +16,59 @@ gh_body_guard = load_tool("gh_body_guard")
 REPO = Path(__file__).parents[2]
 HOOK_INTEGRATION_FIXTURE = Path(__file__).parents[1] / "fixtures" / "675-hook-integration.diff"
 HOOK_INTEGRATION_BASE = "a67980f9"
+
+
+def stage_integrated_hook(tmp_path: Path) -> tuple[Path, Path, bytes]:
+    """Apply the reserved hook fixture to a runnable scratch copy."""
+    scratch = tmp_path / "scratch-repo"
+    shutil.copytree(REPO / ".claude", scratch / ".claude")
+    shutil.copytree(REPO / "tools", scratch / "tools")
+
+    baseline = subprocess.run(  # noqa: S603 — the fixture's fixed Git read
+        [  # noqa: S607 — Git is the fixed fixture reader
+            "git",
+            "show",
+            f"{HOOK_INTEGRATION_BASE}:.claude/hooks/protect-gated-paths.py",
+        ],
+        cwd=REPO,
+        capture_output=True,
+        check=False,
+    )
+    assert baseline.returncode == 0, baseline.stderr.decode()
+
+    target = scratch / ".claude" / "hooks" / "protect-gated-paths.py"
+    target.write_bytes(baseline.stdout)
+    checked = subprocess.run(  # noqa: S603 — the fixture's fixed Git patch check
+        ["git", "apply", "--check", str(HOOK_INTEGRATION_FIXTURE)],  # noqa: S607
+        cwd=scratch,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert checked.returncode == 0, checked.stderr
+    applied = subprocess.run(  # noqa: S603 — the fixture's fixed Git patch
+        ["git", "apply", str(HOOK_INTEGRATION_FIXTURE)],  # noqa: S607
+        cwd=scratch,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert applied.returncode == 0, applied.stderr
+    return scratch, target, baseline.stdout
+
+
+def run_integrated_hook(scratch: Path, command: str) -> subprocess.CompletedProcess[str]:
+    """Run the fixture-applied hook through its JSON Bash boundary."""
+    payload = json.dumps({"tool_name": "Bash", "tool_input": {"command": command}})
+    return subprocess.run(  # noqa: S603 — argv is the scratch hook and fixed interpreter
+        [sys.executable, str(scratch / ".claude" / "hooks" / "protect-gated-paths.py")],
+        cwd=scratch,
+        env={"PATH": os.environ.get("PATH", "")},
+        input=payload,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
 
 
 def test_backticked_body_is_literal_when_sent_through_a_body_file(tmp_path: Path) -> None:
@@ -112,39 +167,9 @@ def test_a_gh_phrase_inside_another_command_is_not_an_invocation() -> None:
 
 def test_hook_fixture_reconstructs_the_committed_hook(tmp_path: Path) -> None:
     """The reserved hook's external integration diff rebuilds its intended bytes."""
-    baseline = subprocess.run(  # noqa: S603 — the fixture's fixed Git read
-        [  # noqa: S607 — Git is the fixed fixture reader
-            "git",
-            "show",
-            f"{HOOK_INTEGRATION_BASE}:.claude/hooks/protect-gated-paths.py",
-        ],
-        cwd=REPO,
-        capture_output=True,
-        check=False,
-    )
-    assert baseline.returncode == 0, baseline.stderr.decode()
+    _scratch, target, baseline = stage_integrated_hook(tmp_path)
 
-    target = tmp_path / ".claude" / "hooks" / "protect-gated-paths.py"
-    target.parent.mkdir(parents=True)
-    target.write_bytes(baseline.stdout)
-    checked = subprocess.run(  # noqa: S603 — the fixture's fixed Git patch check
-        ["git", "apply", "--check", str(HOOK_INTEGRATION_FIXTURE)],  # noqa: S607
-        cwd=tmp_path,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    assert checked.returncode == 0, checked.stderr
-    applied = subprocess.run(  # noqa: S603 — the fixture's fixed Git patch
-        ["git", "apply", str(HOOK_INTEGRATION_FIXTURE)],  # noqa: S607
-        cwd=tmp_path,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    assert applied.returncode == 0, applied.stderr
-
-    expected = baseline.stdout.replace(
+    expected = baseline.replace(
         b"from gated_paths import hook_denial\n",
         b"from gated_paths import hook_denial\n"
         b"from gh_body_guard import denial as gh_body_denial\n",
@@ -160,3 +185,23 @@ def test_hook_fixture_reconstructs_the_committed_hook(tmp_path: Path) -> None:
         1,
     )
     assert target.read_bytes() == expected
+
+
+def test_integrated_hook_refuses_inline_body_with_file_remedy(tmp_path: Path) -> None:
+    """The fixture-applied hook refuses inline bodies at the Bash entry point."""
+    scratch, _target, _baseline = stage_integrated_hook(tmp_path)
+    done = run_integrated_hook(
+        scratch,
+        'gh issue comment 168 --body "never sed -i tests/specs/campaign.yaml by hand"',
+    )
+    assert done.returncode == 2
+    assert "--body-file" in done.stderr
+
+
+def test_integrated_hook_allows_a_complete_body_file_at_the_bash_entry_point(
+    tmp_path: Path,
+) -> None:
+    """The fixture-applied hook lets a complete file-backed body through."""
+    scratch, _target, _baseline = stage_integrated_hook(tmp_path)
+    done = run_integrated_hook(scratch, "gh issue comment 168 --body-file comment.md")
+    assert done.returncode == 0, done.stderr
