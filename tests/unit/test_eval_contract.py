@@ -61,6 +61,14 @@ def test_the_contract_renders_every_state_and_exit_code() -> None:
     rendered = eval_corpus.render_contract()
     for state in eval_corpus.CaseState:
         assert f"  {eval_corpus.CASE_SEVERITY[state]}  {state.value}" in rendered
+    assert "Equal-severity states use CaseState declaration order" in rendered
+
+
+def test_the_contract_reserves_unclassified_as_an_expected_class() -> None:
+    """The grader may emit unclassified, but a task may not expect that reserved state."""
+    rendered = eval_corpus.render_contract()
+    assert "`unclassified` is reserved as a case status" in rendered
+    assert "cannot be `expected_class`" in rendered
 
 
 def test_the_contract_points_at_the_failure_class_table() -> None:
@@ -87,6 +95,19 @@ def test_the_shipped_task_pins_its_grader_by_hash(tmp_path: Path) -> None:
     grader = eval_corpus.Grader(task.grader, task.grader_sha256, tmp_path, task.id)
     verdict = grader.grade({"answer": "Dispatch detached and end the turn."}, task.classes)
     assert verdict[0] == "dispatch_detached_and_end"
+
+
+def test_expected_unclassified_is_rejected_as_reserved(tmp_path: Path) -> None:
+    """A reserved case status cannot be a task's expected grader outcome."""
+    corpus = _write_corpus_with_grader(
+        tmp_path, classes=["unclassified"], expected_class="unclassified"
+    )
+
+    with pytest.raises(eval_corpus.EvalRefusalError) as raised:
+        eval_corpus.load_corpus(corpus, ROOT)
+
+    assert raised.value.kind == "input_invalid"
+    assert raised.value.details == ("expected_class_reserved=t.json",)
 
 
 def test_wait_first_answers_beat_later_handoff_language(tmp_path: Path) -> None:

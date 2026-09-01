@@ -329,6 +329,12 @@ class CaseState(StrEnum):
 # Severity is also the exit code: the run exits on the worst class present, the probe
 # corpus's own convention. These ranks are this runner's vocabulary for eval states;
 # the names shared with the failure-class table keep their table meaning, never redefined.
+# `unclassified` is intentionally shared with task grader outcomes: the grader may emit
+# it for an answer the runner cannot use in its rate, while the report's `expected=` and
+# `status=` keys keep the grader and case-state vocabularies distinct.
+CASE_DECLARATION_ORDER: Final[dict[CaseState, int]] = {
+    state: index for index, state in enumerate(CaseState)
+}
 CASE_SEVERITY: Final[dict[CaseState, int]] = {
     CaseState.WITHIN_TOLERANCE: 0,
     CaseState.UNCLASSIFIED: 1,
@@ -831,6 +837,8 @@ def load_task(corpus_dir: Path, path: Path, repo_root: Path) -> Task:
     expected = _string(document, "expected_class", path.name)
     if expected not in classes:
         raise EvalRefusalError("input_invalid", (f"expected_class_not_in_classes={path.name}",))
+    if expected == UNCLASSIFIED:
+        raise EvalRefusalError("input_invalid", (f"expected_class_reserved={path.name}",))
     tolerance = _required(document, "tolerance", path.name)
     if isinstance(tolerance, bool) or not isinstance(tolerance, (int, float)):
         raise EvalRefusalError("input_invalid", (f"tolerance_not_a_number={path.name}",))
@@ -2102,7 +2110,13 @@ def power_statement(independent_cases: int, min_cases_for_claim: int) -> list[st
 
 def worst_state(results: list[CaseResult]) -> CaseState:
     """Return the worst class present, which is the run's exit code."""
-    return max(results, key=lambda result: CASE_SEVERITY[result.state]).state
+    return max(
+        results,
+        key=lambda result: (
+            CASE_SEVERITY[result.state],
+            CASE_DECLARATION_ORDER[result.state],
+        ),
+    ).state
 
 
 def toolchain_pin(
@@ -2331,6 +2345,9 @@ def render_contract() -> str:
         "code is the worst class present. What a failure class *means* — including for",
         "the names this runner shares with AGENTS.md's failure-class table — is the",
         "table's to say; this output restates none of it:",
+        "Equal-severity states use CaseState declaration order as a deterministic tie-break.",
+        f"A task may list `{UNCLASSIFIED}` in `classes` for grader output, but",
+        f"`{UNCLASSIFIED}` is reserved as a case status and cannot be `expected_class`.",
     ]
     lines.extend(grader_block)
     lines.extend(f"  {CASE_SEVERITY[state]}  {state.value}" for state in CaseState)

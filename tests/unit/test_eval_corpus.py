@@ -335,6 +335,17 @@ def test_unclassified_answers_are_counted_outside_the_rate_and_reported(
     assert "worst_class=unclassified exit=1" in report
 
 
+def test_equal_severity_case_states_are_order_independent() -> None:
+    """A tied case severity uses the enum declaration order as its tie-breaker."""
+    unclassified = eval_corpus.CaseResult(
+        "cfg", "t/unclassified", eval_corpus.CaseState.UNCLASSIFIED
+    )
+    quarantined = eval_corpus.CaseResult("cfg", "t/quarantined", eval_corpus.CaseState.QUARANTINED)
+
+    assert eval_corpus.worst_state([unclassified, quarantined]) is eval_corpus.CaseState.QUARANTINED
+    assert eval_corpus.worst_state([quarantined, unclassified]) is eval_corpus.CaseState.QUARANTINED
+
+
 def test_all_unclassified_answers_have_no_rate_but_keep_their_case_state() -> None:
     """A case with no graded answer is visible as unclassified, not as a harness red."""
     outcomes = [
@@ -399,6 +410,64 @@ def test_pairwise_comparison_shows_both_sides_never_netted(tmp_path: Path) -> No
     assert len([line for line in body.splitlines() if line.startswith("pair=")]) == 2
     assert "task_pair=t1 incumbent=within_tolerance candidate=outside_tolerance" in body
     assert "divergent_cases=2" in body
+
+
+def test_task_summaries_and_task_pairs_use_the_total_case_order(tmp_path: Path) -> None:
+    """A quarantined case cannot disappear behind a tied unclassified task summary."""
+    configurations = [
+        eval_corpus.Configuration(
+            "incumbent", tmp_path / "incumbent.json", (), {}, None, None, None
+        ),
+        eval_corpus.Configuration(
+            "candidate", tmp_path / "candidate.json", (), {}, None, None, None
+        ),
+    ]
+    incumbent_cases = [
+        eval_corpus.CaseResult(
+            "incumbent",
+            "t1/unclassified",
+            eval_corpus.CaseState.UNCLASSIFIED,
+            task_id="t1",
+            variant_id="unclassified",
+        ),
+        eval_corpus.CaseResult(
+            "incumbent",
+            "t1/quarantined",
+            eval_corpus.CaseState.QUARANTINED,
+            task_id="t1",
+            variant_id="quarantined",
+        ),
+    ]
+    candidate_cases = [
+        eval_corpus.CaseResult(
+            "candidate",
+            "t1/unclassified",
+            eval_corpus.CaseState.UNCLASSIFIED,
+            task_id="t1",
+            variant_id="unclassified",
+        ),
+        eval_corpus.CaseResult(
+            "candidate",
+            "t1/quarantined",
+            eval_corpus.CaseState.WITHIN_TOLERANCE,
+            task_id="t1",
+            variant_id="quarantined",
+        ),
+    ]
+    totals = {name: {**_usage(), "usage_unknown": 0.0} for name in ("incumbent", "candidate")}
+
+    report = eval_corpus.render_report(
+        "run",
+        configurations,
+        {"incumbent": incumbent_cases, "candidate": candidate_cases},
+        totals,
+        1,
+        20,
+    )
+
+    assert "task=t1 config=incumbent verdict=quarantined cases=2" in report
+    assert "task=t1 config=candidate verdict=unclassified cases=2" in report
+    assert "task_pair=t1 incumbent=quarantined candidate=unclassified divergent=yes" in report
 
 
 def test_grader_hash_mismatch_refuses_before_any_trial(
