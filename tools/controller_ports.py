@@ -70,7 +70,9 @@ WORK_RUN_OPTIONAL_FIELDS: Final = frozenset(
 # A standalone delivery is an observation of progress, not a source of
 # scheduling authority.  These are the Work Run fields whose values can
 # release a scheduling slot when sourced authoritatively; the delivery reader
-# resets the whole set in one data-driven operation.  A future slot-releasing
+# resets the whole set in one data-driven operation.  `state` is handled by the
+# policy instead: its raw value remains visible to recovery, while unrecognized
+# values fail closed as live.  A future slot-releasing
 # field joins this set and automatically receives the same boundary treatment,
 # rather than gaining another per-field clear.
 DELIVERY_SCHEDULING_FIELDS: Final = frozenset({"landed_sha", "recovery_kind", "result_published"})
@@ -554,17 +556,27 @@ def _read_delivery(path: Path) -> policy.WorkRunFact:
 
 
 def _without_delivery_scheduling_authority(run: policy.WorkRunFact) -> policy.WorkRunFact:
-    """Reset every slot-releasing field to its Work Run default at the boundary."""
+    """Reset every slot-releasing field to a safe value at the boundary."""
+    specifications = {specification.name: specification for specification in fields(run)}
+    unknown = sorted(DELIVERY_SCHEDULING_FIELDS - specifications.keys())
+    if unknown:
+        _fact_fail(f"delivery scheduling field={unknown[0]!r} is not a WorkRunFact field")
     defaults: dict[str, object] = {}
-    for specification in fields(run):
-        if specification.name not in DELIVERY_SCHEDULING_FIELDS:
+    for field_name in DELIVERY_SCHEDULING_FIELDS:
+        if field_name == "state":
+            defaults[field_name] = (
+                run.state
+                if run.state in policy.LIVE_WORK_RUN_STATES
+                else policy.RECORDED_LAUNCH_STATE
+            )
             continue
+        specification = specifications[field_name]
         if specification.default is not MISSING:
-            defaults[specification.name] = specification.default
+            defaults[field_name] = specification.default
+        elif specification.default_factory is not MISSING:
+            defaults[field_name] = specification.default_factory()
         else:
-            if specification.default_factory is MISSING:
-                raise TypeError(specification.name)
-            defaults[specification.name] = specification.default_factory()
+            _fact_fail(f"delivery scheduling field={field_name!r} has no safe default")
     return replace(run, **defaults)
 
 
