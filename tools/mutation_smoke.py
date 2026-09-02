@@ -1475,6 +1475,43 @@ class Collected(NamedTuple):
     shell: Reach
 
 
+DURATION_ROWS_KEPT = 20
+
+
+def cap_durations(output: str) -> str:
+    """Bound pytest's durations table so a red suite's traceback reaches the reader.
+
+    The pre-flight asks pytest for `--durations=0 --durations-min=0` because
+    `read_durations` prices every test id out of that report, so the table
+    cannot simply be turned off. On a red module the table is one row per test,
+    and a tail window over the raw output shows the reader durations where the
+    `FAILURES` traceback — the only evidence that classifies the red — sits
+    (#680). Keep the table's first rows and say how many were hidden; every
+    line outside the table is untouched, and a table that never closes is kept
+    whole rather than guessed at.
+    """
+    lines = output.splitlines(keepends=True)
+    for _header_line_number, line in enumerate(lines):
+        if "slowest durations" in line:
+            break
+    else:
+        return output
+    kept_end = _header_line_number + 1 + DURATION_ROWS_KEPT
+    cursor = kept_end
+    while cursor < len(lines) and not lines[cursor].startswith("="):
+        cursor += 1
+    if cursor >= len(lines):
+        return output
+    hidden = cursor - kept_end
+    if hidden <= 0:
+        return output
+    note = (
+        f"  ... {hidden} duration rows hidden by the failure report's cap; "
+        "`read_durations` still reads the uncapped run.\n"
+    )
+    return "".join(lines[:kept_end]) + note + "".join(lines[cursor:])
+
+
 def measure(root: Path, test_module: str, *, timeout: float) -> Collected:
     """Run one test module once, and report what its tests reached in Python and in bash."""
     with tempfile.TemporaryDirectory() as workspace:
@@ -1522,7 +1559,9 @@ def measure(root: Path, test_module: str, *, timeout: float) -> Collected:
         if done.returncode != 0:
             message = (
                 f"{test_module} is not green on its own — mutation says nothing about a red "
-                f"suite. pytest exit {done.returncode}:\n{done.stdout[-2000:]}"
+                f"suite. pytest exit {done.returncode}:\n{cap_durations(done.stdout)[-6000:]}\n"
+                f"--- pytest stderr ({len(done.stderr)} bytes, last 2000 shown) ---\n"
+                f"{done.stderr[-2000:]}"
             )
             raise Refusal(message)
         exported = subprocess.run(  # noqa: S603 — argv built here from paths and constants

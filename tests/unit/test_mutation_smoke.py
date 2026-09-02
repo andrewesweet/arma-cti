@@ -371,6 +371,71 @@ def test_durations_are_summed_over_a_tests_three_phases() -> None:
     )
 
 
+# --- the failure report's durations cap (#680) --------------------------------
+
+
+def durations_output(rows: int, *, failures_after_table: bool) -> str:
+    """Return a pytest transcript's shape: a durations table, optionally a traceback."""
+    header = "============================ slowest durations ============================\n"
+    table = "".join(
+        f"0.0{index % 10}s call     tests/unit/test_x.py::test_{index:03d}\n"
+        for index in range(rows)
+    )
+    failures = (
+        "=============================== FAILURES ================================\n"
+        "________________________________ test_red ________________________________\n"
+        ">       assert False, 'the failing assertion'\n"
+    )
+    footer = "====================== 1 failed, 9 passed in 1.00s ======================\n"
+    if failures_after_table:
+        return header + table + failures + footer
+    return failures + header + table + footer
+
+
+def count_duration_rows(output: str) -> int:
+    return output.count("s call     tests/unit/test_x.py::test_")
+
+
+def test_a_red_transcript_keeps_the_traceback_and_caps_only_duration_rows() -> None:
+    output = durations_output(40, failures_after_table=True)
+    capped = smoke_tool.cap_durations(output)
+    assert "the failing assertion" in capped
+    assert count_duration_rows(capped) == smoke_tool.DURATION_ROWS_KEPT
+    hidden = 40 - smoke_tool.DURATION_ROWS_KEPT
+    assert f"... {hidden} duration rows hidden" in capped
+    assert "1 failed, 9 passed in 1.00s" in capped
+
+
+def test_a_failure_section_before_the_table_is_never_dropped() -> None:
+    output = durations_output(40, failures_after_table=False)
+    capped = smoke_tool.cap_durations(output)
+    assert "the failing assertion" in capped
+    assert count_duration_rows(capped) == smoke_tool.DURATION_ROWS_KEPT
+
+
+def test_a_durations_table_under_the_cap_is_left_alone() -> None:
+    output = durations_output(5, failures_after_table=True)
+    assert smoke_tool.cap_durations(output) == output
+
+
+def test_a_durations_table_that_never_closes_is_left_whole() -> None:
+    # Fail-closed: a table with no closing section header gives the cap nothing to
+    # bound against, so it keeps the whole output rather than guessing an end.
+    output = (
+        "============================ slowest durations ============================\n"
+        + "".join(
+            f"0.0{index % 10}s call     tests/unit/test_x.py::test_{index:03d}\n"
+            for index in range(40)
+        )
+    )
+    assert smoke_tool.cap_durations(output) == output
+
+
+def test_an_output_without_a_durations_table_is_left_alone() -> None:
+    output = "======================= 1 passed in 0.01s ========================\n"
+    assert smoke_tool.cap_durations(output) == output
+
+
 # --- coverage names are not pytest node ids ---------------------------------
 
 
@@ -1506,9 +1571,14 @@ def test_a_mutant_that_breaks_import_after_a_green_preflight_is_killed(tmp_path:
 
 @pytest.mark.skipif(sys.platform == "win32", reason="the gate runs on the WSL2 side only")
 def test_a_module_that_is_not_green_still_refuses_before_mutation(tmp_path: Path) -> None:
-    name = _throwaway(tmp_path, "def test_red():\n    assert False\n")
-    with pytest.raises(smoke_tool.Refusal, match="is not green on its own"):
+    # #680: the refusal is what a reader classifies the red from, so it must carry
+    # the failing assertion and pytest's stderr, never only a tail the durations
+    # table has filled.
+    name = _throwaway(tmp_path, "def test_red():\n    assert False, 'the failing assertion'\n")
+    with pytest.raises(smoke_tool.Refusal, match="is not green on its own") as raised:
         smoke_tool.smoke(tmp_path, name, cap=8, budget=120.0, rows={})
+    assert "the failing assertion" in str(raised.value)
+    assert "--- pytest stderr (" in str(raised.value)
 
 
 # --- the ratchet, end to end (#244) -----------------------------------------
