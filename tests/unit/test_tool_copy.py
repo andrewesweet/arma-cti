@@ -24,7 +24,6 @@ from conftest import load_tool
 
 if TYPE_CHECKING:
     from collections.abc import Callable
-
     from pathlib import Path
 
     import pytest

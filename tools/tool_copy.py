@@ -283,7 +283,8 @@ def _is_behind(root: Path) -> bool | None:
     code = _git_code("merge-base", "--is-ancestor", "HEAD", "origin/main", root=root)
     if code in (0, 1):
         return code == 0
-    raise _GitUnreadableError(f"git merge-base --is-ancestor: exit {code}")
+    detail = f"git merge-base --is-ancestor: exit {code}"
+    raise _GitUnreadableError(detail)
 
 
 def survey(root: Path) -> Survey:
