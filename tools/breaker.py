@@ -246,8 +246,10 @@ CORPUS_CRASH_CLASS: Final = "node_crashed"
 # this rule: a genuine crash trip deliberately carries no failure class
 # (`pool_merge.crash_stop` returns None) so the pool exits on the `node_crashed`
 # verdicts it actually collected. Typing that stop `infra_unavailable` would turn
-# a measured result into a not-a-result; only the shell's own unread-decision
-# failure, which the shell types itself, is `infra_unavailable`.
+# a measured result into a not-a-result; `infra_unavailable` on a pool stop names
+# only a record-or-decision failure — an unreadable completion record
+# (`pool_merge.read_completion_record`) or a stop decision the shell could not
+# read — never a measured verdict.
 CORPUS_CRASH_RULE: Final = TripRule(
     name="systemic_crash",
     on=frozenset({CORPUS_CRASH_CLASS}),

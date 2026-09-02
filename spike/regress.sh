@@ -805,7 +805,7 @@ CLAIMS="$POOL_OUT/claims"
 STOP_FLAG="$POOL_OUT/stop"
 # Typed for the same reason as the install prep above: slots are held, so an
 # exit here is a failure path out of a run in flight, not a usage refusal.
-mkdir -p "$CLAIMS" || {
+mkdir -p "$CLAIMS" "$POOL_OUT/stop-decision-failures" || {
     {
         printf '\n[regress] could not create the pool'"'"'s evidence directory %s — this is infra_unavailable, not a result.\n' "$POOL_OUT"
         printf 'verdict=FAIL\n'
@@ -1304,15 +1304,14 @@ run_probe() {
         if [[ -n "$decision_failure_class" ]]; then
             # A stop caused by an unreadable decision is itself a result-class
             # failure; otherwise an all-pass pool could stop safely but still
-            # exit green after the merge. Workers race, so this write only ever
-            # upgrades the class — the merge reads whichever marker stands, and
-            # a later writer must not downgrade an earlier one
-            # (untyped_harness_failure outranks infra_unavailable).
-            local marker="$POOL_OUT/stop-decision-failure"
-            if [[ ! -f "$marker" ]] ||
-                ((CLASS_RANK[$decision_failure_class] > CLASS_RANK[$(<"$marker")])); then
-                printf '%s\n' "$decision_failure_class" >"$marker"
-            fi
+            # exit green after the merge. Workers race, so no shared marker
+            # file: each completion writes its own candidate named for the
+            # probe, and the merge — which already owns severity — stands the
+            # worst class. Distinct names mean no writer can overwrite or
+            # downgrade another's candidate, and no second severity order
+            # grows here (ADR-0049; CLASS_RANK is exit codes, not severity).
+            printf '%s\n' "$decision_failure_class" \
+                >"$POOL_OUT/stop-decision-failures/$name"
         fi
         if [[ "$trip" == yes && ! -f "$STOP_FLAG" ]]; then
             printf '%s\n' "$stop_line" >"$STOP_FLAG"

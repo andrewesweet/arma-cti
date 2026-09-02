@@ -7,9 +7,11 @@
   named probes; `CORPUS_CRASH_RULE`'s `failure_class` now carries a comment stating it is
   never the pool's exit class — a genuine crash trip exits on the `node_crashed` verdicts
   it collected, and typing that stop `infra_unavailable` would turn a result into a
-  not-a-result; the `stop-decision-failure` marker write can no longer be downgraded by a
-  later racing worker — a worker writes only when no marker stands or the standing one
-  ranks lower in the failure-class table; and `$POOL_OUT/stop` has one writer, the merge,
-  whose post-drain recount is the final rendering — the shell's redundant rewrite after
-  the merge is deleted. `docs/regression-tier.md`'s merge section now states the marker,
+  not-a-result; a worker that could not read the stop decision now writes its own
+  `stop-decision-failures/<probe>` candidate file instead of one shared marker, and
+  `pool_merge` stands the worst class among the candidates by its own severity table, so
+  no racing worker can overwrite or downgrade another's record; and the shell's rewrite
+  of `$POOL_OUT/stop` from the merge's summary output is deleted — the merge's post-drain
+  recount is that file's final write, the five worker writes that create it standing
+  unchanged. `docs/regression-tier.md`'s merge section now states the candidate files,
   the `worst_class` overlay and the post-drain recount, which it had never carried.

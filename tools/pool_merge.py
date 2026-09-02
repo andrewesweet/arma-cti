@@ -32,8 +32,8 @@ of that stop is that no probe launched to carry the class.
 Six riders travel with the merge because they read and write the same files
 or the same table: `stop-decision` reads the workers' completion record and
 asks `breaker.py` whether the pool's consecutive-crash rule trips (#72) — the
-shell asks after every verdict and writes the stop flag or failure marker it is
-told, while this module owns only the record parsing and explanation — `prune-passes` decides
+shell asks after every verdict and writes the stop flag it is told, while this
+module owns only the record parsing and explanation — `prune-passes` decides
 which old green evidence has outlived the retention convention (the shell does
 the deleting),
 `prune-pools` decides the same for pool directories off the `worst_class`
@@ -180,18 +180,40 @@ def finalize_stop_line(stop_line: str, not_run: int) -> str:
     return f"{line}, {not_run} probe(s) not run"
 
 
-def read_stop_decision_failure(pool_out: Path) -> str | None:
-    """Read the caller's typed stop-decision failure marker, if one exists."""
-    marker = pool_out / "stop-decision-failure"
-    if not marker.is_file():
+def read_stop_decision_failures(pool_out: Path) -> str | None:
+    """Read the workers' typed stop-decision failure candidates, if any exist.
+
+    Each worker writes its own candidate named for the probe whose stop
+    decision could not be read, so racing writers never touch one another's
+    file and no candidate can overwrite or downgrade another. Which class
+    stands is this merge's judgement, because severity is already this
+    module's table (CLASS_SEVERITY, #162) and a second order in the shell
+    would be a second authority for what "worse" means (ADR-0049).
+
+    A candidate that cannot be read, or carries a class the table has never
+    heard of, is an untyped red — the same reading the verdict typer's
+    failure gets.
+    """
+    candidates_dir = pool_out / "stop-decision-failures"
+    if not candidates_dir.is_dir():
         return None
     try:
-        failure_class = marker.read_text(encoding="utf-8").strip()
-    except (OSError, UnicodeDecodeError):
+        candidates = sorted(candidates_dir.iterdir())
+    except OSError:
+        # A directory that exists but cannot be listed is a harness fault at
+        # the one place that stands between the machine and the hammering.
         return "untyped_harness_failure"
-    if failure_class in {"infra_unavailable", "untyped_harness_failure"}:
-        return failure_class
-    return "untyped_harness_failure"
+    worst: str | None = None
+    for candidate in candidates:
+        try:
+            failure_class = candidate.read_text(encoding="utf-8").strip()
+        except (OSError, UnicodeDecodeError):
+            return "untyped_harness_failure"
+        if failure_class not in CLASS_SEVERITY:
+            return "untyped_harness_failure"
+        if worst is None or severity(failure_class) > severity(worst):
+            worst = failure_class
+    return worst
 
 
 def crash_stop(record: Path) -> tuple[bool, str, str | None]:
@@ -694,7 +716,7 @@ def run_merge(args: argparse.Namespace) -> int:
         client_lock_evidence=args.client_lock_evidence,
         mem_stopped=(pool_out / "mem-stop").is_file(),
     )
-    stop_failure = read_stop_decision_failure(pool_out)
+    stop_failure = read_stop_decision_failures(pool_out)
     if stop_failure:
         merged = merged._replace(
             notices=[
@@ -738,8 +760,6 @@ def run_merge(args: argparse.Namespace) -> int:
     )
     (pool_out / "pool.json").write_text(json.dumps(document, indent=2) + "\n", encoding="utf-8")
 
-    if stopped_early:
-        print(f"stopped_early={stopped_early}")  # noqa: T201 — the shell refreshes the stop flag
     print(f"worst_class={merged.worst_class}")  # noqa: T201 — the shell reads these lines
     for slot in merged.reclaim_slots:
         print(f"reclaim_slot={slot}")  # noqa: T201 — the shell releases and reclaims
@@ -793,7 +813,7 @@ def run_stop_decision(args: argparse.Namespace) -> int:
     if stop_line:
         print(f"stop_line={flattened(stop_line)}")  # noqa: T201 — the shell reads a line
     if failure_class:
-        print(f"failure_class={failure_class}")  # noqa: T201 — the shell writes the marker
+        print(f"failure_class={failure_class}")  # noqa: T201 — the shell writes a candidate
     return 0
 
 
