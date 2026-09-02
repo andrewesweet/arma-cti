@@ -600,6 +600,16 @@ class Seat(NamedTuple):
         # one decided answer that composes a lander's brief.
         return registered is not None and registered.lands is True
 
+    # #681's predicate, in the same shape as the ones above it: the derivation lives on
+    # the registry row (`dispatch.Seat.owes_fix_round_report`) and this delegates rather
+    # than rederives, so neither brief path can disagree with the other about which seat
+    # is handed the fix-round report rule. A seat absent from the registry owes none.
+    @property
+    def owes_fix_round_report(self) -> bool:
+        """Whether the registry says this seat's briefing carries the fix-round rule."""
+        registered = dispatch.SEATS.get(self.name)
+        return registered is not None and registered.owes_fix_round_report
+
 
 def derive_seat(override: str, reviewing: str = "") -> Seat:
     """Name the seat and quote the mapping's reason, or ask for the orchestrator's.
@@ -1244,7 +1254,7 @@ def compose(briefing: Briefing) -> str:
     ]
     if seat.owes_reason:
         lines.append(_placeholder(SEAT_PLACEHOLDER))
-    if seat.name == "retro":
+    if seat.owes_fix_round_report:
         lines += ["", "## Fix-round report", dispatch.FIX_ROUND_RULE]
     if seat.reviews:
         lines.append(REVIEW_SUBJECT_RULE)

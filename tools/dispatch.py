@@ -750,6 +750,15 @@ class Seat(NamedTuple):
     # filesystem boundary that makes a writable review safe.
     disposable_worktree: bool = False
 
+    # #681's one predicate: the seats whose briefing carries the fix-round report rule
+    # (#374). A column rather than a name a brief path tests for, for the same reason
+    # `reviews` is: which seats owe the report is a fact about the seat table, and the
+    # table is where every other such fact lives. It stood as a string compare at each
+    # brief path for one round — the two-expression shape #421 closed for
+    # `judgement_only`, agreed today and drifted the day a seat-scope change moved one
+    # path and left the other behind.
+    owes_fix_round_report: bool = False
+
     # #421's one predicate, stated where the column it reads lives so no caller rederives it.
     # Both brief paths branch on this — the composed brief's three sections through
     # `brief.Seat.judgement_only`, which delegates here, and `default_brief` below — and the
@@ -897,6 +906,7 @@ SEATS: Final[dict[str, Seat]] = {
         preference=("fable-high", "opus-xhigh", "codex-sol-max"),
         escalation=("fable-xhigh", "opus-max"),
         lands=True,
+        owes_fix_round_report=True,
     ),
     # Absent from ADR-0071 ruling 2's table and therefore carrying no escalation entry, which
     # after A1 struck the blanket `fable-high` fallback means an escalation from this seat
@@ -3285,9 +3295,10 @@ SINGLE_SHOT_CONTRACT: Final = (
 # reverse, so a constant the default brief must read cannot live there without a cycle —
 # the same import direction that puts SINGLE_SHOT_CONTRACT above. The third home, the retro
 # skill file, was already rejected on #374: it is human sign-off gated, so a rule landing
-# there would govern no pass until signed. `default_brief` emits it under the retro seat
-# because a retro dispatched without `--brief-file` takes that path, and an unswept issue
-# is silent by construction — the failure #374 exists to prevent.
+# there would govern no pass until signed. `default_brief` emits it under the registry's
+# `owes_fix_round_report` column, as `tools/brief.py` does — one predicate for both brief
+# paths (#681), because a retro dispatched without `--brief-file` takes that path, and an
+# unswept issue is silent by construction — the failure #374 exists to prevent.
 FIX_ROUND_RULE: Final = (
     "Fix-round report: list every issue this pass filed with one verdict — `unchanged` or"
     " `corrected`; state what changed for `corrected`, or why `unchanged`. Derive each verdict"
@@ -3431,7 +3442,7 @@ def default_brief(
         f"work in the worktree above and nowhere else. The issue's acceptance criteria "
         f"are the contract. {gate_line}\n"
     )
-    if identity.seat == "retro":
+    if SEATS[identity.seat].owes_fix_round_report:
         rendered += "\n" + FIX_ROUND_RULE + "\n"
     if SEATS[identity.seat].reviews:
         if thread_report is None:
