@@ -659,11 +659,11 @@ def test_a_composed_brief_quoting_a_prior_brief_in_its_handoff_clears_the_route_
 
     `render_handoff` carries the issue's handoff verbatim, so a handoff quoting a prior
     brief — its `## Seat:` heading, its identity sentence — puts those lines in this
-    brief as evidence about another dispatch. Round two's High: the gate scanned every
-    line with no section context and refused exactly that brief, so the caller's only
-    recourse was editing quoted evidence out. Rendering here rather than retyping the
-    shape is the drift tripwire: if the composer's carried-section heading moves and the
-    dispatcher's scoping does not follow, this test goes red.
+    brief as evidence about another dispatch. Rounds one and two scanned that prose and
+    refused exactly this brief; round three reads only the composer's route marker, so
+    quoted evidence cannot refuse. Rendering here rather than retyping the shape is the
+    drift tripwire: if the composer's output shape moves and the gate's one marker does
+    not follow, this test goes red.
     """
     quoted = (
         "## Seat: review\n"
@@ -705,6 +705,62 @@ def test_a_composed_review_brief_quoting_a_seat_line_in_its_carried_report_clear
         base_sha="0" * 40,
     )
     assert dispatch.brief_refusal(_filled(rendered), identity) is None
+
+
+def test_the_composed_brief_carries_one_route_marker_for_its_own_seat() -> None:
+    """The marker is the brief's one route claim, written once, by the composer.
+
+    `just brief` resolves no lane or profile — that is the dispatcher's job, and a
+    composer that guessed one would refuse every dispatch whose live resolution
+    walked past the guess — so its marker names the seat and leaves the other two
+    fields explicitly unresolved rather than silent.
+    """
+    rendered = composed()
+    lines = [line for line in rendered.splitlines() if "cti-brief-route" in line]
+    assert lines == ["<!-- cti-brief-route seat=implementer lane=unresolved profile=unresolved -->"]
+
+
+def test_a_composed_brief_cut_off_before_its_marker_refuses() -> None:
+    """A splice that dies partway loses the marker, because the composer emits it last.
+
+    The marker sits at the very end of the composed output precisely so a truncated
+    composition is refused `brief_route_marker_missing` rather than passing with an
+    unmarked tail.
+    """
+    rendered = _filled(composed())
+    truncated = rendered.rsplit("<!-- cti-brief-route", 1)[0]
+    identity = dispatch.Identity(
+        dispatch_id="d-20260902-000000-000000",
+        lane="zai",
+        profile="zai-glm53-max",
+        seat="implementer",
+        issue=251,
+        base_sha="0" * 40,
+    )
+    refusal = dispatch.brief_refusal(truncated, identity)
+    assert refusal is not None
+    assert refusal.kind == "brief_route_marker_missing"
+
+
+def test_an_unfilled_composed_brief_refuses_the_placeholder_gate() -> None:
+    """The gate fires on the line this composer actually renders, never a second spelling.
+
+    The structural prefix is owned by the dispatcher and imported here; this test is the
+    tripwire that catches the composer's blockquote shape drifting away from the gate's
+    match, which would let an unfilled brief dispatch.
+    """
+    rendered = composed()
+    identity = dispatch.Identity(
+        dispatch_id="d-20260902-000000-000000",
+        lane="zai",
+        profile="zai-glm53-max",
+        seat="implementer",
+        issue=251,
+        base_sha="0" * 40,
+    )
+    refusal = dispatch.brief_refusal(rendered, identity)
+    assert refusal is not None
+    assert refusal.kind == "brief_placeholder"
 
 
 # ----------------------------------------------- the escalation (#325, ADR-0071 ruling 5)

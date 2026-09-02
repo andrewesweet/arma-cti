@@ -751,11 +751,14 @@ def fetch_open_issues(repo: str = REPO_SLUG) -> list[dict[str, object]]:
 # can share. The dispatch-time gate refuses on this same marker (#349), and a composer and
 # a gate that each kept their own copy could drift into a placeholder nothing refuses.
 PLACEHOLDER: Final = dispatch.BRIEF_PLACEHOLDER
+# The structural prefix the dispatcher's gate matches — imported, never retyped, for the
+# same reason: a composer line the gate no longer matches would dispatch an unfilled brief.
+PLACEHOLDER_LINE: Final = dispatch.BRIEF_PLACEHOLDER_LINE
 
 
 def _placeholder(what: str) -> str:
     """Render one placeholder block for a part of the variable half."""
-    return f"> **{PLACEHOLDER}.** {what}"
+    return f"{PLACEHOLDER_LINE} {what}"
 
 
 TASK_PLACEHOLDER: Final = (
@@ -1270,6 +1273,15 @@ def compose(briefing: Briefing) -> str:
         ),
         "",
     ]
+    # The route marker is the brief's one machine-readable route claim (#349, round
+    # three) — the dispatcher's gate reads it and nothing else, so it is emitted last:
+    # a composition that dies partway loses the marker and is refused
+    # `brief_route_marker_missing` rather than passing with an unmarked tail. `just
+    # brief` resolves no lane or profile — that is the dispatcher's job, and a composer
+    # that guessed one would refuse every dispatch whose live resolution walked past
+    # the guess — so the marker asserts the seat and leaves the other two fields
+    # explicitly unresolved rather than silent.
+    lines += [dispatch.brief_route_marker(seat.name), ""]
     return "\n".join(lines)
 
 

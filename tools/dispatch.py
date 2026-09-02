@@ -3287,6 +3287,42 @@ SINGLE_SHOT_CONTRACT: Final = (
 # string that renders the placeholder and the string that refuses on it cannot drift apart.
 BRIEF_PLACEHOLDER: Final = "TO BE WRITTEN BY THE ORCHESTRATOR"
 
+# The structural prefix the gate matches, and the composer renders ahead of every unfilled
+# field. One home, same reason as the string above: `tools/brief.py`'s `_placeholder` renders
+# this exact prefix, so the gate's match and the composer's output cannot drift apart.
+BRIEF_PLACEHOLDER_LINE: Final = f"> **{BRIEF_PLACEHOLDER}.**"
+
+# The brief's one route claim (#349, round three). Every earlier round scanned the brief's
+# prose for a route, and every round refused briefs that legitimately quote or discuss one —
+# a carried handoff, a gate report, a task statement about the gate itself. Free text cannot
+# tell a route a brief asserts from one it mentions, so nothing but this marker is a route
+# claim: the composer writes it once, in a shape prose cannot produce by accident, and the
+# gate below compares it against the identity this dispatch resolved. A field the composer
+# did not resolve is spelled `unresolved` rather than omitted, so the marker always carries
+# all three fields and the gate's comparison is the same three comparisons every time.
+BRIEF_ROUTE_MARK: Final = "cti-brief-route"
+_UNRESOLVED_ROUTE_FIELD: Final = "unresolved"
+_BRIEF_PLACEHOLDER_LINE: Final = re.compile(
+    rf"^{re.escape(BRIEF_PLACEHOLDER_LINE)}.*$", re.MULTILINE
+)
+
+
+def brief_route_marker(seat: str, lane: str = "", profile: str = "") -> str:
+    """Render the one route claim a brief carries, for the route it was composed for.
+
+    The dispatcher owns the format (the import direction is fixed, as for
+    `BRIEF_PLACEHOLDER` above); this is the single writer both composers call. `lane` and
+    `profile` left empty mean the composer resolved no route — `just brief`'s case, since
+    the dispatcher resolves them after composition and a composer that guessed one would
+    refuse every dispatch whose live resolution walked past the guess.
+    """
+    return (
+        f"<!-- {BRIEF_ROUTE_MARK} seat={seat} "
+        f"lane={lane or _UNRESOLVED_ROUTE_FIELD} "
+        f"profile={profile or _UNRESOLVED_ROUTE_FIELD} -->"
+    )
+
+
 # The report is the reviewer's judgement; only its transport belongs to the harness. One
 # wording reaches both briefing paths: `default_brief` below and `tools/brief.py`'s composed
 # review protocol. Keeping `gh` out of the session removes all four #496 failure paths without
@@ -3424,80 +3460,21 @@ def default_brief(
             )
         rendered += "\n" + "\n".join(gate_report.render(identity.issue, thread_report)) + "\n"
         rendered += f"\n{REVIEW_DELIVERY_PROTOCOL}\n"
+    # The marker goes out last so a composition that dies partway loses it and is
+    # refused `brief_route_marker_missing` rather than passing with an unmarked tail.
+    rendered += "\n" + brief_route_marker(identity.seat, identity.lane, identity.profile) + "\n"
     return rendered
 
 
-# The route claims the gate reads (#349). Each pattern is a shape this project itself
-# composes — the default brief's identity clause, its opening, the composed brief's own
-# seat heading — because those are also the shapes a half-failed splice leaves behind: the
-# observed failure (#316) was a stale identity sentence carried out of a previous brief.
-# Freeform prose is deliberately not parsed. An instruction about some *other* dispatch
-# ("re-dispatch on the codex lane", quoting the failure-class table's own wording) is not
-# a claim about this one's route, and refusing on every lane-shaped word would break clean
-# briefs whose titles, handoffs and prior-work lines quote lane names in prose. The names
-# come from the registries, matched in the registries' own spelling.
-#
-# The scan is section-aware (round two's High on #349): the composer carries two blocks
-# into a brief verbatim — the handoff body under `tools/brief.py`'s HANDOFF_HEADING, and
-# a review brief's gate report under `tools/gate_report.py`'s HEADING — and those bodies
-# quote prior briefs, so a carried `## Seat:` heading or identity sentence is evidence
-# about another dispatch, never this brief's route claim. Scanning them refused exactly
-# the briefs `just brief` composes. A carried section closes where the composer's own
-# resume: any other `## ` heading ends it — except another carried-section heading, which
-# re-enters carried mode — and a `## Seat:` line does not close it, because a quoted prior
-# brief's seat heading is precisely the line the exemption exists for. That leaves one
-# named limit: a stale claim the composer itself placed inside a carried span would be
-# skipped too, and the scoping therefore covers what the composer renders, not what a
-# hand edit might interleave; `tests/unit/test_brief.py` renders the composer's real
-# output through this gate so the two surfaces cannot drift apart silently.
-_CARRIED_SECTION: Final = re.compile(r"^## (?:Handoff\b|Implementer's gate report)")
-_ANY_SECTION: Final = re.compile(r"^## ")
-_ROUTE_CLAIM: Final = re.compile(
-    r"dispatched as \S+ on the ([a-z0-9-]+) lane under profile ([a-z0-9-]+)"
+# The route claims the gate reads (#349, round three): one marker, the composer's own.
+# Freeform prose is deliberately never parsed — every round that scanned it refused briefs
+# that legitimately quote or discuss a route (a carried handoff, a gate report, this issue's
+# own task text naming the placeholder), and free text cannot tell a route a brief asserts
+# from one it mentions. The names come from the registries, matched in the registries' own
+# spelling; the marker's shape is pinned by test, beside the emitter `brief_route_marker`.
+_BRIEF_ROUTE_MARKER_LINE: Final = re.compile(
+    rf"^<!-- {BRIEF_ROUTE_MARK} seat=([a-z0-9-]+) lane=(\S+) profile=(\S+) -->$", re.MULTILINE
 )
-_SEAT_HEADING: Final = re.compile(r"^## Seat: ([a-z0-9-]+)")
-_SEAT_OPENING: Final = re.compile(r"^You are the ([a-z0-9-]+) seat")
-
-
-def _route_contradictions(text: str, identity: Identity) -> list[str]:
-    """Collect the route claims that contradict this dispatch, quoting each offending line.
-
-    The scan is section-aware (the comment on `_CARRIED_SECTION`): lines inside a carried
-    section are evidence about another dispatch and are never claims for this one.
-    """
-    contradictions: list[str] = []
-    carried = False
-    for line in text.splitlines():
-        if _CARRIED_SECTION.match(line):
-            carried = True
-            continue
-        if carried and _ANY_SECTION.match(line) and not _SEAT_HEADING.match(line):
-            carried = False
-        if carried:
-            continue
-        for pattern in (_SEAT_HEADING, _SEAT_OPENING):
-            found = pattern.match(line)
-            if found and found.group(1) != identity.seat:
-                contradictions += [
-                    f"brief_seat={found.group(1)}",
-                    f"dispatch_seat={identity.seat}",
-                    f"line={line}",
-                ]
-        claim = _ROUTE_CLAIM.search(line)
-        if claim:
-            if claim.group(1) != identity.lane:
-                contradictions += [
-                    f"brief_lane={claim.group(1)}",
-                    f"dispatch_lane={identity.lane}",
-                    f"line={line}",
-                ]
-            if claim.group(2) != identity.profile:
-                contradictions += [
-                    f"brief_profile={claim.group(2)}",
-                    f"dispatch_profile={identity.profile}",
-                    f"line={line}",
-                ]
-    return contradictions
 
 
 def brief_refusal(text: str, identity: Identity) -> Refusal | None:
@@ -3511,40 +3488,57 @@ def brief_refusal(text: str, identity: Identity) -> Refusal | None:
     fail-closed here, at the second operation, where every composition route — `just
     brief`, a hand edit, a heredoc splice — converges.
 
-    Two refusals. `brief_placeholder` fires on the composer's own marker (`BRIEF_PLACEHOLDER`
-    above, one home shared with `tools/brief.py`) and quotes the offending line.
-    `brief_lane_mismatch` fires on a route claim — a seat heading, a seat opening, or the
-    identity clause carrying lane and profile — that names something other than what this
-    dispatch resolved to. The scan is section-aware: the two blocks the composer carries
-    verbatim (the handoff body, a review brief's gate report) are suspended out of the
-    scan, because they quote prior briefs and a carried `## Seat:` line is evidence about
-    another dispatch, never this brief's claim (see the comment on `_CARRIED_SECTION`).
-    Neither carries a failure class, for `off_peak_refusal`'s reason:
-    nothing was found about a provider or about code under test; the request was
-    self-contradictory. Nothing is launched either way.
+    Three refusals. `brief_placeholder` fires on the composer's placeholder *structure* —
+    the `BRIEF_PLACEHOLDER_LINE` prefix the composer renders ahead of every unfilled
+    field — and quotes the offending line, so prose that merely mentions the placeholder
+    never refuses. `brief_route_marker_missing` fires when the brief carries no route
+    marker at all: a brief this composer did not write, or one whose composition
+    half-failed and lost the marker the composer emits last. `brief_lane_mismatch` fires
+    on the marker's three fields against the identity this dispatch resolved; a field
+    spelled `unresolved` is no claim and cannot mismatch. Neither carries a failure
+    class, for `off_peak_refusal`'s reason: nothing was found about a provider or about
+    code under test; the request was self-contradictory. Nothing is launched either way.
     """
-    for line in text.splitlines():
-        if BRIEF_PLACEHOLDER in line:
-            return Refusal(
-                "brief_placeholder",
-                (f"line={line}",),
-                (
-                    "The brief still carries its composer's placeholder marker, so its "
-                    "variable half was never filled (#316's half-failed composition): the "
-                    "session would read an unfilled template as its task. Fill the task "
-                    "half and dispatch again. Nothing was launched."
-                ),
-            )
-    contradictions = _route_contradictions(text, identity)
-    if contradictions:
+    unfilled = _BRIEF_PLACEHOLDER_LINE.search(text)
+    if unfilled is not None:
+        return Refusal(
+            "brief_placeholder",
+            (f"line={unfilled.group(0)}",),
+            (
+                "The brief still carries one of its composer's unfilled fields, so its "
+                "variable half was never filled (#316's half-failed composition): the "
+                "session would read an unfilled template as its task. Fill the task "
+                "half and dispatch again. Nothing was launched."
+            ),
+        )
+    marker = _BRIEF_ROUTE_MARKER_LINE.search(text)
+    if marker is None:
+        return Refusal(
+            "brief_route_marker_missing",
+            (),
+            (
+                "The brief carries no composer route marker (`<!-- cti-brief-route ... -->`),"
+                " so this composer did not write it or its composition half-failed and lost"
+                " the marker the composer emits last. Compose the brief with `just brief"
+                " <issue>` and dispatch again. Nothing was launched."
+            ),
+        )
+    fields: list[str] = []
+    if marker.group(1) != identity.seat:
+        fields += [f"brief_seat={marker.group(1)}", f"dispatch_seat={identity.seat}"]
+    if marker.group(2) != _UNRESOLVED_ROUTE_FIELD and marker.group(2) != identity.lane:
+        fields += [f"brief_lane={marker.group(2)}", f"dispatch_lane={identity.lane}"]
+    if marker.group(3) != _UNRESOLVED_ROUTE_FIELD and marker.group(3) != identity.profile:
+        fields += [f"brief_profile={marker.group(3)}", f"dispatch_profile={identity.profile}"]
+    if fields:
         return Refusal(
             "brief_lane_mismatch",
-            tuple(dict.fromkeys(contradictions)),
+            tuple(dict.fromkeys(fields)),
             (
-                "The brief names a seat, lane or profile this dispatch is not using — #316's "
-                "stale route note, which a dispatched session obeys over the dispatch's own "
-                "arguments (#345). Re-compose the brief for this route, or dispatch the route "
-                "the brief names. Nothing was launched."
+                "The brief's route marker names a seat, lane or profile this dispatch is not"
+                " using — #316's stale route note, which a dispatched session obeys over the"
+                " dispatch's own arguments (#345). Re-compose the brief for this route, or"
+                " dispatch the route the brief names. Nothing was launched."
             ),
         )
     return None

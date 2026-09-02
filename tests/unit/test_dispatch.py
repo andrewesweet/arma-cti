@@ -5118,29 +5118,64 @@ def test_a_brief_still_carrying_the_composer_s_placeholder_refuses_and_quotes(
     assert not (tmp_path / "dispatches").exists()
 
 
-def test_a_brief_naming_a_different_lane_than_the_dispatch_refuses(tmp_path: Path) -> None:
-    # The stale lane note: an identity sentence spliced from a previous dispatch's
-    # brief, naming a route this dispatch is not using. Both sides go in the refusal.
-    stale = (
-        "You are the implementer seat, dispatched as d-20260818-000000-000000 on the "
-        "codex lane under profile codex-sol-xhigh.\n"
+def marker(
+    seat: str = "implementer", lane: str = "claude-native", profile: str = "opus-high"
+) -> str:
+    """Render the route marker the way the composer writes it, spelled out in full.
+
+    Hand-typed rather than emitted through `dispatch.brief_route_marker`, so the one
+    spelling the gate must find is pinned here against a refactor of the emitter
+    quietly changing it.
+    """
+    return f"<!-- cti-brief-route seat={seat} lane={lane} profile={profile} -->"
+
+
+def test_the_route_marker_renders_in_one_spelling() -> None:
+    # The emitter is the one writer, and the gate's parser is keyed to this exact
+    # shape; pinning the rendered bytes here keeps the two from drifting apart.
+    assert (
+        dispatch.brief_route_marker("implementer", "claude-native", "opus-high")
+        == "<!-- cti-brief-route seat=implementer lane=claude-native profile=opus-high -->"
     )
-    plan, _, refusal = plan_for(tmp_path, brief_file=brief_file(tmp_path, stale))
+    assert (
+        dispatch.brief_route_marker("implementer")
+        == "<!-- cti-brief-route seat=implementer lane=unresolved profile=unresolved -->"
+    )
+
+
+def test_a_brief_with_no_route_marker_refuses(tmp_path: Path) -> None:
+    # A brief this composer did not write, or one whose composition half-failed and
+    # lost the marker emitted last: either way the dispatcher holds no route claim it
+    # can check, so it refuses rather than launching on an unreadable artefact.
+    plan, _, refusal = plan_for(
+        tmp_path, brief_file=brief_file(tmp_path, "# Brief\n\nDo the work.\n")
+    )
     assert plan is None
+    assert refusal is not None
+    assert refusal.kind == "brief_route_marker_missing"
+    assert not (tmp_path / "dispatches").exists()
+
+
+def test_a_brief_whose_marker_names_a_different_lane_refuses(tmp_path: Path) -> None:
+    # The stale route note, in its one surviving home: a marker written for another
+    # dispatch. Both sides go in the refusal. `unresolved` is not a claim, so a
+    # profile the composer never asserted names no contradiction.
+    stale = f"# Brief\n\n{marker(lane='codex', profile='unresolved')}\n"
+    _, _, refusal = plan_for(tmp_path, brief_file=brief_file(tmp_path, stale))
     assert refusal is not None
     assert refusal.kind == "brief_lane_mismatch"
     assert "brief_lane=codex" in refusal.found
     assert "dispatch_lane=claude-native" in refusal.found
+    assert not [line for line in refusal.found if line.startswith("brief_profile=")]
 
 
-def test_a_brief_naming_a_different_profile_refuses_even_on_the_right_lane(
+def test_a_brief_whose_marker_names_a_different_profile_on_the_right_lane_refuses(
     tmp_path: Path,
 ) -> None:
-    stale = (
-        "You are the implementer seat, dispatched as d-20260818-000000-000000 on the "
-        "claude-native lane under profile opus-xhigh.\n"
+    _, _, refusal = plan_for(
+        tmp_path,
+        brief_file=brief_file(tmp_path, f"# Brief\n\n{marker(profile='opus-xhigh')}\n"),
     )
-    _, _, refusal = plan_for(tmp_path, brief_file=brief_file(tmp_path, stale))
     assert refusal is not None
     assert refusal.kind == "brief_lane_mismatch"
     assert "brief_profile=opus-xhigh" in refusal.found
@@ -5149,58 +5184,56 @@ def test_a_brief_naming_a_different_profile_refuses_even_on_the_right_lane(
     assert not [line for line in refusal.found if line.startswith("brief_lane=")]
 
 
-def test_a_brief_heading_a_different_seat_than_the_dispatch_refuses(tmp_path: Path) -> None:
-    _, _, refusal = plan_for(tmp_path, brief_file=brief_file(tmp_path, "## Seat: review\n"))
+def test_a_brief_whose_marker_heads_a_different_seat_refuses(tmp_path: Path) -> None:
+    _, _, refusal = plan_for(
+        tmp_path,
+        brief_file=brief_file(
+            tmp_path,
+            f"{marker(seat='review', lane='unresolved', profile='unresolved')}\n",
+        ),
+    )
     assert refusal is not None
     assert refusal.kind == "brief_lane_mismatch"
     assert "brief_seat=review" in refusal.found
     assert "dispatch_seat=implementer" in refusal.found
 
 
-def test_a_clean_brief_file_plans_exactly_as_before(tmp_path: Path) -> None:
+def test_a_brief_whose_marker_matches_the_dispatch_plans_exactly_as_before(
+    tmp_path: Path,
+) -> None:
     # Criterion 3: a clean brief changes nothing — the plan mints, the brief is
     # passed through byte-for-byte, and no refusal appears.
-    clean = (
-        "You are the implementer seat, dispatched as d-20260818-000000-000000 on the "
-        "claude-native lane under profile opus-high.\n\n## Seat: implementer\nDo the work.\n"
-    )
+    clean = f"# Brief\n\nDo the work.\n\n{marker()}\n"
     plan, carried, refusal = plan_for(tmp_path, brief_file=brief_file(tmp_path, clean))
     assert refusal is None
     assert plan is not None
     assert carried == clean
 
 
-def test_prose_mentioning_another_lane_without_claiming_this_route_is_not_refused(
-    tmp_path: Path,
-) -> None:
-    # The stated limit, pinned: an instruction about some *other* dispatch is prose,
-    # not a route claim for this one, and refusing it would break every clean brief
-    # that quotes the failure-class table's own "re-dispatch to another lane" wording.
+def test_prose_mentioning_the_placeholder_text_is_not_refused(tmp_path: Path) -> None:
+    # Round two's sharpest false refusal: this issue's own task text names the
+    # placeholder, so a brief describing the gate refused the gate. The gate matches
+    # the composer's structure — a line opening the placeholder blockquote — and a
+    # mention in prose is not that structure.
     clean = (
-        "If this run meets quota_exhausted, re-dispatch on the codex lane.\n## Seat: implementer\n"
+        "# Brief\n"
+        "\n"
+        "The composer's unfilled field reads TO BE WRITTEN BY THE ORCHESTRATOR, which\n"
+        "is a mention and not an unfilled field.\n"
+        f"\n{marker()}\n"
     )
     plan, _, refusal = plan_for(tmp_path, brief_file=brief_file(tmp_path, clean))
     assert refusal is None
     assert plan is not None
 
 
-def test_a_brief_quoting_a_prior_seat_line_inside_its_handoff_dispatches(
-    tmp_path: Path,
-) -> None:
-    # Round two's High: the composer carries a prior brief's text verbatim under its
-    # handoff section (tools/brief.py's render_handoff), so a quoted `## Seat:` heading
-    # or an identity sentence from an earlier dispatch is evidence about that dispatch,
-    # not this brief's route claim. Refusing it would stop every clean brief whose
-    # handoff quotes one, and the caller's only recourse — editing quoted evidence out
-    # of a brief — is worse than the half-failure the gate exists to catch. This shape
-    # mirrors what `just brief` renders: the carried section opens at the handoff
-    # heading, and the brief's own seat statement sits outside it.
+def test_a_brief_quoting_a_prior_brief_in_its_prose_dispatches(tmp_path: Path) -> None:
+    # The property every earlier round chased with a scanner: a handoff or a task
+    # statement carries a previous dispatch's seat heading and identity sentence
+    # verbatim. Prose is never parsed, so quoted evidence about another dispatch
+    # cannot refuse this one — the marker is the only route claim there is.
     text = (
         "## Handoff — your first read, verbatim from `just handoff`\n"
-        "\n"
-        "Handoff-for: #349\n"
-        "\n"
-        "State:      review and landing outstanding.\n"
         "\n"
         "## Seat: review\n"
         "Judges work another profile produced (ADR-0071 ruling 4).\n"
@@ -5209,38 +5242,11 @@ def test_a_brief_quoting_a_prior_seat_line_inside_its_handoff_dispatches(
         "\n"
         "## Task, scope, ground truth\n"
         "Do the work.\n"
-        "\n"
-        "## Seat: implementer\n"
-        "Carries the work out, runs its own gate and lands it.\n"
+        f"\n{marker()}\n"
     )
     plan, _, refusal = plan_for(tmp_path, brief_file=brief_file(tmp_path, text))
     assert refusal is None
     assert plan is not None
-
-
-def test_a_stale_seat_heading_after_the_carried_section_still_refuses(
-    tmp_path: Path,
-) -> None:
-    # The scoping cuts one way only: carried evidence is exempt because it quotes
-    # another dispatch, and the composer's own statement sits outside it. A stale
-    # heading outside the carried section is still this brief claiming a route it was
-    # not dispatched on, and must refuse exactly as before.
-    text = (
-        "## Handoff — your first read, verbatim from `just handoff`\n"
-        "\n"
-        "Handoff-for: #349\n"
-        "State:      fine.\n"
-        "\n"
-        "## Task, scope, ground truth\n"
-        "Do the work.\n"
-        "\n"
-        "## Seat: review\n"
-    )
-    _, _, refusal = plan_for(tmp_path, brief_file=brief_file(tmp_path, text))
-    assert refusal is not None
-    assert refusal.kind == "brief_lane_mismatch"
-    assert "brief_seat=review" in refusal.found
-    assert "dispatch_seat=implementer" in refusal.found
 
 
 def test_the_gate_and_the_composer_share_one_placeholder_vocabulary() -> None:
@@ -5248,6 +5254,11 @@ def test_the_gate_and_the_composer_share_one_placeholder_vocabulary() -> None:
     # it — and the composer imports it from there (the import direction is fixed),
     # rather than either retyping it; one authority, so the two can never drift (#349).
     assert dispatch.BRIEF_PLACEHOLDER == brief.PLACEHOLDER
+    # The structural prefix the gate matches is the one the composer renders, not a
+    # second spelling of it.
+    assert brief._placeholder("x").startswith(  # noqa: SLF001 — the composer's real renderer is the subject
+        dispatch.BRIEF_PLACEHOLDER_LINE
+    )
 
 
 def test_the_default_brief_passes_its_own_gate() -> None:
@@ -5264,3 +5275,18 @@ def test_the_default_brief_passes_its_own_gate() -> None:
     assert (
         dispatch.brief_refusal(dispatch.default_brief(identity, Path("/nowhere")), identity) is None
     )
+
+
+def test_the_default_brief_carries_a_route_marker_for_the_identity_it_was_built_from() -> None:
+    # The default composer knows the whole route, so its marker asserts all three
+    # fields rather than leaving any unresolved.
+    identity = dispatch.Identity(
+        dispatch_id="d-20260818-000000-000000",
+        lane="zai",
+        profile="zai-glm53-max",
+        seat="implementer",
+        issue=349,
+        base_sha="0" * 40,
+    )
+    rendered = dispatch.default_brief(identity, Path("/nowhere"))
+    assert "<!-- cti-brief-route seat=implementer lane=zai profile=zai-glm53-max -->" in rendered
