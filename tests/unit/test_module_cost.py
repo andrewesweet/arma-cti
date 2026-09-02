@@ -33,11 +33,12 @@ def test_worker():
 """
 
 
-# A module whose one test spawns a grandchild meant to outlive it: the holder
-# shape the tool's own subjects (`test_pool_slots`, `test_client_lock`) take.
-# The grandchild's pid is recorded where the outer test can read it, and it
-# sleeps far past the deadline, so only a kill that reaches the whole process
-# group can stop it — a direct-child kill leaves it running and this test red.
+# A module whose one test spawns a grandchild then blocks: the holder shape
+# the tool's own subjects (`test_pool_slots`, `test_client_lock`) take. The
+# grandchild's pid is recorded where the outer test can read it, and both it
+# and the staged test sleep far past the deadline, so only a kill that reaches
+# the whole process group can stop the grandchild — a direct-child kill
+# strands it running and this test red.
 GRANDCHILD_PROBE = """
 import os, pathlib, subprocess, sys, time
 
@@ -46,6 +47,7 @@ def test_staged_holder():
         [sys.executable, "-c", "import time; time.sleep(120)"]
     )
     pathlib.Path(os.environ["MODULE_COST_GRANDCHILD_OUT"]).write_text(str(grandchild.pid))
+    time.sleep(120)
 """
 
 
