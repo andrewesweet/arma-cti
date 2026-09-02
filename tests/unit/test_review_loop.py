@@ -1376,7 +1376,7 @@ def test_the_cli_default_root_honours_the_environment(
     constant is therefore deliberately pointed somewhere of this test's own: with the
     environment naming the root the command must use, a reverted default writes the
     constant's tree instead of the environment's, and the read-back fails — inside tmp,
-    never on the box's real review root. The session hold and the sentinel in conftest
+    never on the box's real review root. The session hold and the guard in conftest
     remain responsible for the real path; this test is responsible for the variable.
     """
     constant_root = tmp_path / "constant"
@@ -1397,6 +1397,63 @@ def test_the_cli_default_root_honours_the_environment(
     )
     assert code == review_loop.OK
     assert review_loop.load_loop(environment_root, 677).findings[0].id == "F1"
+
+
+def test_the_author_command_default_root_honours_the_environment(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """`author`'s own default reads the operator's `CTI_REVIEW_DIR` (#677 round 3).
+
+    The shared `_loop_arguments` default covers the loop commands, but `author` declares
+    its `--root` beside its own flags, so reverting that one line left this command
+    recording the declaration under the constant's tree while every loop command
+    honoured the variable. The same arrangement as `open`'s test above discriminates: a
+    reverted default files the authorship under the constant's tree, and the read-back
+    through `recorded_authors` under the environment's finds nothing.
+    """
+    environment_root = tmp_path / "environment"
+    monkeypatch.setattr(review_loop, "REVIEW_ROOT", tmp_path / "constant")
+    monkeypatch.setenv("CTI_REVIEW_DIR", str(environment_root))
+    code = review_loop.main(
+        ["author", "--issue", "677", "--profile", "opus-high"],
+        now=stepped_clock(),
+    )
+    assert code == review_loop.OK
+    assert review_loop.recorded_authors(environment_root, 677) == ("opus-high",)
+
+
+def test_the_show_command_default_root_honours_the_environment(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """`show`'s own default reads the operator's `CTI_REVIEW_DIR` (#677 round 3).
+
+    The second command whose `--root` default stands outside `_loop_arguments`, and the
+    read rather than the write half: the loop is arranged under the environment's root
+    with an explicit `--root` — the arrangement every other test here uses — then read
+    back through the default. A reverted default points `show` at the constant's tree,
+    where no loop exists, and the command refuses instead of printing the finding.
+    """
+    environment_root = tmp_path / "environment"
+    monkeypatch.setattr(review_loop, "REVIEW_ROOT", tmp_path / "constant")
+    monkeypatch.setenv("CTI_REVIEW_DIR", str(environment_root))
+    opened = review_loop.main(
+        [
+            "open",
+            "--issue",
+            "677",
+            "--root",
+            str(environment_root),
+            "--finding",
+            "F1=low",
+            "--journal",
+            str(tmp_path / "journal.jsonl"),
+        ],
+        now=stepped_clock(),
+    )
+    assert opened == review_loop.OK
+    shown = review_loop.main(["show", "--issue", "677"], now=stepped_clock())
+    assert shown == review_loop.OK
+    assert '"id": "F1"' in capsys.readouterr().out
 
 
 def _adjudicate_argv(

@@ -17,13 +17,10 @@ from __future__ import annotations
 import json
 import shutil
 from concurrent.futures import ThreadPoolExecutor
-from typing import TYPE_CHECKING
+from pathlib import Path
 
 import pytest
 from conftest import load_tool
-
-if TYPE_CHECKING:
-    from pathlib import Path
 
 review_exchange = load_tool("review_exchange")
 attribute_registry = load_tool("attribute_registry")
@@ -1254,12 +1251,18 @@ def test_scan_of_an_empty_root_is_empty(tmp_path: Path) -> None:
 def test_the_review_root_reads_the_environment_not_only_the_home_directory() -> None:
     """The journal's hermeticity is structural, not remembered (#484 round 2, finding 3).
 
-    `conftest` holds `CTI_REVIEW_DIR` at pytest's own tmp for the whole session, so
-    this pins that arrangement the way the dead-port test pins the export one: a
-    suite whose fixture went missing writes the box's real review root again, and
-    this reddens on any box rather than only where the damage shows.
+    `conftest` holds `CTI_REVIEW_DIR` at a temporary root before any tool is imported,
+    so this pins that arrangement the way the dead-port test pins the export one: a
+    suite whose hold went missing writes the box's real review root again, and this
+    reddens on any box rather than only where the damage shows. Since #677 round 3 the
+    constant derives from the same variable the function reads, so equal answers are
+    the arrangement working, not the hold gone — what neither may name is the real
+    path, and that is what is asserted here and in conftest's guard.
     """
-    assert review_exchange.review_loop.review_root() != review_exchange.review_loop.REVIEW_ROOT
+    loop = review_exchange.review_loop
+    real = Path.home() / ".arma-cti" / "review"
+    assert real != loop.REVIEW_ROOT
+    assert real != loop.review_root()
 
 
 def test_exchange_pushes_and_the_remote_holds_the_sha(

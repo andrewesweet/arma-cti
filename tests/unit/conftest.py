@@ -21,6 +21,7 @@ import importlib.util
 import json
 import os
 import sys
+import tempfile
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -56,56 +57,46 @@ settings.load_profile("arma-cti")
 # presence so removing it reddens a suite, not a box.
 os.environ["OTEL_EXPORTER_OTLP_LOGS_ENDPOINT"] = "http://127.0.0.1:2999/v1/logs"
 
-
-@pytest.fixture(scope="session", autouse=True)
-def hermetic_review_root(tmp_path_factory: pytest.TempPathFactory) -> None:
-    """Point the review state root at pytest's own tmp, never at `~/.arma-cti` (#484 round 2).
-
-    `review_loop.review_root()` reads `CTI_REVIEW_DIR` at call time the way the queue
-    reads `CTI_QUEUE_DIR`, so a success-path test that forgot to arrange a journal
-    still writes inside a throwaway directory instead of the box's real review root.
-    Session-scoped and autouse because the default needs holding for the whole run,
-    not arranging per test; a test that wants its own root sets the same variable
-    with `monkeypatch.setenv`, which restores this one afterwards. Under `-n auto`
-    each worker gets its own directory, so concurrent workers never share a journal.
-    """
-    os.environ["CTI_REVIEW_DIR"] = str(tmp_path_factory.mktemp("review-root"))
+# The review state root is held here, at import time, and not in a fixture (#677
+# round 3): `tools/land_review.py` aliases `review_loop.REVIEW_ROOT` at import and
+# `tools/review_exchange.py` reads that constant as two `--review-root` parser
+# defaults, so a hold that waited for a session fixture would leave those bindings on
+# the box's real `~/.arma-cti/review`. The constant derives from the variable for the
+# same reason — see the comment at its definition in `review_loop.py` — so setting it
+# before any tool is imported lands every resolver of the review root in this
+# throwaway directory: the CLI defaults, the alias, `review_root()` itself. Under
+# `-n auto` each worker imports this file and mints its own directory, so concurrent
+# workers never share a journal. Like pytest's own numbered directories the directory
+# is left for the tmp reaper; the suite writes nothing it needs back later.
+os.environ["CTI_REVIEW_DIR"] = tempfile.mkdtemp(prefix="arma-cti-unit-review-")
 
 
 @pytest.fixture(scope="session", autouse=True)
-def no_stage_arrival_reaches_the_real_review_root() -> Iterator[None]:
-    """No stage arrival reaches `~/.arma-cti/review` while the suite runs (#677 round 2).
+def the_suite_never_resolves_the_real_review_root() -> None:
+    """Nothing in the suite resolves the box's real review root (#677 round 3).
 
-    `hermetic_review_root` above holds the suite off the box's real review root by
-    holding the variable, and `seam_env` stages its fork the same way — but a guard over
-    the two values those writers already read is a guard over the writers already found.
-    This sentinel asserts about the real path the constant names, whatever any test or
-    forked child does: the stage-arrival journals under it are listed before the first
-    test runs and again at teardown, and a journal that appeared or grew fails the run
-    and names the issue. The subject is the stage journal and not the whole tree,
-    because the root is live shared state — another agent's landing grows rebases and
-    landing records here while the gate runs, and that is this box working, not a test
-    leaking; a red naming an issue a concurrent dispatch really arrived for is re-run,
-    never debugged. Under `-n auto` each worker pairs its own before and after, so a
-    write is caught by any worker whose span covers it.
+    Round 2's sentinel listed the stage journals under the real `~/.arma-cti/review`
+    before and after the run — surveillance of a directory this box shares with live
+    dispatches, where another agent's genuinely arriving stage journal reddened a gate
+    that had leaked nothing, and the prescribed response was a rerun, which the
+    Contract forbids as a way to pass. Prevention replaced it: the hold above lands
+    every resolver in a temporary root, and this asserts the one fact that makes that
+    hold complete — neither the constant nor the alias taken from it is the real path.
+    Two string compares against bindings this process already holds; the real
+    directory is never listed, never stat'd, never touched, so a concurrent dispatch
+    cannot redden a suite that leaked nothing.
     """
-    real = load_tool("review_loop").REVIEW_ROOT
-    journal = load_tool("attribute_registry").STAGE_JOURNAL
-
-    def arrivals() -> dict[str, int]:
-        if not real.exists():
-            return {}
-        return {
-            str(path.relative_to(real)): path.stat().st_size
-            for path in sorted(real.rglob(journal))
-            if path.is_file()
-        }
-
-    before = arrivals()
-    yield
-    after = arrivals()
-    grown = sorted(path for path in (*after, *before) if after.get(path) != before.get(path))
-    assert not grown, f"a test wrote a stage arrival into the real review root {real}: {grown}"
+    real = Path.home() / ".arma-cti" / "review"
+    constant = load_tool("review_loop").REVIEW_ROOT
+    assert constant != real, (
+        f"review_loop.REVIEW_ROOT is the real review root {real}; the CTI_REVIEW_DIR"
+        " hold at the top of this file must run before any tool is imported"
+    )
+    alias = load_tool("land_review").REVIEW_ROOT
+    assert alias != real, (
+        f"land_review.REVIEW_ROOT is the real review root {real}; it aliases"
+        " review_loop.REVIEW_ROOT, which the CTI_REVIEW_DIR hold above derives"
+    )
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -143,7 +134,6 @@ def hermetic_dispatch_assignment() -> None:
 
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
     from types import ModuleType
 
     from cti_daemon.daemon import Daemon

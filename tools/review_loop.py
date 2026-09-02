@@ -1099,7 +1099,15 @@ def emit_terminus(end: Terminus, issue: str, at: float, journal: Path = JOURNAL)
 # `landing.json` once the terminus has run. The command surface below is the production
 # caller that drives all of it — every `emit_*` helper's first production caller.
 
-REVIEW_ROOT: Final = Path.home() / ".arma-cti" / "review"
+# Derived from the environment at import, not a literal home path (#677 round 3): two
+# readers resolve this constant rather than calling `review_root()` — `land_review`'s
+# import-time alias and `review_exchange`'s two `--review-root` parser defaults — so a
+# literal would put the operator's override out of their reach whatever the variable
+# said. Unset, this is home, exactly as it always was; set, every resolver of the
+# constant lands where the variable names, the same root `review_root()` returns.
+REVIEW_ROOT: Final = Path(
+    os.environ.get("CTI_REVIEW_DIR", str(Path.home() / ".arma-cti" / "review"))
+)
 
 
 def review_root() -> Path:
@@ -1110,8 +1118,9 @@ def review_root() -> Path:
     wrote the real one — hermeticity by remembered `monkeypatch.setattr` is the shape
     #458 closed. The constant is the fallback this function reads when
     `CTI_REVIEW_DIR` is unset; since #677 the CLI's `--root` defaults to this
-    function's answer rather than to the constant, so the operator's variable
-    reaches the command the same way it reaches the journal.
+    function's answer rather than to the constant, and the constant itself derives
+    from the variable at import, so the operator's override reaches every reader of
+    the review root the same way it reaches the journal.
     """
     return Path(os.environ.get("CTI_REVIEW_DIR", str(REVIEW_ROOT)))
 
