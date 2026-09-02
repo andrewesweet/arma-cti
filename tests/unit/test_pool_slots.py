@@ -91,6 +91,11 @@ if [[ "$name" == "${CTI_STUB_KILL:-}" ]]; then
     parent() { sed -e 's/^.*) //' "/proc/$1/stat" 2>/dev/null | awk '{print $2}'; }
     worker="$(parent "$(parent "$PPID")")"
     kill -9 "${worker:-$PPID}" 2>/dev/null
+    # The hold below is the "mid-probe" in "dies mid-probe": the flight must
+    # still be running when the worker's death is decided, or the merge reads a
+    # clean early exit instead. The pool's teardown ends the tree long before
+    # the 30 s elapses, so the floor is only "longer than the rest of the pass"
+    # and the length costs no wall clock.
     sleep 30
 fi
 
@@ -333,7 +338,9 @@ def start_holder(tmp_path: Path, slot: int) -> subprocess.Popen[str]:
         # Forked and reaped-for before `ready`: at the moment the test reads that
         # line the inheriting child exists. The old version echoed `ready` and
         # then forked, so whether the child existed when the kill landed was a
-        # race the test lost about one full-suite run in two (#121).
+        # race the test lost about one full-suite run in two (#121). The 60 s is
+        # background life the test kills; its floor is the length of the test,
+        # which it never reaches.
         "sleep 60 &\necho ready\nwait\n",
     )
     # S603: a script this test wrote.
@@ -510,7 +517,8 @@ def test_a_tier_that_is_not_the_machines_kills_nothing_on_it(tmp_path: Path) -> 
     victim_bin = master / "arma3server_x64"
     shutil.copy(shutil.which("sleep") or "/bin/sleep", victim_bin)
     # A process running out of slot 0's install, which is precisely what the
-    # install sweep exists to find and kill.
+    # install sweep exists to find and kill. Its 60 s is background life the
+    # test kills in the `finally`; the floor is the length of the test.
     # S603: this test's own copy of `sleep`, by absolute path.
     victim = subprocess.Popen([str(victim_bin), "60"])  # noqa: S603
     try:
@@ -543,7 +551,8 @@ def test_a_recycled_pid_is_not_the_process_the_sweep_found() -> None:
     mean spawning until a pid came round, so what is asserted is that the
     identity is read, is compared, and decides.
     """
-    # S603: this machine's own `sleep`, by absolute path.
+    # S603: this machine's own `sleep`, by absolute path. Its 60 s is background
+    # life the test kills in the `finally`; the floor is the length of the test.
     sleeper = subprocess.Popen([shutil.which("sleep") or "/bin/sleep", "60"])  # noqa: S603
     try:
         swept = bash_ok(f"cti_slot_pid_starttime {sleeper.pid}")
@@ -1226,6 +1235,12 @@ def test_a_caller_who_asked_to_wait_queues_on_the_machine_too(tmp_path: Path) ->
     wrong half of fail-closed. Asserted through the deadline rather than through
     a clock: `--wait 0` refuses at once, and a `--wait` that is set says it is
     waiting before it gives up.
+
+    The seconds in `--wait 6` are the parameter under test, not a settle, and
+    they stay: the wait's end is the deadline, which is the feature. Its cost is
+    the pool's own 5 s queue poll (`spike/regress.sh`'s `acquire_slots` and
+    `memory_preflight`), product-side and out of this module's reach, so
+    shrinking the literal buys one poll interval and nothing else.
     """
     starved = {"CTI_SLOT_MEM_AVAILABLE_MB": str(mem_floor(1) - 1)}
     at_once = pool_run(tmp_path, "--slots", "1", "--wait", "0", extra_env=starved)
@@ -1512,6 +1527,9 @@ def test_a_preflight_refusal_leaves_a_durable_record(tmp_path: Path) -> None:
 # worker blocks in `wait` for as long as the hang lasts — the pool eventually
 # idle behind slots nobody can take, and no verdict of any class ever produced.
 # The `timeout=` on the subprocess below is what a human's Ctrl-C used to be.
+# The 600 s is never reached: the watchdog (WATCHDOG_ENV) ends the run seconds
+# in, so the hold's only floor is "longer than the watchdog's patience" and its
+# length costs no wall clock.
 STUB_RUN_HANGS = "#!/usr/bin/env bash\nsleep 600\n"
 WATCHDOG_ENV = {"CTI_PROBE_WATCHDOG_SECS": "3", "CTI_PROBE_WATCHDOG_KILL_AFTER": "2"}
 
@@ -1543,6 +1561,14 @@ def test_the_watchdog_leaves_no_process_of_the_run_behind(tmp_path: Path) -> Non
     `timeout` signals the child's whole process group, so the tree a wedged
     `run.sh` had started goes with it — which is what makes the freed lock mean
     something to the next holder.
+
+    The confirm below is a bound on "nothing touches it again", not a settle:
+    the heartbeat's own period is 0.2 s, so anything still alive rewrites the
+    marker within one period of the kill and every further 0.2 s after that. One
+    second is five periods, which is the same detection a longer window gives —
+    a survivor is seen at its first touch, not at the window's expiry — so the
+    old 3 s only waited longer to say the same thing. Its floor is the period,
+    not the old number.
     """
     marker = tmp_path / "grandchild-alive"
     hanging = executable(
@@ -1560,7 +1586,7 @@ def test_the_watchdog_leaves_no_process_of_the_run_behind(tmp_path: Path) -> Non
     assert result.returncode == EXIT_INFRA_UNAVAILABLE, result.stderr[-4000:]
     assert marker.exists(), "the stub never started the child this test is about"
     settled = marker.stat().st_mtime
-    time.sleep(3)
+    time.sleep(1)
     assert marker.stat().st_mtime == settled, "a process of the killed run is still running"
 
 
@@ -1601,6 +1627,13 @@ def test_a_signalled_pool_takes_its_flights_down_with_it(tmp_path: Path) -> None
 
     The heartbeat is the assertion: a stub that keeps touching a file for as
     long as it lives, read after the pool has exited.
+
+    The confirm at the end is a bound on "nothing touches it again", not a
+    settle: the heartbeat's own period is 0.2 s, so a flight that survived the
+    SIGTERM rewrites the marker within one period and every further 0.2 s after
+    that. One second is five periods — the same detection the old 3 s window
+    gave, because a survivor is seen at its first touch rather than at the
+    window's expiry — and its floor is the period, not the old number.
     """
     marker = tmp_path / "flight-alive"
     flying = executable(tmp_path / "flying-run.sh", STUB_RUN_FLYING.format(marker=marker))
@@ -1631,5 +1664,5 @@ def test_a_signalled_pool_takes_its_flights_down_with_it(tmp_path: Path) -> None
     assert "infra_unavailable\tSIGTERM stopped the pool" in refusals, refusals
 
     settled = marker.stat().st_mtime
-    time.sleep(3)
+    time.sleep(1)
     assert marker.stat().st_mtime == settled, "a process of the signalled run is still running"
