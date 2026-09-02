@@ -720,6 +720,72 @@ def test_the_composed_brief_carries_one_route_marker_for_its_own_seat() -> None:
     assert lines == ["<!-- cti-brief-route seat=implementer lane=unresolved profile=unresolved -->"]
 
 
+def test_the_marker_names_the_route_the_composer_was_given() -> None:
+    """Round four: the marker asserts all three route values, and is the final line.
+
+    `just brief` resolves no route of its own — the dispatcher does that — so the route
+    arrives as `--lane`/`--profile` from the orchestrator that already knows it. With
+    them, the marker names all three; without them it leaves the two fields explicitly
+    unresolved. Either way the marker is the brief's last line, because the gate reads
+    exactly that position and nothing else (#349, round four).
+    """
+    rendered = composed(lane="zai", profile="zai-glm53-max")
+    assert rendered.rstrip("\n").splitlines()[-1] == (
+        "<!-- cti-brief-route seat=implementer lane=zai profile=zai-glm53-max -->"
+    )
+
+
+def test_a_composed_brief_whose_marker_names_a_stale_lane_refuses() -> None:
+    """The case this issue was filed for can now fire: a stale lane note is a claim.
+
+    A half-failed edit leaving a stale lane instruction in the brief used to pass,
+    because the composer's marker asserted no lane for it to contradict. Composed with
+    the route, the marker carries the lane, and the gate refuses the mismatch.
+    """
+    rendered = _filled(composed(lane="zai", profile="zai-glm53-max"))
+    identity = dispatch.Identity(
+        dispatch_id="d-20260902-000000-000000",
+        lane="claude-native",
+        profile="opus-high",
+        seat="implementer",
+        issue=251,
+        base_sha="0" * 40,
+    )
+    refusal = dispatch.brief_refusal(rendered, identity)
+    assert refusal is not None
+    assert refusal.kind == "brief_lane_mismatch"
+    assert "brief_lane=zai" in refusal.found
+    assert "dispatch_lane=claude-native" in refusal.found
+
+
+def test_a_composed_brief_quoting_a_prior_route_marker_in_its_handoff_clears() -> None:
+    """A carried handoff quoting another brief's marker can never win: it is not last.
+
+    Position, not pattern, carries the property — the gate reads the brief's final
+    line, so a quoted marker inside a carried handoff is evidence about another
+    dispatch and never this brief's route claim (#349, round four).
+    """
+    quoted = (
+        "Handoff-for: #349\n"
+        "\n"
+        "<!-- cti-brief-route seat=review lane=codex profile=codex-sol-xhigh -->\n"
+    )
+    rendered = composed(
+        lane="zai",
+        profile="zai-glm53-max",
+        handoff=brief.Handoff(brief.HANDOFF_CARRIED, body=quoted),
+    )
+    identity = dispatch.Identity(
+        dispatch_id="d-20260902-000000-000000",
+        lane="zai",
+        profile="zai-glm53-max",
+        seat="implementer",
+        issue=251,
+        base_sha="0" * 40,
+    )
+    assert dispatch.brief_refusal(_filled(rendered), identity) is None
+
+
 def test_a_composed_brief_cut_off_before_its_marker_refuses() -> None:
     """A splice that dies partway loses the marker, because the composer emits it last.
 

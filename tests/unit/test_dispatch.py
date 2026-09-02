@@ -5109,7 +5109,13 @@ def test_a_brief_still_carrying_the_composer_s_placeholder_refuses_and_quotes(
     # line `just brief` emits, not on a second spelling of it.
     unfilled = brief._placeholder("The task statement.")  # noqa: SLF001 — the composer's real renderer is the subject; the gate must fire on the exact emitted line
     plan, _, refusal = plan_for(
-        tmp_path, brief_file=brief_file(tmp_path, f"# Brief\n\n{unfilled}\n")
+        tmp_path,
+        brief_file=brief_file(
+            tmp_path,
+            # The composer's shape, where the gate reads: the placeholder under its
+            # own heading, and the route marker as the final line.
+            f"# Brief\n\n## Task, scope, ground truth\n{unfilled}\n\n{marker()}\n",
+        ),
     )
     assert plan is None
     assert refusal is not None
@@ -5154,6 +5160,79 @@ def test_a_brief_with_no_route_marker_refuses(tmp_path: Path) -> None:
     assert refusal is not None
     assert refusal.kind == "brief_route_marker_missing"
     assert not (tmp_path / "dispatches").exists()
+
+
+def test_a_brief_quoting_a_prior_route_marker_in_its_handoff_dispatches(
+    tmp_path: Path,
+) -> None:
+    # Round four's property, stated as position: the gate reads the brief's final
+    # line, so a carried handoff quoting another dispatch's full route marker is
+    # evidence about that dispatch and never this brief's route claim. A `search()`
+    # over the whole file finds the quoted one first and refuses exactly this brief.
+    text = (
+        "## Handoff — your first read, verbatim from `just handoff`\n"
+        "\n"
+        "<!-- cti-brief-route seat=review lane=codex profile=codex-sol-xhigh -->\n"
+        "\n"
+        "## Task, scope, ground truth\n"
+        "Do the work.\n"
+        f"\n{marker()}\n"
+    )
+    plan, _, refusal = plan_for(tmp_path, brief_file=brief_file(tmp_path, text))
+    assert refusal is None
+    assert plan is not None
+
+
+def test_a_brief_truncated_before_its_own_marker_with_a_carried_one_refuses(
+    tmp_path: Path,
+) -> None:
+    # The other half of the position property: a composition that dies partway can
+    # leave a *carried* marker in place, and a whole-file search is satisfied by it —
+    # the exact defect round three's narrowing reintroduced. The carried marker here
+    # matches the dispatch, so only reading the final line can refuse.
+    text = (
+        "## Handoff — your first read, verbatim from `just handoff`\n"
+        "\n"
+        f"{marker()}\n"
+        "\n"
+        "## Task, scope, ground truth\n"
+        "Do the work.\n"
+        "\nComposed by `just brief 223`.\n<!-- cti-brief-rou"
+    )
+    _, _, refusal = plan_for(tmp_path, brief_file=brief_file(tmp_path, text))
+    assert refusal is not None
+    assert refusal.kind == "brief_route_marker_missing"
+
+
+def test_a_brief_with_content_after_its_marker_refuses(tmp_path: Path) -> None:
+    # The marker is emitted last, so content after it means the brief was altered or
+    # truncated-and-continued after composition. The final line is no longer the
+    # marker, and the gate refuses rather than reading a route out of the middle.
+    text = f"# Brief\n\nDo the work.\n\n{marker()}\n\nAn orchestrator postscript.\n"
+    _, _, refusal = plan_for(tmp_path, brief_file=brief_file(tmp_path, text))
+    assert refusal is not None
+    assert refusal.kind == "brief_route_marker_missing"
+
+
+def test_a_brief_quoting_a_placeholder_line_in_its_handoff_dispatches(
+    tmp_path: Path,
+) -> None:
+    # The placeholder check is anchored the same way as the marker: the composer
+    # writes unfilled fields only in its own variable half, so a carried handoff
+    # legitimately quoting an old placeholder line is not this brief's unfilled field
+    # and must not refuse it. A whole-file search refuses exactly this clean brief.
+    text = (
+        "## Handoff — your first read, verbatim from `just handoff`\n"
+        "\n"
+        f"{brief._placeholder('The task statement.')}\n"  # noqa: SLF001 — the composer's real renderer is the subject; the gate must not fire on it here
+        "\n"
+        "## Task, scope, ground truth\n"
+        "Do the work.\n"
+        f"\n{marker()}\n"
+    )
+    plan, _, refusal = plan_for(tmp_path, brief_file=brief_file(tmp_path, text))
+    assert refusal is None
+    assert plan is not None
 
 
 def test_a_brief_whose_marker_names_a_different_lane_refuses(tmp_path: Path) -> None:
