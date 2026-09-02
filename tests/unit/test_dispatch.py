@@ -5087,3 +5087,120 @@ def test_a_stratum_refuses_a_code_its_flag_contradicts() -> None:
         dispatch.Stratum(value=None, checked=False, unchecked_why="", code=dispatch.STRATUM_CHECKED)
     with pytest.raises(ValueError, match="unknown Stratum code"):
         dispatch.Stratum(value="fast", checked=True, unchecked_why="", code="wat")
+
+
+# ----------------------------------------------------------- the brief gate (#349)
+
+
+def brief_file(tmp_path: Path, text: str) -> str:
+    """Write one brief exactly as a caller would hand it to `--brief-file`."""
+    path = tmp_path / "brief.md"
+    path.write_text(text, encoding="utf-8")
+    return str(path)
+
+
+def test_a_brief_still_carrying_the_composer_s_placeholder_refuses_and_quotes(
+    tmp_path: Path,
+) -> None:
+    # #316's four instances: a splice half-fails, the file goes out anyway, and the
+    # dispatched session reads an unfilled template as its task. The refusal quotes
+    # the offending line, and nothing is launched — no record directory is even made.
+    # The composer's real renderer is the point — the gate must fire on exactly the
+    # line `just brief` emits, not on a second spelling of it.
+    unfilled = brief._placeholder("The task statement.")  # noqa: SLF001
+    plan, _, refusal = plan_for(
+        tmp_path, brief_file=brief_file(tmp_path, f"# Brief\n\n{unfilled}\n")
+    )
+    assert plan is None
+    assert refusal is not None
+    assert refusal.kind == "brief_placeholder"
+    assert f"line={unfilled}" in refusal.found
+    assert not (tmp_path / "dispatches").exists()
+
+
+def test_a_brief_naming_a_different_lane_than_the_dispatch_refuses(tmp_path: Path) -> None:
+    # The stale lane note: an identity sentence spliced from a previous dispatch's
+    # brief, naming a route this dispatch is not using. Both sides go in the refusal.
+    stale = (
+        "You are the implementer seat, dispatched as d-20260818-000000-000000 on the "
+        "codex lane under profile codex-sol-xhigh.\n"
+    )
+    plan, _, refusal = plan_for(tmp_path, brief_file=brief_file(tmp_path, stale))
+    assert plan is None
+    assert refusal is not None
+    assert refusal.kind == "brief_lane_mismatch"
+    assert "brief_lane=codex" in refusal.found
+    assert "dispatch_lane=claude-native" in refusal.found
+
+
+def test_a_brief_naming_a_different_profile_refuses_even_on_the_right_lane(
+    tmp_path: Path,
+) -> None:
+    stale = (
+        "You are the implementer seat, dispatched as d-20260818-000000-000000 on the "
+        "claude-native lane under profile opus-xhigh.\n"
+    )
+    _, _, refusal = plan_for(tmp_path, brief_file=brief_file(tmp_path, stale))
+    assert refusal is not None
+    assert refusal.kind == "brief_lane_mismatch"
+    assert "brief_profile=opus-xhigh" in refusal.found
+    assert "dispatch_profile=opus-high" in refusal.found
+    # The lane matches, so only the profile contradiction is named.
+    assert not [line for line in refusal.found if line.startswith("brief_lane=")]
+
+
+def test_a_brief_heading_a_different_seat_than_the_dispatch_refuses(tmp_path: Path) -> None:
+    _, _, refusal = plan_for(tmp_path, brief_file=brief_file(tmp_path, "## Seat: review\n"))
+    assert refusal is not None
+    assert refusal.kind == "brief_lane_mismatch"
+    assert "brief_seat=review" in refusal.found
+    assert "dispatch_seat=implementer" in refusal.found
+
+
+def test_a_clean_brief_file_plans_exactly_as_before(tmp_path: Path) -> None:
+    # Criterion 3: a clean brief changes nothing — the plan mints, the brief is
+    # passed through byte-for-byte, and no refusal appears.
+    clean = (
+        "You are the implementer seat, dispatched as d-20260818-000000-000000 on the "
+        "claude-native lane under profile opus-high.\n\n## Seat: implementer\nDo the work.\n"
+    )
+    plan, carried, refusal = plan_for(tmp_path, brief_file=brief_file(tmp_path, clean))
+    assert refusal is None
+    assert plan is not None
+    assert carried == clean
+
+
+def test_prose_mentioning_another_lane_without_claiming_this_route_is_not_refused(
+    tmp_path: Path,
+) -> None:
+    # The stated limit, pinned: an instruction about some *other* dispatch is prose,
+    # not a route claim for this one, and refusing it would break every clean brief
+    # that quotes the failure-class table's own "re-dispatch to another lane" wording.
+    clean = (
+        "If this run meets quota_exhausted, re-dispatch on the codex lane.\n## Seat: implementer\n"
+    )
+    plan, _, refusal = plan_for(tmp_path, brief_file=brief_file(tmp_path, clean))
+    assert refusal is None
+    assert plan is not None
+
+
+def test_the_gate_and_the_composer_share_one_placeholder_vocabulary() -> None:
+    # Criterion 4: the marker is imported from the composer's home, not retyped here
+    # or in the dispatcher — one authority, so the two can never drift (#349).
+    assert dispatch.BRIEF_PLACEHOLDER == brief.PLACEHOLDER
+
+
+def test_the_default_brief_passes_its_own_gate() -> None:
+    # The gate runs over whatever brief is about to be sent, composed or named, so
+    # the default brief — built from the same identity — must clear it by construction.
+    identity = dispatch.Identity(
+        dispatch_id="d-20260818-000000-000000",
+        lane="zai",
+        profile="zai-glm53-max",
+        seat="implementer",
+        issue=349,
+        base_sha="0" * 40,
+    )
+    assert (
+        dispatch.brief_refusal(dispatch.default_brief(identity, Path("/nowhere")), identity) is None
+    )
