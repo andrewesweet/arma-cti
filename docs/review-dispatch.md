@@ -97,20 +97,17 @@ rather than merely obstructs: in the session of 2026-08-19/20 five fragments cla
 than their diff delivered and #446's, read sentence by sentence, was accurate.
 
 The permission mode is **`plan`**, and since #322 the seat forces it rather than asking the
-caller for it. What that forced mode *renders* is runner-specific, and
-`docs/multi-provider-dispatch.md`'s codex section is the one authority for that mapping: on
-the `claude` family it is a permission policy — read-only tools and read-only Bash work in
-it headless, and no edit can be applied, verified before first use by a `plan`-mode headless
-run that executed `git rev-parse --short HEAD` and returned its output — while on `codex`,
-since #600, it is a `workspace-write` sandbox scoped to the disposable worktree the dispatch
-owns and destroys. The brief forbids landing as well, but the brief is an instruction and
-the mechanism is what holds.
+caller for it. What that forced mode *renders* is runner-specific, and it is stated once, in
+`docs/multi-provider-dispatch.md`'s codex section — the one authority for that mapping — and
+is deliberately not restated here: the renderings this section used to carry went stale
+against #600 while the pointer did not. The brief forbids landing as well, but the brief is
+an instruction and the mechanism is what holds.
 
 **What that mode is for, after #449.** The clarification of 2026-08-20 narrowed the test rule
 and left this one alone: the forcing enforces that a review neither edits nor lands the change
-it judges — ADR-0071 ruling 4's never-alone invariant — through the permission policy on the
-`claude` family and through the disposable tree on `codex` — and it is *not* the statement of
-what a reviewer may run or file. The three replacements weighed against keeping it are recorded in
+it judges — ADR-0071 ruling 4's never-alone invariant — by whatever rendering the mapping
+gives the runner, and it is *not* the statement of what a reviewer may run or file. The
+three replacements weighed against keeping it are recorded in
 `tools/dispatch.py` beside the registry row, with why each trades a mechanism for a sentence.
 The consequence is stated plainly rather than glossed: under `plan` a review dispatch cannot
 land a **review-specific gate**, which the ruling permits it to do. That is not a bar the
@@ -580,11 +577,11 @@ deliberately thin and is wrong for this seat — it tells the agent to do the is
     Your worktree: <path>, at origin/main. Work only there.
 
     A review lands nothing. Do not edit a file, do not commit, do not push, do not
-    run `just land`. Your seat forces `plan`; what that renders is runner-specific —
-    a read-only permission policy on the `claude` family, and on `codex` a
-    workspace-write sandbox scoped to the disposable worktree the dispatcher owns
-    and destroys. That containment, not this instruction, is what keeps the reviewed
-    ref untouched; the rule is stated as well because a mechanism you understand is
+    run `just land`. Your seat forces `plan`; what that renders is runner-specific,
+    and `docs/multi-provider-dispatch.md`'s codex section is the one authority for
+    it — read it there, this brief does not restate it. The containment your seat's
+    configuration provides, not this instruction, is what keeps the reviewed ref
+    untouched; the rule is stated as well because a mechanism you understand is
     one you do not fight.
     Filing is not landing. Put your review report, including an explicit clean
     verdict when you find nothing, between these exact lines in your final response:

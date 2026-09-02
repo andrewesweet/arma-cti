@@ -63,16 +63,13 @@ branch could not reach the sandbox and the gate stage would have died at the `uv
 the same.
 What keeps an argument that rests on a seat writing nothing true is not the sandbox word but
 the tree: a review or recon dispatch runs in a worktree this dispatch owns and destroys, and
-the verdict binds to the reviewed SHA rather than to whatever the tree holds at the end. The
-containment that buys is specific, and it is not that the writes vanish unread — the gate
-writes probe files and runs test suites inside the tree before it is removed, and
-`tests/unit/test_dispatch.py` asserts exactly that. It is that nothing outside the tree can
-be reached by them: the tree is created detached at the reviewed SHA, so it holds no branch
-of its own, and the git state that carries the reviewed ref lives in the shared directory
-outside it, which the sandbox does not make writable — git writes through it were measured
-refused under `workspace-write` (`git add` did not; `index.lock` read-only). A reviewer's
-edits therefore die with the tree; they cannot reach the reviewed ref, and `just land`'s
-re-gate after the rebase — which no flag skips — is what keeps them out of the landing.
+the verdict binds to the reviewed SHA rather than to whatever the tree holds at the end.
+Two facts name what that containment demonstrably is: the tree is created detached at the
+reviewed SHA, so it holds no branch of its own, and the shared git directory that carries
+the reviewed ref lives outside the sandbox's writable roots. What else the sandbox grants —
+writable cache roots and network among them — is not a containment and is not stated here:
+`tools/dispatch.py` decides it, and `tools/dispatch.py` with `tests/unit/test_dispatch.py`
+are where a reader finds what a dispatch actually gets.
 
 The z.ai lane made the argument concrete rather than abstract (#225). Claude Code's five
 effort levels differ in the `thinking.budget_tokens` they send, and that endpoint ignores
