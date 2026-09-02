@@ -733,7 +733,12 @@ def test_writing_a_review_record_arrives_at_review_not_implementation(
         ("remote", "add", "origin", str(origin)),
         ("push", "-q", "origin", "main:refs/heads/issue-223"),
     ):
-        subprocess.run(["git", *args], cwd=main_checkout, check=True, capture_output=True)  # noqa: S603, S607
+        subprocess.run(  # noqa: S603 — fixture Git argv, as in `git_worktree` above
+            ["git", *args],  # noqa: S607 — Git resolves from the test toolchain's PATH
+            cwd=main_checkout,
+            check=True,
+            capture_output=True,
+        )
     monkeypatch.setattr(dispatch, "main_checkout", lambda _cwd: main_checkout)
     brief_file = tmp_path / "brief.md"
     brief_file.write_text("a test brief\n", encoding="utf-8")
@@ -775,6 +780,86 @@ def test_writing_a_review_record_arrives_at_review_not_implementation(
     ]
     assert row["attributes"]["cti.stage.name"] == "review"
     assert not (environment_root / "223").exists()
+
+
+def test_a_tilde_valued_review_root_arrives_beside_the_reads(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A quoted `--review-root '~/.review'` writes arrivals where the reads look (#677 round 4).
+
+    The tilde is the input class every earlier round's absolute `tmp_path` roots
+    missed: a shell would have expanded an unquoted `~`, but a quoted flag reached
+    the parser whole, and the readers held a relative directory named `~` beside the
+    process while `write_record` resolved the same spelling under `$HOME` — two roots
+    in one process. The flag is now the one place that expands, so the arrival lands
+    under the root the readers were given and no literal `~` directory appears. `HOME`
+    moves so the expansion resolves inside this test's own tree, and the environment
+    names a third root to prove the flag still wins, exactly as the arrangement above.
+    """
+    environment_root = tmp_path / "review"
+    monkeypatch.setenv("CTI_REVIEW_DIR", str(environment_root))
+    monkeypatch.setenv("HOME", str(tmp_path / "home"))
+    trip(tmp_path, "codex", breaker.GATE_FAILED, 3)
+    # The review seat's tree is disposable and derived from the reviewed work's exchange
+    # ref, so the main checkout is staged in tmp — with an `origin` that names the ref —
+    # to keep `git ls-remote` and `git worktree add` inside this test's own tree.
+    main_checkout = git_worktree(tmp_path)
+    origin = tmp_path / "origin.git"
+    for args in (
+        ("init", "-q", "--bare", str(origin)),
+        ("remote", "add", "origin", str(origin)),
+        ("push", "-q", "origin", "main:refs/heads/issue-223"),
+    ):
+        subprocess.run(  # noqa: S603 — fixture Git argv, as in `git_worktree` above
+            ["git", *args],  # noqa: S607 — Git resolves from the test toolchain's PATH
+            cwd=main_checkout,
+            check=True,
+            capture_output=True,
+        )
+    monkeypatch.setattr(dispatch, "main_checkout", lambda _cwd: main_checkout)
+    brief_file = tmp_path / "brief.md"
+    brief_file.write_text("a test brief\n", encoding="utf-8")
+    code = dispatch.main(
+        [
+            "--seat",
+            "review",
+            "--reviewing",
+            "opus-high",
+            "--issue",
+            "223",
+            "--worktree",
+            str(main_checkout),
+            "--issue-body",
+            str(READY_BODY),
+            "--brief-file",
+            str(brief_file),
+            "--dispatch-dir",
+            str(tmp_path / "dispatches"),
+            # Quoted, as an operator's shell would deliver it: the parser, not the
+            # shell, is what this arrangement asks to expand it.
+            "--review-root",
+            "~/.review",
+            "--credentials",
+            str(tmp_path / "credentials.env"),
+            "--breaker-dir",
+            str(tmp_path / "breaker"),
+            "--queue-dir",
+            str(open_policy(tmp_path)),
+            "--queue-root",
+            str(tmp_path / "queue-root"),
+        ],
+        now=OFF_PEAK,
+    )
+    assert code == 0
+    (row,) = [
+        json.loads(line)
+        for line in (tmp_path / "home" / ".review" / "223" / attribute_registry.STAGE_JOURNAL)
+        .read_text(encoding="utf-8")
+        .splitlines()
+    ]
+    assert row["attributes"]["cti.stage.name"] == "review"
+    assert not (environment_root / "223").exists()
+    assert not (tmp_path / "~").exists()
 
 
 def test_a_planner_dispatch_records_no_arrival(

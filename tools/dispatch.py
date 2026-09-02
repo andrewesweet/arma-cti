@@ -5622,7 +5622,8 @@ def plan_dispatch(  # noqa: C901, PLR0911, PLR0912 — planning owns the ordered
             brief,
             root,
             args.base_sha,
-            Path(args.review_root).expanduser(),
+            # Already expanded by `--review-root`'s `type=` (#677 round 4).
+            Path(args.review_root),
             custom_brief=bool(args.brief_file),
             thread_report=thread_report,
             writable_roots=writable_roots,
@@ -6178,6 +6179,21 @@ def instruction_preflight(
     return plan._replace(guidance=result), None
 
 
+def expanded_review_root(value: str) -> str:
+    """Expand `~` where the review root is decided, once (#677 round 4).
+
+    Every consumer of this value — the authorship read, the disposable tree's
+    arrivals and `write_record` — takes the flag's answer as `Path(value)`, so a
+    quoted `--review-root '~/.review'` or a literal `~` in `CTI_REVIEW_DIR` would
+    hand the readers a relative directory named `~` beside the process while the
+    writers resolved the same spelling under `$HOME`: two roots in one process,
+    the split this issue's criterion forbids. argparse applies `type` to a string
+    default exactly as to the argv, so both ways in expand here and no caller is
+    left to remember it.
+    """
+    return str(Path(value).expanduser())
+
+
 def parse_args(argv: list[str] | None) -> argparse.Namespace:
     """Parse the dispatch request, as the seam passes it through."""
     parser = argparse.ArgumentParser(prog="dispatch", description=__doc__)
@@ -6215,7 +6231,14 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     # authorship read and `write_record`'s stage arrival alike — takes this value, so an
     # operator's override cannot leave declarations read from home while arrivals land
     # elsewhere.
-    parser.add_argument("--review-root", default=str(review_loop.review_root()))
+    # `expanded_review_root` is the flag's own `type=`: a tilde-valued root — quoted on
+    # the argv or literal in `CTI_REVIEW_DIR` — expands here, where the root is decided,
+    # so the readers and `write_record` hold one root a process can name (#677 round 4).
+    parser.add_argument(
+        "--review-root",
+        default=str(review_loop.review_root()),
+        type=expanded_review_root,
+    )
     parser.add_argument("--credentials", default=str(CREDENTIALS))
     # `CTI_BREAKER_DIR` exists so that a test can run the real seam — `tools/dispatch.sh`
     # forks a fresh process, which no in-process patch reaches — against its own breaker
@@ -6463,7 +6486,7 @@ def main(argv: list[str] | None = None, now: datetime | None = None) -> int:
         return emit((*refusal_lines, *cleanup_lines), EXIT_REFUSED)
 
     try:
-        write_record(plan, brief, Path(args.review_root).expanduser())
+        write_record(plan, brief, Path(args.review_root))
     except BaseException:
         cleanup_refusal, _ = _cleanup_plan_worktree(plan)
         if cleanup_refusal is not None:

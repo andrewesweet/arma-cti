@@ -10,3 +10,6 @@
   (home when it is unset, as before), so the readers that resolve the constant rather
   than calling `review_root()` — `tools/land_review.py`'s authorship root and
   `tools/review_exchange.py`'s two `--review-root` defaults — honour the override too.
+  A tilde-valued root — a quoted `--review-root '~/.review'` or a literal `~` in
+  `CTI_REVIEW_DIR` — now expands at the flag, the one place the root is decided, so the
+  readers and the stage-arrival writer hold one root a process can name (#677).

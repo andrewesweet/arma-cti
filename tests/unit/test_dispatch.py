@@ -3980,6 +3980,43 @@ def test_the_review_root_flag_default_honours_the_environment(
     assert Path(args.review_root) == root
 
 
+def test_the_review_root_flag_expands_a_quoted_tilde(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A quoted `--review-root '~/.review'` names one expanded root, not a literal `~` (#677).
+
+    Round three's tests all passed absolute `tmp_path` roots, so the input class the
+    finding turns on never ran: a shell would expand an unquoted `~`, but a quoted
+    flag reaches the parser whole, and the readers took it as a relative directory
+    named `~` while `write_record` resolved one under `$HOME` — two roots in one
+    process. The expansion lives on the flag, where the root is decided, so this
+    asserts the value every consumer of `args.review_root` reads.
+    """
+    home = tmp_path / "home"
+    monkeypatch.setenv("HOME", str(home))
+    args = dispatch.parse_args(
+        ["--lane", "claude-native", "--issue", "223", "--review-root", "~/.review"]
+    )
+    assert Path(args.review_root) == home / ".review"
+
+
+def test_the_review_root_default_expands_a_tilde_valued_environment(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A literal `~` in `CTI_REVIEW_DIR` expands like the flag's own value (#677).
+
+    The default reads `review_root()`'s answer through the same `type=` the argv
+    takes, because argparse applies the conversion to a string default: an operator
+    who quoted the variable gets the root under `$HOME` for the authorship read and
+    the stage arrival alike, never a relative directory named `~` beside the process.
+    """
+    home = tmp_path / "home"
+    monkeypatch.setenv("HOME", str(home))
+    monkeypatch.setenv("CTI_REVIEW_DIR", "~/.review")
+    args = dispatch.parse_args(["--lane", "claude-native", "--issue", "223"])
+    assert Path(args.review_root) == home / ".review"
+
+
 def test_the_seam_forks_nothing_for_a_dry_run(tmp_path: Path) -> None:
     worktree = git_worktree(tmp_path)
     capture = tmp_path / "must-not-run.txt"
