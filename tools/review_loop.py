@@ -1108,7 +1108,10 @@ def review_root() -> Path:
     Read at call time rather than import time (#484 round 2, finding 3): a module
     constant binds `Path.home()` once, so a test that forgot to arrange its own root
     wrote the real one — hermeticity by remembered `monkeypatch.setattr` is the shape
-    #458 closed. The constant stays as the default the CLI's `--root` names.
+    #458 closed. The constant is the fallback this function reads when
+    `CTI_REVIEW_DIR` is unset; since #677 the CLI's `--root` defaults to this
+    function's answer rather than to the constant, so the operator's variable
+    reaches the command the same way it reaches the journal.
     """
     return Path(os.environ.get("CTI_REVIEW_DIR", str(REVIEW_ROOT)))
 

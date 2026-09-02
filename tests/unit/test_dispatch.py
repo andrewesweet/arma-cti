@@ -3963,24 +3963,6 @@ def test_a_zai_dispatch_leaks_into_neither_the_parent_nor_the_next_lane(
     assert FAKE_TOKEN not in "".join(native_env.values())
 
 
-def test_no_seam_arrangement_reaches_the_box_s_real_review_root(tmp_path: Path) -> None:
-    """The recorder's root is decided once, away from the box's real review root (#677).
-
-    The class is a fail-open recorder reaching a real path, so the guard is about the
-    path: the suite's session-wide `CTI_REVIEW_DIR` hold must be in force, and the
-    staging fixture the forked seam inherits must name a root of this test's own. A
-    fixture gone missing, or a staging line deleted from `seam_env`, puts the recorder
-    back on `~/.arma-cti/review` for every test and every forked child — and this
-    reddens on any box, rather than reddening only where the damage shows.
-    """
-    held = review_loop.review_root()
-    assert held != review_loop.REVIEW_ROOT
-    assert not held.is_relative_to(Path.home() / ".arma-cti")
-    staged = Path(seam_env(tmp_path, tmp_path / "capture")["CTI_REVIEW_DIR"])
-    assert staged != review_loop.REVIEW_ROOT
-    assert not staged.is_relative_to(Path.home() / ".arma-cti")
-
-
 def test_the_review_root_flag_default_honours_the_environment(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

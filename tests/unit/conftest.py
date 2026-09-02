@@ -73,6 +73,42 @@ def hermetic_review_root(tmp_path_factory: pytest.TempPathFactory) -> None:
 
 
 @pytest.fixture(scope="session", autouse=True)
+def no_stage_arrival_reaches_the_real_review_root() -> Iterator[None]:
+    """No stage arrival reaches `~/.arma-cti/review` while the suite runs (#677 round 2).
+
+    `hermetic_review_root` above holds the suite off the box's real review root by
+    holding the variable, and `seam_env` stages its fork the same way — but a guard over
+    the two values those writers already read is a guard over the writers already found.
+    This sentinel asserts about the real path the constant names, whatever any test or
+    forked child does: the stage-arrival journals under it are listed before the first
+    test runs and again at teardown, and a journal that appeared or grew fails the run
+    and names the issue. The subject is the stage journal and not the whole tree,
+    because the root is live shared state — another agent's landing grows rebases and
+    landing records here while the gate runs, and that is this box working, not a test
+    leaking; a red naming an issue a concurrent dispatch really arrived for is re-run,
+    never debugged. Under `-n auto` each worker pairs its own before and after, so a
+    write is caught by any worker whose span covers it.
+    """
+    real = load_tool("review_loop").REVIEW_ROOT
+    journal = load_tool("attribute_registry").STAGE_JOURNAL
+
+    def arrivals() -> dict[str, int]:
+        if not real.exists():
+            return {}
+        return {
+            str(path.relative_to(real)): path.stat().st_size
+            for path in sorted(real.rglob(journal))
+            if path.is_file()
+        }
+
+    before = arrivals()
+    yield
+    after = arrivals()
+    grown = sorted(path for path in (*after, *before) if after.get(path) != before.get(path))
+    assert not grown, f"a test wrote a stage arrival into the real review root {real}: {grown}"
+
+
+@pytest.fixture(scope="session", autouse=True)
 def hermetic_dispatch_records(tmp_path_factory: pytest.TempPathFactory) -> None:
     """Point the dispatch records' root at pytest's own tmp too (#490 round 2).
 
@@ -107,6 +143,7 @@ def hermetic_dispatch_assignment() -> None:
 
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
     from types import ModuleType
 
     from cti_daemon.daemon import Daemon

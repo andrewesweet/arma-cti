@@ -1365,6 +1365,40 @@ def test_the_cli_refuses_the_round_zero_dismissal(
     assert review_loop.load_loop(root, 326).findings[0].adjudication is None
 
 
+def test_the_cli_default_root_honours_the_environment(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Omitting `--root` reads the operator's `CTI_REVIEW_DIR` over the constant (#677).
+
+    Every other command test here passes `--root` by hand, so a default reverted to the
+    `REVIEW_ROOT` constant would stay green while the command ignored the operator's
+    override — the read/write split #677 closed, back on the command surface. The
+    constant is therefore deliberately pointed somewhere of this test's own: with the
+    environment naming the root the command must use, a reverted default writes the
+    constant's tree instead of the environment's, and the read-back fails — inside tmp,
+    never on the box's real review root. The session hold and the sentinel in conftest
+    remain responsible for the real path; this test is responsible for the variable.
+    """
+    constant_root = tmp_path / "constant"
+    environment_root = tmp_path / "environment"
+    monkeypatch.setattr(review_loop, "REVIEW_ROOT", constant_root)
+    monkeypatch.setenv("CTI_REVIEW_DIR", str(environment_root))
+    code = review_loop.main(
+        [
+            "open",
+            "--issue",
+            "677",
+            "--finding",
+            "F1=low",
+            "--journal",
+            str(tmp_path / "journal.jsonl"),
+        ],
+        now=stepped_clock(),
+    )
+    assert code == review_loop.OK
+    assert review_loop.load_loop(environment_root, 677).findings[0].id == "F1"
+
+
 def _adjudicate_argv(
     root: Path,
     journal: Path,

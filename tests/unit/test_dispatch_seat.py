@@ -706,21 +706,67 @@ def test_writing_an_implementer_record_arrives_at_implementation(
 def test_writing_a_review_record_arrives_at_review_not_implementation(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """The stage is `review`, and the arrival lands at the root the caller named (#677).
+    """The stage is `review`, and the arrival lands at the root `main`'s flag names (#677).
 
-    The environment deliberately names a different root: since #677 the arrival
-    follows `write_record`'s parameter — one decision per process, the caller's root
-    over the environment's — so the journal is read from the parameter's root and the
-    environment's stays empty.
+    The environment deliberately names a different root: one decision per process means
+    `--review-root` decides both halves — the authorship read and the write — so the
+    journal is read from the flag's root and the environment's stays empty. The claim is
+    driven through `main` rather than by handing each consumer the root by hand, because
+    an arrangement that passes the root to `plan_for` and `write_record` itself stays
+    green if `main`'s write reverts to the environment — the split this test exists to
+    catch (#677 review round 2, finding 2). The brief rides a file so planning needs no
+    thread read, the Codex entry is tripped so the walk answers the native profile
+    without the instruction preflight a Codex plan would run, and the main checkout is
+    staged in tmp so the disposable tree is derived inside this test's own tree.
     """
     environment_root = tmp_path / "review"
     parameter_root = tmp_path / "review-records"
     monkeypatch.setenv("CTI_REVIEW_DIR", str(environment_root))
-    plan, brief, _ = plan_for(
-        tmp_path, seat="review", reviewing="opus-high", review_root=str(parameter_root)
+    trip(tmp_path, "codex", breaker.GATE_FAILED, 3)
+    # The review seat's tree is disposable and derived from the reviewed work's exchange
+    # ref, so the main checkout is staged in tmp — with an `origin` that names the ref —
+    # to keep `git ls-remote` and `git worktree add` inside this test's own tree.
+    main_checkout = git_worktree(tmp_path)
+    origin = tmp_path / "origin.git"
+    for args in (
+        ("init", "-q", "--bare", str(origin)),
+        ("remote", "add", "origin", str(origin)),
+        ("push", "-q", "origin", "main:refs/heads/issue-223"),
+    ):
+        subprocess.run(["git", *args], cwd=main_checkout, check=True, capture_output=True)  # noqa: S603, S607
+    monkeypatch.setattr(dispatch, "main_checkout", lambda _cwd: main_checkout)
+    brief_file = tmp_path / "brief.md"
+    brief_file.write_text("a test brief\n", encoding="utf-8")
+    code = dispatch.main(
+        [
+            "--seat",
+            "review",
+            "--reviewing",
+            "opus-high",
+            "--issue",
+            "223",
+            "--worktree",
+            str(main_checkout),
+            "--issue-body",
+            str(READY_BODY),
+            "--brief-file",
+            str(brief_file),
+            "--dispatch-dir",
+            str(tmp_path / "dispatches"),
+            "--review-root",
+            str(parameter_root),
+            "--credentials",
+            str(tmp_path / "credentials.env"),
+            "--breaker-dir",
+            str(tmp_path / "breaker"),
+            "--queue-dir",
+            str(open_policy(tmp_path)),
+            "--queue-root",
+            str(tmp_path / "queue-root"),
+        ],
+        now=OFF_PEAK,
     )
-    assert plan is not None
-    dispatch.write_record(plan, brief, parameter_root)
+    assert code == 0
     (row,) = [
         json.loads(line)
         for line in (parameter_root / "223" / attribute_registry.STAGE_JOURNAL)
