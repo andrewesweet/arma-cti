@@ -91,11 +91,8 @@ if [[ "$name" == "${CTI_STUB_KILL:-}" ]]; then
     parent() { sed -e 's/^.*) //' "/proc/$1/stat" 2>/dev/null | awk '{print $2}'; }
     worker="$(parent "$(parent "$PPID")")"
     kill -9 "${worker:-$PPID}" 2>/dev/null
-    # The hold below is the "mid-probe" in "dies mid-probe": the flight must
-    # still be running when the worker's death is decided, or the merge reads a
-    # clean early exit instead. The pool's teardown ends the tree long before
-    # the 30 s elapses, so the floor is only "longer than the rest of the pass"
-    # and the length costs no wall clock.
+    # The hold below is the "mid-probe" in "dies mid-probe"; its argument and
+    # floor live in the docstrings of the two tests that set CTI_STUB_KILL.
     sleep 30
 fi
 
@@ -328,6 +325,12 @@ def start_holder(tmp_path: Path, slot: int) -> subprocess.Popen[str]:
     carrying the descriptor it inherited. A holder that is a single process would
     let both tests below assert something easier than the thing that happens.
 
+    The `sleep 60` is background life the holder carries so there is something
+    to kill: `test_a_dead_holders_lock_frees_itself` and
+    `test_an_orphan_that_inherited_the_lock_is_named_and_reclaimed` both end it
+    long before the 60 s elapses, so its floor is the length of those tests and
+    the length costs no wall clock.
+
     Its own session, so a test can kill the tree the way the machine kills an
     agent, without the process group reaching pytest.
     """
@@ -338,9 +341,8 @@ def start_holder(tmp_path: Path, slot: int) -> subprocess.Popen[str]:
         # Forked and reaped-for before `ready`: at the moment the test reads that
         # line the inheriting child exists. The old version echoed `ready` and
         # then forked, so whether the child existed when the kill landed was a
-        # race the test lost about one full-suite run in two (#121). The 60 s is
-        # background life the test kills; its floor is the length of the test,
-        # which it never reaches.
+        # race the test lost about one full-suite run in two (#121). The hold's
+        # argument and floor live in this helper's docstring.
         "sleep 60 &\necho ready\nwait\n",
     )
     # S603: a script this test wrote.
@@ -508,6 +510,9 @@ def test_a_tier_that_is_not_the_machines_kills_nothing_on_it(tmp_path: Path) -> 
     run pointed somewhere else is not this machine's tier and sweeps nothing. Only
     this direction is testable — the sweeping direction is exactly what must never
     run from a test, so its coverage is the real tier's own use of it.
+
+    The victim's 60 s is background life the test kills in the `finally`; its
+    floor is the length of the test, which it never reaches.
     """
     master = tmp_path / "arma3server"
     master.mkdir(parents=True)
@@ -550,9 +555,11 @@ def test_a_recycled_pid_is_not_the_process_the_sweep_found() -> None:
     Only this direction is testable: forcing a real recycle inside a test would
     mean spawning until a pid came round, so what is asserted is that the
     identity is read, is compared, and decides.
+
+    The sleeper's 60 s is background life the test kills in the `finally`; its
+    floor is the length of the test, which it never reaches.
     """
-    # S603: this machine's own `sleep`, by absolute path. Its 60 s is background
-    # life the test kills in the `finally`; the floor is the length of the test.
+    # S603: this machine's own `sleep`, by absolute path.
     sleeper = subprocess.Popen([shutil.which("sleep") or "/bin/sleep", "60"])  # noqa: S603
     try:
         swept = bash_ok(f"cti_slot_pid_starttime {sleeper.pid}")
@@ -889,6 +896,12 @@ def test_a_slot_that_dies_mid_probe_is_not_a_result(tmp_path: Path) -> None:
     The worker is killed with the claim made and no verdict written; the merge
     must call that `infra_unavailable` rather than read the absence of evidence
     as a failure of the probe.
+
+    The stub's 30 s hold is the "mid-probe": the flight must still be running
+    when the worker's death is decided, or the merge reads a clean early exit
+    instead. Its floor is only "longer than the rest of the pass" — the pool's
+    teardown ends the tree long before the 30 s elapses — so the length costs no
+    wall clock.
     """
     result = pool_run(tmp_path, "--slots", "3", extra_env={"CTI_STUB_KILL": "casualties"})
     assert result.returncode == EXIT_INFRA_UNAVAILABLE, result.stderr[-4000:]
@@ -924,6 +937,11 @@ def test_a_dead_slot_leaves_the_lock_free_for_the_next_holder(tmp_path: Path) ->
     an arbitrary instant after teardown and passed on the corpus being longer
     than whatever was still holding on — which is timing luck, and #138 is the
     case where the luck ran out.
+
+    The stub's 30 s hold is the orphan a mid-probe death leaves running, the
+    same shape `test_a_slot_that_dies_mid_probe_is_not_a_result` stages, and it
+    is what the descriptor waits below exist to see gone. Its floor is only
+    "longer than the rest of the pass", so the length costs no wall clock.
     """
     pool_run(tmp_path, "--slots", "3", extra_env={"CTI_STUB_KILL": "casualties"})
     for slot in (0, 1, 2):
@@ -1527,14 +1545,17 @@ def test_a_preflight_refusal_leaves_a_durable_record(tmp_path: Path) -> None:
 # worker blocks in `wait` for as long as the hang lasts — the pool eventually
 # idle behind slots nobody can take, and no verdict of any class ever produced.
 # The `timeout=` on the subprocess below is what a human's Ctrl-C used to be.
-# The 600 s is never reached: the watchdog (WATCHDOG_ENV) ends the run seconds
-# in, so the hold's only floor is "longer than the watchdog's patience" and its
-# length costs no wall clock.
 STUB_RUN_HANGS = "#!/usr/bin/env bash\nsleep 600\n"
 WATCHDOG_ENV = {"CTI_PROBE_WATCHDOG_SECS": "3", "CTI_PROBE_WATCHDOG_KILL_AFTER": "2"}
 
 
 def test_a_run_that_never_exits_is_killed_at_the_watchdog(tmp_path: Path) -> None:
+    """A `run.sh` that never returns is ended by the watchdog, not waited out.
+
+    The stub's hold is 600 s and nothing reaches it — the watchdog
+    (WATCHDOG_ENV) ends the run seconds in, so the hold's only floor is "longer
+    than the watchdog's patience" and its length costs no wall clock.
+    """
     hanging = executable(tmp_path / "hanging-run.sh", STUB_RUN_HANGS)
     result = pool_run(
         tmp_path,
@@ -1565,11 +1586,13 @@ def test_the_watchdog_leaves_no_process_of_the_run_behind(tmp_path: Path) -> Non
     The confirm below is an absence window, and an absence window is its own
     subject: the assertion is that nothing rewrote the marker *for a window*, so
     shortening the window narrows the claim — a survivor descheduled past it
-    escapes a shorter window that a longer one catches. Its detection floor is
-    the heartbeat's own 0.2 s period, since anything alive rewrites within one
-    period of the kill; 3 s holds fifteen of them, margin a shortened window
-    would spend, so the wait is kept at its original length rather than
-    converted.
+    escapes a shorter window that a longer one catches. The window is 3 s, the
+    length this test has always used, and what it buys is a judgement rather
+    than a derivation: the heartbeat's `sleep 0.2` is a minimum, so a live
+    writer rewrites at least 0.2 s after its last touch and scheduling can
+    stretch that past any bound — no period derives a detection floor. Fifteen
+    periods is room for a descheduled survivor to be caught that a shorter
+    window would miss, which is why the wait is kept rather than converted.
     """
     marker = tmp_path / "grandchild-alive"
     hanging = executable(
@@ -1632,11 +1655,13 @@ def test_a_signalled_pool_takes_its_flights_down_with_it(tmp_path: Path) -> None
     The confirm at the end is an absence window, and an absence window is its
     own subject: the assertion is that no flight rewrote the marker *for a
     window*, so shortening the window narrows the claim — a flight descheduled
-    past it escapes a shorter window that a longer one catches. Its detection
-    floor is the heartbeat's own 0.2 s period, since a survivor rewrites within
-    one period of the SIGTERM; 3 s holds fifteen of them, margin a shortened
-    window would spend, so the wait is kept at its original length rather than
-    converted.
+    past it escapes a shorter window that a longer one catches. The window is
+    3 s, the length this test has always used, and what it buys is a judgement
+    rather than a derivation: the heartbeat's `sleep 0.2` is a minimum, so a
+    survivor rewrites at least 0.2 s after its last touch and scheduling can
+    stretch that past any bound — no period derives a detection floor. Fifteen
+    periods is room for a descheduled survivor to be caught that a shorter
+    window would miss, which is why the wait is kept rather than converted.
     """
     marker = tmp_path / "flight-alive"
     flying = executable(tmp_path / "flying-run.sh", STUB_RUN_FLYING.format(marker=marker))
