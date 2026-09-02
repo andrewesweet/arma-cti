@@ -17,6 +17,9 @@ One decision, two renderings:
 - ``env``: the tier's `key=value` lines, for the harness to fold a stop's
   `failure_detail` into `results.env` through its own `fail`.
 
+Stops retain the `infra_unavailable` class, but carry a `failure_reason` so a
+live play session is distinguishable from a host process-list check that failed.
+
 Exit code 0 is proceed; 5 is stop — the number `CTI_EXIT_INFRA_UNAVAILABLE`
 names in spike/host-guard.sh, its one bash home, and the pair is asserted
 equal. The default rung is fail-closed (#41): a state this ladder has never
@@ -36,6 +39,9 @@ EXIT_INFRA_UNAVAILABLE: Final = 5
 
 COULD_NOT_RUN: Final = "A check that could not run is not a check that passed."
 NOT_A_RESULT: Final = "This is a stop, not a result. Nothing was launched."
+PLAY_SESSION: Final = "play_session"
+TRANSPORT_FAILURE: Final = "transport_failure"
+HOST_CHECK_FAILED: Final = "host_check_failed"
 
 
 class GuardVerdict(NamedTuple):
@@ -60,19 +66,30 @@ def split_answer(answer: str) -> tuple[str, str]:
     return state, detail
 
 
+def _failure_reason(state: str, detail: str) -> str:
+    """Name why a non-free host answer stopped the caller."""
+    if state == "running":
+        return PLAY_SESSION
+    if state == "unavailable" and detail.startswith(f"{TRANSPORT_FAILURE} "):
+        return TRANSPORT_FAILURE
+    return HOST_CHECK_FAILED
+
+
 def decide(answer: str, host: str = "") -> GuardVerdict:
     """Apply the module docstring's ladder to one guard answer."""
     state, detail = split_answer(answer)
     prefix = f"[host-guard] {host}: " if host else "[host-guard] "
-    verdict_line = "[host-guard] verdict=FAIL failure_class=infra_unavailable" + (
-        f" host={host}" if host else ""
-    )
     if state == "free":
         return GuardVerdict(
             proceed=True,
             block=(f"{prefix}{detail}",),
             env=("verdict=proceed", f"detail={detail}"),
         )
+    reason = _failure_reason(state, detail)
+    verdict_line = (
+        "[host-guard] verdict=FAIL failure_class=infra_unavailable "
+        f"failure_reason={reason}" + (f" host={host}" if host else "")
+    )
     if state == "running":
         return GuardVerdict(
             proceed=False,
@@ -84,7 +101,10 @@ def decide(answer: str, host: str = "") -> GuardVerdict:
             env=(
                 "verdict=FAIL",
                 "failure_class=infra_unavailable",
-                f"failure_detail={detail} — that is a play session, not ours",
+                (
+                    f"failure_detail=failure_reason={reason}; {detail} "
+                    "— that is a play session, not ours"
+                ),
             ),
         )
     # `unavailable`, and every state the ladder has never heard of: fail closed.
@@ -98,7 +118,10 @@ def decide(answer: str, host: str = "") -> GuardVerdict:
         env=(
             "verdict=FAIL",
             "failure_class=infra_unavailable",
-            f"failure_detail={detail}; refusing to take a machine I cannot check",
+            (
+                f"failure_detail=failure_reason={reason}; {detail}; "
+                "refusing to take a machine I cannot check"
+            ),
         ),
     )
 

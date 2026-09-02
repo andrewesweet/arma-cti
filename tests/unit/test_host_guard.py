@@ -102,6 +102,8 @@ def test_human_client_running_refuses(tmp_path: Path) -> None:
     result = _run(tasklist)
     assert result.returncode == EXIT_INFRA_UNAVAILABLE
     assert "failure_class=infra_unavailable" in result.stderr
+    assert "failure_reason=play_session" in result.stderr
+    assert "transport_failure" not in result.stderr
     assert "Nothing was launched" in result.stderr
 
 
@@ -192,12 +194,44 @@ def test_non_executable_tool_refuses(tmp_path: Path) -> None:
     assert result.returncode == EXIT_INFRA_UNAVAILABLE
 
 
-def test_tool_that_errors_refuses(tmp_path: Path) -> None:
-    """An interop binary that cannot start is not an answer about the host."""
-    tasklist = _stub(tmp_path, "tasklist.sh", "echo 'Access is denied.' >&2\nexit 1")
+def test_a_transient_interop_failure_is_retried_before_the_guard_proceeds(
+    tmp_path: Path,
+) -> None:
+    """A recovered checking channel must not abandon the corpus."""
+    counter = tmp_path / "asks"
+    tasklist = _stub(
+        tmp_path,
+        "tasklist.sh",
+        f'n=$(cat "{counter}" 2>/dev/null || echo 0)\n'
+        f'echo $((n + 1)) > "{counter}"\n'
+        "if ((n == 0)); then echo 'UtilAcceptVsock: accept4 failed 110' >&2; exit 1; fi\n"
+        f"printf '%s' {TASKLIST_ABSENT!r}",
+    )
+
+    result = _run(tasklist)
+
+    assert result.returncode == 0, result.stderr
+    assert counter.read_text() == "2\n"
+    assert "is not in the Windows process list" in result.stderr
+
+
+def test_tool_that_errors_refuses_after_the_bounded_retries(tmp_path: Path) -> None:
+    """An exhausted interop retry is still not an answer about the host."""
+    counter = tmp_path / "asks"
+    tasklist = _stub(
+        tmp_path,
+        "tasklist.sh",
+        f'n=$(cat "{counter}" 2>/dev/null || echo 0)\n'
+        f'echo $((n + 1)) > "{counter}"\n'
+        "echo 'Access is denied.' >&2\nexit 1",
+    )
     result = _run(tasklist)
     assert result.returncode == EXIT_INFRA_UNAVAILABLE
     assert "exited 1" in result.stderr
+    assert counter.read_text() == "3\n"
+    assert "after 3 attempts" in result.stderr
+    assert "failure_reason=transport_failure" in result.stderr
+    assert "play session" not in result.stderr
 
 
 def test_tool_that_says_nothing_refuses(tmp_path: Path) -> None:

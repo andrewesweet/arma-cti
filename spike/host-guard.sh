@@ -53,6 +53,14 @@ CTI_WINDOWS_INTEROP_TIMEOUT="${CTI_WINDOWS_INTEROP_TIMEOUT:-20}"
 # tell apart from the Windows tool's own exit codes.
 CTI_EXIT_TIMED_OUT=124
 
+# The observed `UtilAcceptVsock` failure cleared when `tasklist.exe` answered by
+# hand seconds later. Two one-second gaps, three total asks, give that transient
+# checking-channel failure a bounded chance to clear while adding at most two
+# seconds when the channel stays down. This bound is tied to the incident's
+# seconds-scale recovery, not tuned until a test passes. An exhausted retry is
+# still `unavailable`; it never becomes permission to assume the host is free.
+CTI_WINDOWS_INTEROP_RETRY_DELAY=1
+
 # The infra_unavailable exit code, in its one bash home (#161): this file sits
 # at the bottom of the source graph (spike/hosts.sh pulls it in; spike/slots.sh,
 # spike/tier-lock.sh and the runners arrive through hosts.sh), so everything
@@ -80,7 +88,7 @@ CTI_EXIT_USAGE=64
 # that a test can assert the state and a runner can map it to a verdict.
 cti_human_client_state() {
     local image="${1:-$CTI_HUMAN_CLIENT_IMAGE}"
-    local out status
+    local out status attempt
 
     if [[ ! -x "$CTI_WINDOWS_TASKLIST" ]]; then
         printf 'unavailable no executable Windows process list at %s\n' "$CTI_WINDOWS_TASKLIST"
@@ -96,19 +104,28 @@ cti_human_client_state() {
         return 0
     fi
 
-    out="$(timeout "$CTI_WINDOWS_INTEROP_TIMEOUT" \
-        "$CTI_WINDOWS_TASKLIST" /FI "IMAGENAME eq $image" 2>&1)"
-    status=$?
-    if ((status == CTI_EXIT_TIMED_OUT)); then
-        printf 'unavailable %s did not answer within %ss; WSL interop may be wedged\n' \
-            "$CTI_WINDOWS_TASKLIST" "$CTI_WINDOWS_INTEROP_TIMEOUT"
-        return 0
-    fi
-    if ((status != 0)); then
-        printf 'unavailable %s exited %s: %s\n' \
+    # The retry is only for a tasklist process that returned a non-zero status:
+    # that is the observed WSL interop failure. A timeout remains an immediate
+    # unavailable answer because retrying a full interop deadline would turn a
+    # checking failure into a long, unbounded-looking pre-flight.
+    for attempt in 1 2 3; do
+        out="$(timeout "$CTI_WINDOWS_INTEROP_TIMEOUT" \
+            "$CTI_WINDOWS_TASKLIST" /FI "IMAGENAME eq $image" 2>&1)"
+        status=$?
+        if ((status == CTI_EXIT_TIMED_OUT)); then
+            printf 'unavailable %s did not answer within %ss; WSL interop may be wedged\n' \
+                "$CTI_WINDOWS_TASKLIST" "$CTI_WINDOWS_INTEROP_TIMEOUT"
+            return 0
+        fi
+        ((status == 0)) && break
+        if [[ "$attempt" != 3 ]]; then
+            sleep "$CTI_WINDOWS_INTEROP_RETRY_DELAY"
+            continue
+        fi
+        printf 'unavailable transport_failure %s exited %s after 3 attempts: %s\n' \
             "$CTI_WINDOWS_TASKLIST" "$status" "$(tr '\n' ' ' <<<"$out")"
         return 0
-    fi
+    done
     # An empty answer is not a negative answer. Real tasklist says "INFO: No
     # tasks are running which match the specified criteria." when nothing
     # matches, so silence means something other than the tool answering.

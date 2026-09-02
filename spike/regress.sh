@@ -468,13 +468,19 @@ fi
 #
 # `block` and stderr: the guard's lines are read by whoever is watching the pool,
 # and the durable line below is what the refusal log gets.
-if ! cti_host_guard_or_queue "$HOST" block "$WAIT_SECS" log >&2; then
+guard_block=""
+if guard_block="$(cti_host_guard_or_queue "$HOST" block "$WAIT_SECS" log)"; then
+    printf '%s\n' "$guard_block" >&2
+else
     # The guard's own words went to stderr above; this is the durable line. Which
     # of the three it was, where the box can still tell us: a busy client lock
     # names its holder and its age here rather than only in output the invoker
     # has to have kept, so a refusal that turns out to be somebody's wedged run
     # is diagnosable from the refusal log alone (#153).
+    printf '%s\n' "$guard_block" >&2
+    guard_reason="$(sed -n 's/.*failure_reason=\([^ ]*\).*/\1/p' <<<"$guard_block" | head -1)"
     refusal="the host guard refused $HOST — a play session may be live, another run held the Windows client, or the check could not run"
+    [[ -n "$guard_reason" ]] && refusal="$refusal; failure_reason=$guard_reason"
     cti_client_lock_busy && refusal="$refusal; the client lock was held — $(cti_client_lock_summary)"
     record_refusal infra_unavailable "$refusal"
     exit "${CLASS_RANK[infra_unavailable]}"

@@ -27,6 +27,10 @@ host_guard_verdict = load_tool("host_guard_verdict")
 FREE = "free arma3_x64.exe is not in the Windows process list"
 RUNNING = "running arma3_x64.exe is in the Windows process list"
 UNAVAILABLE = "unavailable no executable Windows process list at /mnt/c/tasklist.exe"
+TRANSPORT_FAILURE = (
+    "unavailable transport_failure /mnt/c/Windows/System32/tasklist.exe exited 1 "
+    "after 3 attempts: WSL interop failed"
+)
 
 HOST_GUARD_SH = REPO / "spike" / "host-guard.sh"
 SPIKE = REPO / "spike"
@@ -55,7 +59,7 @@ def test_running_stops_and_says_a_play_session_may_be_live() -> None:
     assert not verdict.proceed
     assert verdict.block == (
         "[host-guard] arma3_x64.exe is in the Windows process list — a play session may be live.",
-        "[host-guard] verdict=FAIL failure_class=infra_unavailable",
+        "[host-guard] verdict=FAIL failure_class=infra_unavailable failure_reason=play_session",
         "[host-guard] This is a stop, not a result. Nothing was launched.",
     )
 
@@ -68,7 +72,10 @@ def test_running_with_a_host_carries_it_on_the_verdict_line() -> None:
             "[host-guard] local: arma3_x64.exe is in the Windows process list "
             "— a play session may be live."
         ),
-        "[host-guard] verdict=FAIL failure_class=infra_unavailable host=local",
+        (
+            "[host-guard] verdict=FAIL failure_class=infra_unavailable "
+            "failure_reason=play_session host=local"
+        ),
         "[host-guard] This is a stop, not a result. Nothing was launched.",
     )
 
@@ -78,9 +85,28 @@ def test_unavailable_stops_with_the_could_not_run_sentence() -> None:
     assert not verdict.proceed
     assert verdict.block == (
         "[host-guard] no executable Windows process list at /mnt/c/tasklist.exe",
-        "[host-guard] verdict=FAIL failure_class=infra_unavailable",
+        (
+            "[host-guard] verdict=FAIL failure_class=infra_unavailable "
+            "failure_reason=host_check_failed"
+        ),
         "[host-guard] A check that could not run is not a check that passed.",
     )
+
+
+def test_transport_failure_is_typed_separately_from_a_play_session() -> None:
+    transport = host_guard_verdict.decide(TRANSPORT_FAILURE, host="local")
+    occupied = host_guard_verdict.decide(RUNNING, host="local")
+
+    assert transport.block[1] == (
+        "[host-guard] verdict=FAIL failure_class=infra_unavailable "
+        "failure_reason=transport_failure host=local"
+    )
+    assert occupied.block[1] == (
+        "[host-guard] verdict=FAIL failure_class=infra_unavailable "
+        "failure_reason=play_session host=local"
+    )
+    assert "failure_reason=transport_failure" in transport.env[-1]
+    assert "failure_reason=play_session" in occupied.env[-1]
 
 
 def test_an_unknown_state_takes_the_fail_closed_rung() -> None:
@@ -118,7 +144,8 @@ def test_env_running_detail_is_what_run_sh_recorded() -> None:
         "verdict=FAIL",
         "failure_class=infra_unavailable",
         (
-            "failure_detail=arma3_x64.exe is in the Windows process list "
+            "failure_detail=failure_reason=play_session; "
+            "arma3_x64.exe is in the Windows process list "
             "— that is a play session, not ours"
         ),
     )
@@ -131,7 +158,8 @@ def test_env_unavailable_detail_refuses_a_machine_it_cannot_check() -> None:
         "verdict=FAIL",
         "failure_class=infra_unavailable",
         (
-            "failure_detail=no executable Windows process list at /mnt/c/tasklist.exe"
+            "failure_detail=failure_reason=host_check_failed; "
+            "no executable Windows process list at /mnt/c/tasklist.exe"
             "; refusing to take a machine I cannot check"
         ),
     )

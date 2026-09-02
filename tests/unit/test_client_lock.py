@@ -920,6 +920,31 @@ def test_an_unheld_client_in_the_list_is_the_humans_however_long_we_wait(
     assert time.monotonic() - started < 60, "the pool queued behind a play session"
 
 
+def test_pool_refusal_records_a_transport_failure_distinctly(tmp_path: Path) -> None:
+    """The pool keeps a failed check typed without treating it as a free host."""
+    counter = tmp_path / "asks"
+    listing = executable(
+        tmp_path / "tasklist-fails.sh",
+        "#!/usr/bin/env bash\n"
+        f'n=$(cat "{counter}" 2>/dev/null || echo 0)\n'
+        f'echo $((n + 1)) > "{counter}"\n'
+        "echo 'UtilAcceptVsock: accept4 failed 110' >&2\n"
+        "exit 1\n",
+    )
+    result = pool_run(
+        pool_env(tmp_path, "transport-failure", listing=listing),
+        "--slots",
+        "1",
+        "contact-decay",
+    )
+
+    assert result.returncode == EXIT_INFRA_UNAVAILABLE, result.stderr[-4000:]
+    assert counter.read_text() == "3\n"
+    assert "failure_reason=transport_failure" in result.stderr
+    refusals = (tmp_path / "state" / "runs" / "refusals.log").read_text()
+    assert "failure_reason=transport_failure" in refusals, refusals
+
+
 def test_a_process_list_we_cannot_read_is_never_queued_on(tmp_path: Path) -> None:
     """A check that could not run is not a check that will pass in a minute."""
     unreadable = tmp_path / "there-is-no-tasklist-here.exe"

@@ -215,7 +215,8 @@ cti_client_lock_wait_free() {
 # probe it had left — nineteen of them on 2026-08-05, nineteen seconds into
 # somebody else's client. Two asks of one question deserve one implementation
 # rather than a second near-verbatim copy of a decision (#161's shape); the
-# verdict vocabulary is unchanged by this, and only the patience is new.
+# verdict class vocabulary is unchanged by this, and only the patience and its
+# host-guard reason detail are new.
 #
 # Every pass re-derives the two facts that make queueing legitimate rather than
 # establishing them once (#151): a client is in the list, and somebody else

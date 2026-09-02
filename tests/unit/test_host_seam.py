@@ -477,7 +477,7 @@ def test_the_guard_is_asked_of_a_host_a_human_plays_on(tmp_path: Path) -> None:
         },
     )
     assert result.returncode == EXIT_INFRA_UNAVAILABLE
-    assert "failure_class=infra_unavailable host=local" in result.stderr
+    assert "failure_class=infra_unavailable failure_reason=play_session host=local" in result.stderr
     assert calls.read_text().strip() == "asked"
 
 
@@ -589,7 +589,8 @@ def test_a_run_refused_by_the_guard_still_names_the_host(tmp_path: Path) -> None
     assert recorded["tier_host"] == "local"
     assert recorded["tier_slot"] == "2"
     assert recorded["failure_detail"] == (
-        "arma3_x64.exe is in the Windows process list — that is a play session, not ours"
+        "failure_reason=play_session; arma3_x64.exe is in the Windows process list — "
+        "that is a play session, not ours"
     )
     assert calls.read_text().split() == ["asked"], "the guard was not the thing that refused"
 
