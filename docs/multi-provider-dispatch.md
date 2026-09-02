@@ -54,17 +54,25 @@ which is why a recon claim that decides a routing choice is cited.
 before it. `SEATS` forced a read-only `permission_mode` on `review` and nothing on `recon`, so
 a recon dispatch inherited the writable default and one of them edited `tools/` and its tests
 with nothing refusing it. The row now forces `plan` the way `review`'s does — rendered
-`--permission-mode plan` on the `claude` family. On `codex` the same forced mode has mapped
-to `workspace-write` rather than `--sandbox read-only` since #600, and the reason is the
-dead end #415's rejected first round hit: Codex's two grants are `sandbox_workspace_write`
-settings, a section the `read-only` policy does not read, so the uv-cache root that round
-spelled onto the read-only branch could not reach the sandbox and the gate stage would have
-died at the `uv` lock all the same.
-What keeps an argument that rests on a seat writing nothing true is therefore not the
-sandbox word but the tree: a review or recon dispatch runs in a worktree this dispatch owns
-and destroys, so the only project paths it may write stop existing before anything reads
-them, and the verdict binds to the reviewed SHA rather than to whatever the tree holds at
-the end.
+`--permission-mode plan` on the `claude` family; what it renders on `codex` is the per-mode
+mapping the codex section below states, and that section is the one authority for it, so it
+is not restated here. The reason the mapping exists at all is the dead end #415's rejected
+first round hit: Codex's two grants are `sandbox_workspace_write` settings, a section the
+`read-only` policy does not read, so the uv-cache root that round spelled onto the read-only
+branch could not reach the sandbox and the gate stage would have died at the `uv` lock all
+the same.
+What keeps an argument that rests on a seat writing nothing true is not the sandbox word but
+the tree: a review or recon dispatch runs in a worktree this dispatch owns and destroys, and
+the verdict binds to the reviewed SHA rather than to whatever the tree holds at the end. The
+containment that buys is specific, and it is not that the writes vanish unread — the gate
+writes probe files and runs test suites inside the tree before it is removed, and
+`tests/unit/test_dispatch.py` asserts exactly that. It is that nothing outside the tree can
+be reached by them: the tree is created detached at the reviewed SHA, so it holds no branch
+of its own, and the git state that carries the reviewed ref lives in the shared directory
+outside it, which the sandbox does not make writable — git writes through it were measured
+refused under `workspace-write` (`git add` did not; `index.lock` read-only). A reviewer's
+edits therefore die with the tree; they cannot reach the reviewed ref, and `just land`'s
+re-gate after the rebase — which no flag skips — is what keeps them out of the landing.
 
 The z.ai lane made the argument concrete rather than abstract (#225). Claude Code's five
 effort levels differ in the `thinking.budget_tokens` they send, and that endpoint ignores
@@ -532,7 +540,20 @@ worktree keeps `--sandbox read-only` — no `writable_roots`, no `network_access
 argv tail `tests/unit/test_dispatch.py` pins — while a `review` or `recon` dispatch, whose
 seat owns a disposable worktree (#600), maps its forced `plan` to `workspace-write` inside
 that tree with the two measured tool-cache roots and network on. The disposable tree is the
-containment; the mode word is not.
+containment; the mode word is not. **This paragraph is the one authority for that mapping**;
+every other surface — the lane-and-profile section above, `docs/review-dispatch.md` — points
+here rather than restating it, because the stale prose those surfaces carried before #600 is
+what three-place drift looks like.
+
+**Conflict with ADR-0071, flagged rather than resolved.** ADR-0071 still states the
+`read-only` rendering in two places — ruling 4's containment paragraph ("On the Codex lane
+both `plan` and `default` map to `--sandbox read-only`") and ruling 7's parity notes, which
+repeat it — and #600 changed the behaviour without amending either passage. The ADR's
+*requirement* stands: the mode is still forced, never defaulted. Its *stated rendering* is
+what went stale. This document states the behaviour the code has, and nothing here softens
+it to match the ADR's text; the amendment is owed, it is human sign-off gated, and it is
+escalated separately rather than recorded as a delegated decision.
+
 `--dangerously-bypass-approvals-and-sandbox` was put to the human, declined, and is unused.
 
 **The session cannot commit, and that is Codex's policy rather than a gap in this

@@ -51,7 +51,7 @@ Six things, and the dispatch record carries four of them by construction:
   instead, and say so if neither states a criterion you are asked to judge;
 - **the implementer's pasted gate output** — the gate record the 2026-08-14 ruling puts in
   the review's hands in place of a gate run (#353). The host dispatcher reads the issue
-  comments before launching the forced-read-only child and carries the newest comment whose
+  comments before launching the forced-`plan` child and carries the newest comment whose
   first line begins with the marker `### Implementer gate report` into the review brief. An
   optional suffix may follow the marker after a space, so a round or SHA can identify the
   paste without changing which marker selects it. The carried comment characters are a bounded
@@ -97,15 +97,20 @@ rather than merely obstructs: in the session of 2026-08-19/20 five fragments cla
 than their diff delivered and #446's, read sentence by sentence, was accurate.
 
 The permission mode is **`plan`**, and since #322 the seat forces it rather than asking the
-caller for it. That is the mechanical face of "a review lands nothing": read-only tools and
-read-only Bash work in it headless, and no edit can be applied. Verified before first use — a
-`plan`-mode headless run executed `git rev-parse --short HEAD` and returned its output. The
-brief forbids landing as well, but the brief is an instruction and the mode is a mechanism.
+caller for it. What that forced mode *renders* is runner-specific, and
+`docs/multi-provider-dispatch.md`'s codex section is the one authority for that mapping: on
+the `claude` family it is a permission policy — read-only tools and read-only Bash work in
+it headless, and no edit can be applied, verified before first use by a `plan`-mode headless
+run that executed `git rev-parse --short HEAD` and returned its output — while on `codex`,
+since #600, it is a `workspace-write` sandbox scoped to the disposable worktree the dispatch
+owns and destroys. The brief forbids landing as well, but the brief is an instruction and
+the mechanism is what holds.
 
 **What that mode is for, after #449.** The clarification of 2026-08-20 narrowed the test rule
-and left this one alone: the mode enforces that a review neither edits nor lands the change it
-judges — ADR-0071 ruling 4's never-alone invariant — and it is *not* the statement of what a
-reviewer may run or file. The three replacements weighed against keeping it are recorded in
+and left this one alone: the forcing enforces that a review neither edits nor lands the change
+it judges — ADR-0071 ruling 4's never-alone invariant — through the permission policy on the
+`claude` family and through the disposable tree on `codex` — and it is *not* the statement of
+what a reviewer may run or file. The three replacements weighed against keeping it are recorded in
 `tools/dispatch.py` beside the registry row, with why each trades a mechanism for a sentence.
 The consequence is stated plainly rather than glossed: under `plan` a review dispatch cannot
 land a **review-specific gate**, which the ruling permits it to do. That is not a bar the
@@ -118,10 +123,10 @@ which is writable on both runner families, so until #322 a review dispatched wit
 could edit — and the sentence above described what a careful caller would type rather than what
 the dispatcher would do. `tools/dispatch.py`'s `review` seat now carries the mode in the
 registry and `routed` writes it over whatever the caller passed; on the `claude` family that is
-`--permission-mode plan`, and on `codex` the same mode maps, since #600's disposable worktrees,
-to `workspace-write` inside the tree that dispatch owns and destroys — it rendered
-`--sandbox read-only` before that, and the two dated observations below keep the rendering
-they were measured under.
+`--permission-mode plan`, and on `codex` it maps as stated above, per
+`docs/multi-provider-dispatch.md`'s authority. It rendered `--sandbox read-only` before #600's
+disposable worktrees, and the two dated observations below keep the rendering they were
+measured under.
 The override is printed, in the dry run and on the record, as
 `route_permission_mode=plan forced_by_seat=review`.
 
@@ -138,8 +143,10 @@ judgement on the diff plus trust in a paste, with `just land`'s re-gate after re
 no flag skips — as the one independent re-execution. The `codex` lane's inability to run the
 gate (#265's sandbox ceiling) is therefore **moot for this seat rather than blocking it**: no
 review runs a gate on any lane, so a `codex` review reports no `gate=not_run` shortfall
-against its peers. The ceiling still bites `codex` as an *implementer*, where
-`docs/agents/orchestration.md` states it.
+against its peers. Nor does the ceiling bite anywhere else any more: #405's harness-commit
+arrangement has a Codex implementer gating its own work — `docs/agents/orchestration.md`
+records it — and #600's disposable tree extends that same capability to a review or recon
+seat's tree, which is why the sandbox the seat runs under is writable at all.
 
 **The human's clarification of 2026-08-20 (#449) says what that ruling never said.** In their
 own words: *"#393 ruling was intended to prevent reviewers from re-running tests. They should
@@ -573,8 +580,12 @@ deliberately thin and is wrong for this seat — it tells the agent to do the is
     Your worktree: <path>, at origin/main. Work only there.
 
     A review lands nothing. Do not edit a file, do not commit, do not push, do not
-    run `just land`. Your permission mode is `plan`, which enforces this; the rule
-    is stated as well because a mechanism you understand is one you do not fight.
+    run `just land`. Your seat forces `plan`; what that renders is runner-specific —
+    a read-only permission policy on the `claude` family, and on `codex` a
+    workspace-write sandbox scoped to the disposable worktree the dispatcher owns
+    and destroys. That containment, not this instruction, is what keeps the reviewed
+    ref untouched; the rule is stated as well because a mechanism you understand is
+    one you do not fight.
     Filing is not landing. Put your review report, including an explicit clean
     verdict when you find nothing, between these exact lines in your final response:
 
