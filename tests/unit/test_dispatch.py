@@ -53,6 +53,8 @@ gate_clock = load_tool("gate_clock")
 readiness = load_tool("readiness")
 routing_policy = load_tool("routing_policy")
 review_exchange = load_tool("review_exchange")
+review_loop = load_tool("review_loop")
+attribute_registry = load_tool("attribute_registry")
 queue_policy = load_tool("queue_policy")
 
 SEAM = REPO / "tools" / "dispatch.sh"
@@ -392,6 +394,12 @@ def seam_env(tmp_path: Path, capture: Path, **extra: str) -> dict[str, str]:
     # an empty tree, so the count is this test's and not whatever is in flight on the box.
     env["CTI_QUEUE_DIR"] = str(open_policy(tmp_path))
     env["CTI_QUEUE_ROOT"] = str(tmp_path / "queue-root")
+    # And the review state root (#677): a non-dry seam forks `tools/dispatch.py`, whose
+    # `write_record` lays the stage arrival beside the declarations the same process
+    # reads, both from `--review-root`'s env-honouring default. Naming the variable here
+    # keeps the seam's staging self-contained — its hermeticity is stated in the fixture
+    # that stages the fork, not remembered from conftest's session-wide hold.
+    env["CTI_REVIEW_DIR"] = str(tmp_path / "review")
     env.update(extra)
     return env
 
@@ -3747,6 +3755,19 @@ def test_the_seam_returns_a_dispatch_id_at_once_and_the_child_runs_detached(
     assert "gate-clock: recorded unit" in log
     assert "gate_clock_collection=failed" not in log
 
+    # The arrival `write_record` laid down went beside this test's own declarations,
+    # not onto the box's real review root (#677): the seam's env names `CTI_REVIEW_DIR`,
+    # the child's `--review-root` default honours it, and the write reads the same root
+    # the process's authorship read takes. Reading the journal back here is the proof
+    # the criterion asks for — a regression that re-points the write at the real root
+    # leaves this file missing, and the test red rather than the box polluted.
+    journal = tmp_path / "review" / "223" / attribute_registry.STAGE_JOURNAL
+    assert journal.is_file()
+    (arrival,) = (json.loads(line) for line in journal.read_text(encoding="utf-8").splitlines())
+    assert arrival["attributes"]["cti.stage.name"] == "implementation"
+    assert arrival["attributes"]["cti.issue"] == 223
+    assert arrival["attributes"]["cti.dispatch_id"] == printed["dispatch"]
+
     ran = read_lines(capture.read_text(encoding="utf-8"))
     assert ran["cwd"] == str(worktree.resolve())
     assert "--model opus --effort high" in ran["argv"]
@@ -3942,6 +3963,41 @@ def test_a_zai_dispatch_leaks_into_neither_the_parent_nor_the_next_lane(
     assert FAKE_TOKEN not in "".join(native_env.values())
 
 
+def test_no_seam_arrangement_reaches_the_box_s_real_review_root(tmp_path: Path) -> None:
+    """The recorder's root is decided once, away from the box's real review root (#677).
+
+    The class is a fail-open recorder reaching a real path, so the guard is about the
+    path: the suite's session-wide `CTI_REVIEW_DIR` hold must be in force, and the
+    staging fixture the forked seam inherits must name a root of this test's own. A
+    fixture gone missing, or a staging line deleted from `seam_env`, puts the recorder
+    back on `~/.arma-cti/review` for every test and every forked child — and this
+    reddens on any box, rather than reddening only where the damage shows.
+    """
+    held = review_loop.review_root()
+    assert held != review_loop.REVIEW_ROOT
+    assert not held.is_relative_to(Path.home() / ".arma-cti")
+    staged = Path(seam_env(tmp_path, tmp_path / "capture")["CTI_REVIEW_DIR"])
+    assert staged != review_loop.REVIEW_ROOT
+    assert not staged.is_relative_to(Path.home() / ".arma-cti")
+
+
+def test_the_review_root_flag_default_honours_the_environment(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """`--review-root`'s default reads `CTI_REVIEW_DIR`, closing the read/write split (#677).
+
+    #423's arrangement — the authorship read env-blind over the constant while
+    `write_record` read the environment — is gone: one value decides the root for the
+    whole process, so a test staging declarations by the environment stages the
+    authorship read by the same variable, and an operator's `CTI_REVIEW_DIR` reaches
+    both halves instead of only the write.
+    """
+    root = tmp_path / "declarations"
+    monkeypatch.setenv("CTI_REVIEW_DIR", str(root))
+    args = dispatch.parse_args(["--lane", "claude-native", "--issue", "223"])
+    assert Path(args.review_root) == root
+
+
 def test_the_seam_forks_nothing_for_a_dry_run(tmp_path: Path) -> None:
     worktree = git_worktree(tmp_path)
     capture = tmp_path / "must-not-run.txt"
@@ -3965,11 +4021,10 @@ def test_the_seam_forks_nothing_for_a_dry_run(tmp_path: Path) -> None:
             str(credentials_file(tmp_path, f"ZAI_API_KEY={FAKE_TOKEN}\n")),
             "--dispatch-dir",
             str(tmp_path / "dispatches"),
-            # A review seat's author set is read from `--review-root`'s value, which
-            # defaults to this box's real declaration root — `CTI_REVIEW_DIR` never
-            # reaches it, because the flag is read and not the environment (#423). An
-            # empty root of this test's own keeps the read hermetic like every other
-            # state directory this argv names.
+            # A review seat's author set is read from `--review-root`'s value, whose
+            # default honours `CTI_REVIEW_DIR` (#677), so an empty root of this test's
+            # own keeps the read hermetic like every other state directory this argv
+            # names — named explicitly, because this test's claim is about the argv.
             "--review-root",
             str(tmp_path / "review"),
         ],

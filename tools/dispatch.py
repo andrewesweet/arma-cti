@@ -5630,7 +5630,7 @@ def plan_dispatch(  # noqa: C901, PLR0911, PLR0912 — planning owns the ordered
     return plan, brief, None
 
 
-def write_record(plan: Plan, brief: str) -> None:
+def write_record(plan: Plan, brief: str, review_root: Path) -> None:
     """Lay down the dispatch record: the plan, and the brief exactly as it will be sent.
 
     Writing the record is also the stage transition it records (#490): the dispatch
@@ -5651,7 +5651,11 @@ def write_record(plan: Plan, brief: str) -> None:
         attribute_registry.record_stage_arrival(
             stage,
             plan.identity.issue,
-            review_loop.review_root(),
+            # The caller's root, not `review_root()`'s environment read (#677): the
+            # arrival belongs beside the declarations this same process reads, so one
+            # decision — `--review-root` — holds both, the way the landing rung's
+            # parameter holds its own arrival over the constant it defaults to.
+            review_root,
             plan.planned_at.timestamp(),
             dispatch_id=plan.identity.dispatch_id,
         )
@@ -6206,7 +6210,12 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     # set reads them beside the dispatch records, the same merge the landing rung performs,
     # so the two consumers of that set cannot disagree. A flag rather than a constant so a
     # test can stage its own declarations, exactly as `--dispatch-dir` stages its own records.
-    parser.add_argument("--review-root", default=str(review_loop.REVIEW_ROOT))
+    # The default honours `CTI_REVIEW_DIR` like `--breaker-dir` honours its own variable
+    # (#677): this root is decided once per process, and every reader of it — the
+    # authorship read and `write_record`'s stage arrival alike — takes this value, so an
+    # operator's override cannot leave declarations read from home while arrivals land
+    # elsewhere.
+    parser.add_argument("--review-root", default=str(review_loop.review_root()))
     parser.add_argument("--credentials", default=str(CREDENTIALS))
     # `CTI_BREAKER_DIR` exists so that a test can run the real seam — `tools/dispatch.sh`
     # forks a fresh process, which no in-process patch reaches — against its own breaker
@@ -6454,7 +6463,7 @@ def main(argv: list[str] | None = None, now: datetime | None = None) -> int:
         return emit((*refusal_lines, *cleanup_lines), EXIT_REFUSED)
 
     try:
-        write_record(plan, brief)
+        write_record(plan, brief, Path(args.review_root).expanduser())
     except BaseException:
         cleanup_refusal, _ = _cleanup_plan_worktree(plan)
         if cleanup_refusal is not None:

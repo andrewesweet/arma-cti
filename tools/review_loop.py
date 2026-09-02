@@ -1635,7 +1635,10 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
         "author", help="declare that an interactive session authored this issue's change"
     )
     authored.add_argument("--issue", required=True, type=_issue_number)
-    authored.add_argument("--root", default=str(REVIEW_ROOT), help="the review state directory")
+    # The default honours `CTI_REVIEW_DIR` (#677), as `review_root()` reads it: one way
+    # of deciding the root per process, so an operator's override reaches the command
+    # the same way it reaches the journal and the stage arrivals.
+    authored.add_argument("--root", default=str(review_root()), help="the review state directory")
     authored.add_argument("--profile", required=True, help="the profile that authored the change")
     authored.add_argument(
         "--sha", default="", help="the commit in hand when the declaration was recorded"
@@ -1649,7 +1652,7 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
 
     shown = commands.add_parser("show", help="print an issue's stored loop state")
     shown.add_argument("--issue", required=True, type=_issue_number)
-    shown.add_argument("--root", default=str(REVIEW_ROOT))
+    shown.add_argument("--root", default=str(review_root()))
     shown.set_defaults(handler=_cmd_show)
 
     return parser.parse_args(argv)
@@ -1657,7 +1660,9 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
 
 def _loop_arguments(command: argparse.ArgumentParser, *, findings: bool = False) -> None:
     command.add_argument("--issue", required=True, type=_issue_number)
-    command.add_argument("--root", default=str(REVIEW_ROOT), help="the review state directory")
+    # As `author`'s above (#677): the environment-honouring default, one way of
+    # deciding the root per process.
+    command.add_argument("--root", default=str(review_root()), help="the review state directory")
     command.add_argument("--journal", default=str(JOURNAL), help="the telemetry journal")
     if findings:
         command.add_argument(
