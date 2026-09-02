@@ -3280,6 +3280,24 @@ SINGLE_SHOT_CONTRACT: Final = (
     " part and state exactly what remains and why."
 )
 
+# The retro fix-round rule (#374, #681). One wording reaches both briefing paths, so the
+# home is here rather than in `tools/brief.py`: `brief` imports `dispatch`, never the
+# reverse, so a constant the default brief must read cannot live there without a cycle —
+# the same import direction that puts SINGLE_SHOT_CONTRACT above. The third home, the retro
+# skill file, was already rejected on #374: it is human sign-off gated, so a rule landing
+# there would govern no pass until signed. `default_brief` emits it under the retro seat
+# because a retro dispatched without `--brief-file` takes that path, and an unswept issue
+# is silent by construction — the failure #374 exists to prevent.
+FIX_ROUND_RULE: Final = (
+    "Fix-round report: list every issue this pass filed with one verdict — `unchanged` or"
+    " `corrected`; state what changed for `corrected`, or why `unchanged`. Derive each verdict"
+    " from this round's own sweep, or transcribe a deriver's with attribution; never inherit"
+    " a prior report wholesale. A landing takes one review round, and findings `medium` and"
+    " below are filed rather than fixed (ruled 2026-08-18, #217) — so the issues this pass"
+    " filed are the main product of a review, and an issue missing from this list is a"
+    " defect in that product, not leftover tidying."
+)
+
 # The report is the reviewer's judgement; only its transport belongs to the harness. One
 # wording reaches both briefing paths: `default_brief` below and `tools/brief.py`'s composed
 # review protocol. Keeping `gh` out of the session removes all four #496 failure paths without
@@ -3370,6 +3388,10 @@ def default_brief(
     recon do not re-run the implementer's gate; the disposable tree is a containment
     capability, not a revision of that instruction. `Seat.judgement_only` is the predicate for
     the no-gate arm.
+
+    A retro brief also carries the fix-round rule (#681). That widening is deliberate and
+    costs none of the thinness above: the text is FIX_ROUND_RULE's, one home that
+    `tools/brief.py` imports too, so the default path carries no copy of its own to drift.
     """
     judgement_only = SEATS[identity.seat].judgement_only
     gate_line = (
@@ -3409,6 +3431,8 @@ def default_brief(
         f"work in the worktree above and nowhere else. The issue's acceptance criteria "
         f"are the contract. {gate_line}\n"
     )
+    if identity.seat == "retro":
+        rendered += "\n" + FIX_ROUND_RULE + "\n"
     if SEATS[identity.seat].reviews:
         if thread_report is None:
             thread_report = gate_report.GateReport(

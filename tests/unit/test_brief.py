@@ -1211,6 +1211,9 @@ def test_the_default_seat_opens_only_the_one_placeholder() -> None:
 def test_a_retro_brief_requires_verdicts_for_every_filed_issue() -> None:
     rendered = composed(seat=brief.derive_seat("retro"))
     assert "## Fix-round report" in rendered
+    # One home: the composer reads `dispatch.FIX_ROUND_RULE`, and so does
+    # `dispatch.default_brief`, so neither path carries a copy that can drift (#681).
+    assert dispatch.FIX_ROUND_RULE in rendered
     assert "every issue this pass filed" in rendered
     assert "`unchanged` or `corrected`" in rendered
     assert "never inherit a prior report wholesale" in rendered

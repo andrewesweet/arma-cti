@@ -2790,6 +2790,41 @@ def test_default_review_brief_distinguishes_pre_and_post_landing_passes(
     )
 
 
+def test_default_retro_brief_carries_the_fix_round_rule(tmp_path: Path) -> None:
+    """#681: the unnamed-file path — `default_brief` — carries the fix-round rule too.
+
+    #374 composed the rule into `just brief --seat retro` output only, so a retro
+    dispatched without `--brief-file` met none of it and the unswept issue it exists to
+    make visible stayed silent by construction. The rule's one home is
+    `dispatch.FIX_ROUND_RULE`, read here and by `tools/brief.py`.
+    """
+    identity = dispatch.Identity(
+        dispatch_id="d-retro",
+        lane="claude-native",
+        profile="fable-high",
+        seat="retro",
+        issue=681,
+        base_sha="0" * 40,
+    )
+    rendered = dispatch.default_brief(identity, tmp_path)
+    assert dispatch.FIX_ROUND_RULE in rendered
+    assert "every issue this pass filed" in rendered
+    assert "never inherit a prior report wholesale" in rendered
+
+
+def test_default_non_retro_brief_carries_no_fix_round_rule(tmp_path: Path) -> None:
+    """The rule is the retro seat's; no other seat's default brief grows it."""
+    identity = dispatch.Identity(
+        dispatch_id="d-plan",
+        lane="claude-native",
+        profile="opus-xhigh",
+        seat="planner",
+        issue=681,
+        base_sha="0" * 40,
+    )
+    assert dispatch.FIX_ROUND_RULE not in dispatch.default_brief(identity, tmp_path)
+
+
 def test_dry_run_review_plan_carries_the_report_it_would_send(tmp_path: Path) -> None:
     """#641: preview deliberately reads the same report as a real review dispatch."""
     report_body = "### Implementer gate report — preview\njust check: 22 passed\n"
