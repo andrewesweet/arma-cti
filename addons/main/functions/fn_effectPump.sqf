@@ -94,8 +94,8 @@ private _stuckAfter = 90;
 // be independent: in denominator (the shared one counts every caller's
 // transport error, this one only the pump's polls) and in reset condition
 // (this one resets on any outcome that is not `unreachable`; the shared run
-// ends on any reply that arrives and parses — `unreadable` included — by the
-// same rule `_recordTransport` below states).
+// ends on any reply that arrives — parsed or not, `unreadable` included —
+// by the same rule `_recordTransport` below states).
 private _transport = createHashMapFromArray [
     ["next_poll_at", 0],
     ["consecutive_unreachable", 0]

@@ -174,11 +174,11 @@ if !("status" in _reply) exitWith {
     // fn_effectPump.sqf's pump-only `_latchAfter` in both the ways two counters
     // can be independent: in denominator (every caller's transport error lands
     // here; the pump counts only its own polls) and in reset condition (this
-    // run ends on any reply that arrives and parses — `unreadable` included,
-    // by the same rule the pump's `_recordTransport` states — while the pump
-    // resets on any outcome that is not `unreachable`). Read from the tally
-    // rather than a local, so a caller reading `cti_daemonCall` sees the run
-    // the log is being quieted against.
+    // run ends on any reply that arrives — parsed or not, `unreadable`
+    // included, by the same rule the pump's `_recordTransport` states — while
+    // the pump resets on any outcome that is not `unreachable`). Read from the
+    // tally rather than a local, so a caller reading `cti_daemonCall` sees the
+    // run the log is being quieted against.
     private _latchAfter = 5;
     if (_run < _latchAfter) then {
         diag_log format ["CTI|daemon_unreachable verb=%1 detail=%2",

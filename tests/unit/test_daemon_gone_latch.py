@@ -106,6 +106,18 @@ def _exit_with_spans(shell: str) -> list[tuple[int, int]]:
     return spans
 
 
+def _straight_line(shell: str, opening: int, at: int) -> bool:
+    """Whether `at` sits unconditionally on the path from a block's opening brace.
+
+    Braces are counted on the comment-and-string-blanked text, so only depth
+    still open at `at` counts: a whole `if ... then { ... }` earlier in the
+    block closes before it and leaves the path straight, while an `if` whose
+    block still encloses `at` means the statement runs only when that
+    condition is taken, not on the path every entry to the block travels.
+    """
+    return shell.count("{", opening + 1, at) == shell.count("}", opening, at)
+
+
 def _reaches(resets: list[int], exits_at: int, spans: list[tuple[int, int]], wire: int) -> bool:
     """Whether a run-reset statement is on the straight-line path to `exits_at`.
 
@@ -122,28 +134,36 @@ def _reaches(resets: list[int], exits_at: int, spans: list[tuple[int, int]], wir
     )
 
 
-def _call_events() -> tuple[int, list[tuple[int, str]], list[int], list[tuple[int, int]], int]:
+def _call_events() -> tuple[int, list[tuple[int, str]], list[int], list[tuple[int, int]], int, str]:
     """Derive the call's exit graph from the source.
 
     Returns the wire call's offset, every `call _answer` exit as
-    (offset, outcome), every run-reset statement's offset, every exitWith
-    block's span, and the latch threshold. Exits are matched on the
-    comment-blanked text because a comment naming an outcome must not look like
-    one; string literals stay intact because the outcome names live in them.
+    (offset, outcome), every run-reset statement's offset — resets of the
+    `consecutive_unreachable` run itself, not of any other key the tally
+    carries, because the latch and the per-call quiet both read that key and
+    resetting a different one leaves the defect standing — every exitWith
+    block's span, the latch threshold, and the comment-and-string-blanked text
+    the brace spans were read on. Exits are matched on the comment-blanked text
+    because a comment naming an outcome must not look like one; string literals
+    stay intact because the outcome names live in them.
     """
     body = source()
     code = _code_only(body)
+    shell = _code_shell(body)
     wire = code.index("_extension callExtension")
     exits = [
         (match.start(), match.group(1))
         for match in re.finditer(r'\[\s*"([a-z_]+)"[^]]*\]\s*call\s+_answer\b', code)
     ]
     resets = [
-        match.start() for match in re.finditer(r'_tally\s+set\s+\[\s*"[^"]*"\s*,\s*0\s*\]', code)
+        match.start()
+        for match in re.finditer(
+            r'_tally\s+set\s+\[\s*"consecutive_unreachable"\s*,\s*0\s*\]', code
+        )
     ]
     latch = re.search(r"\b_latchAfter\s*=\s*(\d+)", code)
     assert latch is not None, "the latch threshold is not in the source"
-    return wire, exits, resets, _exit_with_spans(_code_shell(body)), int(latch.group(1))
+    return wire, exits, resets, _exit_with_spans(shell), int(latch.group(1)), shell
 
 
 def test_a_reply_that_cannot_be_parsed_resets_the_run_so_a_second_outage_is_audible() -> None:
@@ -157,8 +177,15 @@ def test_a_reply_that_cannot_be_parsed_resets_the_run_so_a_second_outage_is_audi
     graph rather than pinned to the fix's wording, so a semantic regression
     that keeps the file's strings intact still reddens — the gap #72's
     round-four review named in the substring tests below.
+
+    Review round two tightened what counts as the fix: the reset must write
+    `consecutive_unreachable` — the key the latch and the per-call quiet both
+    read, so `_tally set ["ok", 0]` reddens here however it is placed — and it
+    must sit on the unreadable exit's own straight-line path, so a reset of the
+    right key behind a conditional an unreadable reply never satisfies reddens
+    too.
     """
-    wire, exits, resets, spans, latch = _call_events()
+    wire, exits, resets, spans, latch, shell = _call_events()
     post_wire = [(offset, name) for offset, name in exits if offset > wire]
 
     # Every exit the wire can reach is one of: a transport failure (the latch
@@ -177,6 +204,21 @@ def test_a_reply_that_cannot_be_parsed_resets_the_run_so_a_second_outage_is_audi
             assert _reaches(resets, offset, spans, wire), (
                 f"the {name!r} exit reaches no reset of the transport-error run"
             )
+
+    # The exit an unreadable reply actually takes is pinned tighter than
+    # reachability: its own `exitWith` block must hold the run's reset, and on
+    # the block's straight-line path — no `if` still open between the block's
+    # opening brace and the reset — because that block is the code an unreadable
+    # reply is executing when it returns.
+    unreadable_at = next(offset for offset, name in post_wire if name == "unreadable")
+    keyword_at = next(start for start, end in spans if start < unreadable_at < end)
+    opening = shell.index("{", keyword_at)
+    in_block = [reset for reset in resets if opening < reset < unreadable_at]
+    assert in_block, "the unreadable exit's own block holds no reset of the run"
+    assert any(_straight_line(shell, opening, reset) for reset in in_block), (
+        "the run's reset in the unreadable block sits behind a conditional "
+        "an unreadable reply never satisfies"
+    )
 
     # The scenario, as arithmetic over the derived facts: `latch` transport
     # errors reach the threshold — the latch line is said once and the per-call
@@ -225,7 +267,7 @@ def test_daemon_call_still_reaches_the_wire_and_resets_on_recovery() -> None:
     — so the recovery reset is asserted on the reply exits' path through the
     derived graph rather than pinned as the file's only reset line.
     """
-    wire, exits, resets, spans, _latch = _call_events()
+    wire, exits, resets, spans, _latch, _shell = _call_events()
     # The wire call still precedes the branch that counts the failure.
     branch_at = next(offset for offset, name in exits if name == "unreachable")
     assert wire < branch_at
