@@ -126,6 +126,8 @@ def test_junit_counts_read_a_bare_suite_root(tmp_path: Path) -> None:
         "<not-xml",
         "<testsuites></testsuites>",
         '<testsuite tests="oops"></testsuite>',
+        "<testsuite></testsuite>",
+        '<testsuite tests="4" failures="0"></testsuite>',
     ],
 )
 def test_junit_counts_unknown_is_none_not_zero(tmp_path: Path, content: str | None) -> None:
@@ -133,7 +135,11 @@ def test_junit_counts_unknown_is_none_not_zero(tmp_path: Path, content: str | No
 
     Zero would read as a fact — "no tests ran" — that the missing report
     cannot support, which is the token-versus-thing failure the row exists to
-    avoid; the absence is `None`, named by `readable_junit` in the row.
+    avoid; the absence is `None`, named by `readable_junit` in the row. A
+    well-formed but incomplete suite — `<testsuite/>` with no attributes, or
+    one carrying only some of the four — parses cleanly and would have
+    defaulted every absent count to zero, so all four attributes are required
+    before any reading is reported.
     """
     path = tmp_path / "junit.xml"
     if content is not None:

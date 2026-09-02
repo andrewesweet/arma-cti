@@ -22,7 +22,8 @@ an isolated one.
 Every number is a real reading, and a reading that cannot be taken is `null`
 rather than a guess — the same rule `gate_clock`'s recorder holds. That rule
 reaches the test counts too: a junit report the child did not write, or wrote
-in a form that will not parse, leaves every count `null` with `readable_junit`
+in a form that will not parse, or one that parses but omits a count attribute,
+leaves every count `null` with `readable_junit`
 naming the absence in the row, never four zeroes that read as a fact. Load and
 the foreign gate-process count are read before the child starts and after it
 exits: `/proc/loadavg` for the 1-minute load, and `gate_clock`'s
@@ -129,8 +130,10 @@ def junit_counts(xml_path: Path) -> tuple[int, int, int, int] | None:
 
     The child writes the file itself; a missing, malformed or truncated report
     means the counts are unknown, and unknown is `None` — never four zeroes,
-    which would read as a fact a reader could quote. The row's
-    `readable_junit` field carries this answer beside the counts.
+    which would read as a fact a reader could quote. A well-formed suite that
+    omits any of the four count attributes is the same absence: the defaults
+    would have manufactured a confident `tests=0` out of no reading at all. The
+    row's `readable_junit` field carries this answer beside the counts.
     """
     try:
         root = ET.parse(xml_path).getroot()  # noqa: S314 — the child's own report, not untrusted input
@@ -141,10 +144,10 @@ def junit_counts(xml_path: Path) -> tuple[int, int, int, int] | None:
         return None
     try:
         return (
-            int(suite.get("tests", "0")),
-            int(suite.get("failures", "0")),
-            int(suite.get("errors", "0")),
-            int(suite.get("skipped", "0")),
+            int(suite.get("tests", "")),
+            int(suite.get("failures", "")),
+            int(suite.get("errors", "")),
+            int(suite.get("skipped", "")),
         )
     except ValueError:
         return None
