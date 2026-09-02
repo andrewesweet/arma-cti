@@ -58,7 +58,7 @@ def _added_paths(root: Path) -> set[str]:
 
 def _valid_fragment(path: Path) -> bool:
     sections = MdTools().parse_text(path.read_text(encoding="utf-8"))
-    return bool(sections) and set(sections) <= VALID_CATEGORIES
+    return bool(sections) and set(sections) <= VALID_CATEGORIES and any(sections.values())
 
 
 def _is_source(path: str) -> bool:
