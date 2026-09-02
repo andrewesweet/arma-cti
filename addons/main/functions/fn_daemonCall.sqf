@@ -142,10 +142,37 @@ if (isNil "_reply" || { !(_reply isEqualType createHashMap) }) exitWith {
 };
 
 // The shim's own failure: it never reached anything that could set a status.
+//
+// The consecutive-unreachable run is counted here because this is the one place
+// every caller's transport failure passes through, and the latch is #72's: a
+// daemon that died mid-run used to earn an identical `daemon_unreachable` line
+// at every loop's poll cadence for the rest of the window — noise in the
+// evidence, load on nothing. After the run reaches the latch threshold, the
+// per-call line goes quiet and the fact is said once. The calls themselves
+// never stop: the first reply to get through is what lets the world notice a
+// restarted daemon (cti_fnc_campaignLost reads the epoch off it), so a call-
+// suppressing latch here would trade legible evidence for a world that can
+// never hear that the daemon came back.
 if !("status" in _reply) exitWith {
     _tally set ["unreachable", (_tally get "unreachable") + 1];
-    diag_log format ["CTI|daemon_unreachable verb=%1 detail=%2",
-        _verb, _reply getOrDefault ["error", "(none given)"]];
+    private _run = (_tally getOrDefault ["consecutive_unreachable", 0]) + 1;
+    _tally set ["consecutive_unreachable", _run];
+    // Five consecutive transport errors — ten seconds at the effect pump's
+    // default cadence — is long enough that nothing transient is still being
+    // waited out, and short enough that the latch arrives inside any probe
+    // window long enough to care about it. Read from the tally rather than a
+    // local, so a caller reading `cti_daemonCall` sees the run the log is
+    // being quieted against.
+    private _latchAfter = 5;
+    if (_run < _latchAfter) then {
+        diag_log format ["CTI|daemon_unreachable verb=%1 detail=%2",
+            _verb, _reply getOrDefault ["error", "(none given)"]];
+    };
+    if (_run isEqualTo _latchAfter) then {
+        diag_log format ["CTI|daemon_gone_latched consecutive=%1 detail=%2 "
+            + "— daemon_unreachable lines quiet until the daemon answers",
+            _run, _reply getOrDefault ["error", "(none given)"]];
+    };
     if !(missionNamespace getVariable ["cti_daemon_down", false]) then {
         missionNamespace setVariable ["cti_daemon_down", true, true];
         diag_log "CTI|daemon_down the world has stopped hearing from the daemon";
@@ -154,6 +181,12 @@ if !("status" in _reply) exitWith {
     };
     ["unreachable", _reply, _raw] call _answer
 };
+
+// The daemon answered, so whatever it said, the transport is back: the run of
+// consecutive transport errors ends here, and the quieted log line unquiets
+// with it (the latch is said again on the next outage, not on this recovery —
+// the recovery has its own line below).
+_tally set ["consecutive_unreachable", 0];
 
 // Who answered (#96, ADR-0036). Read before the status is acted on: a reply from
 // a daemon that is not the one this Campaign belongs to must not be applied,

@@ -535,6 +535,12 @@ NO_TEST_MODULE: Final[dict[str, str]] = {}
 
 NO_MUTABLE_SUBJECT: Final[dict[str, str]] = {
     # --- reads a document rather than executing anything ---
+    "tests/unit/test_daemon_gone_latch.py": (
+        "its subject is the SQF latch in addons/main/functions/fn_daemonCall.sqf (#72), "
+        "read as a document; SQF has no mutation arm and the reasoning is above; the "
+        "in-world path it guards is exercised by spike/probes/daemon-restart.sqf, owed "
+        "the full corpus at landing"
+    ),
     "tests/unit/test_controller_policy_purity.py": (
         "its subject is the AST import policy in tools/controller_policy.py, read as a "
         "document rather than executing product code; controller policy behaviour is "

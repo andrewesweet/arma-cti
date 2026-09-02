@@ -750,3 +750,102 @@ def test_fallback_writes_the_least_the_merge_reads(tmp_path: Path) -> None:
         "evidence": str(tmp_path),
     }
     assert pool_merge.read_verdict(verdict_json) == ("untyped_harness_failure", 97)
+
+
+# ------------------------------------------------------------ stop-decision (#72)
+# Two consecutive `node_crashed` verdicts are the tier telling you the crash is
+# systemic: one bad `.so`, one broken `CfgFunctions`, and every further bring-up
+# is a non-result bought at full price, N slots at a time. The decision is a
+# threshold over a run of classes, so it lives here rather than in the shell
+# (ADR-0049), and the worker writes the flag it is told.
+
+
+def _record(tmp_path: Path, *entries: tuple[str, str]) -> Path:
+    """Write a completion record the way `regress.sh`'s workers append to it."""
+    record = tmp_path / "completions.tsv"
+    record.write_text("".join(f"{name}\t{class_}\n" for name, class_ in entries), encoding="utf-8")
+    return record
+
+
+def test_two_consecutive_crashes_trip_the_breaker(tmp_path: Path) -> None:
+    trip, stop_line = pool_merge.crash_stop(
+        _record(
+            tmp_path,
+            ("base-assault", "node_crashed"),
+            ("contacts", "node_crashed"),
+        ),
+        corpus_size=28,
+    )
+    assert trip is True
+    assert stop_line == (
+        "node_crashed in base-assault, then contacts — abandoned after 2 "
+        "consecutive node_crashed, 26 probe(s) not run"
+    )
+
+
+def test_a_verdict_between_two_crashes_restarts_the_run(tmp_path: Path) -> None:
+    """`consecutive` is the rule: a world that survives proves the crash is not systemic."""
+    trip, stop_line = pool_merge.crash_stop(
+        _record(
+            tmp_path,
+            ("base-assault", "node_crashed"),
+            ("contacts", "pass"),
+            ("massed-assault", "node_crashed"),
+        ),
+        corpus_size=28,
+    )
+    assert trip is False
+    assert stop_line == ""
+
+
+def test_one_crash_alone_never_trips(tmp_path: Path) -> None:
+    trip, _ = pool_merge.crash_stop(_record(tmp_path, ("contacts", "node_crashed")), 28)
+    assert trip is False
+
+
+def test_a_longer_run_names_every_crash_it_ran_past(tmp_path: Path) -> None:
+    """A decision that answered late still says the whole run, never just the last two."""
+    trip, stop_line = pool_merge.crash_stop(
+        _record(
+            tmp_path,
+            ("a", "node_crashed"),
+            ("b", "node_crashed"),
+            ("c", "node_crashed"),
+        ),
+        corpus_size=28,
+    )
+    assert trip is True
+    assert "node_crashed in a, then b, then c" in stop_line
+
+
+def test_an_unreadable_record_trips_fail_closed(tmp_path: Path) -> None:
+    """The breaker protects the machine; unreadable is stop, with the reason spelled."""
+    trip, stop_line = pool_merge.crash_stop(tmp_path / "absent.tsv", 28)
+    assert trip is True
+    assert "no completion record readable" in stop_line
+
+
+def test_a_corrupt_record_trips_fail_closed(tmp_path: Path) -> None:
+    record = tmp_path / "completions.tsv"
+    record.write_text("base-assault\nnode_crashed without a name", encoding="utf-8")
+    trip, stop_line = pool_merge.crash_stop(record, 28)
+    assert trip is True
+    assert "the completion record is corrupt at line 1" in stop_line
+
+
+def test_the_subcommand_prints_the_lines_the_shell_acts_on(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    record = _record(tmp_path, ("base-assault", "node_crashed"), ("contacts", "node_crashed"))
+    assert pool_merge.main(["stop-decision", "--record", str(record), "--corpus-size", "28"]) == 0
+    out = capsys.readouterr().out.splitlines()
+    assert out[0] == "trip=yes"
+    assert out[1].startswith("stop_line=node_crashed in base-assault, then contacts")
+
+
+def test_the_subcommand_answers_trip_no_alone(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    record = _record(tmp_path, ("contacts", "pass"))
+    assert pool_merge.main(["stop-decision", "--record", str(record), "--corpus-size", "28"]) == 0
+    assert capsys.readouterr().out.splitlines() == ["trip=no"]

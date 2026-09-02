@@ -60,7 +60,9 @@ EXIT_UNTYPED_HARNESS_FAILURE = 8
 # class the world declared. By default it gives every probe the class that
 # probe's own `expect:` header asks for, so a stub pass of the corpus is green
 # for the same reason a real one is — including the four probes that are red by
-# design. CTI_STUB_FAIL and CTI_STUB_KILL override it for one named probe.
+# design. CTI_STUB_FAIL and CTI_STUB_KILL override it: a comma-separated name
+# list, or `all` — every probe fails, which is the systemic shape the crash
+# breaker (#72) is for and what a test of that breaker has to stage.
 STUB_RUN = r"""#!/usr/bin/env bash
 set -uo pipefail
 name="$(basename "${CTI_HARNESS_EXTRA:-unknown}" .sqf)"
@@ -92,7 +94,7 @@ if [[ "$name" == "${CTI_STUB_KILL:-}" ]]; then
     sleep 30
 fi
 
-if [[ ",${CTI_STUB_FAIL:-}," == *",$name,"* ]]; then
+if [[ "${CTI_STUB_FAIL:-}" == "all" || ",${CTI_STUB_FAIL:-}," == *",$name,"* ]]; then
     printf 'verdict=FAIL\n' >>"$out/results.env"
     printf 'failure_class=%s\n' "${CTI_STUB_FAIL_CLASS:-assertion_failed}" >>"$out/results.env"
     printf 'failure_detail=staged by the stub\n' >>"$out/results.env"
@@ -747,11 +749,39 @@ def test_the_corpus_two_deliberate_node_crashes_do_not_trip_the_breaker(tmp_path
 
 
 def test_two_unexpected_node_crashes_stop_the_pool(tmp_path: Path) -> None:
-    """#58's reading of #72: a pool hammers a systemically-crashing world N times.
+    """#72: two consecutive `node_crashed` verdicts are a world failing systemically.
 
-    The breaker stops the pool taking *new* work rather than killing what is in
-    flight, because interrupting a running world would manufacture the very
-    non-result it exists to avoid.
+    The staging is the systemic shape the breaker is for — every world the stub
+    runs crashes, so the completions run is unbroken — because two crashes with
+    a passing world between them are exactly what `consecutive` refuses to
+    read as systemic (the next test pins that side of it). The breaker stops
+    the pool taking *new* work rather than killing what is in flight, because
+    interrupting a running world would manufacture the very non-result it
+    exists to avoid.
+    """
+    result = pool_run(
+        tmp_path,
+        "--slots",
+        "1",
+        extra_env={"CTI_STUB_FAIL": "all", "CTI_STUB_FAIL_CLASS": "node_crashed"},
+    )
+    pool = pool_json(tmp_path)
+    assert "abandoned after 2 consecutive node_crashed" in pool["stopped_early"], result.stderr[
+        -4000:
+    ]
+    assert "node_crashed in " in pool["stopped_early"], result.stderr[-4000:]
+    assert pool["not_run"], "the breaker fired and the pool carried on regardless"
+    assert result.returncode != EXIT_PASS
+
+
+def test_two_crashes_with_a_pass_between_them_do_not_stop_the_pool(tmp_path: Path) -> None:
+    """The other half of `consecutive` (#72): two isolated crashes are not a systemic one.
+
+    The two stub-crashed probes sit far apart in the schedule with passing
+    worlds between them, so the run of crashes never reaches two. The corpus
+    still carries both verdicts to the merge and the run is red on
+    `node_crashed` — the breaker changes what is abandoned, never what a
+    completed verdict says.
     """
     result = pool_run(
         tmp_path,
@@ -763,8 +793,13 @@ def test_two_unexpected_node_crashes_stop_the_pool(tmp_path: Path) -> None:
         },
     )
     pool = pool_json(tmp_path)
-    assert "crashed a node" in pool["stopped_early"]
-    assert pool["not_run"], "the breaker fired and the pool carried on regardless"
+    assert pool["stopped_early"] == "", (
+        result.stderr[-4000:],
+        "two isolated crashes must not abandon the corpus",
+    )
+    assert pool["not_run"] == []
+    classes = {row["class"] for row in pool["verdicts"]}
+    assert "node_crashed" in classes
     assert result.returncode != EXIT_PASS
 
 

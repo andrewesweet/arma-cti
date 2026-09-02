@@ -29,8 +29,12 @@ classes added since #83 took the next free numbers. The mem-stop overlay
 (#125) raises `infra_unavailable` at the pool level, because the whole point
 of that stop is that no probe launched to carry the class.
 
-Five riders travel with the merge because they read and write the same files
-or the same table: `prune-passes` decides which old green evidence has
+Six riders travel with the merge because they read and write the same files
+or the same table: `stop-decision` reads the workers' completion record and
+answers whether the pool's consecutive-crash breaker trips (#72) — the shell
+asks after every verdict and writes the stop flag it is told, because a run
+of trips is a decision about the whole pool and the whole pool's decisions
+live here — `prune-passes` decides which old green evidence has
 outlived the retention convention (the shell does the deleting),
 `prune-pools` decides the same for pool directories off the `worst_class`
 the merge itself records — verdict-aware because the count-only prune kept
@@ -96,6 +100,16 @@ MISSION_CLASSES: Final[frozenset[str]] = frozenset(CLASS_SEVERITY) - {
     "flake_quarantine",
 }
 
+# The consecutive-crash run that trips the pool's stop (#72): one crashed world
+# is a verdict, but two back to back are the tier telling you the crash is
+# systemic — one bad `.so`, one broken `CfgFunctions` — and every further
+# bring-up is a non-result bought at full price, N slots at a time. The
+# threshold and the class it counts are a comparison against a constant, so the
+# constant lives here rather than in the shell that asks (ADR-0049); N=2 is
+# #72's own judgement.
+CRASH_STOP_AFTER: Final = 2
+CRASH_STOP_CLASS: Final = "node_crashed"
+
 
 def severity(class_: str) -> int:
     """Rank one class; a class the table has never heard of is an untyped red."""
@@ -121,6 +135,60 @@ def mission_class(line: str) -> tuple[str, str]:
         f"may carry — a wrong class is a harness bug (#83); line: {line}"
     )
     return "untyped_harness_failure", detail
+
+
+def crash_stop(record: Path, corpus_size: int) -> tuple[bool, str]:
+    """Answer whether the pool's consecutive-crash breaker trips, and say so how.
+
+    The record is the workers' completion log — one `name<TAB>class` line per
+    finished verdict, in completion order, which is the only order a pool has.
+    The trip is the trailing run of `CRASH_STOP_CLASS` verdicts reaching
+    `CRASH_STOP_AFTER`; a verdict of any other class between two crashes means
+    the crash is not carrying every world, and the run restarts.
+
+    Every answer the decision cannot read trips rather than runs on: a record
+    that is missing or carries a line this module did not write is a harness
+    fault at the one place that stands between the machine and the hammering,
+    and the pool stopping is the readable direction (the caller writes the line
+    it is given, so the reason is spelled where a reader acts on it). This is
+    the same fail-closed shape ADR-0049 gives every call site it lands.
+
+    The second half of the answer is the sentence for the stop flag, in the
+    `infra_unavailable` break's own voice — the class named, the run that
+    tripped it, and how many probes the abandonment leaves unrun.
+    """
+    try:
+        lines = record.read_text(encoding="utf-8").splitlines()
+    except (OSError, UnicodeDecodeError):
+        return (
+            True,
+            f"no completion record readable at {record} — stopping rather than running past it",
+        )
+
+    completions: list[tuple[str, str]] = []
+    for number, line in enumerate(lines, start=1):
+        if not line.strip():
+            continue
+        name, _, class_ = line.partition("\t")
+        if not name.strip() or not class_.strip():
+            return True, (
+                f"the completion record is corrupt at line {number} ({line!r}) — "
+                "stopping rather than reading past it"
+            )
+        completions.append((name.strip(), class_.strip()))
+
+    run = 0
+    while run < len(completions) and completions[-1 - run][1] == CRASH_STOP_CLASS:
+        run += 1
+    if run < CRASH_STOP_AFTER:
+        return False, ""
+
+    names = ", then ".join(name for name, _ in completions[-run:])
+    left = corpus_size - len(completions)
+    return True, (
+        f"{CRASH_STOP_CLASS} in {names} — abandoned after {run} consecutive "
+        f"{CRASH_STOP_CLASS}, {left} probe(s) not run"
+    )
 
 
 class ProbeRow(NamedTuple):
@@ -548,6 +616,13 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     )
     class_of.add_argument("--line", required=True)
 
+    stop = commands.add_parser(
+        "stop-decision",
+        help="whether the pool's consecutive-crash breaker trips (#72)",
+    )
+    stop.add_argument("--record", required=True, type=Path)
+    stop.add_argument("--corpus-size", required=True, type=int)
+
     return parser.parse_args(argv)
 
 
@@ -658,6 +733,15 @@ def run_class_of(args: argparse.Namespace) -> int:
     return 0
 
 
+def run_stop_decision(args: argparse.Namespace) -> int:
+    """Print the breaker's answer; the worker writes the stop flag it is told."""
+    trip, stop_line = crash_stop(args.record, args.corpus_size)
+    print(f"trip={'yes' if trip else 'no'}")  # noqa: T201 — the shell reads these lines
+    if stop_line:
+        print(f"stop_line={flattened(stop_line)}")  # noqa: T201 — the shell reads a line
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     """Dispatch on the subcommand."""
     args = parse_args(argv)
@@ -668,6 +752,7 @@ def main(argv: list[str] | None = None) -> int:
         "prune-pools": run_prune_pools,
         "fallback-verdict": run_fallback,
         "class-of": run_class_of,
+        "stop-decision": run_stop_decision,
     }
     return handlers[args.command](args)
 

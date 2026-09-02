@@ -1219,11 +1219,14 @@ run_probe() {
     #
     # Two things do stop the pool taking *new* work. `infra_unavailable` is not a
     # result, and a pool that keeps launching worlds past one produces more
-    # non-results N at a time. And a second `node_crashed` is a world failing
-    # systemically, which a pool hammers N times as hard as a serial run did —
-    # #58's reading of #72, whose effect-pump half is still #72's. Neither kills
-    # a probe already in flight: interrupting a running world would itself
-    # manufacture the non-result being avoided.
+    # non-results N at a time. And two consecutive `node_crashed` verdicts are a
+    # world failing systemically — one bad `.so`, one broken `CfgFunctions` —
+    # which a pool hammers N times as hard as a serial run did (#72, #58's
+    # reading of it). The decision is made in Python (a threshold and a run of
+    # classes is past ADR-0049's line) and only the flag is written here, because
+    # flag files coordinating workers are the shell's half of that line. Neither
+    # stop kills a probe already in flight: interrupting a running world would
+    # itself manufacture the non-result being avoided.
     # First writer wins on the stop flag: a probe the starvation watch stopped
     # types infra_unavailable here too, and its generic line overwriting the
     # watch's — which names the reading and the floor — would bury the story a
@@ -1231,11 +1234,28 @@ run_probe() {
     if [[ "$class" == infra_unavailable ]]; then
         [[ -f "$STOP_FLAG" ]] ||
             printf 'infra_unavailable in slot %s on %s\n' "$slot" "$name" >"$STOP_FLAG"
-    elif [[ "$class" == node_crashed ]]; then
-        printf '%s\n' "$name" >>"$POOL_OUT/crashes"
-        if (($(wc -l <"$POOL_OUT/crashes") >= 2)) && [[ ! -f "$STOP_FLAG" ]]; then
-            printf 'two probes crashed a node (%s) — stopping rather than hammering it N slots at a time\n' \
-                "$(tr '\n' ' ' <"$POOL_OUT/crashes")" >"$STOP_FLAG"
+    else
+        # The completion record the crash breaker reads (#72): one `name<TAB>class`
+        # line per finished verdict, in completion order — the only order a pool
+        # has. A verdict of any other class between two crashes means the crash
+        # is not carrying every world, so the run restarts rather than trips.
+        printf '%s\t%s\n' "$name" "$class" >>"$POOL_OUT/completions.tsv"
+        decided="$(cd "$REPO" && timeout "$UV_TIMEOUT" uv run --quiet python tools/pool_merge.py \
+            stop-decision --record "$POOL_OUT/completions.tsv" --corpus-size "${#CORPUS[@]}" 2>>"$out/regress.log")"
+        decision_status=$?
+        if ((decision_status == 0)) && [[ -n "$decided" ]]; then
+            trip="$(sed -n 's/^trip=//p' <<<"$decided" | tail -1)"
+            stop_line="$(sed -n 's/^stop_line=//p' <<<"$decided" | tail -1)"
+        else
+            # Fail closed in the protective direction (ADR-0049's caller rule):
+            # an unread stop decision stops the pool with the failure named,
+            # rather than leaving it to hammer a world that may be crashing
+            # every time. The same reading the verdict typer's failure gets.
+            trip=yes
+            stop_line="the stop decision could not be read (tools/pool_merge.py stop-decision exited $decision_status) — stopping rather than running past it"
+        fi
+        if [[ "$trip" == yes && ! -f "$STOP_FLAG" ]]; then
+            printf '%s\n' "$stop_line" >"$STOP_FLAG"
         fi
     fi
     printf 'done\n' >"$CLAIMS/$name/done"
