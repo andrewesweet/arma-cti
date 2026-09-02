@@ -1593,6 +1593,11 @@ def test_the_watchdog_leaves_no_process_of_the_run_behind(tmp_path: Path) -> Non
     stretch that past any bound — no period derives a detection floor. Fifteen
     periods is room for a descheduled survivor to be caught that a shorter
     window would miss, which is why the wait is kept rather than converted.
+
+    The stub's `sleep 600` is a hold, not a settle: it keeps the wedged
+    `run.sh` alive for the watchdog (WATCHDOG_ENV) to end, so it only has to
+    outlast the watchdog's patience and its length costs no wall clock — the
+    run is killed seconds in, well before the hold could ever be reached.
     """
     marker = tmp_path / "grandchild-alive"
     hanging = executable(
