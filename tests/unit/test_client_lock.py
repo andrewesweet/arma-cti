@@ -24,6 +24,7 @@ Windows process list `tests/unit/test_bringup_guards.py` uses.
 
 from __future__ import annotations
 
+import codecs
 import json
 import os
 import re
@@ -33,9 +34,12 @@ import signal
 import stat
 import subprocess
 import time
+import weakref
+from collections import deque
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import suppress
 from pathlib import Path
+from typing import Any, cast
 
 import pytest
 from conftest import REPO
@@ -50,6 +54,7 @@ HEADED_CLIENT_SH = REPO / "spike" / "headed-client.sh"
 REGRESS = REPO / "spike" / "regress.sh"
 RUN = REPO / "spike" / "run.sh"
 BASH = shutil.which("bash") or "/bin/bash"
+FIFO_OPEN_TIMEOUT = 5.0
 
 EXIT_INFRA_UNAVAILABLE = 5
 
@@ -135,39 +140,106 @@ def lock_process(script: str, env: dict[str, str] | None = None) -> subprocess.P
     )
 
 
+class _StderrBuffer:
+    """Keep complete lines read directly from a process's pipe."""
+
+    def __init__(self, *, encoding: str, errors: str) -> None:
+        self._decoder = codecs.getincrementaldecoder(encoding)(errors=errors)
+        self._lines: deque[str] = deque()
+        self._partial = ""
+        self.eof = False
+
+    def feed(self, chunk: bytes) -> None:
+        self._partial += self._decoder.decode(chunk)
+        while "\n" in self._partial:
+            line, self._partial = self._partial.split("\n", 1)
+            self._lines.append(f"{line}\n")
+
+    def finish(self) -> None:
+        if self.eof:
+            return
+        self._partial += self._decoder.decode(b"", final=True)
+        if self._partial:
+            self._lines.append(self._partial)
+            self._partial = ""
+        self.eof = True
+
+    def pop_line(self) -> str | None:
+        if not self._lines:
+            return None
+        return self._lines.popleft()
+
+    def drain(self) -> str:
+        return "".join(self._lines) + self._partial
+
+
+_STDERR_BUFFERS: weakref.WeakKeyDictionary[subprocess.Popen[str], _StderrBuffer] = (
+    weakref.WeakKeyDictionary()
+)
+
+
+def _stderr_buffer_for(process: subprocess.Popen[str]) -> _StderrBuffer:
+    buffer = _STDERR_BUFFERS.get(process)
+    if buffer is not None:
+        return buffer
+    assert process.stderr is not None
+    buffer = _StderrBuffer(
+        encoding=getattr(process.stderr, "encoding", None) or "utf-8",
+        errors=getattr(process.stderr, "errors", None) or "strict",
+    )
+    _STDERR_BUFFERS[process] = buffer
+    return buffer
+
+
 def complete_process(
     process: subprocess.Popen[str], *, timeout: float, stderr_prefix: str = ""
 ) -> subprocess.CompletedProcess[str]:
     """Collect a process, preserving stderr already consumed by a condition wait."""
+    buffered = _STDERR_BUFFERS.pop(process, None)
+    buffered_stderr = "" if buffered is None else buffered.drain()
     try:
         stdout, stderr = process.communicate(timeout=timeout)
-    except subprocess.TimeoutExpired:
+    except subprocess.TimeoutExpired as error:
         process.kill()
-        process.communicate()
+        stdout, stderr = process.communicate()
+        # The stdlib types this exception's fields as bytes even when Popen is
+        # text-mode; preserve this helper's decoded diagnostics at runtime.
+        cast("Any", error).stdout = stdout
+        cast("Any", error).stderr = stderr_prefix + buffered_stderr + stderr
         raise
     return subprocess.CompletedProcess(
-        process.args, process.returncode, stdout, stderr_prefix + stderr
+        process.args, process.returncode, stdout, stderr_prefix + buffered_stderr + stderr
     )
 
 
 def wait_for_stderr(process: subprocess.Popen[str], needle: str, *, timeout: float = 120) -> str:
     """Wait for a diagnostic condition, bounded only to stop a broken runner hanging."""
     assert process.stderr is not None
+    buffer = _stderr_buffer_for(process)
     selector = selectors.DefaultSelector()
-    selector.register(process.stderr, selectors.EVENT_READ)
+    descriptor = process.stderr.fileno()
+    selector.register(descriptor, selectors.EVENT_READ)
     lines: list[str] = []
     deadline = time.monotonic() + timeout
     try:
         while True:
+            while (line := buffer.pop_line()) is not None:
+                lines.append(line)
+                if needle in line:
+                    return "".join(lines)
+            if buffer.eof:
+                pytest.fail(f"process exited before emitting {needle!r}")
             remaining = deadline - time.monotonic()
             if remaining <= 0 or not selector.select(remaining):
                 pytest.fail(f"process did not emit {needle!r} within {timeout}s")
-            line = process.stderr.readline()
-            if not line:
-                pytest.fail(f"process exited before emitting {needle!r}")
-            lines.append(line)
-            if needle in line:
-                return "".join(lines)
+            try:
+                chunk = os.read(descriptor, 8192)
+            except BlockingIOError:
+                continue
+            if chunk:
+                buffer.feed(chunk)
+            else:
+                buffer.finish()
     finally:
         selector.close()
 
@@ -276,9 +348,22 @@ def control_fifo(tmp_path: Path, name: str) -> Path:
 
 
 def release_fifo(path: Path) -> None:
-    """Fire a holder transition; opening the FIFO waits for its reader."""
-    with path.open("w", encoding="utf-8") as control:
-        control.write("release\n")
+    """Fire a holder transition, bounding the open if its reader disappeared."""
+    timeout_message = f"FIFO reader did not open: {path}"
+
+    def fail_if_reader_disappears(_signum: int, _frame: object) -> None:
+        raise TimeoutError(timeout_message)
+
+    previous_handler = signal.signal(signal.SIGALRM, fail_if_reader_disappears)
+    previous_timer = signal.setitimer(signal.ITIMER_REAL, FIFO_OPEN_TIMEOUT)
+    try:
+        with path.open("w", encoding="utf-8") as control:
+            control.write("release\n")
+    finally:
+        signal.setitimer(signal.ITIMER_REAL, 0)
+        signal.signal(signal.SIGALRM, previous_handler)
+        if previous_timer != (0.0, 0.0):
+            signal.setitimer(signal.ITIMER_REAL, *previous_timer)
 
 
 # ------------------------------------------------------------------- the lock
@@ -335,19 +420,23 @@ def test_a_bounded_wait_queues_and_a_release_lets_it_through(tmp_path: Path) -> 
     waiter = lock_process(
         "cti_client_lock_busy || exit 8\n"
         'printf "waiting\\n"\n'
+        'printf "AAA\\nBBB\\n" >&2\n'
         'cti_client_lock_acquire 30 "queued" && echo TOOK',
         env=env,
     )
     try:
         assert waiter.stdout is not None
         assert waiter.stdout.readline().strip() == "waiting"
+        stderr = wait_for_stderr(waiter, "AAA", timeout=1)
+        stderr += wait_for_stderr(waiter, "BBB", timeout=1)
         release_fifo(release)
-        waited = complete_process(waiter, timeout=120)
+        waited = complete_process(waiter, timeout=120, stderr_prefix=stderr)
     finally:
         if waiter.poll() is None:
             waiter.kill()
         holder.kill()
     assert "TOOK" in waited.stdout, waited.stderr
+    assert stderr == "AAA\nBBB\n"
 
 
 def test_a_dead_holders_lock_frees_itself(tmp_path: Path) -> None:
