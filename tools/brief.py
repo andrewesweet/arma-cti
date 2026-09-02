@@ -16,9 +16,10 @@ mechanism, and describing it as one is the error #206 corrected on `just watch`.
 ## What this composes, and what it refuses to compose
 
 The **invariant half**, in the order `compose()` emits it: prior work already on
-`origin/main`, the handoff when one is carried, the implementer's gate report for a review
-seat, the escalation where one fires or cannot be read, seat, the single-shot contract,
-reserved surfaces, worktree protocol, gate line, flake lines, landing protocol, paste rule.
+`origin/main`, the handoff when one is carried or could not be read, the implementer's gate
+report for a review seat, the escalation where one fires or cannot be read, seat, the
+single-shot contract, reserved surfaces, worktree protocol, gate line, flake lines,
+landing protocol, paste rule.
 The **variable half** — the task
 statement, the scope boundary, the ground truth to read, and the reason for a non-default
 seat — is the orchestrator's, is the actual work of the turn, and is emitted here as a
