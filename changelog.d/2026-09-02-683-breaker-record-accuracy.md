@@ -16,8 +16,13 @@
   decision can fail, so a corrupt candidate reading any other class is an untyped red
   rather than a greener verdict — so no racing worker can overwrite or downgrade
   another's record; a pool whose evidence directories could not be created now refuses
-  naming them rather than always the claims path; and the shell's rewrite
-  of `$POOL_OUT/stop` from the merge's summary output is deleted — the merge's post-drain
-  recount is that file's final write, the five worker writes that create it standing
-  unchanged. `docs/regression-tier.md`'s merge section now states the candidate files,
+  naming them rather than always the claims path; the merge now reads a stopped
+  pool whose evidence explains nothing — all-pass rows, no mem-stop, no
+  stop-decision candidate — as `untyped_harness_failure` rather than green, so a
+  stop record that failed to be written can no longer read as health; and the shell's
+  rewrite of `$POOL_OUT/stop` from the merge's summary output is deleted — the merge's
+  post-drain recount is that file's final write, the five shell writes that create it
+  (four from workers, one from the starvation watch) standing unchanged. The worker's
+  candidate write reports its own failure where it fails, no longer load-bearing under
+  the merge-side invariant. `docs/regression-tier.md`'s merge section now states the candidate files,
   the `worst_class` overlay and the post-drain recount, which it had never carried.

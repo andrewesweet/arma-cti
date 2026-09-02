@@ -1310,8 +1310,14 @@ run_probe() {
             # worst class. Distinct names mean no writer can overwrite or
             # downgrade another's candidate, and no second severity order
             # grows here (ADR-0049; CLASS_RANK is exit codes, not severity).
-            printf '%s\n' "$decision_failure_class" \
-                >"$POOL_OUT/stop-decision-failures/$name"
+            # A failed write is reported here, where it fails, and it is not
+            # load-bearing: the merge reads a stop its evidence does not
+            # explain as untyped_harness_failure (#683), so a lost candidate
+            # costs the story, never the pool's honesty.
+            if ! printf '%s\n' "$decision_failure_class" \
+                >"$POOL_OUT/stop-decision-failures/$name"; then
+                log "could not write the stop-decision failure candidate for $name under $POOL_OUT/stop-decision-failures — the merge will read the stop as unexplained"
+            fi
         fi
         if [[ "$trip" == yes && ! -f "$STOP_FLAG" ]]; then
             printf '%s\n' "$stop_line" >"$STOP_FLAG"

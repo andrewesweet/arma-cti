@@ -744,6 +744,32 @@ def run_merge(args: argparse.Namespace) -> int:
                 else merged.worst_class
             ),
         )
+    # The stop flag says the pool abandoned probes; the explanation is a red
+    # verdict row, a mem-stop or a stop-decision candidate — each of which the
+    # reading above has already stood into `worst_class`. A stop over a reading
+    # that still ranks `pass` means the record that should have carried the
+    # class failed to be written: a `printf` that failed, a writer that lost a
+    # race, a value that never landed. #683's defect class was exactly that
+    # absence reading as health, and three rounds of guarding individual writes
+    # in regress.sh never closed it, because every new write is a new guard to
+    # forget. The invariant lives here instead, merge-side, in the language
+    # that owns the severity table: a stopped pool whose evidence explains
+    # nothing is `untyped_harness_failure` — a harness fault nobody typed —
+    # and no future write in the shell has to be guarded to keep the pool
+    # honest (ADR-0049's fail-closed caller rule).
+    try:
+        stopped_early = (pool_out / "stop").read_text(encoding="utf-8")
+    except OSError:
+        stopped_early = ""
+    if stopped_early.strip() and severity(merged.worst_class) <= severity("pass"):
+        merged = merged._replace(
+            notices=[
+                *merged.notices,
+                "the pool stopped and nothing in its evidence explains why — "
+                "untyped_harness_failure, not a result",
+            ],
+            worst_class="untyped_harness_failure",
+        )
     for notice in merged.notices:
         print(f"[regress] {notice}", file=sys.stderr)  # noqa: T201
     for line in render_summary(
@@ -751,10 +777,6 @@ def run_merge(args: argparse.Namespace) -> int:
     ):
         print(line, file=sys.stderr)  # noqa: T201
 
-    try:
-        stopped_early = (pool_out / "stop").read_text(encoding="utf-8")
-    except OSError:
-        stopped_early = ""
     final_stopped_early = finalize_stop_line(stopped_early, len(merged.not_run))
     if final_stopped_early != flattened(stopped_early):
         (pool_out / "stop").write_text(final_stopped_early + "\n", encoding="utf-8")

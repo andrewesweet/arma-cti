@@ -389,10 +389,12 @@ def test_main_writes_the_pool_document_the_suites_read(
     assert document["git_sha"] == SHA
     assert document["slots"] == [0, 1]
     assert document["host"] == "local"
-    # The merge's own answer, recorded (#182): contacts passed, and a not_run
-    # probe contributes no row, so the worst class here is pass — the field is
-    # what the pool pruner believes.
-    assert document["worst_class"] == "pass"
+    # The merge's own answer, recorded (#182): contacts passed and a not_run
+    # probe contributes no row — but the stop flag stands over an evidence set
+    # that explains nothing (no red row, no mem-stop, no candidate), so the
+    # #683 invariant types the pool untyped_harness_failure and the pruner
+    # believes that, keeping the failure evidence rather than pruning it.
+    assert document["worst_class"] == "untyped_harness_failure"
     assert document["wall_secs"] == 61
     assert document["peak_mem_used_kb"] == 7100000
     assert document["peak_tier_rss_kb"] == 5100000
@@ -926,6 +928,63 @@ def test_the_merge_overlays_the_worst_candidate_onto_worst_class(
     document = json.loads((tmp_path / "pool.json").read_text(encoding="utf-8"))
     assert document["worst_class"] == expected
     assert f"the stop decision failed as {expected}" in err
+
+
+def test_a_stopped_pool_with_no_candidate_is_never_green(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The invariant merge-side (#683): a stop the evidence does not explain is untyped.
+
+    The stop flag says the pool abandoned probes. Every writer that sets it
+    leaves a red trace a merge can read — a red verdict, a mem-stop, a
+    candidate — so a stop over all-pass rows and an empty candidate directory
+    is a record that failed to be written, and its absence reading as health
+    is the defect class three rounds of write guards could not close. The
+    merge, which owns the severity table, refuses it rather than ranking it.
+    """
+    claim(tmp_path, "contacts", verdict={"class": "pass", "elapsed_secs": 1})
+    (tmp_path / "stop").write_text("the pool stopped\n", encoding="utf-8")
+
+    status, _, err = run_merge(tmp_path, capsys, ["contacts"])
+
+    assert status == 0
+    document = json.loads((tmp_path / "pool.json").read_text(encoding="utf-8"))
+    assert document["worst_class"] == "untyped_harness_failure"
+    assert "the pool stopped and nothing in its evidence explains why" in err
+
+
+def test_a_stop_its_candidate_explains_is_not_untyped(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The invariant fires on an unexplained stop only: a candidate is the explanation."""
+    claim(tmp_path, "contacts", verdict={"class": "pass", "elapsed_secs": 1})
+    (tmp_path / "stop").write_text("the pool stopped\n", encoding="utf-8")
+    failures = tmp_path / "stop-decision-failures"
+    failures.mkdir()
+    (failures / "contacts").write_text("infra_unavailable\n", encoding="utf-8")
+
+    status, _, err = run_merge(tmp_path, capsys, ["contacts"])
+
+    assert status == 0
+    document = json.loads((tmp_path / "pool.json").read_text(encoding="utf-8"))
+    assert document["worst_class"] == "infra_unavailable"
+    assert "nothing in its evidence explains why" not in err
+
+
+def test_a_stop_its_red_rows_explain_is_not_untyped(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A crash trip's node_crashed rows are the explanation; no untyped overlay on top."""
+    claim(tmp_path, "crash-a", verdict={"class": "node_crashed", "elapsed_secs": 1})
+    claim(tmp_path, "in_flight-pass", verdict={"class": "pass", "elapsed_secs": 1})
+    (tmp_path / "stop").write_text("node_crashed in crash-a\n", encoding="utf-8")
+
+    status, _, err = run_merge(tmp_path, capsys, ["crash-a", "in_flight-pass"])
+
+    assert status == 0
+    document = json.loads((tmp_path / "pool.json").read_text(encoding="utf-8"))
+    assert document["worst_class"] == "node_crashed"
+    assert "nothing in its evidence explains why" not in err
 
 
 def test_the_subcommand_prints_the_lines_the_shell_acts_on(
