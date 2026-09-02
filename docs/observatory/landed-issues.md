@@ -113,6 +113,7 @@
 |448|ffd9e54c50d37c5fb7fec4b25cdf7d9b4c54f53b|journal|4|0|2278|claude-native,codex|C1.3821|U|N|
 |449|a962c6fbe0214316e81a632e271579b8a9f20a22|journal|6|0|4524|claude-native,codex,zai|C2.61134|U|U|
 |450|94b9c7396059c500d1fa9eec657af25d8a74564b|journal|6|R|3052|claude-native,codex|C1.76924|U|N|
+|456|92d58631b84f932d6c1b3391a0c221535c116b22|journal|4|3|12696|claude-native,codex,zai|C0.389884|U|U|
 |458|48a4ce7d45474b20b1b662e13f74f2dbe665f26f|journal|4|0|2695|codex|N|U|N|
 |460|dc9ec1b93fffcd79f8efc6d47511e789579b0bb3|journal|4|R|3398|claude-native,zai|C1.31838|N|U|
 |461|7032b525596627ec1ff83ec5398161c58ee9969a|journal|4|0|2276|codex,zai|N|U|U|
@@ -214,4 +215,4 @@
 |669|d70d53308410640f821897995a0b1e94a248e702|journal|5|1|2851|claude-native,codex|C1.01268|U|N|
 |670|2cf66296b3ac798d7212089ce367cd38d071bbf1|journal|3|1|1414|codex,zai|N|U|U|
 |674|e3435dca2e01e6920a67a8df44297ad885161745|journal|4|1|1156|codex,zai|N|U|U|
-|682|f187b11ae65c82fdcdb5dfe72e678b5fa336f1a3|journal|3|1|1630|claude-native,codex|C0.41961|U|N|
+|682|f187b11ae65c82fdcdb5dfe72e678b5fa336f1a3|journal|3|1|1630|claude-native,codex|C0.861664|U|N|
