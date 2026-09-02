@@ -54,9 +54,17 @@ which is why a recon claim that decides a routing choice is cited.
 before it. `SEATS` forced a read-only `permission_mode` on `review` and nothing on `recon`, so
 a recon dispatch inherited the writable default and one of them edited `tools/` and its tests
 with nothing refusing it. The row now forces `plan` the way `review`'s does — rendered
-`--permission-mode plan` on the `claude` family and `--sandbox read-only` on `codex`, with no
-writable root and no network access — because an argument that rests on a seat writing nothing
-needs the seat to be unable to write, not merely described as not doing so.
+`--permission-mode plan` on the `claude` family. On `codex` the same forced mode has mapped
+to `workspace-write` rather than `--sandbox read-only` since #600, and the reason is the
+dead end #415's rejected first round hit: Codex's two grants are `sandbox_workspace_write`
+settings, a section the `read-only` policy does not read, so the uv-cache root that round
+spelled onto the read-only branch could not reach the sandbox and the gate stage would have
+died at the `uv` lock all the same.
+What keeps an argument that rests on a seat writing nothing true is therefore not the
+sandbox word but the tree: a review or recon dispatch runs in a worktree this dispatch owns
+and destroys, so the only project paths it may write stop existing before anything reads
+them, and the verdict binds to the reviewed SHA rather than to whatever the tree holds at
+the end.
 
 The z.ai lane made the argument concrete rather than abstract (#225). Claude Code's five
 effort levels differ in the `thinking.budget_tokens` they send, and that endpoint ignores
@@ -518,7 +526,13 @@ synthetic corpus inside an outer bubblewrap boundary completed successfully, inc
 the runner's nested invocation, so the Codex lane needs no sandbox bypass or special
 case for `just fast` or `just eval-corpus`; `just prereqs check` reports the host binary.
 
-Read-only seats keep the sandbox they always had, and
+The sandbox policy is per mode, and which mode a dispatch receives is its seat row's forcing,
+so the per-mode statement is: a Codex run on `plan` or `default` **outside** a disposable
+worktree keeps `--sandbox read-only` — no `writable_roots`, no `network_access`, the exact
+argv tail `tests/unit/test_dispatch.py` pins — while a `review` or `recon` dispatch, whose
+seat owns a disposable worktree (#600), maps its forced `plan` to `workspace-write` inside
+that tree with the two measured tool-cache roots and network on. The disposable tree is the
+containment; the mode word is not.
 `--dangerously-bypass-approvals-and-sandbox` was put to the human, declined, and is unused.
 
 **The session cannot commit, and that is Codex's policy rather than a gap in this

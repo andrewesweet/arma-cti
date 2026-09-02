@@ -118,7 +118,10 @@ which is writable on both runner families, so until #322 a review dispatched wit
 could edit — and the sentence above described what a careful caller would type rather than what
 the dispatcher would do. `tools/dispatch.py`'s `review` seat now carries the mode in the
 registry and `routed` writes it over whatever the caller passed; on the `claude` family that is
-`--permission-mode plan`, and on `codex` the sandbox mapping renders it `--sandbox read-only`.
+`--permission-mode plan`, and on `codex` the same mode maps, since #600's disposable worktrees,
+to `workspace-write` inside the tree that dispatch owns and destroys — it rendered
+`--sandbox read-only` before that, and the two dated observations below keep the rendering
+they were measured under.
 The override is printed, in the dry run and on the record, as
 `route_permission_mode=plan forced_by_seat=review`.
 
