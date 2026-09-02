@@ -39,7 +39,7 @@ def pending_lines(source: str) -> list[int]:
 def pending_adrs(root: Path) -> list[tuple[str, list[int]]]:
     """Every ADR under `root`'s `docs/adr/` carrying a pending review.
 
-    `rglob("*.md")` rather than a walk: `.claude/worktrees/` sits outside
+    `glob("*.md")` rather than a walk: `.claude/worktrees/` sits outside
     `docs/`, so no nested agent tree is scanned — the same reason
     `check_adr_form.adr_files` globs one directory.
     """
