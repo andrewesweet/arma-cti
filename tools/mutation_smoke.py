@@ -558,6 +558,17 @@ NO_MUTABLE_SUBJECT: Final[dict[str, str]] = {
         "its subject is the agreement between cti_daemon.report.SHAPES and the SQF "
         "samplers (#74): it reads both as documents rather than executing either"
     ),
+    "tests/unit/test_pool_slots.py": (
+        "cost, not shape: its subject is the slot pool in spike/regress.sh (#47, "
+        "ADR-0028) and the shell arm measures it — 40%, 4/10 sampled, measured twice "
+        "at #457 — but one serial run of the module was 199.33 s at the same re-measure, "
+        "of which #457's conversion pass could remove only 6 s (two 3 s no-respawn "
+        "confirms, cut to 1 s each; the paired sampled runs moved 325.8 s to 317.0 s at "
+        "an unchanged 4/10). With the shell arm's own 150 s mutant budget on top, a "
+        "landing that touches this module spends ADR-0064 decision 3's five-minute "
+        "ceiling on `just fast`. Re-measure and remove this row if the module or its "
+        "subject get materially cheaper, or gate it somewhere other than `just fast`"
+    ),
 }
 
 
