@@ -90,7 +90,12 @@ private _stuckAfter = 90;
 // cadence faster. The daemon-restart probe allows 90 s after restart for this
 // probe to notice the new epoch, so this leaves ample probes without silencing
 // the epoch-change path. This pump-only `_latchAfter` is independent from
-// fn_daemonCall.sqf's shared `_latchAfter`, which counts every caller.
+// fn_daemonCall.sqf's shared `_latchAfter` in both the ways two counters can
+// be independent: in denominator (the shared one counts every caller's
+// transport error, this one only the pump's polls) and in reset condition
+// (this one resets on any outcome that is not `unreachable`; the shared run
+// ends on any reply that arrives and parses — `unreadable` included — by the
+// same rule `_recordTransport` below states).
 private _transport = createHashMapFromArray [
     ["next_poll_at", 0],
     ["consecutive_unreachable", 0]

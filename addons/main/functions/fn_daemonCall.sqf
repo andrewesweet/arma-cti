@@ -136,6 +136,13 @@ private _reply = fromJSON _raw;
 // `isEqualType` against an undefined variable is a scripting error, and a
 // scripting error kills the calling loop for the rest of the session (#102).
 if (isNil "_reply" || { !(_reply isEqualType createHashMap) }) exitWith {
+    // The bytes arrived even if they say nothing, so the transport is back —
+    // the rule fn_effectPump.sqf's `_recordTransport` already states ("Any
+    // reply proves the wire is back"). Ending the run here is what keeps the
+    // outage after a truncated reply audible: without it the run stays at the
+    // latch threshold, every `CTI|` transport line stays unwritten, and the
+    // second outage is never announced (#684).
+    _tally set ["consecutive_unreachable", 0];
     diag_log format ["CTI|FAIL class=oracle_disagreement daemon_reply_unreadable verb=%1 raw=%2",
         _verb, _raw];
     ["unreadable", createHashMap, _raw] call _answer
@@ -164,9 +171,14 @@ if !("status" in _reply) exitWith {
     // sooner. That is long enough that nothing transient is still being waited
     // out, and short enough that the latch arrives inside any probe window long
     // enough to care about it. This shared threshold is independent from
-    // fn_effectPump.sqf's pump-only `_latchAfter`. Read from the tally rather
-    // than a local, so a caller reading `cti_daemonCall` sees the run the log
-    // is being quieted against.
+    // fn_effectPump.sqf's pump-only `_latchAfter` in both the ways two counters
+    // can be independent: in denominator (every caller's transport error lands
+    // here; the pump counts only its own polls) and in reset condition (this
+    // run ends on any reply that arrives and parses — `unreadable` included,
+    // by the same rule the pump's `_recordTransport` states — while the pump
+    // resets on any outcome that is not `unreachable`). Read from the tally
+    // rather than a local, so a caller reading `cti_daemonCall` sees the run
+    // the log is being quieted against.
     private _latchAfter = 5;
     if (_run < _latchAfter) then {
         diag_log format ["CTI|daemon_unreachable verb=%1 detail=%2",
@@ -187,9 +199,10 @@ if !("status" in _reply) exitWith {
 };
 
 // The daemon answered, so whatever it said, the transport is back: the run of
-// consecutive transport errors ends here, and the quieted log line unquiets
-// with it (the latch is said again on the next outage, not on this recovery —
-// the recovery has its own line below).
+// consecutive transport errors ends here — as it already ended on the
+// `unreadable` exit above, by the same rule — and the quieted log line
+// unquiets with it (the latch is said again on the next outage, not on this
+// recovery — the recovery has its own line below).
 _tally set ["consecutive_unreachable", 0];
 
 // Who answered (#96, ADR-0036). Read before the status is acted on: a reply from
