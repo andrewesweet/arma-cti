@@ -1165,18 +1165,31 @@ def _duration_fields(line: str) -> tuple[str, str, str] | None:
 
     A row is `0.12s call     tests/unit/test_x.py::test_y` — pytest writes it
     with `f"{rep.duration:02.2f}s {rep.when:<8} {rep.nodeid}"` (_pytest/
-    runner.py). Read rather than inferred, and shared by the green path's
-    `read_durations` and the failure report's `cap_durations`, so the module
-    has one answer to what a duration row is and never two that can disagree
-    (#680, round three). A line of *captured output* reproducing that shape
-    exactly would be misread by both halves alike; that is the one ambiguity
-    the shape carries, and it is the same one either half would carry alone.
+    runner.py). The node id is everything after the phase, taken with at most
+    two splits: a node id may itself contain spaces — `tests/unit/
+    test_commands.py` parametrises prose ids such as "a bare string is not a
+    Command" — and a third split turned those rows into non-rows that neither
+    half recognised, so `read_durations` never priced them and `cap_durations`
+    never dropped them (#680, round four). The seconds field is validated
+    numerically here rather than by `read_durations` alone, so the two halves
+    that share this predicate refuse the same lines and can never disagree
+    about what a row is (#680, round three). A line of *captured output*
+    reproducing that shape exactly would still be misread by both halves
+    alike; that is the one ambiguity the shape carries, and it is the same
+    one either half would carry alone.
     """
-    parts = line.split()
-    if len(parts) != DURATION_FIELDS or not parts[0].endswith("s"):
+    parts = line.split(maxsplit=2)
+    if len(parts) != DURATION_FIELDS:
         return None
     seconds, phase, name = parts
-    if phase not in ("call", "setup", "teardown") or "::" not in name:
+    if not seconds.endswith("s") or phase not in ("call", "setup", "teardown"):
+        return None
+    try:
+        float(seconds.removesuffix("s"))
+    except ValueError:
+        return None
+    name = name.rstrip()
+    if "::" not in name:
         return None
     return seconds, phase, name
 
@@ -1187,7 +1200,9 @@ def read_durations(output: str) -> dict[str, float]:
     Read rather than measured: the coverage pass already runs every test once,
     and pytest already knows what each one cost. A line is `0.12s call
     tests/unit/test_x.py::test_y`; setup and teardown are summed in with the
-    call, because a mutant run pays all three.
+    call, because a mutant run pays all three. The seconds field is already a
+    float by the time it arrives — `_duration_fields` validated it — so no
+    line can be skipped here that `cap_durations` kept.
     """
     costs: dict[str, float] = {}
     for line in output.splitlines():
@@ -1195,10 +1210,7 @@ def read_durations(output: str) -> dict[str, float]:
         if fields is None:
             continue
         seconds, _phase, name = fields
-        try:
-            costs[name] = costs.get(name, 0.0) + float(seconds.removesuffix("s"))
-        except ValueError:
-            continue
+        costs[name] = costs.get(name, 0.0) + float(seconds.removesuffix("s"))
     return costs
 
 
@@ -1507,16 +1519,18 @@ def cap_durations(output: str) -> str:
     evidence that classifies the red — is not shown at all (#680).
 
     The failure report does not compete with a table it never reads: every
-    line pytest printed as a duration row is dropped wherever it sits, told
-    apart by `_duration_fields` — the same shape test `read_durations` reads
-    the green run's table with — and one note says how many were dropped. The
-    cap needs neither the section's header nor its terminator, because a row
-    is the one thing pytest's own writer defines and both rounds of matching
+    line pytest printed as a duration row is told apart by `_duration_fields`
+    — the same shape test `read_durations` reads the green run's table with —
+    the first `DURATION_ROWS_KEPT` are kept for the reader's eye, and every
+    run of rows past that window is replaced by a note carrying its own
+    count. A report whose rows are interrupted, or whose table sits before
+    the traceback, therefore carries several notes rather than one. The cap
+    needs neither the section's header nor its terminator, because a row is
+    the one thing pytest's own writer defines and both rounds of matching
     the header by text went wrong (#680, rounds one and two). The rows are
     never consumed on this path — they feed the selection ordering on the
-    green run alone, `measure`'s `read_durations(done.stdout)` — so the first
-    `DURATION_ROWS_KEPT` are kept only for the reader's eye, and every line
-    that is not a row is untouched.
+    green run alone, `measure`'s `read_durations(done.stdout)` — and every
+    line that is not a row is untouched.
     """
     kept: list[str] = []
     kept_rows = 0

@@ -494,6 +494,48 @@ def test_a_captured_line_shaped_like_a_row_is_dropped_like_one() -> None:
     assert "the failing assertion" in capped
 
 
+def test_a_node_id_containing_a_space_is_still_a_row() -> None:
+    # pytest node ids carry spaces in the wild — `tests/unit/test_commands.py`
+    # parametrises prose ids ("a bare string is not a Command") — so a row is
+    # not three whitespace-separated fields: the id is everything after the
+    # phase. Reading it with at most two splits keeps such a row a row, and
+    # the row that `read_durations` prices is the same row `cap_durations`
+    # drops past its keep window (#680, round four).
+    node_id = (
+        "tests/unit/test_commands.py::"
+        "test_a_payload_that_is_not_a_command_is_refused[a bare string is not a Command]"
+    )
+    costs = smoke_tool.read_durations(f"0.50s call     {node_id}\n")
+    assert costs == {node_id: pytest.approx(0.50)}
+
+    early = "".join(
+        f"0.{index:02d}s call     tests/unit/test_x.py::test_early{index:02d}\n"
+        for index in range(smoke_tool.DURATION_ROWS_KEPT)
+    )
+    output = (
+        "============================ slowest durations ============================\n"
+        + early
+        + f"1.00s call     {node_id}\n"
+        + "________________________________ test_red ________________________________\n"
+        ">       assert False, 'the failing assertion'\n"
+    )
+    capped = smoke_tool.cap_durations(output)
+    assert "the failing assertion" in capped
+    assert node_id not in capped
+    assert "... 1 duration rows hidden" in capped
+
+
+def test_a_row_whose_seconds_field_is_not_a_number_is_not_a_row() -> None:
+    # `values` ends in `s`, so a shape-only test would take `values call
+    # tests::case` for a row and the two halves would disagree — `read_durations`
+    # refusing it at `float()` while `cap_durations` dropped it. The seconds
+    # field is validated numerically inside the shared predicate, so both
+    # halves refuse the same line (#680, round four).
+    line = "values call tests/unit/test_x.py::test_a\n"
+    assert smoke_tool.read_durations(line) == {}
+    assert smoke_tool.cap_durations(line) == line
+
+
 def test_an_output_without_a_durations_table_is_left_alone() -> None:
     output = "======================= 1 passed in 0.01s ========================\n"
     assert smoke_tool.cap_durations(output) == output
