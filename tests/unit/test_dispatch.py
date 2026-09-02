@@ -5110,9 +5110,8 @@ def test_the_record_surveys_the_tree_the_dispatching_code_ran_from(
     dispatch.git("add", "-A", cwd=root)
     dispatch.git("commit", "-qm", "test: planning inputs", cwd=root)
     linked = tmp_path / "linked"
-    # S603: fixed literals; S607 sits on the argv line, where ruff reports it.
-    subprocess.run(  # noqa: S603
-        ["git", "worktree", "add", "-b", "side", str(linked)],  # noqa: S607
+    subprocess.run(  # noqa: S603 — fixed argv list, never a shell string
+        ["git", "worktree", "add", "-b", "side", str(linked)],  # noqa: S607 — git resolves off PATH on purpose
         cwd=root,
         check=True,
         capture_output=True,

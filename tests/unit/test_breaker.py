@@ -1302,50 +1302,26 @@ def _current_seed_repository(root: Path) -> str:
     repository = root / "tool-copy-seed"
     (repository / "tools").mkdir(parents=True)
     (repository / ".claude").mkdir()
-    for args in (
-        ["init", "-q", "-b", "main"],
-        ["config", "user.email", "t@example.invalid"],
-        ["config", "user.name", "t"],
-    ):
-        subprocess.run(  # noqa: S603
-            ["git", *args],  # noqa: S607
-            cwd=repository,
-            check=True,
-            capture_output=True,
-        )
     (repository / "justfile").write_text("demo:\n\techo demo\n", encoding="utf-8")
     (repository / "tools" / "a.py").write_text("a = 1\n", encoding="utf-8")
     (repository / ".claude" / "settings.json").write_text("{}\n", encoding="utf-8")
-    subprocess.run(
-        ["git", "add", "-A"],  # noqa: S607
-        cwd=repository,
-        check=True,
-        capture_output=True,
-    )
-    subprocess.run(
-        ["git", "commit", "-qm", "chore: seed"],  # noqa: S607
-        cwd=repository,
-        check=True,
-        capture_output=True,
-    )
     remote = root / "tool-copy-seed.git"
-    subprocess.run(  # noqa: S603
-        ["git", "init", "-q", "--bare", str(remote)],  # noqa: S607
-        check=True,
-        capture_output=True,
-    )
-    subprocess.run(  # noqa: S603
-        ["git", "remote", "add", "origin", str(remote)],  # noqa: S607
-        cwd=repository,
-        check=True,
-        capture_output=True,
-    )
-    subprocess.run(
-        ["git", "push", "-q", "-u", "origin", "main"],  # noqa: S607
-        cwd=repository,
-        check=True,
-        capture_output=True,
-    )
+    for args, cwd in (
+        (["init", "-q", "-b", "main"], repository),
+        (["config", "user.email", "t@example.invalid"], repository),
+        (["config", "user.name", "t"], repository),
+        (["add", "-A"], repository),
+        (["commit", "-qm", "chore: seed"], repository),
+        (["init", "-q", "--bare", str(remote)], root),
+        (["remote", "add", "origin", str(remote)], repository),
+        (["push", "-q", "-u", "origin", "main"], repository),
+    ):
+        subprocess.run(  # noqa: S603 — fixed argv list, never a shell string
+            ["git", *args],  # noqa: S607 — git resolves off PATH on purpose
+            cwd=cwd,
+            check=True,
+            capture_output=True,
+        )
     return str(repository)
 
 
@@ -1404,9 +1380,7 @@ def test_watch_report_prints_the_verdicts_and_stays_silent_when_nothing_is_tripp
         finding 5). The read has to answer, not merely print.
         """
         done = subprocess.run(
-            # S607: `just` resolves off PATH on purpose, like every other tool this
-            # project shells out to — the recipe under test is the one a caller runs.
-            ["just", "watch-report"],  # noqa: S607
+            ["just", "watch-report"],  # noqa: S607 — `just` resolves off PATH on purpose, like every other tool this project shells out to
             cwd=REPO,
             capture_output=True,
             text=True,
@@ -1448,6 +1422,12 @@ def test_the_recipe_folds_the_breaker_into_the_read_at_the_top_of_a_turn() -> No
     assert "tools/tool_copy.py report" in body
     assert body.index("tools/tool_copy.py report") > body.index("trial.py")
     assert body.index("breaker.py") < body.index("stall_watch.py"), "the verdicts read first"
+    # #676 round four: the rung's failure is typed at its site — the timeout kill is
+    # `infra_unavailable`, anything else `untyped_harness_failure` — and fails closed,
+    # never the success-shaped `|| echo` over an unclassified collapse.
+    assert "tool-copy=infra_unavailable" in body
+    assert "tool-copy=untyped_harness_failure" in body
+    assert body.index('exit "$code"') > body.index("tool-copy=infra_unavailable")
     assert body.index("breaker.py") < body.index("queue_policy.py")
     assert body.index("queue_policy.py") < body.index("stall_watch.py")
     assert body.index("stall_watch.py") < body.index("trial.py")

@@ -977,9 +977,12 @@ watch-report *args:
     # without fetching, on the same ground the other rungs read local state.
     # Bounded twice (ADR-0049): every git read inside is on a 30 s timeout and answers
     # "cannot tell" where git hangs, and the rung itself is on a 60 s `timeout` whose
-    # failure prints one typed line and never reads as silence — a hung uv or a crashed
-    # interpreter must neither stall the turn-top read nor pass as health.
-    timeout 60 uv run python tools/tool_copy.py report || echo "tool-copy: rung did not answer (exit $?) — untellable, never current"
+    # failure this site classifies — the kill is `infra_unavailable`, a rung that ran
+    # and failed is `untyped_harness_failure` — and exits with the rung's own status,
+    # never 0: a hung uv or a crashed interpreter neither stalls the turn-top read nor
+    # passes as health.
+    timeout 60 uv run python tools/tool_copy.py report; code=$?; if [ "$code" -eq 124 ]; then echo "tool-copy=infra_unavailable bound=60s state=untellable"; \
+      elif [ "$code" -ne 0 ]; then echo "tool-copy=untyped_harness_failure exit=$code state=untellable"; fi; exit "$code"
 
 # The gate-duration read's other half (#446): per-recipe record counts, green
 # medians, spans and the anchor each recipe holds with its set date, for the

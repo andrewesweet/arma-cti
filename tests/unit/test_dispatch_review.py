@@ -1523,7 +1523,7 @@ def test_the_record_names_the_dispatching_tree_s_own_copy_of_the_tools(
     assert plan is not None
     document = plan.document()
     head = subprocess.run(
-        ["git", "rev-parse", "HEAD"],  # noqa: S607
+        ["git", "rev-parse", "HEAD"],  # noqa: S607 — git resolves off PATH on purpose
         cwd=REPO,
         capture_output=True,
         text=True,
@@ -1538,5 +1538,4 @@ def test_the_record_names_the_dispatching_tree_s_own_copy_of_the_tools(
     assert plan.copy_state is not None
     assert read_back.head == plan.copy_state.head
     assert read_back.origin_main == plan.copy_state.origin_main
-    assert read_back.behind_origin_main == plan.copy_state.behind_origin_main
     assert read_back.paths == plan.copy_state.paths

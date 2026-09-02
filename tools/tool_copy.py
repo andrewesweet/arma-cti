@@ -25,19 +25,23 @@ dispatcher (#676, the narrowing ruling of round three). Test modules, docs and o
 sources stay outside it — they are read, not executed, and naming them would turn every
 landing into a drift report.
 
-A path is **behind** only where this tree's ``HEAD`` is an ancestor of ``origin/main``:
-that is the fact "a landing has superseded this copy". A tree carrying its own commits is
-a session mid-work, and its drifted paths are its own candidate, never a report. Reading
-``origin/main`` uses the local ref without fetching — ``just land`` and ``just worktree
-add`` fetch as a matter of routine, so the ref is fresh exactly where the loop needs it
-to be. The walk is over the **union** of the two governed sets — this tree's and
-``origin/main``'s — so a path the landing added is surveyed though no local set could
-hold it, and the record and the rung carry the blob sha each of the three sides holds:
-the working tree, ``HEAD`` and ``origin/main``, empty where a side does not hold the
-path. ``HEAD`` is what tells a landed removal from the session's own new work, which
-neither commit has. Blob shas come from ``git hash-object`` over the working-tree bytes,
-so an uncommitted edit shows as drift too; where a checkout filter rewrites bytes, the
-shas a drifted path carries are the evidence a reader needs to see it.
+A path is **stale** where the copy this tree holds — mode and bytes — differs from what
+``origin/main`` holds. That fact is read off the blob comparison alone, never off commit
+topology: the question is which bytes the interpreter loads, and ancestry is a property
+of history, not of bytes (#676 round four deleted the ancestry test, which had read even
+that question wrong a different way in each of three rounds). Reading ``origin/main``
+uses the local ref without fetching — ``just land`` and ``just worktree add`` fetch as
+a matter of routine, so the ref is fresh exactly where the loop needs it to be. The walk
+is over the **union** of the two governed sets, so a path the landing added is surveyed
+though no local set could hold it, and the record and the rung carry the mode and blob
+sha each of the three sides holds: the working tree, ``HEAD`` and ``origin/main``, empty
+where a side does not hold the path. ``HEAD`` is what separates a path only the working
+tree holds — this session's own uncommitted new work, never a report — from every other
+drift; a path this tree holds **committed** and ``origin/main`` does not has the same
+signature whether it is a landed removal or the session's own candidate, so it is named
+either way — the over-report the narrowing ruling calls the correct direction of error.
+Blob shas come from ``git hash-object`` over the working-tree bytes, so an uncommitted
+edit shows as drift too.
 """
 
 from __future__ import annotations
@@ -57,8 +61,17 @@ GOVERNED_HOOK_DIR: Final = ".claude/hooks"
 GOVERNED_SETTINGS: Final = ".claude/settings.json"
 GOVERNED_TOOL_DIR: Final = "tools"
 
+# The governed roots and singletons, named once: both walks read these, and the two
+# halves of the walk drifting apart is the defect round two's finding 2 was (#676).
+_GOVERNED_DIRS: Final = (GOVERNED_TOOL_DIR, GOVERNED_HOOK_DIR)
+_GOVERNED_FILES: Final = (GOVERNED_JUSTFILE, GOVERNED_SETTINGS)
+
 # A `git ls-tree` entry is `<mode> <type> <sha>\t<path>`; fewer fields carries no blob.
 _LS_TREE_FIELDS: Final = 3
+
+# A comparison side that does not hold the path: a real entry always names a mode and a
+# blob, so the empty pair is unambiguous.
+_ABSENT_SIDE: Final = ("", "")
 
 # Every git read is bounded, because this module runs at the top of an orchestrator turn
 # (the `just watch-report` rung) and a git that never answers would stall that turn rather
@@ -79,7 +92,7 @@ class _GitUnreadableError(Exception):
 def _git(*args: str, root: Path) -> str:
     """Run one bounded git command and return its stdout; raise where git could not answer."""
     try:
-        done = subprocess.run(  # noqa: S603
+        done = subprocess.run(  # noqa: S603 — fixed argv list, never a shell string
             ["git", *args],  # noqa: S607 — the checkout's toolchain is the caller's
             cwd=root,
             capture_output=True,
@@ -100,6 +113,11 @@ def _git(*args: str, root: Path) -> str:
     return done.stdout
 
 
+def _is_machinery(path: Path) -> bool:
+    """``__pycache__`` is interpreter output, not machinery, on either side of the walk."""
+    return "__pycache__" not in path.parts
+
+
 def _directory_files(root: Path, relative: str) -> set[Path]:
     """Every file under ``root/relative``, repo-relative; empty where there is no directory."""
     directory = root / relative
@@ -108,7 +126,7 @@ def _directory_files(root: Path, relative: str) -> set[Path]:
     return {
         path.relative_to(root)
         for path in directory.rglob("*")
-        if path.is_file() and "__pycache__" not in path.parts
+        if path.is_file() and _is_machinery(path)
     }
 
 
@@ -122,10 +140,9 @@ def governed_paths(root: Path) -> tuple[Path, ...]:
     that over-report is the correct direction of error: "your copy is not what landed" is
     true either way and the reader's response is the same, while under-reporting is what
     silently ships a stale dispatcher (#676, the narrowing ruling of round three).
-    ``__pycache__`` is interpreter output, not machinery, in either directory.
     """
-    governed = {Path(GOVERNED_JUSTFILE), Path(GOVERNED_SETTINGS)}
-    for relative in (GOVERNED_TOOL_DIR, GOVERNED_HOOK_DIR):
+    governed = {Path(name) for name in _GOVERNED_FILES}
+    for relative in _GOVERNED_DIRS:
         governed |= _directory_files(root, relative)
     return tuple(sorted(governed, key=lambda path: path.as_posix()))
 
@@ -134,37 +151,31 @@ def governed_paths(root: Path) -> tuple[Path, ...]:
 class Survey:
     """One read of a tree's copies against ``origin/main``, at one instant.
 
-    ``paths`` carries **only** the governed paths whose working-tree bytes and
-    ``origin/main`` bytes differ — the drift, walked over the **union** of the two
-    governed sets, with the blob sha each of the three sides holds beside the others:
-    ``worktree`` (the working tree), ``head`` (the tree's own ``HEAD`` commit) and
-    ``origin_main`` — empty where that side does not hold the path. Every other path is
-    current and is deliberately absent: a full listing per dispatch would be a dashboard
-    of sameness (#209).
+    ``paths`` carries **only** the governed paths whose working-tree copy — mode and
+    bytes — differs from ``origin/main``'s, walked over the **union** of the two governed
+    sets, with the mode and blob sha each of the three sides holds beside the others:
+    ``worktree``/``worktree_mode`` (the working tree), ``head``/``head_mode`` (the tree's
+    own ``HEAD`` commit) and ``origin_main``/``origin_main_mode`` — empty where that side
+    does not hold the path. Every other path is current and is deliberately absent: a
+    full listing per dispatch would be a dashboard of sameness (#209).
     """
 
     head: str
+    # Empty exactly where git could not answer, which is the "could not tell" verdict the
+    # report prints; a read that succeeded always carries the sha `rev-parse` printed. It
+    # is never folded into a healthy-looking value, because an unreadable ref reads as
+    # health nowhere else in this project's reporting.
     origin_main: str
-    # ``None`` is "could not tell" — git refused, or the ref is not there, or
-    # `merge-base --is-ancestor` failed rather than answering. It is never folded into
-    # ``False``, because an unreadable ref reads as health nowhere else in this
-    # project's reporting.
-    behind_origin_main: bool | None
     paths: Mapping[str, Mapping[str, str]] = field(default_factory=dict)
 
     def stale_paths(self) -> tuple[str, ...]:
-        """Return the governed paths a landing has superseded; empty unless the tree is behind.
+        """Return the governed paths whose copy is not what ``origin/main`` landed.
 
-        Two exclusions keep the report from crying wolf. A tree carrying its own commits
-        is not behind even where its bytes differ from ``origin/main`` — that drift is the
-        session's own candidate, and naming it would report every mid-issue tree as stale.
-        And a path only the working tree holds — ``origin/main`` and ``HEAD`` both empty —
-        is this session's own new work, which no landing has superseded. A path
-        ``origin/main`` has **deleted**, by contrast, is named: ``HEAD`` still holds what
-        the landing removed, so it is drift with its two sides stated like any other.
+        One exclusion keeps the report from crying wolf: a path only the working tree
+        holds — ``origin/main`` and ``HEAD`` both empty — is this session's own
+        uncommitted new work, which no landing has superseded. Every other drift is
+        named, a landed removal included.
         """
-        if self.behind_origin_main is not True:
-            return ()
         return tuple(
             name
             for name in sorted(self.paths)
@@ -176,7 +187,6 @@ class Survey:
         return {
             "worktree_head": self.head,
             "origin_main_head": self.origin_main,
-            "behind_origin_main": self.behind_origin_main,
             "paths": {name: dict(entry) for name, entry in sorted(self.paths.items())},
         }
 
@@ -186,11 +196,9 @@ class Survey:
         if not isinstance(document, dict):
             return None
         paths = document.get("paths")
-        behind = document.get("behind_origin_main")
         return cls(
             head=str(document.get("worktree_head", "")),
             origin_main=str(document.get("origin_main_head", "")),
-            behind_origin_main=None if behind is None else behind is True,
             paths={
                 str(name): dict(entry) for name, entry in paths.items() if isinstance(entry, dict)
             }
@@ -199,26 +207,36 @@ class Survey:
         )
 
 
-def _worktree_hashes(root: Path, names: Sequence[str]) -> dict[str, str]:
-    """Each name's blob sha as the working tree holds it; absent where the tree has no such file.
+def _worktree_mode(path: Path) -> str:
+    """Return the mode git records for this file: any executable bit is 100755."""
+    if path.is_symlink():
+        return "120000"
+    return "100755" if os.access(path, os.X_OK) else "100644"
+
+
+def _worktree_entries(root: Path, names: Sequence[str]) -> dict[str, tuple[str, str]]:
+    """Each name's ``(mode, blob sha)`` as the working tree holds it; absent where it has no file.
 
     Absent from the result is "not present", never "not hashed": a name the caller has no
     entry for yet is hashed here on demand, so an unchanged file a landing newly governs
-    cannot be read as an empty worktree sha and reported superseded (#676 round three,
+    cannot be read as an empty worktree side and reported superseded (#676 round three,
     finding 3).
     """
     present = [name for name in names if (root / name).is_file()]
     if not present:
         return {}
     listed = _git("hash-object", "--", *present, root=root).split()
-    return dict(zip(present, listed, strict=False))
+    return {
+        name: (_worktree_mode(root / name), blob)
+        for name, blob in zip(present, listed, strict=False)
+    }
 
 
-def _local_side(root: Path) -> tuple[str, tuple[str, ...], dict[str, str]]:
-    """Read this tree's own half: HEAD, the governed set, each path's working-tree blob."""
+def _local_side(root: Path) -> tuple[str, tuple[str, ...], dict[str, tuple[str, str]]]:
+    """Read this tree's own half: HEAD, the governed set, each path's mode and blob."""
     head = _git("rev-parse", "HEAD", root=root).strip()
     names = tuple(path.as_posix() for path in governed_paths(root))
-    return head, names, _worktree_hashes(root, names)
+    return head, names, _worktree_entries(root, names)
 
 
 def _origin_governed(root: Path) -> tuple[str, ...]:
@@ -237,34 +255,33 @@ def _origin_governed(root: Path) -> tuple[str, ...]:
         "-z",
         "origin/main",
         "--",
-        GOVERNED_TOOL_DIR,
-        GOVERNED_HOOK_DIR,
+        *_GOVERNED_DIRS,
         root=root,
     )
-    names = {Path(GOVERNED_JUSTFILE), Path(GOVERNED_SETTINGS)}
-    names.update(
-        Path(line) for line in listed.split("\0") if line and "__pycache__" not in Path(line).parts
-    )
+    names = {Path(name) for name in _GOVERNED_FILES}
+    names.update(Path(line) for line in listed.split("\0") if line and _is_machinery(Path(line)))
     return tuple(sorted({name.as_posix() for name in names}))
 
 
-def _ls_tree_blobs(rev: str, names: Sequence[str], root: Path) -> dict[str, str]:
-    """Each name's blob sha as ``rev`` holds it; absent where ``rev`` does not have it."""
-    blobs: dict[str, str] = {}
+def _ls_tree_entries(rev: str, names: Sequence[str], root: Path) -> dict[str, tuple[str, str]]:
+    """Each name's ``(mode, blob sha)`` as ``rev`` holds it; absent where ``rev`` has no file."""
+    entries: dict[str, tuple[str, str]] = {}
     if not names:
-        return blobs
+        return entries
     for entry in _git("ls-tree", "-z", rev, "--", *names, root=root).split("\0"):
         if not entry:
             continue
         meta, _, path = entry.partition("\t")
         parts = meta.split()
         if len(parts) >= _LS_TREE_FIELDS:
-            blobs[path] = parts[2]
-    return blobs
+            entries[path] = (parts[0], parts[2])
+    return entries
 
 
-def _origin_side(root: Path, names: tuple[str, ...]) -> tuple[str, tuple[str, ...], dict[str, str]]:
-    """``origin/main``'s half: its head, its governed set, and each governed path's blob.
+def _origin_side(
+    root: Path, names: tuple[str, ...]
+) -> tuple[str, tuple[str, ...], dict[str, tuple[str, str]]]:
+    """``origin/main``'s half: its head, its governed set, and each governed path's mode and blob.
 
     The origin side derives its own governed set, so a path the landing added or renamed
     is surveyed on the origin side even where this tree has never had it — a tool the
@@ -274,45 +291,8 @@ def _origin_side(root: Path, names: tuple[str, ...]) -> tuple[str, tuple[str, ..
     origin_main = _git("rev-parse", "origin/main", root=root).strip()
     origin_names = _origin_governed(root)
     # One listing over the whole surveyed set, rather than a `rev-parse` per path.
-    blobs = _ls_tree_blobs("origin/main", list(dict.fromkeys([*names, *origin_names])), root)
+    blobs = _ls_tree_entries("origin/main", list(dict.fromkeys([*names, *origin_names])), root)
     return origin_main, origin_names, blobs
-
-
-def _git_code(*args: str, root: Path) -> int:
-    """Run one bounded git command for its exit code alone, which `--is-ancestor`'s answer is.
-
-    A non-zero exit is an *answer* here — `merge-base --is-ancestor` writes nothing and
-    exits 1 for "no" — so it must not collapse into the refusal the stdout runner raises.
-    """
-    try:
-        return subprocess.run(  # noqa: S603
-            ["git", *args],  # noqa: S607
-            cwd=root,
-            capture_output=True,
-            text=True,
-            check=False,
-            timeout=GIT_TIMEOUT,
-        ).returncode
-    except OSError as unreadable:
-        raise _GitUnreadableError(str(unreadable)) from unreadable
-    except subprocess.TimeoutExpired as unanswered:
-        detail = f"git {' '.join(args)}: no answer within {GIT_TIMEOUT:g}s"
-        raise _GitUnreadableError(detail) from unanswered
-
-
-def _is_behind(root: Path) -> bool | None:
-    """Whether this tree's HEAD is an ancestor of ``origin/main``, or ``None`` where git errored.
-
-    ``merge-base --is-ancestor`` answers in its exit code — 0 for yes, 1 for no — and
-    exits with anything else when it fails rather than answering, so a failure is
-    untellable, never a folded "no" (git-merge-base's own contract; #676 review round
-    two).
-    """
-    code = _git_code("merge-base", "--is-ancestor", "HEAD", "origin/main", root=root)
-    if code in (0, 1):
-        return code == 0
-    detail = f"git merge-base --is-ancestor: exit {code}"
-    raise _GitUnreadableError(detail)
 
 
 def survey(root: Path) -> Survey:
@@ -325,47 +305,55 @@ def survey(root: Path) -> Survey:
     try:
         head, names, local = _local_side(root)
     except _GitUnreadableError:
-        return Survey(head="", origin_main="", behind_origin_main=None, paths={})
+        return Survey(head="", origin_main="", paths={})
     try:
         origin_main, origin_names, origin = _origin_side(root, names)
-        behind = _is_behind(root)
         walked = sorted(set(names).union(origin_names))
         # A name the local set never held has no entry yet — that is "not hashed", never
         # "not present". Hash on demand, so an unchanged file a landing newly governs is
-        # not read as an empty worktree sha and reported superseded (round three, #3).
-        local.update(_worktree_hashes(root, [name for name in walked if name not in local]))
+        # not read as an empty worktree side and reported superseded (round three, #3).
+        local.update(_worktree_entries(root, [name for name in walked if name not in local]))
+        # One comparison per path, over mode and blob together: a permissions-only
+        # landing keeps the same blob sha, so the mode is the other half of the copy
+        # (#676 round four). Nothing here reads commit topology.
         drifted = {
             name: {
-                "worktree": local.get(name, ""),
+                "worktree": mine[1],
+                "worktree_mode": mine[0],
                 "head": "",
-                "origin_main": origin.get(name, ""),
+                "head_mode": "",
+                "origin_main": theirs[1],
+                "origin_main_mode": theirs[0],
             }
             for name in walked
-            if local.get(name, "") != origin.get(name, "")
+            if (mine := local.get(name, _ABSENT_SIDE)) != (theirs := origin.get(name, _ABSENT_SIDE))
         }
-        # A path only the working tree holds is the session's own new work and stays out
-        # of the report; `HEAD` holding the blob is what separates that from a landed
-        # removal this tree has not taken yet.
-        for name, blob in _ls_tree_blobs("HEAD", sorted(drifted), root).items():
+        # `HEAD` holding the blob separates a path only the working tree holds — the
+        # session's own new work, never reported — from every other drift.
+        for name, (mode, blob) in _ls_tree_entries("HEAD", sorted(drifted), root).items():
             drifted[name]["head"] = blob
+            drifted[name]["head_mode"] = mode
     except _GitUnreadableError:
-        return Survey(head=head, origin_main="", behind_origin_main=None, paths={})
-    return Survey(head=head, origin_main=origin_main, behind_origin_main=behind, paths=drifted)
+        return Survey(head=head, origin_main="", paths={})
+    return Survey(head=head, origin_main=origin_main, paths=drifted)
 
 
 def _report_line(name: str, entry: Mapping[str, str]) -> str:
     return (
-        f"tool-copy: {name} behind origin/main"
+        f"tool-copy: {name} is not what origin/main landed"
         f" worktree={entry.get('worktree', '')[:12]}"
+        f" worktree_mode={entry.get('worktree_mode', '')}"
         f" origin/main={entry.get('origin_main', '')[:12]}"
+        f" origin/main_mode={entry.get('origin_main_mode', '')}"
     )
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Report one line per stale governed path, silent while current.
+    """Report one line per governed path whose copy is not what ``origin/main`` landed.
 
-    Every outcome exits 0 — this is a verdict, never a gate. "Cannot tell" prints rather
-    than staying silent, because silence is health everywhere else on this read.
+    Every outcome exits 0 — this is a verdict, never a gate; the recipe's own site
+    classifies a killed or crashed rung (ADR-0049). "Cannot tell" prints rather than
+    staying silent, because silence is health everywhere else on this read.
     """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -378,9 +366,9 @@ def main(argv: list[str] | None = None) -> int:
     arguments = parser.parse_args(argv)
 
     state = survey(arguments.repo)
-    if state.behind_origin_main is None:
+    if not state.origin_main:
         print(  # noqa: T201 — the orchestrator reads this
-            "tool-copy: cannot tell whether this tree's tools are behind origin/main"
+            "tool-copy: cannot tell whether this tree's tools are what origin/main landed"
             f" worktree={state.head[:12] or 'unreadable'}"
         )
         return 0

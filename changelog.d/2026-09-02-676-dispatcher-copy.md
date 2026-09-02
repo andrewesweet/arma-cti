@@ -4,15 +4,14 @@
   of the project's command machinery (#676).** `just dispatch` runs `tools/dispatch.py`
   from the dispatching session's worktree, so a landing that changes the dispatch path did
   not govern the session that landed it, silently. Every dispatch record now carries
-  `dispatcher_copy`: the dispatching tree's `HEAD`, `origin/main`'s head, `behind_origin_main`
-  as `true`/`false`/`null` — `null` where git could not answer — and the blob shas the
-  working tree, `HEAD` and `origin/main` each hold for every governed path whose bytes
-  differ across the **union** of the two governed sets. `just watch-report` gained a
-  `tools/tool_copy.py report` rung: one line per governed path a landing has superseded —
-  a tree whose `HEAD` is an ancestor of `origin/main` whose bytes differ — silent while
-  current, silent about a tree carrying its own commits, silent about a path only the
-  working tree holds, and loud where git cannot answer rather than silently current. It
-  reports and never rebases.
+  `dispatcher_copy`: the dispatching tree's `HEAD`, `origin/main`'s head — empty exactly
+  where git could not answer — and, for every governed path whose copy differs across the
+  **union** of the two governed sets, the git mode and blob sha each of the working tree,
+  `HEAD` and `origin/main` holds, empty where a side does not hold the path.
+  `just watch-report` gained a `tools/tool_copy.py report` rung: one line per governed
+  path whose mode or bytes are not what `origin/main` landed — silent while current and
+  about a path only the working tree holds, loud where git cannot answer; it reports and
+  never rebases.
 
 ### Changed
 
@@ -30,8 +29,11 @@
   longer record a fresh main checkout while a stale worktree's own `tools/dispatch.py`
   produced it. A path a landing newly governs is hashed on demand rather than read as
   absent, so a byte-identical file is no longer reported superseded.
-- **The `just watch-report` tool-copy rung is bounded and its failure typed (ADR-0049).**
-  Every git read inside `tools/tool_copy.py` carries a 30-second timeout that reports
-  "cannot tell" where git hangs, and the rung itself runs under a 60-second `timeout`
-  whose failure prints one typed line — `tool-copy: rung did not answer` — instead of
-  stalling the turn-top read or passing as silence.
+- **The `just watch-report` tool-copy rung is bounded and its failure typed, and it
+  fails closed (ADR-0049).** Every git read inside `tools/tool_copy.py` carries a
+  30-second timeout that reports "cannot tell" where git hangs, and the rung itself runs
+  under a 60-second `timeout` whose site classifies the failure — the kill prints
+  `tool-copy=infra_unavailable bound=60s state=untellable`, a rung that ran and failed
+  prints `tool-copy=untyped_harness_failure exit=N state=untellable` — and exits with the
+  rung's own status either way, so a hung uv or a crashed interpreter neither stalls the
+  turn-top read nor passes as silence or as success.

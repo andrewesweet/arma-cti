@@ -11,8 +11,8 @@ someone notices. The claims here are about the two halves that make the copy vis
   something a report does.
 
 Every claim is made against real git repositories, because each one is a claim about what
-git can see: a blob on one side, a ref on the other, an ancestry between two commits. A
-stubbed git would let them pass over code that cannot read a tree at all.
+git can see: a blob on one side, a ref on the other, a mode beside each blob. A stubbed
+git would let them pass over code that cannot read a tree at all.
 """
 
 from __future__ import annotations
@@ -40,8 +40,8 @@ demo:
 
 def _git(*args: str, cwd: Path) -> str:
     """Run one git command for its stdout, failing the test on git's own error."""
-    done = subprocess.run(  # noqa: S603
-        ["git", *args],  # noqa: S607
+    done = subprocess.run(  # noqa: S603 — fixed argv list, never a shell string
+        ["git", *args],  # noqa: S607 — git resolves off PATH on purpose
         cwd=cwd,
         capture_output=True,
         text=True,
@@ -95,8 +95,8 @@ def _advance_origin_with(
 ) -> None:
     """Land one commit on `origin/main` built by `edit`, without the local tree moving."""
     ahead = tmp_path / f"ahead-{label}"
-    subprocess.run(  # noqa: S603
-        ["git", "clone", "-q", str(tmp_path / "remote.git"), str(ahead)],  # noqa: S607
+    subprocess.run(  # noqa: S603 — fixed argv list, never a shell string
+        ["git", "clone", "-q", str(tmp_path / "remote.git"), str(ahead)],  # noqa: S607 — git resolves off PATH on purpose
         check=True,
         capture_output=True,
     )
@@ -136,13 +136,12 @@ def test_governed_paths_are_the_machinery_directories_and_their_wiring(tmp_path:
     }
 
 
-def test_a_tree_behind_origin_main_is_named_per_governed_path(tmp_path: Path) -> None:
+def test_a_path_origin_main_landed_over_is_named_per_governed_path(tmp_path: Path) -> None:
     root = _with_origin(tmp_path)
     _advance_origin(root, tmp_path, "tools/a.py", "run = 2\n")
 
     survey = tool_copy.survey(root)
 
-    assert survey.behind_origin_main is True
     assert survey.stale_paths() == ("tools/a.py",)
 
 
@@ -152,24 +151,32 @@ def test_a_path_origin_main_did_not_touch_is_not_drift(tmp_path: Path) -> None:
 
     survey = tool_copy.survey(root)
 
-    # The tree is behind `origin/main`, but nothing it runs changed — the drift is
+    # `origin/main` moved on, but nothing this tree runs changed — the drift is
     # path-scoped, never a whole-tree verdict.
-    assert survey.behind_origin_main is True
+    assert survey.paths == {}
     assert survey.stale_paths() == ()
 
 
-def test_a_tree_carrying_its_own_commits_is_never_named_behind(tmp_path: Path) -> None:
+def test_a_session_s_own_committed_candidate_is_named_like_any_other_drift(
+    tmp_path: Path,
+) -> None:
     root = _with_origin(tmp_path)
     (root / "tools" / "a.py").write_text("run = 3\n", encoding="utf-8")
     _commit_all(root, "feat: this session's own work")
 
     survey = tool_copy.survey(root)
 
-    assert survey.behind_origin_main is False
-    assert survey.stale_paths() == ()
+    # A tree carrying its own commits is not exempt: its candidate's bytes differ from
+    # what landed, and this signature — `HEAD` holds the blob, `origin/main` another —
+    # is identical to a landed removal's, so both are named. Ancestry answered for
+    # history, not for the bytes the interpreter loads (#676 round four); the over-report
+    # is the narrowing ruling's correct direction of error.
+    assert survey.stale_paths() == ("tools/a.py",)
+    assert survey.paths["tools/a.py"]["head"] == survey.paths["tools/a.py"]["worktree"]
+    assert survey.paths["tools/a.py"]["origin_main"]
 
 
-def test_a_governed_path_origin_main_does_not_have_is_never_named_behind(
+def test_a_governed_path_origin_main_does_not_have_is_never_named(
     tmp_path: Path,
 ) -> None:
     root = _with_origin(tmp_path)
@@ -180,11 +187,10 @@ def test_a_governed_path_origin_main_does_not_have_is_never_named_behind(
 
     survey = tool_copy.survey(root)
 
-    # The tree is behind `origin/main` — but this path is this session's own new work,
-    # which no landing has superseded, so the report stays silent about it. The justfile
-    # the session itself edited, by contrast, is named: its bytes are not what landed,
-    # which is the drift this module exists to name.
-    assert survey.behind_origin_main is True
+    # A path only the working tree holds — neither `HEAD` nor `origin/main` has it — is
+    # this session's own uncommitted new work, which no landing has superseded. The
+    # justfile the session itself edited, by contrast, is named: its bytes are not what
+    # landed.
     assert "tools/b.py" not in survey.stale_paths()
     assert survey.stale_paths() == ("justfile",)
     assert "tools/b.py" in survey.paths
@@ -206,13 +212,12 @@ def test_a_governed_path_only_origin_main_has_is_surveyed_and_named(tmp_path: Pa
     # A landing that adds machinery this tree's justfile has never heard of is the case
     # this issue is most about: the union of the two governed sets is what is walked, so
     # the origin side's new path is named even though no local set could have held it.
-    assert survey.behind_origin_main is True
     assert survey.stale_paths() == ("justfile", "tools/new.py")
     assert survey.paths["tools/new.py"]["worktree"] == ""
     assert survey.paths["tools/new.py"]["origin_main"]
 
 
-def test_a_governed_path_origin_main_deleted_is_named_behind(tmp_path: Path) -> None:
+def test_a_governed_path_origin_main_deleted_is_named(tmp_path: Path) -> None:
     root = _with_origin(tmp_path)
 
     def delete(ahead: Path) -> None:
@@ -224,30 +229,52 @@ def test_a_governed_path_origin_main_deleted_is_named_behind(tmp_path: Path) -> 
 
     # A path the landing removed is not "nothing to say": it is a landed removal this
     # tree has not taken yet, named like any other drift. The `head` blob is what tells
-    # it from this session's own new work, which HEAD does not hold either.
-    assert survey.behind_origin_main is True
+    # it from this session's own uncommitted new work, which HEAD does not hold either.
     assert "tools/a.py" in survey.stale_paths()
     assert survey.paths["tools/a.py"]["origin_main"] == ""
     assert survey.paths["tools/a.py"]["head"]
 
 
-def test_a_failing_ancestry_check_is_untellable_not_current(
+def test_a_mode_only_landing_is_named(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    root = _with_origin(tmp_path)
+
+    def make_executable(ahead: Path) -> None:
+        (ahead / "tools" / "a.py").chmod(0o755)
+
+    _advance_origin_with(root, tmp_path, "exec-bit", make_executable)
+
+    survey = tool_copy.survey(root)
+
+    # A permissions-only landing keeps the same blob sha, so the blob comparison alone
+    # would read a `tools/dispatch.sh` whose exec bit a landing flipped as current; the
+    # line states the mode where the bytes cannot.
+    assert "tools/a.py" in survey.stale_paths()
+    entry = survey.paths["tools/a.py"]
+    assert entry["worktree"] == entry["origin_main"]
+    assert entry["worktree_mode"] == "100644"
+    assert entry["origin_main_mode"] == "100755"
+    assert tool_copy.main(["report", "--repo", str(root)]) == 0
+    (line,) = capsys.readouterr().out.splitlines()
+    assert "worktree_mode=100644" in line
+    assert "origin/main_mode=100755" in line
+
+
+def test_a_git_read_that_fails_is_untellable_not_current(
     tmp_path: Path,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
     root = _with_origin(tmp_path)
     _advance_origin(root, tmp_path, "tools/a.py", "run = 2\n")
-    # `merge-base --is-ancestor` answers in its exit code — 0 yes, 1 no — and errors with
-    # 128. Head's own commit object removed makes that real: the origin side still reads,
-    # while the ancestry question cannot be answered at all.
-    head = _git("rev-parse", "HEAD", cwd=root)
-    (root / ".git" / "objects" / head[:2] / head[2:]).unlink()
+    # The commit object `origin/main` names, deleted: the local side still reads, while
+    # the origin side's `ls-tree` cannot answer at all. Git failing to answer is
+    # untellable, never current — `origin_main` empty is the whole contract.
+    origin_head = _git("rev-parse", "origin/main", cwd=root)
+    (root / ".git" / "objects" / origin_head[:2] / origin_head[2:]).unlink()
 
     survey = tool_copy.survey(root)
 
-    # Git failing to answer is untellable, never a folded "no": the rung says so out loud
-    # rather than reading as health.
-    assert survey.behind_origin_main is None
+    assert survey.head
+    assert survey.origin_main == ""
     assert survey.stale_paths() == ()
     assert tool_copy.main(["report", "--repo", str(root)]) == 0
     assert "cannot tell" in capsys.readouterr().out
@@ -262,7 +289,7 @@ def test_an_origin_main_that_cannot_be_read_is_reported_as_untellable(
 
     survey = tool_copy.survey(root)
 
-    assert survey.behind_origin_main is None
+    assert survey.origin_main == ""
     assert tool_copy.main(["report", "--repo", str(root)]) == 0
     assert "cannot tell" in capsys.readouterr().out
 
@@ -297,6 +324,8 @@ def test_the_record_document_names_both_sides_of_a_drifted_path(tmp_path: Path) 
     assert drifted["tools/a.py"]["worktree"]
     assert drifted["tools/a.py"]["origin_main"]
     assert drifted["tools/a.py"]["worktree"] != drifted["tools/a.py"]["origin_main"]
+    # The mode rides beside the blob on every side of the record.
+    assert drifted["tools/a.py"]["worktree_mode"] == drifted["tools/a.py"]["origin_main_mode"]
 
 
 def test_a_path_only_the_origin_set_governs_is_hashed_not_named_superseded(
@@ -327,7 +356,6 @@ def test_a_path_only_the_origin_set_governs_is_hashed_not_named_superseded(
 
     survey = tool_copy.survey(root)
 
-    assert survey.behind_origin_main is True
     assert survey.stale_paths() == ("justfile",)
     assert survey.paths.get("tools/extra.py") is None
 
@@ -354,6 +382,6 @@ def test_a_git_read_that_never_answers_is_untellable_not_a_hang(
 
     survey = tool_copy.survey(root)
 
-    assert survey.behind_origin_main is None
+    assert survey.origin_main == ""
     assert tool_copy.main(["report", "--repo", str(root)]) == 0
     assert "cannot tell" in capsys.readouterr().out
