@@ -285,19 +285,24 @@ unit-rust:
 # Measure one test module's serial wall and CPU, with machine load and foreign
 # gate-process count stated (#685). #447's family — #455, #456, #457 — each ask
 # for this figure and the command surface offered no way to take it: `just unit`
-# runs the whole tier in parallel and reports neither, and #457's dispatched
-# session could not reach bare `uv run pytest` or `/usr/bin/time` at all, which
-# is how the same acceptance criterion became satisfiable or not depending on
-# who drew the dispatch. The measurement lives in `tools/module_cost.py` (ADR-0049);
-# this recipe is its thin wrapper and takes the module path as its only argument.
-# The run is serial because that is what makes the figure mean anything — the
-# tool passes `-n0` itself, overriding pyproject's `-n auto`, and its row says
-# `mode=serial` so a contended figure cannot pass for an isolated one. A red
-# module is still a measurement: the row prints whatever the run produced and
-# the child's exit code propagates.
+# runs the whole tier in parallel and `gate_clock` records only its whole-tier
+# wall, so one module's own serial wall and CPU had no reading anywhere, and
+# #457's dispatched session could not reach bare `uv run pytest` or
+# `/usr/bin/time` at all, which is how the same acceptance criterion became
+# satisfiable or not depending on who drew the dispatch. The measurement lives
+# in `tools/module_cost.py` (ADR-0049); this recipe is its thin wrapper and
+# takes the module path as its only argument. The run is serial because that is
+# what makes the figure mean anything — the tool passes `-n0` itself, overriding
+# pyproject's `-n auto`, and its row says `mode=serial` so a contended figure
+# cannot pass for an isolated one. A red module is still a measurement: the row
+# prints whatever the run produced and the child's exit code propagates. The
+# run is bounded at both seams — this `timeout` is the outer one ADR-0049
+# requires of every `uv run`, and the child pytest carries its own shorter
+# deadline inside it — because a hung module would otherwise hold the recipe,
+# and the dispatched session that called it is single-shot.
 [positional-arguments]
 module-cost *args:
-    uv run python tools/module_cost.py "$@"
+    timeout "${CTI_MODULE_COST_TIMEOUT:-1800}" uv run python tools/module_cost.py "$@"
 
 # Score the committed guidance control or compare a supplied replay pair. Prompt bodies live
 # in the versioned corpus; this never writes to the telemetry ledger.

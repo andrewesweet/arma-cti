@@ -21,9 +21,6 @@ if TYPE_CHECKING:
 load_tool("gate_clock")  # the sibling `module_cost` imports, registered first
 module_cost = load_tool("module_cost")
 
-load_tool("gate_clock")  # the sibling `module_cost` imports, registered first
-module_cost = load_tool("module_cost")
-
 # A module whose one test records whether it ran under an xdist worker. With
 # `-n0` winning over addopts, no worker exists and the marker is absent.
 WORKER_PROBE = """
@@ -51,6 +48,7 @@ def make_sample(**overrides: object) -> module_cost.Sample:
         "failed": 0,
         "errored": 0,
         "skipped": 0,
+        "junit_readable": True,
         "exit_code": 0,
     }
     fields.update(overrides)
@@ -66,13 +64,27 @@ def test_row_names_serial_and_every_figure() -> None:
     assert "cpu=13.54s (user 10.13s + sys 3.41s)" in row
     assert "load_1m=1.13 -> 1.30" in row
     assert "foreign_gate_processes=0 -> 0" in row
-    assert "tests=47 failed=0 errored=0 skipped=0 exit=0" in row
+    assert "tests=47 failed=0 errored=0 skipped=0 exit=0 readable_junit=yes" in row
 
 
 def test_row_shows_null_for_a_reading_it_could_not_take() -> None:
     """An unreadable load is `null`, never a guess or a crash."""
     row = module_cost.format_row(make_sample(load_start=None, load_end=None))
     assert "load_1m=null -> null" in row
+
+
+def test_row_shows_null_for_a_foreign_count_it_could_not_take() -> None:
+    """An unreadable `/proc` renders `null`, never Python's `None`."""
+    row = module_cost.format_row(make_sample(foreign_start=None, foreign_end=None))
+    assert "foreign_gate_processes=null -> null" in row
+
+
+def test_row_marks_unreadable_junit_and_nulls_every_count() -> None:
+    """A report the child did not write is `readable_junit=no` and four nulls."""
+    row = module_cost.format_row(
+        make_sample(collected=None, failed=None, errored=None, skipped=None, junit_readable=False)
+    )
+    assert "tests=null failed=null errored=null skipped=null exit=0 readable_junit=no" in row
 
 
 def test_argv_is_serial_and_counts_through_junit(tmp_path: Path) -> None:
@@ -116,12 +128,17 @@ def test_junit_counts_read_a_bare_suite_root(tmp_path: Path) -> None:
         '<testsuite tests="oops"></testsuite>',
     ],
 )
-def test_junit_counts_unknown_is_zero_not_a_crash(tmp_path: Path, content: str | None) -> None:
-    """A report the child did not write leaves the counts unknown at zero."""
+def test_junit_counts_unknown_is_none_not_zero(tmp_path: Path, content: str | None) -> None:
+    """A report the child did not write leaves the counts unknown, never zero.
+
+    Zero would read as a fact — "no tests ran" — that the missing report
+    cannot support, which is the token-versus-thing failure the row exists to
+    avoid; the absence is `None`, named by `readable_junit` in the row.
+    """
     path = tmp_path / "junit.xml"
     if content is not None:
         path.write_text(content)
-    assert module_cost.junit_counts(path) == (0, 0, 0, 0)
+    assert module_cost.junit_counts(path) is None
 
 
 def stage_module(root: Path, body: str, name: str = "test_staged.py") -> str:
@@ -160,6 +177,24 @@ def test_measure_counts_a_red_module_and_propagates_its_exit(tmp_path: Path) -> 
     assert sample.exit_code == 1
 
 
+def test_measure_kills_a_child_at_its_deadline(tmp_path: Path) -> None:
+    """A child still running at the deadline is killed, typed, and not a measurement.
+
+    The staged module sleeps well past the one-second deadline, so the kill is
+    the run's own path — wall and CPU up to the kill are real readings, the
+    exit is 124, `timed_out` is set and the counts stay unknown because a run
+    that never finished has no counts.
+    """
+    module = stage_module(tmp_path, "import time\n\ndef test_hangs():\n    time.sleep(60)\n")
+    sample = module_cost.measure(module, root=tmp_path, child_timeout_s=1.0)
+    assert sample.timed_out is True
+    assert sample.exit_code == 124
+    assert sample.collected is None
+    assert sample.junit_readable is False
+    assert sample.wall_s >= 1.0
+    assert sample.cpu_user_s + sample.cpu_sys_s > 0.0
+
+
 def test_measure_reads_staged_kernel_files(tmp_path: Path) -> None:
     """Load and the foreign count come from the staged `/proc`, exactly."""
     module = stage_module(tmp_path, "def test_one():\n    assert True\n")
@@ -193,9 +228,24 @@ def test_main_prints_one_row_and_propagates(
     assert "the module is red" in out
 
 
+def test_main_prints_a_timeout_note_not_a_red_note(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A killed child reads as a timeout, never as a red module."""
+    monkeypatch.setattr(
+        module_cost,
+        "measure",
+        lambda *_, **__: make_sample(timed_out=True, exit_code=124, junit_readable=False),
+    )
+    assert module_cost.main(["tests/unit/test_example.py"]) == 124
+    out = capsys.readouterr().out
+    assert "timed-out run is not a measurement" in out
+    assert "the module is red" not in out
+
+
 def test_main_green_prints_no_red_note(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    monkeypatch.setattr(module_cost, "measure", lambda *_: make_sample())
+    monkeypatch.setattr(module_cost, "measure", lambda *_, **__: make_sample())
     assert module_cost.main(["tests/unit/test_example.py"]) == 0
     assert "the module is red" not in capsys.readouterr().out
