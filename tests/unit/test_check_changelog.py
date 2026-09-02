@@ -13,6 +13,9 @@ if TYPE_CHECKING:
 
 check_changelog = load_tool("check_changelog")
 
+# The validator is the unit under test; staging a whole gate run per shape would test the fixture.
+_valid_fragment = check_changelog._valid_fragment  # noqa: SLF001
+
 
 def _git(root: Path, *args: str) -> str:
     done = subprocess.run(  # noqa: S603
@@ -79,17 +82,17 @@ def test_fragment_validity_rejects_shape_without_content(tmp_path: Path) -> None
     fragment = root / "changelog.d" / "429-feature.md"
 
     fragment.write_text("", encoding="utf-8")
-    assert not check_changelog._valid_fragment(fragment)
+    assert not _valid_fragment(fragment)
 
     # A category header with nothing under it claims nothing (#429).
     fragment.write_text("### Added\n", encoding="utf-8")
-    assert not check_changelog._valid_fragment(fragment)
+    assert not _valid_fragment(fragment)
 
     fragment.write_text("### Invalid\n\n- Not collectable.\n", encoding="utf-8")
-    assert not check_changelog._valid_fragment(fragment)
+    assert not _valid_fragment(fragment)
 
     fragment.write_text("### Added\n\n- Feature.\n", encoding="utf-8")
-    assert check_changelog._valid_fragment(fragment)
+    assert _valid_fragment(fragment)
 
 
 def test_a_source_change_with_only_a_header_fragment_fails_the_gate(
