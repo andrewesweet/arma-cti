@@ -27,6 +27,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import selectors
 import shutil
 import signal
 import stat
@@ -118,16 +119,57 @@ def flipping_tasklist(path: Path, flip: Path) -> Path:
 
 def lock_eval(script: str, env: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
     """Run a snippet with `spike/client-lock.sh` sourced."""
+    return complete_process(lock_process(script, env), timeout=120)
+
+
+def lock_process(script: str, env: dict[str, str] | None = None) -> subprocess.Popen[str]:
+    """Start a lock snippet so its condition output can drive test setup."""
     full = f'source "{CLIENT_LOCK_SH}"\n{script}'
     # S603: this repo's own library, with a script this test wrote.
-    return subprocess.run(  # noqa: S603
+    return subprocess.Popen(  # noqa: S603
         [BASH, "-c", full],
-        capture_output=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
         text=True,
-        check=False,
         env={**os.environ, **(env or {})},
-        timeout=120,
     )
+
+
+def complete_process(
+    process: subprocess.Popen[str], *, timeout: float, stderr_prefix: str = ""
+) -> subprocess.CompletedProcess[str]:
+    """Collect a process, preserving stderr already consumed by a condition wait."""
+    try:
+        stdout, stderr = process.communicate(timeout=timeout)
+    except subprocess.TimeoutExpired:
+        process.kill()
+        process.communicate()
+        raise
+    return subprocess.CompletedProcess(
+        process.args, process.returncode, stdout, stderr_prefix + stderr
+    )
+
+
+def wait_for_stderr(process: subprocess.Popen[str], needle: str, *, timeout: float = 120) -> str:
+    """Wait for a diagnostic condition, bounded only to stop a broken runner hanging."""
+    assert process.stderr is not None
+    selector = selectors.DefaultSelector()
+    selector.register(process.stderr, selectors.EVENT_READ)
+    lines: list[str] = []
+    deadline = time.monotonic() + timeout
+    try:
+        while True:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0 or not selector.select(remaining):
+                pytest.fail(f"process did not emit {needle!r} within {timeout}s")
+            line = process.stderr.readline()
+            if not line:
+                pytest.fail(f"process exited before emitting {needle!r}")
+            lines.append(line)
+            if needle in line:
+                return "".join(lines)
+    finally:
+        selector.close()
 
 
 def headed_eval(script: str, env: dict[str, str]) -> subprocess.CompletedProcess[str]:
@@ -208,7 +250,7 @@ fi
 def holding(
     state: Path, label: str, then: str = "sleep 120\n", **extra: str
 ) -> subprocess.Popen[str]:
-    """Hold the client lock in a live process, ready by the time this returns."""
+    """Hold lock until caller's condition, with default sleep as unpaid background life."""
     script = (
         f'source "{CLIENT_LOCK_SH}"\n'
         f'cti_client_lock_acquire 0 "{label}" || exit 9\n'
@@ -224,6 +266,19 @@ def holding(
     assert holder.stdout is not None
     assert holder.stdout.read(5) == "ready"
     return holder
+
+
+def control_fifo(tmp_path: Path, name: str) -> Path:
+    """Create a blocking control channel for a holder's next state transition."""
+    path = tmp_path / name
+    os.mkfifo(path)
+    return path
+
+
+def release_fifo(path: Path) -> None:
+    """Fire a holder transition; opening the FIFO waits for its reader."""
+    with path.open("w", encoding="utf-8") as control:
+        control.write("release\n")
 
 
 # ------------------------------------------------------------------- the lock
@@ -263,19 +318,45 @@ def test_a_second_taker_is_refused_and_told_whose_run_it_is_behind(tmp_path: Pat
 
 
 def test_a_bounded_wait_queues_and_a_release_lets_it_through(tmp_path: Path) -> None:
-    """#125's `--wait` precedent: waiting on a resource is a queue, not a retry."""
+    """#125's `--wait` precedent: waiting on a resource is a queue, not a retry.
+
+    The holder releases on an explicit FIFO signal after the waiter has observed
+    the busy lock. The 30-second acquire bound remains a safety deadline; no
+    fixed settle stands in for the release event.
+    """
     state = tmp_path / "state"
     env = {"CTI_TIER_STATE": str(state)}
-    holder = holding(state, "holder", then="sleep 2\ncti_client_lock_release\nsleep 30\n")
+    release = control_fifo(tmp_path, "release")
+    holder = holding(
+        state,
+        "holder",
+        then=f'read -r _ < "{release}"\ncti_client_lock_release\n',
+    )
+    waiter = lock_process(
+        "cti_client_lock_busy || exit 8\n"
+        'printf "waiting\\n"\n'
+        'cti_client_lock_acquire 30 "queued" && echo TOOK',
+        env=env,
+    )
     try:
-        waited = lock_eval('cti_client_lock_acquire 30 "queued" && echo TOOK', env=env)
+        assert waiter.stdout is not None
+        assert waiter.stdout.readline().strip() == "waiting"
+        release_fifo(release)
+        waited = complete_process(waiter, timeout=120)
     finally:
+        if waiter.poll() is None:
+            waiter.kill()
         holder.kill()
     assert "TOOK" in waited.stdout, waited.stderr
 
 
 def test_a_dead_holders_lock_frees_itself(tmp_path: Path) -> None:
-    """Use flock rather than a pidfile, for the reason ADR-0016 chose it."""
+    """Use flock rather than a pidfile, for the reason ADR-0016 chose it.
+
+    The holder's 60-second sleep is background life that the test kills
+    immediately. The 30-second wait only reaps that killed process; neither is
+    a settle for the lock transition.
+    """
     state = tmp_path / "state"
     env = {"CTI_TIER_STATE": str(state)}
     holder = holding(state, "doomed", then="sleep 60\n")
@@ -565,6 +646,9 @@ def test_a_lock_held_by_an_orphan_with_no_metadata_names_the_pid_to_kill(tmp_pat
     is what stops the tier's own launches doing it, but anything can still be
     killed at the wrong instant — and when it happens, the only recovery is a
     human killing a process, so the refusal has to say which one.
+
+    The orphan's 120-second sleep is deliberately unpaid background life. The
+    test polls for its pid, then kills it; it never waits out that duration.
     """
     state = tmp_path / "state"
     leaked = tmp_path / "leaked.pid"
@@ -621,6 +705,11 @@ def run_sh(tmp_path: Path, listing: str | Path, **extra: str) -> subprocess.Comp
     `pool_env`'s own union, for the tests below that need the list to change
     its answer while the run is watching it.
     """
+    return complete_process(run_sh_process(tmp_path, listing, **extra), timeout=120)
+
+
+def run_sh_process(tmp_path: Path, listing: str | Path, **extra: str) -> subprocess.Popen[str]:
+    """Start `spike/run.sh` so a guard diagnostic can drive its holder."""
     tool = listing if isinstance(listing, Path) else tasklist(tmp_path / "tasklist.sh", listing)
     env = dict(
         os.environ,
@@ -631,8 +720,12 @@ def run_sh(tmp_path: Path, listing: str | Path, **extra: str) -> subprocess.Comp
         **extra,
     )
     # S603: this repo's own script, with paths this test just wrote.
-    return subprocess.run(  # noqa: S603
-        [BASH, str(RUN)], env=env, capture_output=True, text=True, check=False, timeout=120
+    return subprocess.Popen(  # noqa: S603
+        [BASH, str(RUN)],
+        env=env,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
     )
 
 
@@ -739,17 +832,20 @@ def pool_env(tmp_path: Path, tag: str, *, listing: str | Path = TASKLIST_FREE) -
 
 
 def pool_run(
-    env: dict[str, str], *args: str, timeout: int = 300, delay: float = 0.0
+    env: dict[str, str], *args: str, timeout: int = 300
 ) -> subprocess.CompletedProcess[str]:
-    time.sleep(delay)
+    return complete_process(pool_process(env, *args), timeout=timeout)
+
+
+def pool_process(env: dict[str, str], *args: str) -> subprocess.Popen[str]:
+    """Start `spike/regress.sh` so its guard diagnostics can drive test setup."""
     # S603: this repo's own runner, against a stub this test wrote.
-    return subprocess.run(  # noqa: S603
+    return subprocess.Popen(  # noqa: S603
         [BASH, str(REGRESS), *args],
-        capture_output=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
         text=True,
-        check=False,
         env=env,
-        timeout=timeout,
     )
 
 
@@ -774,6 +870,11 @@ def test_two_concurrent_pools_never_hold_the_client_at_once(tmp_path: Path) -> N
     sibling worktrees. Each drains its own parallel phase and then wants the one
     headed client. With `--wait` they queue; the proof is that their client legs
     are disjoint in time rather than merely that both went green.
+
+    The stub's two-second total client-leg dwell is the subject: it keeps one
+    client held while the sibling reaches the same tail. The dwell must stay as
+    a two-second floor; the former 0.2-second thread-start settle was outside
+    that subject and is removed.
     """
     envs = {tag: pool_env(tmp_path, tag) for tag in ("a", "b")}
     with ThreadPoolExecutor(max_workers=2) as pool:
@@ -786,9 +887,8 @@ def test_two_concurrent_pools_never_hold_the_client_at_once(tmp_path: Path) -> N
                 "--wait",
                 "120",
                 *HOST_PROBES,
-                delay=delay,
             )
-            for (tag, env), delay in zip(envs.items(), (0.0, 0.2), strict=True)
+            for tag, env in envs.items()
         }
         outcomes = {tag: f.result() for tag, f in futures.items()}
 
@@ -864,24 +964,33 @@ def test_a_held_client_lock_lets_the_pool_queue_rather_than_refuse(tmp_path: Pat
     The guard is not told this — it refuses exactly as before. The caller reads
     the lock and queues, which is the whole of #127's fix and the reason the
     ownership-blind property survives it.
+
+    The holder releases on the queue diagnostic, then flips the process list and
+    drops the lock. The 60-second `--wait` is the caller's queue deadline, not a
+    settle; the transition itself is event-driven.
     """
     # The list shows a client until the sibling's leg ends, and not afterwards.
-    # The holder releases at the same moment, which is the ordering the real
-    # teardown gets from waiting on `cti_windows_wait_gone` before releasing.
     flip = tmp_path / "flip"
+    release = control_fifo(tmp_path, "release")
     listing = flipping_tasklist(tmp_path / "tasklist-flip.sh", flip)
     env = pool_env(tmp_path, "queued", listing=listing)
     holder = holding(
         tmp_path / "state",
         "a sibling agent",
-        then=f'sleep 3\ntouch "{flip}"\ncti_client_lock_release\nsleep 60\n',
+        then=f'read -r _ < "{release}"\ntouch "{flip}"\ncti_client_lock_release\n',
     )
+    process = pool_process(env, "--slots", "1", "--wait", "60", "contact-decay")
     try:
-        result = pool_run(env, "--slots", "1", "--wait", "60", "contact-decay")
+        stderr = wait_for_stderr(process, "queueing up to ")
+        stderr += wait_for_stderr(process, "label=a sibling agent")
+        release_fifo(release)
+        result = complete_process(process, timeout=300, stderr_prefix=stderr)
     finally:
+        if process.poll() is None:
+            process.kill()
         holder.kill()
     assert result.returncode == 0, result.stderr[-4000:]
-    assert "queueing up to 60s" in result.stderr
+    assert re.search(r"queueing up to \d+s:", result.stderr), result.stderr[-4000:]
 
 
 def test_without_a_wait_a_client_in_the_list_still_stops_the_pool(tmp_path: Path) -> None:
@@ -983,20 +1092,26 @@ def test_a_third_run_that_takes_the_client_in_the_gap_is_queued_behind_too(
     The stub process list is what makes the gap deterministic rather than a race
     to lose: the third run is launched *by* the ask that lands in the gap, and
     the list does not answer until it holds the lock.
+
+    Both sibling holds end on diagnostics from the queued run. Their former
+    three-second settles were only margins around those transitions; the 120-
+    second `--wait` remains the queue's deadline.
     """
     client_there = tmp_path / "client-in-the-list"
     client_there.touch()
     first_gone = tmp_path / "first-released"
     third_started = tmp_path / "third-started"
     third_holds = tmp_path / "third-holds"
+    first_release = control_fifo(tmp_path, "first-release")
+    third_release = control_fifo(tmp_path, "third-release")
 
     third_run = executable(
         tmp_path / "third-run.sh",
         "#!/usr/bin/env bash\n"
         f'source "{CLIENT_LOCK_SH}"\n'
         'cti_client_lock_acquire 60 "a third agent" || exit 9\n'
-        f'touch "{third_holds}"\n'
-        "sleep 3\n"
+        f'printf "%s" "$$" > "{third_holds}"\n'
+        f'read -r _ < "{third_release}"\n'
         # The client leaves the list before the lock is dropped, which is the
         # ordering every real holder gets from `cti_windows_wait_gone`.
         f'rm -f "{client_there}"\n'
@@ -1022,11 +1137,19 @@ def test_a_third_run_that_takes_the_client_in_the_gap_is_queued_behind_too(
     holder = holding(
         tmp_path / "state",
         "a sibling agent",
-        then=f'sleep 3\ncti_client_lock_release\ntouch "{first_gone}"\nsleep 60\n',
+        then=f'read -r _ < "{first_release}"\ncti_client_lock_release\ntouch "{first_gone}"\n',
     )
+    process = pool_process(env, "--slots", "1", "--wait", "120", "contact-decay")
     try:
-        result = pool_run(env, "--slots", "1", "--wait", "120", "contact-decay")
+        stderr = wait_for_stderr(process, "queueing up to ")
+        stderr += wait_for_stderr(process, "label=a sibling agent")
+        release_fifo(first_release)
+        stderr += wait_for_stderr(process, "label=a third agent")
+        release_fifo(third_release)
+        result = complete_process(process, timeout=300, stderr_prefix=stderr)
     finally:
+        if process.poll() is None:
+            process.kill()
         holder.kill()
 
     assert result.returncode == 0, result.stderr[-4000:]
@@ -1085,23 +1208,34 @@ def test_a_probe_queues_behind_another_runs_client_rather_than_abandoning_the_po
     The green branch is asserted at the *next* refusal rather than at a pass:
     getting past the guard means reaching the missing server install, which is
     as far as any of these runs is meant to get.
+
+    The holder releases on the guard's queue diagnostic, then flips the process
+    list before dropping the lock. The 60-second `CTI_CLIENT_LOCK_WAIT` is the
+    queue deadline; no fixed settle stages the sibling's exit.
     """
     flip = tmp_path / "flip"
+    release = control_fifo(tmp_path, "release")
     listing = flipping_tasklist(tmp_path / "tasklist-flip.sh", flip)
     holder = holding(
         tmp_path / "state",
         "a sibling agent",
-        then=f'sleep 3\ntouch "{flip}"\ncti_client_lock_release\nsleep 60\n',
+        then=f'read -r _ < "{release}"\ntouch "{flip}"\ncti_client_lock_release\n',
     )
+    process = run_sh_process(tmp_path, listing, CTI_CLIENT_LOCK_WAIT="60")
     try:
-        result = guard_wait(tmp_path, listing, "60")
+        stderr = wait_for_stderr(process, "queueing up to ")
+        stderr += wait_for_stderr(process, "label=a sibling agent")
+        release_fifo(release)
+        result = complete_process(process, timeout=120, stderr_prefix=stderr)
     finally:
+        if process.poll() is None:
+            process.kill()
         holder.kill()
     got = results(tmp_path)
     assert result.returncode != 0
     assert got["windows_host_free"] == "true", got
     assert "server binary missing" in got["failure_detail"], got
-    assert "queueing up to 60s" in result.stderr, result.stderr[-4000:]
+    assert re.search(r"queueing up to \d+s:", result.stderr), result.stderr[-4000:]
     # And it named the run it was behind, so a wedged holder is diagnosable
     # from the queuer's own log rather than from the machine.
     assert "label=a sibling agent" in result.stderr

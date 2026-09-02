@@ -558,13 +558,6 @@ NO_MUTABLE_SUBJECT: Final[dict[str, str]] = {
         "its subject is the agreement between cti_daemon.report.SHAPES and the SQF "
         "samplers (#74): it reads both as documents rather than executing either"
     ),
-    # --- measurable, but not inside the budget `just fast` can carry ---
-    "tests/unit/test_client_lock.py": (
-        "cost, not shape: the shell arm measures it at 80% against spike/client-lock.sh "
-        "(8/10) and takes 216.6 s doing it, of which 112.8 s is one serial run of the "
-        "module — #197's 60 s soak is in there. Past ADR-0064 decision 3's ceiling on "
-        "top of `just fast`, so it is measured and recorded rather than enforced"
-    ),
     "tests/unit/test_pool_slots.py": (
         "cost, not shape: its subject is the slot pool in spike/regress.sh (#47, ADR-0028) "
         "and the shell arm can measure it, but one serial run of the module is 190.8 s "
