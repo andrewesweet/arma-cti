@@ -157,15 +157,12 @@ def read_completion_record(record: Path) -> tuple[list[tuple[str, str]], str]:
     return completions, ""
 
 
-def crash_stop_line(names: Sequence[str], not_run: int | None = None) -> str:
-    """Explain a corpus crash trip, optionally with its final not-run count."""
-    line = (
+def crash_stop_line(names: Sequence[str]) -> str:
+    """Explain a corpus crash trip before the final not-run count is known."""
+    return (
         f"{breaker.CORPUS_CRASH_CLASS} in {', then '.join(names)} — abandoned after "
         f"{breaker.CORPUS_CRASH_RULE.consecutive} consecutive {breaker.CORPUS_CRASH_CLASS}"
     )
-    if not_run is not None:
-        line += f", {not_run} probe(s) not run"
-    return line
 
 
 def finalize_stop_line(stop_line: str, not_run: int) -> str:
@@ -192,7 +189,7 @@ def read_stop_decision_failure(pool_out: Path) -> str | None:
     return "untyped_harness_failure"
 
 
-def crash_stop(record: Path, corpus_size: int, *, include_not_run: bool = True) -> tuple[bool, str]:
+def crash_stop(record: Path) -> tuple[bool, str]:
     """Answer whether the pool's consecutive-crash breaker trips, and say so how.
 
     The record is the workers' completion log — one `name<TAB>class` line per
@@ -210,8 +207,8 @@ def crash_stop(record: Path, corpus_size: int, *, include_not_run: bool = True) 
 
     The second half of the answer is the sentence for the stop flag, in the
     `infra_unavailable` break's own voice — the class named and the run that
-    tripped it. The live decision can omit the not-run count because in-flight
-    probes may still land; `run_merge` adds the final count after they drain.
+    tripped it. The live decision has no not-run count because in-flight probes
+    may still land; `run_merge` adds the final count after they drain.
     """
     completions, error = read_completion_record(record)
     if error:
@@ -219,8 +216,7 @@ def crash_stop(record: Path, corpus_size: int, *, include_not_run: bool = True) 
     names = breaker.crash_stop(completions)
     if names is None:
         return False, ""
-    left = corpus_size - len(completions) if include_not_run else None
-    return True, crash_stop_line(names, left)
+    return True, crash_stop_line(names)
 
 
 class ProbeRow(NamedTuple):
@@ -653,7 +649,6 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
         help="whether the pool's consecutive-crash breaker trips (#72)",
     )
     stop.add_argument("--record", required=True, type=Path)
-    stop.add_argument("--corpus-size", required=True, type=int)
 
     return parser.parse_args(argv)
 
@@ -786,7 +781,7 @@ def run_class_of(args: argparse.Namespace) -> int:
 
 def run_stop_decision(args: argparse.Namespace) -> int:
     """Print the breaker's answer; the worker writes the stop flag it is told."""
-    trip, stop_line = crash_stop(args.record, args.corpus_size, include_not_run=False)
+    trip, stop_line = crash_stop(args.record)
     print(f"trip={'yes' if trip else 'no'}")  # noqa: T201 — the shell reads these lines
     if stop_line:
         print(f"stop_line={flattened(stop_line)}")  # noqa: T201 — the shell reads a line

@@ -1247,7 +1247,7 @@ run_probe() {
         # is not carrying every world, so the run restarts rather than trips.
         printf '%s\t%s\n' "$name" "$class" >>"$POOL_OUT/completions.tsv"
         decided="$(cd "$REPO" && timeout "$UV_TIMEOUT" uv run --quiet python "$POOL_MERGE_TOOL" \
-            stop-decision --record "$POOL_OUT/completions.tsv" --corpus-size "${#CORPUS[@]}" 2>>"$out/regress.log")"
+            stop-decision --record "$POOL_OUT/completions.tsv" 2>>"$out/regress.log")"
         decision_status=$?
         decision_lines=()
         if ((decision_status == 0)); then
@@ -1265,12 +1265,12 @@ run_probe() {
                 else
                     trip=yes
                     decision_failure_class=untyped_harness_failure
-                    stop_line="the stop decision output was malformed (tools/pool_merge.py stop-decision exited $decision_status) — stopping rather than running past it"
+                    stop_line="the stop decision output was malformed — stopping rather than running past it"
                 fi
             else
                 trip=yes
                 decision_failure_class=untyped_harness_failure
-                stop_line="the stop decision output was malformed (tools/pool_merge.py stop-decision exited $decision_status) — stopping rather than running past it"
+                stop_line="the stop decision output was malformed — stopping rather than running past it"
             fi
         else
             # Fail closed in the protective direction (ADR-0049's caller rule):

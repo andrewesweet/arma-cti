@@ -815,6 +815,9 @@ def test_two_crashes_with_a_pass_between_them_do_not_stop_the_pool(tmp_path: Pat
     `node_crashed` — the breaker changes what is abandoned, never what a
     completed verdict says.
     """
+    # This relies on longest-job-first scheduling and current measured probe
+    # durations placing staged crashes non-adjacent in completion order. A
+    # schedule change must make the assertion below fail loudly.
     result = pool_run(
         tmp_path,
         "--slots",

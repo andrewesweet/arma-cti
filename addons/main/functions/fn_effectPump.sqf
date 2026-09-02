@@ -89,7 +89,8 @@ private _stuckAfter = 90;
 // 10 s on the default 2 s cadence; never make a caller configured with a slower
 // cadence faster. The daemon-restart probe allows 90 s after restart for this
 // probe to notice the new epoch, so this leaves ample probes without silencing
-// the epoch-change path.
+// the epoch-change path. This pump-only `_latchAfter` is independent from
+// fn_daemonCall.sqf's shared `_latchAfter`, which counts every caller.
 private _transport = createHashMapFromArray [
     ["next_poll_at", 0],
     ["consecutive_unreachable", 0]

@@ -768,16 +768,14 @@ def _record(tmp_path: Path, *entries: tuple[str, str]) -> Path:
 
 
 def test_two_consecutive_crashes_trip_the_breaker(tmp_path: Path) -> None:
-    trip, stop_line = pool_merge.crash_stop(
-        _record(
-            tmp_path,
-            ("base-assault", "node_crashed"),
-            ("contacts", "node_crashed"),
-        ),
-        corpus_size=28,
+    record = _record(
+        tmp_path,
+        ("base-assault", "node_crashed"),
+        ("contacts", "node_crashed"),
     )
+    trip, stop_line = pool_merge.crash_stop(record)
     assert trip is True
-    assert stop_line == (
+    assert pool_merge.finalize_stop_line(stop_line, 26) == (
         "node_crashed in base-assault, then contacts — abandoned after 2 "
         "consecutive node_crashed, 26 probe(s) not run"
     )
@@ -791,15 +789,14 @@ def test_a_verdict_between_two_crashes_restarts_the_run(tmp_path: Path) -> None:
             ("base-assault", "node_crashed"),
             ("contacts", "pass"),
             ("massed-assault", "node_crashed"),
-        ),
-        corpus_size=28,
+        )
     )
     assert trip is False
     assert stop_line == ""
 
 
 def test_one_crash_alone_never_trips(tmp_path: Path) -> None:
-    trip, _ = pool_merge.crash_stop(_record(tmp_path, ("contacts", "node_crashed")), 28)
+    trip, _ = pool_merge.crash_stop(_record(tmp_path, ("contacts", "node_crashed")))
     assert trip is False
 
 
@@ -811,8 +808,7 @@ def test_a_longer_run_names_every_crash_it_ran_past(tmp_path: Path) -> None:
             ("a", "node_crashed"),
             ("b", "node_crashed"),
             ("c", "node_crashed"),
-        ),
-        corpus_size=28,
+        )
     )
     assert trip is True
     assert "node_crashed in a, then b, then c" in stop_line
@@ -820,7 +816,7 @@ def test_a_longer_run_names_every_crash_it_ran_past(tmp_path: Path) -> None:
 
 def test_an_unreadable_record_trips_fail_closed(tmp_path: Path) -> None:
     """The breaker protects the machine; unreadable is stop, with the reason spelled."""
-    trip, stop_line = pool_merge.crash_stop(tmp_path / "absent.tsv", 28)
+    trip, stop_line = pool_merge.crash_stop(tmp_path / "absent.tsv")
     assert trip is True
     assert "no completion record readable" in stop_line
 
@@ -828,7 +824,7 @@ def test_an_unreadable_record_trips_fail_closed(tmp_path: Path) -> None:
 def test_a_corrupt_record_trips_fail_closed(tmp_path: Path) -> None:
     record = tmp_path / "completions.tsv"
     record.write_text("base-assault\nnode_crashed without a name", encoding="utf-8")
-    trip, stop_line = pool_merge.crash_stop(record, 28)
+    trip, stop_line = pool_merge.crash_stop(record)
     assert trip is True
     assert "the completion record is corrupt at line 1" in stop_line
 
@@ -837,7 +833,7 @@ def test_the_subcommand_prints_the_lines_the_shell_acts_on(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
     record = _record(tmp_path, ("base-assault", "node_crashed"), ("contacts", "node_crashed"))
-    assert pool_merge.main(["stop-decision", "--record", str(record), "--corpus-size", "28"]) == 0
+    assert pool_merge.main(["stop-decision", "--record", str(record)]) == 0
     out = capsys.readouterr().out.splitlines()
     assert out[0] == "trip=yes"
     assert out[1].startswith("stop_line=node_crashed in base-assault, then contacts")
@@ -847,7 +843,7 @@ def test_the_subcommand_answers_trip_no_alone(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
     record = _record(tmp_path, ("contacts", "pass"))
-    assert pool_merge.main(["stop-decision", "--record", str(record), "--corpus-size", "28"]) == 0
+    assert pool_merge.main(["stop-decision", "--record", str(record)]) == 0
     assert capsys.readouterr().out.splitlines() == ["trip=no"]
 
 
