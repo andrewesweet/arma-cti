@@ -66,6 +66,7 @@ dispatch = load_tool("dispatch")
 breaker = load_tool("breaker")
 queue_policy = load_tool("queue_policy")
 review_loop = load_tool("review_loop")
+tool_copy = load_tool("tool_copy")
 
 READY_BODY = REPO / "tests" / "fixtures" / "routing-eligible.md"
 
@@ -1504,3 +1505,38 @@ def test_a_lost_declaration_refuses_rather_than_narrowing_the_set(
     assert f"record={lost}" in refusal.found
     assert f"lock={lost.with_name(review_loop.AUTHORSHIP_LOCK)}" in refusal.found
     assert "just review-loop author" in refusal.action
+
+
+def test_the_record_names_the_dispatching_tree_s_own_copy_of_the_tools(
+    tmp_path: Path,
+) -> None:
+    """#676 criterion 1: the record carries which revision of the machinery dispatched it.
+
+    `plan_dispatch` runs from the dispatching session's tree — `REPO` here — so the
+    survey it embeds is that tree's own read: its HEAD beside `origin/main`'s, and the
+    paths whose bytes a landing has superseded. A reader of the record can tell a stale
+    dispatcher from a current one without reaching this box.
+    """
+    plan, _, refusal = plan_for(tmp_path)
+
+    assert refusal is None
+    assert plan is not None
+    document = plan.document()
+    head = subprocess.run(
+        ["git", "rev-parse", "HEAD"],  # noqa: S607
+        cwd=REPO,
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout.strip()
+    assert document["dispatcher_copy"]["worktree_head"] == head
+    # The record survives its own read-back, which is how the detached child and the
+    # ledger meet it — asserted field by field, because a whole-object comparison over a
+    # record that names a path set this large truncates before it explains.
+    read_back = tool_copy.Survey.from_document(document["dispatcher_copy"])
+    assert read_back is not None
+    assert plan.copy_state is not None
+    assert read_back.head == plan.copy_state.head
+    assert read_back.origin_main == plan.copy_state.origin_main
+    assert read_back.behind_origin_main == plan.copy_state.behind_origin_main
+    assert read_back.paths == plan.copy_state.paths

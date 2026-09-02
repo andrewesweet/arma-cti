@@ -1292,6 +1292,63 @@ def test_the_estimate_verb_refuses_without_a_plan_tier_and_names_the_recipe(
     assert "just prereqs plan-tier" in done.stderr
 
 
+def _current_seed_repository(root: Path) -> str:
+    """Give the rung a repository whose governed files are current against `origin/main`.
+
+    #676's rung reads the calling tree, so the recipe-silence test isolates it the way
+    #249 isolated the other stateful reads: with a tree whose only possible answer is
+    "current", the report can say nothing.
+    """
+    repository = root / "tool-copy-seed"
+    (repository / "tools").mkdir(parents=True)
+    (repository / ".claude").mkdir()
+    for args in (
+        ["init", "-q", "-b", "main"],
+        ["config", "user.email", "t@example.invalid"],
+        ["config", "user.name", "t"],
+    ):
+        subprocess.run(  # noqa: S603
+            ["git", *args],  # noqa: S607
+            cwd=repository,
+            check=True,
+            capture_output=True,
+        )
+    (repository / "justfile").write_text("demo:\n\techo demo\n", encoding="utf-8")
+    (repository / "tools" / "a.py").write_text("a = 1\n", encoding="utf-8")
+    (repository / ".claude" / "settings.json").write_text("{}\n", encoding="utf-8")
+    subprocess.run(
+        ["git", "add", "-A"],  # noqa: S607
+        cwd=repository,
+        check=True,
+        capture_output=True,
+    )
+    subprocess.run(
+        ["git", "commit", "-qm", "chore: seed"],  # noqa: S607
+        cwd=repository,
+        check=True,
+        capture_output=True,
+    )
+    remote = root / "tool-copy-seed.git"
+    subprocess.run(  # noqa: S603
+        ["git", "init", "-q", "--bare", str(remote)],  # noqa: S607
+        check=True,
+        capture_output=True,
+    )
+    subprocess.run(  # noqa: S603
+        ["git", "remote", "add", "origin", str(remote)],  # noqa: S607
+        cwd=repository,
+        check=True,
+        capture_output=True,
+    )
+    subprocess.run(
+        ["git", "push", "-q", "-u", "origin", "main"],  # noqa: S607
+        cwd=repository,
+        check=True,
+        capture_output=True,
+    )
+    return str(repository)
+
+
 def test_watch_report_prints_the_verdicts_and_stays_silent_when_nothing_is_tripped(
     tmp_path: Path,
 ) -> None:
@@ -1321,6 +1378,11 @@ def test_watch_report_prints_the_verdicts_and_stays_silent_when_nothing_is_tripp
         "CTI_ADMISSION_DIR": str(tmp_path / "admission"),
         "CTI_BREAKER_DIR": str(directory),
         "CTI_DISPATCH_DIR": str(tmp_path / "dispatches"),
+        # #676's rung reads the calling tree itself, so it gets the same isolation every
+        # other stateful read here already has: a seed repository whose governed files
+        # are current against its own `origin/main`, and silence is then the only
+        # possible answer.
+        "CTI_TOOL_COPY_REPO": str(_current_seed_repository(tmp_path)),
         # #249 again, for the read #446 folded in: without this seam the live
         # `~/.arma-cti/gate-clock/` records feed the report, and a gate that is
         # genuinely durably slower on this box would redden a run about the

@@ -279,6 +279,7 @@ import review_exchange
 # is safe today and those edges cannot move up without cycling them back.
 import review_loop
 import routing_policy
+import tool_copy
 import worktree as worktree_tool
 
 if TYPE_CHECKING:
@@ -1767,6 +1768,15 @@ class Plan(NamedTuple):
     # different holder's worktree.
     disposable_worktree: bool = False
     worktree_ref: str = ""
+    # Which revision of this project's own command machinery the dispatching tree ran,
+    # captured at planning time, because the survey is a read of the dispatching tree
+    # itself: a landing that supersedes the dispatcher must not be invisible on the
+    # record the dispatcher wrote (#676). A reader compares the embedded blobs against
+    # `origin/main` to tell a stale dispatcher from a current one after the fact. `None`
+    # where the survey could not run, and on every record written before #676, which is
+    # why the key is written only when a survey exists rather than defaulted to an empty
+    # document a reader could mistake for a clean one.
+    copy_state: tool_copy.Survey | None = None
 
     def document(self) -> dict[str, object]:
         """Render the dispatch record, which names the credential key and never its value."""
@@ -1817,6 +1827,8 @@ class Plan(NamedTuple):
         else:
             manifest = codex_guidance.UnattributableGuidanceManifest(launch_directory)
         document["guidance_manifest"] = manifest.document()
+        if self.copy_state is not None:
+            document["dispatcher_copy"] = self.copy_state.document()
         return document
 
 
@@ -5615,6 +5627,7 @@ def plan_dispatch(  # noqa: C901, PLR0911, PLR0912 — planning owns the ordered
         routing=routing_clearance(args, root, found, now),
         strata=capture_strata(found.body, args.issue, root, body_from_file=bool(args.issue_body)),
         disposable_worktree=disposable,
+        copy_state=tool_copy.survey(root),
     )
     if disposable and materialize_worktree:
         return _materialize_disposable_plan(
@@ -5688,6 +5701,7 @@ def load_record(record: Path) -> Plan:
         strata=read_strata(document),
         disposable_worktree=document.get("disposable_worktree") is True,
         worktree_ref=str(document.get("worktree_ref", "")),
+        copy_state=tool_copy.Survey.from_document(document.get("dispatcher_copy")),
     )
 
 

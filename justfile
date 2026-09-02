@@ -967,6 +967,15 @@ watch-report *args:
     # the tree at tools/gate-clock-anchor.json; raising it is a deliberate diff,
     # never automatic. Reads `CTI_GATE_CLOCK_DIR`, the same seam.
     uv run python tools/gate_clock.py report
+    # The dispatching session's own copy of the command machinery (#676): one line per
+    # governed path — the tools/ files the justfile runs, the .claude/hooks/ surface and
+    # its wiring — whose working-tree bytes `origin/main` has superseded. A landing that
+    # changes the dispatch path does not govern the session that landed it until this
+    # read names it, and the report names it without fixing it: rebasing a live session's
+    # tree is a judgement, never something a report does. Silent while current, and loud
+    # rather than silent where git could not answer at all. Reads the local `origin/main`
+    # ref without fetching, on the same ground the other rungs read local state.
+    uv run python tools/tool_copy.py report
 
 # The gate-duration read's other half (#446): per-recipe record counts, green
 # medians, spans and the anchor each recipe holds with its set date, for the
