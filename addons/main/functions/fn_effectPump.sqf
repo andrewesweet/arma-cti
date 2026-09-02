@@ -84,12 +84,52 @@ private _deferrals = createHashMap;
 // rather than after one.
 private _stuckAfter = 90;
 
+// Keep asking after a transport outage, but stop paying the shim's reconnect
+// cost on every normal pump cadence. Five failures latch a half-open probe at
+// 10 s on the default 2 s cadence; never make a caller configured with a slower
+// cadence faster. The daemon-restart probe allows 90 s after restart for this
+// probe to notice the new epoch, so this leaves ample probes without silencing
+// the epoch-change path.
+private _transport = createHashMapFromArray [
+    ["next_poll_at", 0],
+    ["consecutive_unreachable", 0]
+];
+private _latchAfter = 5;
+private _halfOpenInterval = _interval max 10;
+
 // Paced, heartbeated and watched by the one adapter every loop in the addon
 // runs on (#85).
-["effect_pump", _interval, [_drain, _deferrals, _stuckAfter], {
-    params ["_drain", "_deferrals", "_stuckAfter"];
+["effect_pump", _interval, [
+    _drain, _deferrals, _stuckAfter, _transport, _latchAfter, _halfOpenInterval
+], {
+    params [
+        "_drain", "_deferrals", "_stuckAfter", "_transport", "_latchAfter",
+        "_halfOpenInterval"
+    ];
+
+    // The call remains available for the half-open probe. This gate is on the
+    // pump, not daemonCall, so the daemon-call API still observes every caller
+    // that explicitly asks and the restart probe remains immediate.
+    if (diag_tickTime < (_transport get "next_poll_at")) exitWith {};
+
+    private _recordTransport = {
+        params ["_answer"];
+        if ((_answer get "outcome") isEqualTo "unreachable") then {
+            private _failures = (_transport get "consecutive_unreachable") + 1;
+            _transport set ["consecutive_unreachable", _failures];
+            if (_failures >= _latchAfter) then {
+                _transport set ["next_poll_at", diag_tickTime + _halfOpenInterval];
+            };
+        } else {
+            // Any reply proves the wire is back. Recovery starts the normal
+            // cadence again; daemonCall owns the one recovery log line.
+            _transport set ["consecutive_unreachable", 0];
+            _transport set ["next_poll_at", 0];
+        };
+    };
 
     private _answer = [["poll"] call cti_fnc_requestId, "poll"] call cti_fnc_daemonCall;
+    [_answer] call _recordTransport;
     _drain set ["polls", (_drain get "polls") + 1];
 
     // Every outcome that is not `ok` has already been classified and logged
@@ -189,6 +229,7 @@ private _stuckAfter = 90;
             format ["ack-%1", _highest], "ack",
             createHashMapFromArray [["through", _highest], ["dead", _dead]]
         ] call cti_fnc_daemonCall;
+        [_acked] call _recordTransport;
         if ((_acked get "outcome") isEqualTo "ok") then {
             diag_log format ["CTI|effects_acked through=%1", _highest];
         } else {

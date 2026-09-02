@@ -275,6 +275,16 @@ def test_the_rules_a_consumer_would_write_for_issue_72_work_unchanged() -> None:
     assert len(verdicts) - abandoned_after - 1 == 2, "two probes not run, which the summary says"
 
 
+def test_the_corpus_breaker_finds_a_crash_pair_before_a_later_completion() -> None:
+    """A later in-flight pass must not hide the adjacent crash pair (#72)."""
+    completions = [
+        ("crash-a", "node_crashed"),
+        ("crash-b", "node_crashed"),
+        ("in_flight-pass", "pass"),
+    ]
+    assert breaker.crash_stop(completions) == ("crash-a", "crash-b")
+
+
 # ------------------------------------------------------------------------------ feeds
 
 

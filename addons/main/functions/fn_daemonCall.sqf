@@ -152,7 +152,8 @@ if (isNil "_reply" || { !(_reply isEqualType createHashMap) }) exitWith {
 // never stop: the first reply to get through is what lets the world notice a
 // restarted daemon (cti_fnc_campaignLost reads the epoch off it), so a call-
 // suppressing latch here would trade legible evidence for a world that can
-// never hear that the daemon came back.
+// never hear that the daemon came back. The effect pump paces its own asks
+// after the threshold; this function still sends every call its caller makes.
 if !("status" in _reply) exitWith {
     _tally set ["unreachable", (_tally get "unreachable") + 1];
     private _run = (_tally getOrDefault ["consecutive_unreachable", 0]) + 1;

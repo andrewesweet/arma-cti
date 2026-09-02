@@ -849,3 +849,28 @@ def test_the_subcommand_answers_trip_no_alone(
     record = _record(tmp_path, ("contacts", "pass"))
     assert pool_merge.main(["stop-decision", "--record", str(record), "--corpus-size", "28"]) == 0
     assert capsys.readouterr().out.splitlines() == ["trip=no"]
+
+
+def test_the_merge_recounts_crash_stop_after_in_flight_survivors_finish(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The final pool record counts not-run probes after workers have drained (#72)."""
+    claim(tmp_path, "crash-a", verdict={"class": "node_crashed", "elapsed_secs": 1})
+    claim(tmp_path, "crash-b", verdict={"class": "node_crashed", "elapsed_secs": 1})
+    claim(tmp_path, "in_flight-pass", verdict={"class": "pass", "elapsed_secs": 1})
+    (tmp_path / "stop").write_text(
+        "node_crashed in crash-a, then crash-b — abandoned after 2 consecutive node_crashed\n",
+        encoding="utf-8",
+    )
+
+    status, _, _ = run_merge(
+        tmp_path,
+        capsys,
+        ["crash-a", "crash-b", "in_flight-pass", "not-started"],
+    )
+
+    assert status == 0
+    document = json.loads((tmp_path / "pool.json").read_text(encoding="utf-8"))
+    assert document["not_run"] == ["not-started"]
+    assert document["stopped_early"].endswith(", 1 probe(s) not run")
+    assert (tmp_path / "stop").read_text(encoding="utf-8").strip() == document["stopped_early"]

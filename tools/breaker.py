@@ -237,6 +237,44 @@ QUALITY_RULE: Final = TripRule(
 # outcome appears in two rules, and the assertion below keeps it that way.
 LANE_RULES: Final[tuple[TripRule, ...]] = (QUOTA_RULE, PROVIDER_ERROR_RULE, QUALITY_RULE)
 
+# The pool's systemic-crash rule is the other consumer of this module's pure
+# consecutive-N policy. It is not a lane circuit: the pool has no provider or
+# reset state, only an ordered completion stream, so the rule carries the
+# threshold and outcome without pretending that a pool is a lane.
+CORPUS_CRASH_CLASS: Final = "node_crashed"
+CORPUS_CRASH_RULE: Final = TripRule(
+    name="systemic_crash",
+    on=frozenset({CORPUS_CRASH_CLASS}),
+    consecutive=2,
+    family="pool",
+    auto_reset=False,
+    escalates=False,
+    failure_class="infra_unavailable",
+)
+
+
+def crash_stop(completions: Iterable[tuple[str, str]]) -> tuple[str, ...] | None:
+    """Return the first crash run that reaches the corpus stop threshold.
+
+    Completion order is the pool's only order. A completion after the threshold
+    may already be in the record when a competing worker reads it, so keep the
+    whole contiguous run for the stop explanation; the first adjacent pair is
+    still what makes the decision. A later non-crash ends that run, but cannot
+    hide a pair that was already found.
+    """
+    run: list[str] = []
+    tripped = False
+    for name, class_ in completions:
+        if class_ in CORPUS_CRASH_RULE.on:
+            run.append(name)
+            if len(run) >= CORPUS_CRASH_RULE.consecutive:
+                tripped = True
+        elif tripped:
+            return tuple(run)
+        else:
+            run = []
+    return tuple(run) if tripped else None
+
 
 def rule_named(rules: Sequence[TripRule], name: str) -> TripRule | None:
     """Find a rule by name, which is how a stored circuit rejoins its policy."""

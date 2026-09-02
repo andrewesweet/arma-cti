@@ -19,11 +19,17 @@ from __future__ import annotations
 from conftest import REPO
 
 DAEMON_CALL = REPO / "addons" / "main" / "functions" / "fn_daemonCall.sqf"
+EFFECT_PUMP = REPO / "addons" / "main" / "functions" / "fn_effectPump.sqf"
 
 
 def source() -> str:
     """Read the one file the latch lives in."""
     return DAEMON_CALL.read_text(encoding="utf-8")
+
+
+def pump_source() -> str:
+    """Read the pump's cadence gate, which decides when to ask again."""
+    return EFFECT_PUMP.read_text(encoding="utf-8")
 
 
 def test_the_run_is_counted_in_the_one_place_every_failure_passes_through() -> None:
@@ -52,8 +58,8 @@ def test_the_threshold_is_five_consecutive_transport_errors() -> None:
     assert "private _latchAfter = 5;" in source()
 
 
-def test_the_calls_never_stop_so_a_restarted_daemon_is_still_noticed() -> None:
-    """A call-suppressing latch would deafen the world to the epoch change (#96)."""
+def test_daemon_call_still_reaches_the_wire_and_resets_on_recovery() -> None:
+    """The cadence gate belongs to the pump; daemonCall still observes recovery (#96)."""
     body = source()
     # The wire call still precedes the branch that counts the failure, and the
     # run resets on the first reply — any reply — so recovery is discoverable.
@@ -64,3 +70,21 @@ def test_the_calls_never_stop_so_a_restarted_daemon_is_still_noticed() -> None:
     reset_at = body.index('_tally set ["consecutive_unreachable", 0];')
     branch_end = body.index('["unreachable", _reply, _raw] call _answer')
     assert reset_at > branch_end
+
+
+def test_the_effect_pump_skips_wire_calls_until_its_half_open_probe() -> None:
+    body = pump_source()
+    gate_at = body.index('if (diag_tickTime < (_transport get "next_poll_at")) exitWith {};')
+    call_at = body.index('private _answer = [["poll"] call cti_fnc_requestId')
+    assert gate_at < call_at
+    assert '["next_poll_at", 0]' in body
+    assert "private _halfOpenInterval = _interval max 10;" in body
+    assert "if (_failures >= _latchAfter) then {" in body
+    assert '_transport set ["next_poll_at", diag_tickTime + _halfOpenInterval];' in body
+
+
+def test_the_half_open_cadence_fits_daemon_restart_probe_window() -> None:
+    body = pump_source()
+    restart = (REPO / "spike" / "probes" / "daemon-restart.sqf").read_text(encoding="utf-8")
+    assert "private _halfOpenInterval = _interval max 10;" in body
+    assert "_deadline = diag_tickTime + 90;" in restart

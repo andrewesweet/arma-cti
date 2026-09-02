@@ -31,11 +31,11 @@ of that stop is that no probe launched to carry the class.
 
 Six riders travel with the merge because they read and write the same files
 or the same table: `stop-decision` reads the workers' completion record and
-answers whether the pool's consecutive-crash breaker trips (#72) — the shell
-asks after every verdict and writes the stop flag it is told, because a run
-of trips is a decision about the whole pool and the whole pool's decisions
-live here — `prune-passes` decides which old green evidence has
-outlived the retention convention (the shell does the deleting),
+asks `breaker.py` whether the pool's consecutive-crash rule trips (#72) — the
+shell asks after every verdict and writes the stop flag it is told, while this
+module owns only the record parsing and explanation — `prune-passes` decides
+which old green evidence has outlived the retention convention (the shell does
+the deleting),
 `prune-pools` decides the same for pool directories off the `worst_class`
 the merge itself records — verdict-aware because the count-only prune kept
 `prune-interrupted` names verdict-less evidence beyond its recovery horizon,
@@ -64,8 +64,14 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, NamedTuple
 
+# tools/ holds standalone scripts rather than an importable package, so a sibling
+# import needs the script's own directory on the path.
+sys.path.insert(0, str(Path(__file__).parent))
+
+import breaker
+
 if TYPE_CHECKING:
-    from collections.abc import Iterable
+    from collections.abc import Iterable, Sequence
 
 # The failure-class table, by how bad each row is. The summary sorts by this
 # and the pool's exit is the worst class present; the numbers are ranks, not
@@ -100,16 +106,6 @@ MISSION_CLASSES: Final[frozenset[str]] = frozenset(CLASS_SEVERITY) - {
     "flake_quarantine",
 }
 
-# The consecutive-crash run that trips the pool's stop (#72): one crashed world
-# is a verdict, but two back to back are the tier telling you the crash is
-# systemic — one bad `.so`, one broken `CfgFunctions` — and every further
-# bring-up is a non-result bought at full price, N slots at a time. The
-# threshold and the class it counts are a comparison against a constant, so the
-# constant lives here rather than in the shell that asks (ADR-0049); N=2 is
-# #72's own judgement.
-CRASH_STOP_AFTER: Final = 2
-CRASH_STOP_CLASS: Final = "node_crashed"
-
 
 def severity(class_: str) -> int:
     """Rank one class; a class the table has never heard of is an untyped red."""
@@ -137,14 +133,73 @@ def mission_class(line: str) -> tuple[str, str]:
     return "untyped_harness_failure", detail
 
 
-def crash_stop(record: Path, corpus_size: int) -> tuple[bool, str]:
+def read_completion_record(record: Path) -> tuple[list[tuple[str, str]], str]:
+    """Read the completion stream, or return the reason it cannot be trusted."""
+    try:
+        lines = record.read_text(encoding="utf-8").splitlines()
+    except (OSError, UnicodeDecodeError):
+        return (
+            [],
+            f"no completion record readable at {record} — stopping rather than running past it",
+        )
+
+    completions: list[tuple[str, str]] = []
+    for number, line in enumerate(lines, start=1):
+        if not line.strip():
+            continue
+        name, separator, class_ = line.partition("\t")
+        if not separator or not name.strip() or not class_.strip():
+            return [], (
+                f"the completion record is corrupt at line {number} ({line!r}) — "
+                "stopping rather than reading past it"
+            )
+        completions.append((name.strip(), class_.strip()))
+    return completions, ""
+
+
+def crash_stop_line(names: Sequence[str], not_run: int | None = None) -> str:
+    """Explain a corpus crash trip, optionally with its final not-run count."""
+    line = (
+        f"{breaker.CORPUS_CRASH_CLASS} in {', then '.join(names)} — abandoned after "
+        f"{breaker.CORPUS_CRASH_RULE.consecutive} consecutive {breaker.CORPUS_CRASH_CLASS}"
+    )
+    if not_run is not None:
+        line += f", {not_run} probe(s) not run"
+    return line
+
+
+def finalize_stop_line(stop_line: str, not_run: int) -> str:
+    """Add the merged pool's final not-run count to a crash stop explanation."""
+    line = flattened(stop_line)
+    prefix = f"{breaker.CORPUS_CRASH_CLASS} in "
+    if not line.startswith(prefix):
+        return line
+    line = re.sub(r", \d+ probe\(s\) not run$", "", line)
+    return f"{line}, {not_run} probe(s) not run"
+
+
+def read_stop_decision_failure(pool_out: Path) -> str | None:
+    """Read the caller's typed stop-decision failure marker, if one exists."""
+    marker = pool_out / "stop-decision-failure"
+    if not marker.is_file():
+        return None
+    try:
+        failure_class = marker.read_text(encoding="utf-8").strip()
+    except (OSError, UnicodeDecodeError):
+        return "untyped_harness_failure"
+    if failure_class in {"infra_unavailable", "untyped_harness_failure"}:
+        return failure_class
+    return "untyped_harness_failure"
+
+
+def crash_stop(record: Path, corpus_size: int, *, include_not_run: bool = True) -> tuple[bool, str]:
     """Answer whether the pool's consecutive-crash breaker trips, and say so how.
 
     The record is the workers' completion log — one `name<TAB>class` line per
     finished verdict, in completion order, which is the only order a pool has.
-    The trip is the trailing run of `CRASH_STOP_CLASS` verdicts reaching
-    `CRASH_STOP_AFTER`; a verdict of any other class between two crashes means
-    the crash is not carrying every world, and the run restarts.
+    The trip is any adjacent run of `breaker.py`'s corpus crash rule reaching
+    its threshold; a verdict of any other class ends that run, but cannot hide
+    a pair already found earlier in the record.
 
     Every answer the decision cannot read trips rather than runs on: a record
     that is missing or carries a line this module did not write is a harness
@@ -154,41 +209,18 @@ def crash_stop(record: Path, corpus_size: int) -> tuple[bool, str]:
     the same fail-closed shape ADR-0049 gives every call site it lands.
 
     The second half of the answer is the sentence for the stop flag, in the
-    `infra_unavailable` break's own voice — the class named, the run that
-    tripped it, and how many probes the abandonment leaves unrun.
+    `infra_unavailable` break's own voice — the class named and the run that
+    tripped it. The live decision can omit the not-run count because in-flight
+    probes may still land; `run_merge` adds the final count after they drain.
     """
-    try:
-        lines = record.read_text(encoding="utf-8").splitlines()
-    except (OSError, UnicodeDecodeError):
-        return (
-            True,
-            f"no completion record readable at {record} — stopping rather than running past it",
-        )
-
-    completions: list[tuple[str, str]] = []
-    for number, line in enumerate(lines, start=1):
-        if not line.strip():
-            continue
-        name, _, class_ = line.partition("\t")
-        if not name.strip() or not class_.strip():
-            return True, (
-                f"the completion record is corrupt at line {number} ({line!r}) — "
-                "stopping rather than reading past it"
-            )
-        completions.append((name.strip(), class_.strip()))
-
-    run = 0
-    while run < len(completions) and completions[-1 - run][1] == CRASH_STOP_CLASS:
-        run += 1
-    if run < CRASH_STOP_AFTER:
+    completions, error = read_completion_record(record)
+    if error:
+        return True, error
+    names = breaker.crash_stop(completions)
+    if names is None:
         return False, ""
-
-    names = ", then ".join(name for name, _ in completions[-run:])
-    left = corpus_size - len(completions)
-    return True, (
-        f"{CRASH_STOP_CLASS} in {names} — abandoned after {run} consecutive "
-        f"{CRASH_STOP_CLASS}, {left} probe(s) not run"
-    )
+    left = corpus_size - len(completions) if include_not_run else None
+    return True, crash_stop_line(names, left)
 
 
 class ProbeRow(NamedTuple):
@@ -660,6 +692,19 @@ def run_merge(args: argparse.Namespace) -> int:
         client_lock_evidence=args.client_lock_evidence,
         mem_stopped=(pool_out / "mem-stop").is_file(),
     )
+    stop_failure = read_stop_decision_failure(pool_out)
+    if stop_failure:
+        merged = merged._replace(
+            notices=[
+                *merged.notices,
+                f"the stop decision failed as {stop_failure} — the pool is not a result",
+            ],
+            worst_class=(
+                stop_failure
+                if severity(stop_failure) >= severity(merged.worst_class)
+                else merged.worst_class
+            ),
+        )
     for notice in merged.notices:
         print(f"[regress] {notice}", file=sys.stderr)  # noqa: T201
     for line in render_summary(
@@ -671,6 +716,10 @@ def run_merge(args: argparse.Namespace) -> int:
         stopped_early = (pool_out / "stop").read_text(encoding="utf-8")
     except OSError:
         stopped_early = ""
+    final_stopped_early = finalize_stop_line(stopped_early, len(merged.not_run))
+    if final_stopped_early != flattened(stopped_early):
+        (pool_out / "stop").write_text(final_stopped_early + "\n", encoding="utf-8")
+    stopped_early = final_stopped_early
     document = pool_document(
         merged,
         started_at=args.started_at,
@@ -687,6 +736,8 @@ def run_merge(args: argparse.Namespace) -> int:
     )
     (pool_out / "pool.json").write_text(json.dumps(document, indent=2) + "\n", encoding="utf-8")
 
+    if stopped_early:
+        print(f"stopped_early={stopped_early}")  # noqa: T201 — the shell refreshes the stop flag
     print(f"worst_class={merged.worst_class}")  # noqa: T201 — the shell reads these lines
     for slot in merged.reclaim_slots:
         print(f"reclaim_slot={slot}")  # noqa: T201 — the shell releases and reclaims
@@ -735,7 +786,7 @@ def run_class_of(args: argparse.Namespace) -> int:
 
 def run_stop_decision(args: argparse.Namespace) -> int:
     """Print the breaker's answer; the worker writes the stop flag it is told."""
-    trip, stop_line = crash_stop(args.record, args.corpus_size)
+    trip, stop_line = crash_stop(args.record, args.corpus_size, include_not_run=False)
     print(f"trip={'yes' if trip else 'no'}")  # noqa: T201 — the shell reads these lines
     if stop_line:
         print(f"stop_line={flattened(stop_line)}")  # noqa: T201 — the shell reads a line

@@ -115,6 +115,20 @@ fi
 printf 'verdict=PASS\n' >>"$out/results.env"
 """
 
+# A test-only pool-merge wrapper that returns malformed stop-decision output while
+# delegating every other verb to the real tool. The regress caller must stop rather
+# than interpret this as either trip state (#72, ADR-0049).
+MALFORMED_POOL_MERGE = r"""import os
+import runpy
+import sys
+
+if len(sys.argv) > 1 and sys.argv[1] == "stop-decision":
+    print("not a stop decision")
+else:
+    sys.argv[0] = os.environ["CTI_REAL_POOL_MERGE"]
+    runpy.run_path(sys.argv[0], run_name="__main__")
+"""
+
 # A stand-in for `cti_slot_reclaim`, named by CTI_SLOT_RECLAIM.
 #
 # The real one is the only part of a slot's bring-up that touches the machine's
@@ -772,6 +786,24 @@ def test_two_unexpected_node_crashes_stop_the_pool(tmp_path: Path) -> None:
     assert "node_crashed in " in pool["stopped_early"], result.stderr[-4000:]
     assert pool["not_run"], "the breaker fired and the pool carried on regardless"
     assert result.returncode != EXIT_PASS
+
+
+def test_malformed_crash_breaker_output_stops_the_pool_fail_closed(tmp_path: Path) -> None:
+    wrapper = executable(tmp_path / "malformed-pool-merge.py", MALFORMED_POOL_MERGE)
+    result = pool_run(
+        tmp_path,
+        "--slots",
+        "1",
+        extra_env={
+            "CTI_POOL_MERGE": str(wrapper),
+            "CTI_REAL_POOL_MERGE": str(REPO / "tools" / "pool_merge.py"),
+        },
+    )
+    pool = pool_json(tmp_path)
+    assert "malformed" in pool["stopped_early"], result.stderr[-4000:]
+    assert pool["not_run"], "malformed breaker output must not fail open"
+    assert pool["worst_class"] == "untyped_harness_failure"
+    assert result.returncode == EXIT_UNTYPED_HARNESS_FAILURE, result.stderr[-4000:]
 
 
 def test_two_crashes_with_a_pass_between_them_do_not_stop_the_pool(tmp_path: Path) -> None:

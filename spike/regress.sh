@@ -59,6 +59,9 @@ DEFAULT_SLOTS=3
 # merge against a stub that prints what the engine would have printed
 # (tests/unit/test_pool_scheduling.py). Nothing else sets it.
 RUN_SH="${CTI_RUN_SH:-$REPO/spike/run.sh}"
+# Overridable so the no-Arma tier can exercise the caller's fail-closed parsing
+# without changing the merge used by the live tier.
+POOL_MERGE_TOOL="${CTI_POOL_MERGE:-$REPO/tools/pool_merge.py}"
 # Overridable for the same reason and by the same tier. Reclamation is the one
 # part of a slot's bring-up that touches the real machine's port space and
 # process table, so the no-Arma tier cannot produce a *failed* reclaim to test
@@ -769,7 +772,7 @@ SLOTS=("${READY_SLOTS[@]}")
 # decision that cannot run deletes nothing (ADR-0049).
 prune_interrupted() {
     local doomed status dir
-    doomed="$(cd "$REPO" && timeout "$UV_TIMEOUT" uv run --quiet python tools/pool_merge.py prune-interrupted \
+    doomed="$(cd "$REPO" && timeout "$UV_TIMEOUT" uv run --quiet python "$POOL_MERGE_TOOL" prune-interrupted \
         --runs-dir "$RUNS_DIR" --older-than-days "$INTERRUPTED_RETENTION_DAYS")"
     status=$?
     if ((status != 0)); then
@@ -818,7 +821,7 @@ mkdir -p "$CLAIMS" || {
 # recoverable, evidence deleted by a pruner that could not read is not.
 prune_pools() {
     local doomed status dir
-    doomed="$(cd "$REPO" && timeout "$UV_TIMEOUT" uv run --quiet python tools/pool_merge.py prune-pools \
+    doomed="$(cd "$REPO" && timeout "$UV_TIMEOUT" uv run --quiet python "$POOL_MERGE_TOOL" prune-pools \
         --runs-dir "$RUNS_DIR" --keep "$KEEP_POOLS")"
     status=$?
     if ((status != 0)); then
@@ -850,7 +853,7 @@ prune_passes() {
     # no-Arma pool suite would otherwise pay one uv start-up per probe to be
     # told an empty directory is empty.
     compgen -G "$RUNS_DIR/*-$name" >/dev/null || return 0
-    doomed="$(cd "$REPO" && timeout "$UV_TIMEOUT" uv run --quiet python tools/pool_merge.py prune-passes \
+    doomed="$(cd "$REPO" && timeout "$UV_TIMEOUT" uv run --quiet python "$POOL_MERGE_TOOL" prune-passes \
         --runs-dir "$RUNS_DIR" --probe "$name" --keep "$KEEP_PASSES")"
     status=$?
     if ((status != 0)); then
@@ -1062,6 +1065,9 @@ run_probe() {
     local file="$PROBE_DIR/$name.sqf"
     local window expect quarantine probe_env stamp out t0 elapsed run_status watchdog
     local typed typer_status detail legs class probe_pid
+    local decided decision_status decision_line trip stop_line decision_failure_class
+    local -a decision_lines=()
+    decision_failure_class=""
     window="$(header_of "$file" window)"
     expect="$(header_of "$file" expect)"
     quarantine="$(header_of "$file" quarantined)"
@@ -1196,7 +1202,7 @@ run_probe() {
             detail="the verdict typer failed (exit $typer_status) — harness bug; see $out/regress.log"
         fi
         legs=""
-        (cd "$REPO" && timeout "$UV_TIMEOUT" uv run --quiet python tools/pool_merge.py fallback-verdict \
+        (cd "$REPO" && timeout "$UV_TIMEOUT" uv run --quiet python "$POOL_MERGE_TOOL" fallback-verdict \
             --probe "$name" --class "$class" --detail "$detail" --elapsed "$elapsed" \
             --evidence "$out" --verdict-json "$out/verdict.json") 2>>"$out/regress.log" ||
             log "[slot $slot]      the fallback verdict writer failed too — the merge will read $name as not a result"
@@ -1240,19 +1246,46 @@ run_probe() {
         # has. A verdict of any other class between two crashes means the crash
         # is not carrying every world, so the run restarts rather than trips.
         printf '%s\t%s\n' "$name" "$class" >>"$POOL_OUT/completions.tsv"
-        decided="$(cd "$REPO" && timeout "$UV_TIMEOUT" uv run --quiet python tools/pool_merge.py \
+        decided="$(cd "$REPO" && timeout "$UV_TIMEOUT" uv run --quiet python "$POOL_MERGE_TOOL" \
             stop-decision --record "$POOL_OUT/completions.tsv" --corpus-size "${#CORPUS[@]}" 2>>"$out/regress.log")"
         decision_status=$?
-        if ((decision_status == 0)) && [[ -n "$decided" ]]; then
-            trip="$(sed -n 's/^trip=//p' <<<"$decided" | tail -1)"
-            stop_line="$(sed -n 's/^stop_line=//p' <<<"$decided" | tail -1)"
+        decision_lines=()
+        if ((decision_status == 0)); then
+            while IFS= read -r decision_line || [[ -n "$decision_line" ]]; do
+                decision_lines+=("$decision_line")
+            done <<<"$decided"
+            if ((${#decision_lines[@]} == 1)) && [[ "${decision_lines[0]}" == "trip=no" ]]; then
+                trip=no
+                stop_line=""
+            elif ((${#decision_lines[@]} == 2)) && [[ "${decision_lines[0]}" == "trip=yes" ]] &&
+                [[ "${decision_lines[1]}" == stop_line=* ]]; then
+                stop_line="${decision_lines[1]#stop_line=}"
+                if [[ -n "$stop_line" ]]; then
+                    trip=yes
+                else
+                    trip=yes
+                    decision_failure_class=untyped_harness_failure
+                    stop_line="the stop decision output was malformed (tools/pool_merge.py stop-decision exited $decision_status) — stopping rather than running past it"
+                fi
+            else
+                trip=yes
+                decision_failure_class=untyped_harness_failure
+                stop_line="the stop decision output was malformed (tools/pool_merge.py stop-decision exited $decision_status) — stopping rather than running past it"
+            fi
         else
             # Fail closed in the protective direction (ADR-0049's caller rule):
             # an unread stop decision stops the pool with the failure named,
             # rather than leaving it to hammer a world that may be crashing
             # every time. The same reading the verdict typer's failure gets.
             trip=yes
+            decision_failure_class=infra_unavailable
             stop_line="the stop decision could not be read (tools/pool_merge.py stop-decision exited $decision_status) — stopping rather than running past it"
+        fi
+        if [[ -n "$decision_failure_class" ]]; then
+            # A stop caused by an unreadable decision is itself a result-class
+            # failure; otherwise an all-pass pool could stop safely but still
+            # exit green after the merge.
+            printf '%s\n' "$decision_failure_class" >"$POOL_OUT/stop-decision-failure"
         fi
         if [[ "$trip" == yes && ! -f "$STOP_FLAG" ]]; then
             printf '%s\n' "$stop_line" >"$STOP_FLAG"
@@ -1446,7 +1479,7 @@ merge_args=(
 for i in "${!DIRTY_SLOTS[@]}"; do
     merge_args+=(--dirty-slot "${DIRTY_SLOTS[$i]}:${DIRTY_DETAIL[$i]}")
 done
-merged="$(cd "$REPO" && timeout "$UV_TIMEOUT" uv run --quiet python tools/pool_merge.py merge "${merge_args[@]}")"
+merged="$(cd "$REPO" && timeout "$UV_TIMEOUT" uv run --quiet python "$POOL_MERGE_TOOL" merge "${merge_args[@]}")"
 merge_status=$?
 worst_class="$(sed -n 's/^worst_class=//p' <<<"$merged" | tail -1)"
 if ((merge_status != 0)) || [[ -z "$worst_class" ]]; then
@@ -1458,6 +1491,14 @@ if ((merge_status != 0)) || [[ -z "$worst_class" ]]; then
     } >&2
     record_refusal infra_unavailable "the pool merge exited $merge_status; the workers' evidence is under $POOL_OUT"
     exit "${CLASS_RANK[infra_unavailable]}"
+fi
+
+# The merge has now seen every in-flight claim. Refresh the stop flag from its
+# final rendering so the durable pool record and the file workers acted on name
+# the same not-run count.
+final_stop_line="$(sed -n 's/^stopped_early=//p' <<<"$merged" | tail -1)"
+if [[ -n "$final_stop_line" ]]; then
+    printf '%s\n' "$final_stop_line" >"$STOP_FLAG"
 fi
 
 # The merge decides, this shell acts (ADR-0049): a dead worker's slot is
