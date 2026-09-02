@@ -77,7 +77,7 @@
 |321|128891669de791f89ac6cb39cc1858bdd41c4727|journal|4|R|4858|claude-native,codex|C4.73485|U|N|
 |322|bd908f3f25e94d8fe96e6637d2687bb47ac76343|journal|8|R|9945|claude-native,codex|C9.24234|U|N|
 |336|97f70ca25392ede2c9abc4d21b51b3648ee33325|git_fallback|1|R|550792|claude-native|C1.37509|N|N|
-|338|f0007f074c8c88682346875e68a82ae81c2a1edb|git_fallback|4|0|75486|claude-native,codex|C2.00063|U|N|
+|338|f0007f074c8c88682346875e68a82ae81c2a1edb|git_fallback|5|0|75486|claude-native,codex,zai|C2.00063|U|U|
 |339|204d3f9fc05922af416cef16882d5f3fbf8bcbb1|git_fallback|3|R|97381|codex,zai|N|U|U|
 |340|f84ebc49b6bd665648fc161da40e303508c8401d|git_fallback|1|R|172343|zai|N|N|U|
 |342|f84ebc49b6bd665648fc161da40e303508c8401d|git_fallback|1|R|168392|zai|N|N|U|
@@ -90,7 +90,7 @@
 |363|14edb3da5b941f1e31827eef90509ad2f37f4822|git_fallback|2|0|57102|codex,zai|N|U|U|
 |367|f54c78487d3715de6a7d590bce90bb383ccedced|git_fallback|2|R|52365|codex,zai|N|U|U|
 |370|e4a403b85101920c95e7adda0be1abf2f864169c|journal|9|R|108919|claude-native,codex,zai|C3.21709|U|U|
-|374|56f91c229cd24dc9d71b227d51cdd1cfa6c6eb40|git_fallback|4|R|14911|claude-native,codex,zai|C0.661194|U|U|
+|374|4dbcbdbaec7eee8d14e9605c58984b83db68d939|journal|11|4|1291232|claude-native,codex,zai|C1.0386|U|U|
 |378|ac56579c8184e1017cbb86a7df9ed55ca6b09f6c|journal|4|1|7171|claude-native,codex,zai|C0.522725|U|U|
 |379|7a756280a30119c48a5e77c63c0b6fb71a24d7bb|journal|2|0|7481|codex,zai|N|U|U|
 |380|3c7856e44aba04b21148236649e1d20300e1734a|journal|4|0|9267|codex,zai|N|U|U|
