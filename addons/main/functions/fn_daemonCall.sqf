@@ -159,7 +159,7 @@ if !("status" in _reply) exitWith {
     private _run = (_tally getOrDefault ["consecutive_unreachable", 0]) + 1;
     _tally set ["consecutive_unreachable", _run];
     // This run counts transport errors from every caller of cti_fnc_daemonCall.
-    // Five effect-pump poll attempts at its default cadence span ten seconds;
+    // Five effect-pump poll intervals at its default cadence span ten seconds;
     // the pump's ack and other callers can make this shared run reach five
     // sooner. That is long enough that nothing transient is still being waited
     // out, and short enough that the latch arrives inside any probe window long

@@ -32,8 +32,8 @@ of that stop is that no probe launched to carry the class.
 Six riders travel with the merge because they read and write the same files
 or the same table: `stop-decision` reads the workers' completion record and
 asks `breaker.py` whether the pool's consecutive-crash rule trips (#72) — the
-shell asks after every verdict and writes the stop flag it is told, while this
-module owns only the record parsing and explanation — `prune-passes` decides
+shell asks after every verdict and writes the stop flag or failure marker it is
+told, while this module owns only the record parsing and explanation — `prune-passes` decides
 which old green evidence has outlived the retention convention (the shell does
 the deleting),
 `prune-pools` decides the same for pool directories off the `worst_class`
@@ -133,14 +133,15 @@ def mission_class(line: str) -> tuple[str, str]:
     return "untyped_harness_failure", detail
 
 
-def read_completion_record(record: Path) -> tuple[list[tuple[str, str]], str]:
-    """Read the completion stream, or return the reason it cannot be trusted."""
+def read_completion_record(record: Path) -> tuple[list[tuple[str, str]], str, str | None]:
+    """Read the completion stream, or return its reason and failure class."""
     try:
         lines = record.read_text(encoding="utf-8").splitlines()
     except (OSError, UnicodeDecodeError):
         return (
             [],
             f"no completion record readable at {record} — stopping rather than running past it",
+            "infra_unavailable",
         )
 
     completions: list[tuple[str, str]] = []
@@ -149,12 +150,16 @@ def read_completion_record(record: Path) -> tuple[list[tuple[str, str]], str]:
             continue
         name, separator, class_ = line.partition("\t")
         if not separator or not name.strip() or not class_.strip():
-            return [], (
-                f"the completion record is corrupt at line {number} ({line!r}) — "
-                "stopping rather than reading past it"
+            return (
+                [],
+                (
+                    f"the completion record is corrupt at line {number} ({line!r}) — "
+                    "stopping rather than reading past it"
+                ),
+                "untyped_harness_failure",
             )
         completions.append((name.strip(), class_.strip()))
-    return completions, ""
+    return completions, "", None
 
 
 def crash_stop_line(names: Sequence[str]) -> str:
@@ -189,7 +194,7 @@ def read_stop_decision_failure(pool_out: Path) -> str | None:
     return "untyped_harness_failure"
 
 
-def crash_stop(record: Path) -> tuple[bool, str]:
+def crash_stop(record: Path) -> tuple[bool, str, str | None]:
     """Answer whether the pool's consecutive-crash breaker trips, and say so how.
 
     The record is the workers' completion log — one `name<TAB>class` line per
@@ -209,14 +214,16 @@ def crash_stop(record: Path) -> tuple[bool, str]:
     `infra_unavailable` break's own voice — the class named and the run that
     tripped it. The live decision has no not-run count because in-flight probes
     may still land; `run_merge` adds the final count after they drain.
+    The third return value carries a record-read failure to the shell; a genuine
+    crash trip carries no failure class.
     """
-    completions, error = read_completion_record(record)
+    completions, error, failure_class = read_completion_record(record)
     if error:
-        return True, error
+        return True, error, failure_class
     names = breaker.crash_stop(completions)
     if names is None:
-        return False, ""
-    return True, crash_stop_line(names)
+        return False, "", None
+    return True, crash_stop_line(names), None
 
 
 class ProbeRow(NamedTuple):
@@ -781,10 +788,12 @@ def run_class_of(args: argparse.Namespace) -> int:
 
 def run_stop_decision(args: argparse.Namespace) -> int:
     """Print the breaker's answer; the worker writes the stop flag it is told."""
-    trip, stop_line = crash_stop(args.record)
+    trip, stop_line, failure_class = crash_stop(args.record)
     print(f"trip={'yes' if trip else 'no'}")  # noqa: T201 — the shell reads these lines
     if stop_line:
         print(f"stop_line={flattened(stop_line)}")  # noqa: T201 — the shell reads a line
+    if failure_class:
+        print(f"failure_class={failure_class}")  # noqa: T201 — the shell writes the marker
     return 0
 
 

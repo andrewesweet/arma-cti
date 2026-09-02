@@ -129,6 +129,22 @@ else:
     runpy.run_path(sys.argv[0], run_name="__main__")
 """
 
+# A test-only pool-merge wrapper that corrupts the completion record before
+# delegating the stop decision to the real tool. The Python-side fail-closed
+# trip has to reach the pool's exit class, not look like a genuine crash trip.
+CORRUPT_COMPLETION_RECORD_POOL_MERGE = r"""import os
+import runpy
+import sys
+
+if len(sys.argv) > 1 and sys.argv[1] == "stop-decision":
+    record = sys.argv[sys.argv.index("--record") + 1]
+    with open(record, "w", encoding="utf-8") as stream:
+        stream.write("corrupt completion\n")
+
+sys.argv[0] = os.environ["CTI_REAL_POOL_MERGE"]
+runpy.run_path(sys.argv[0], run_name="__main__")
+"""
+
 # A stand-in for `cti_slot_reclaim`, named by CTI_SLOT_RECLAIM.
 #
 # The real one is the only part of a slot's bring-up that touches the machine's
@@ -802,6 +818,26 @@ def test_malformed_crash_breaker_output_stops_the_pool_fail_closed(tmp_path: Pat
     pool = pool_json(tmp_path)
     assert "malformed" in pool["stopped_early"], result.stderr[-4000:]
     assert pool["not_run"], "malformed breaker output must not fail open"
+    assert pool["worst_class"] == "untyped_harness_failure"
+    assert result.returncode == EXIT_UNTYPED_HARNESS_FAILURE, result.stderr[-4000:]
+
+
+def test_corrupt_completion_record_stops_the_pool_fail_closed(tmp_path: Path) -> None:
+    wrapper = executable(tmp_path / "corrupt-pool-merge.py", CORRUPT_COMPLETION_RECORD_POOL_MERGE)
+    result = pool_run(
+        tmp_path,
+        "--slots",
+        "1",
+        "contacts",
+        "bareworld",
+        extra_env={
+            "CTI_POOL_MERGE": str(wrapper),
+            "CTI_REAL_POOL_MERGE": str(REPO / "tools" / "pool_merge.py"),
+        },
+    )
+    pool = pool_json(tmp_path)
+    assert "completion record is corrupt" in pool["stopped_early"], result.stderr[-4000:]
+    assert pool["not_run"], "a Python-side breaker failure must not fail open"
     assert pool["worst_class"] == "untyped_harness_failure"
     assert result.returncode == EXIT_UNTYPED_HARNESS_FAILURE, result.stderr[-4000:]
 

@@ -1267,6 +1267,20 @@ run_probe() {
                     decision_failure_class=untyped_harness_failure
                     stop_line="the stop decision output was malformed — stopping rather than running past it"
                 fi
+            elif ((${#decision_lines[@]} == 3)) && [[ "${decision_lines[0]}" == "trip=yes" ]] &&
+                [[ "${decision_lines[1]}" == stop_line=* ]] &&
+                [[ "${decision_lines[2]}" == failure_class=* ]]; then
+                stop_line="${decision_lines[1]#stop_line=}"
+                decision_failure_class="${decision_lines[2]#failure_class=}"
+                if [[ -n "$stop_line" ]] &&
+                    [[ "$decision_failure_class" == infra_unavailable ||
+                        "$decision_failure_class" == untyped_harness_failure ]]; then
+                    trip=yes
+                else
+                    trip=yes
+                    decision_failure_class=untyped_harness_failure
+                    stop_line="the stop decision output was malformed — stopping rather than running past it"
+                fi
             else
                 trip=yes
                 decision_failure_class=untyped_harness_failure

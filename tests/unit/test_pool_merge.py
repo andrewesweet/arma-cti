@@ -773,8 +773,9 @@ def test_two_consecutive_crashes_trip_the_breaker(tmp_path: Path) -> None:
         ("base-assault", "node_crashed"),
         ("contacts", "node_crashed"),
     )
-    trip, stop_line = pool_merge.crash_stop(record)
+    trip, stop_line, failure_class = pool_merge.crash_stop(record)
     assert trip is True
+    assert failure_class is None
     assert pool_merge.finalize_stop_line(stop_line, 26) == (
         "node_crashed in base-assault, then contacts — abandoned after 2 "
         "consecutive node_crashed, 26 probe(s) not run"
@@ -783,7 +784,7 @@ def test_two_consecutive_crashes_trip_the_breaker(tmp_path: Path) -> None:
 
 def test_a_verdict_between_two_crashes_restarts_the_run(tmp_path: Path) -> None:
     """`consecutive` is the rule: a world that survives proves the crash is not systemic."""
-    trip, stop_line = pool_merge.crash_stop(
+    trip, stop_line, failure_class = pool_merge.crash_stop(
         _record(
             tmp_path,
             ("base-assault", "node_crashed"),
@@ -793,16 +794,18 @@ def test_a_verdict_between_two_crashes_restarts_the_run(tmp_path: Path) -> None:
     )
     assert trip is False
     assert stop_line == ""
+    assert failure_class is None
 
 
 def test_one_crash_alone_never_trips(tmp_path: Path) -> None:
-    trip, _ = pool_merge.crash_stop(_record(tmp_path, ("contacts", "node_crashed")))
+    trip, _, failure_class = pool_merge.crash_stop(_record(tmp_path, ("contacts", "node_crashed")))
     assert trip is False
+    assert failure_class is None
 
 
 def test_a_longer_run_names_every_crash_it_ran_past(tmp_path: Path) -> None:
     """A decision that answered late still says the whole run, never just the last two."""
-    trip, stop_line = pool_merge.crash_stop(
+    trip, stop_line, failure_class = pool_merge.crash_stop(
         _record(
             tmp_path,
             ("a", "node_crashed"),
@@ -811,22 +814,25 @@ def test_a_longer_run_names_every_crash_it_ran_past(tmp_path: Path) -> None:
         )
     )
     assert trip is True
+    assert failure_class is None
     assert "node_crashed in a, then b, then c" in stop_line
 
 
 def test_an_unreadable_record_trips_fail_closed(tmp_path: Path) -> None:
     """The breaker protects the machine; unreadable is stop, with the reason spelled."""
-    trip, stop_line = pool_merge.crash_stop(tmp_path / "absent.tsv")
+    trip, stop_line, failure_class = pool_merge.crash_stop(tmp_path / "absent.tsv")
     assert trip is True
     assert "no completion record readable" in stop_line
+    assert failure_class == "infra_unavailable"
 
 
 def test_a_corrupt_record_trips_fail_closed(tmp_path: Path) -> None:
     record = tmp_path / "completions.tsv"
     record.write_text("base-assault\nnode_crashed without a name", encoding="utf-8")
-    trip, stop_line = pool_merge.crash_stop(record)
+    trip, stop_line, failure_class = pool_merge.crash_stop(record)
     assert trip is True
     assert "the completion record is corrupt at line 1" in stop_line
+    assert failure_class == "untyped_harness_failure"
 
 
 def test_the_subcommand_prints_the_lines_the_shell_acts_on(
@@ -845,6 +851,30 @@ def test_the_subcommand_answers_trip_no_alone(
     record = _record(tmp_path, ("contacts", "pass"))
     assert pool_merge.main(["stop-decision", "--record", str(record)]) == 0
     assert capsys.readouterr().out.splitlines() == ["trip=no"]
+
+
+@pytest.mark.parametrize(
+    ("record_kind", "expected_class"),
+    [
+        ("unreadable", "infra_unavailable"),
+        ("corrupt", "untyped_harness_failure"),
+    ],
+)
+def test_the_subcommand_names_a_record_failure_for_the_shell(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    record_kind: str,
+    expected_class: str,
+) -> None:
+    record = tmp_path / f"{record_kind}.tsv"
+    if record_kind == "corrupt":
+        record.write_text("corrupt completion\n", encoding="utf-8")
+
+    assert pool_merge.main(["stop-decision", "--record", str(record)]) == 0
+    out = capsys.readouterr().out.splitlines()
+    assert out[0] == "trip=yes"
+    assert out[1].startswith("stop_line=")
+    assert out[2] == f"failure_class={expected_class}"
 
 
 def test_the_merge_recounts_crash_stop_after_in_flight_survivors_finish(
