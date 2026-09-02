@@ -242,6 +242,12 @@ LANE_RULES: Final[tuple[TripRule, ...]] = (QUOTA_RULE, PROVIDER_ERROR_RULE, QUAL
 # reset state, only an ordered completion stream, so the rule carries the
 # threshold and outcome without pretending that a pool is a lane.
 CORPUS_CRASH_CLASS: Final = "node_crashed"
+# failure_class is present because TripRule requires it, and nothing reads it on
+# this rule: a genuine crash trip deliberately carries no failure class
+# (`pool_merge.crash_stop` returns None) so the pool exits on the `node_crashed`
+# verdicts it actually collected. Typing that stop `infra_unavailable` would turn
+# a measured result into a not-a-result; only the shell's own unread-decision
+# failure, which the shell types itself, is `infra_unavailable`.
 CORPUS_CRASH_RULE: Final = TripRule(
     name="systemic_crash",
     on=frozenset({CORPUS_CRASH_CLASS}),

@@ -1304,8 +1304,15 @@ run_probe() {
         if [[ -n "$decision_failure_class" ]]; then
             # A stop caused by an unreadable decision is itself a result-class
             # failure; otherwise an all-pass pool could stop safely but still
-            # exit green after the merge.
-            printf '%s\n' "$decision_failure_class" >"$POOL_OUT/stop-decision-failure"
+            # exit green after the merge. Workers race, so this write only ever
+            # upgrades the class — the merge reads whichever marker stands, and
+            # a later writer must not downgrade an earlier one
+            # (untyped_harness_failure outranks infra_unavailable).
+            local marker="$POOL_OUT/stop-decision-failure"
+            if [[ ! -f "$marker" ]] ||
+                ((CLASS_RANK[$decision_failure_class] > CLASS_RANK[$(<"$marker")])); then
+                printf '%s\n' "$decision_failure_class" >"$marker"
+            fi
         fi
         if [[ "$trip" == yes && ! -f "$STOP_FLAG" ]]; then
             printf '%s\n' "$stop_line" >"$STOP_FLAG"
@@ -1511,14 +1518,6 @@ if ((merge_status != 0)) || [[ -z "$worst_class" ]]; then
     } >&2
     record_refusal infra_unavailable "the pool merge exited $merge_status; the workers' evidence is under $POOL_OUT"
     exit "${CLASS_RANK[infra_unavailable]}"
-fi
-
-# The merge has now seen every in-flight claim. Refresh the stop flag from its
-# final rendering so the durable pool record and the file workers acted on name
-# the same not-run count.
-final_stop_line="$(sed -n 's/^stopped_early=//p' <<<"$merged" | tail -1)"
-if [[ -n "$final_stop_line" ]]; then
-    printf '%s\n' "$final_stop_line" >"$STOP_FLAG"
 fi
 
 # The merge decides, this shell acts (ADR-0049): a dead worker's slot is

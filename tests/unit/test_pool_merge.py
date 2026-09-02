@@ -804,7 +804,11 @@ def test_one_crash_alone_never_trips(tmp_path: Path) -> None:
 
 
 def test_a_longer_run_names_every_crash_it_ran_past(tmp_path: Path) -> None:
-    """A decision that answered late still says the whole run, never just the last two."""
+    """A decision that answered late still says the whole run, never just the last two.
+
+    The count is the run's own length, so the named probes and the claimed
+    number can never disagree (#683).
+    """
     trip, stop_line, failure_class = pool_merge.crash_stop(
         _record(
             tmp_path,
@@ -815,7 +819,10 @@ def test_a_longer_run_names_every_crash_it_ran_past(tmp_path: Path) -> None:
     )
     assert trip is True
     assert failure_class is None
-    assert "node_crashed in a, then b, then c" in stop_line
+    assert (
+        stop_line
+        == "node_crashed in a, then b, then c — abandoned after 3 consecutive node_crashed"
+    )
 
 
 def test_an_unreadable_record_trips_fail_closed(tmp_path: Path) -> None:

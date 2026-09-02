@@ -166,7 +166,7 @@ def crash_stop_line(names: Sequence[str]) -> str:
     """Explain a corpus crash trip before the final not-run count is known."""
     return (
         f"{breaker.CORPUS_CRASH_CLASS} in {', then '.join(names)} — abandoned after "
-        f"{breaker.CORPUS_CRASH_RULE.consecutive} consecutive {breaker.CORPUS_CRASH_CLASS}"
+        f"{len(names)} consecutive {breaker.CORPUS_CRASH_CLASS}"
     )
 
 
