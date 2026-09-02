@@ -782,7 +782,7 @@ def test_a_child_failure_removes_the_disposable_tree(
 ) -> None:
     """The child-result path tears down before it publishes its failure result."""
     plan, brief, _root, _reviewed_sha = disposable_review_plan(tmp_path)
-    dispatch.write_record(plan, brief)
+    dispatch.write_record(plan, brief, tmp_path / "review")
     failed_child = subprocess.CompletedProcess(plan.argv, 17, stdout="", stderr="gate failed")
     monkeypatch.setattr(
         dispatch,
@@ -1886,7 +1886,7 @@ def test_the_child_launches_nothing_over_a_tree_a_predecessor_left(
     assert refusal is None
     assert plan is not None
     assert plan.argv[0] == "codex"
-    dispatch.write_record(plan, brief)
+    dispatch.write_record(plan, brief, tmp_path / "review")
     if left_behind == "message":
         (plan.worktree / dispatch.CODEX_COMMIT_MESSAGE).write_text(
             "fix(x): a predecessor's own message\n\nrefs #404\n", encoding="utf-8"
@@ -2000,7 +2000,7 @@ def test_the_record_names_the_credential_key_and_never_its_value(tmp_path: Path)
     )
     assert refusal is None
     assert plan is not None
-    dispatch.write_record(plan, brief)
+    dispatch.write_record(plan, brief, tmp_path / "review")
 
     document = json.loads((plan.record / "dispatch.json").read_text(encoding="utf-8"))
     assert document["credential"] == "ZAI_API_KEY"
@@ -2024,7 +2024,7 @@ def test_a_zai_record_carries_the_plan_charge_block_the_estimator_will_read(
     )
     assert refusal is None
     assert plan is not None
-    dispatch.write_record(plan, brief)
+    dispatch.write_record(plan, brief, tmp_path / "review")
 
     document = json.loads((plan.record / "dispatch.json").read_text(encoding="utf-8"))
     charge = document["plan_charge"]
@@ -2053,7 +2053,7 @@ def test_the_record_is_stamped_with_the_injected_instant_not_the_clock(
     assert refusal is None
     assert plan is not None
     assert plan.planned_at == moment
-    dispatch.write_record(plan, brief)
+    dispatch.write_record(plan, brief, tmp_path / "review")
     document = json.loads((plan.record / "dispatch.json").read_text(encoding="utf-8"))
     assert document["planned_at"] == moment.isoformat()
 
@@ -2094,7 +2094,7 @@ def test_the_plan_charge_prices_the_carried_instant(
     )
     assert refusal is None
     assert plan is not None
-    dispatch.write_record(plan, brief)
+    dispatch.write_record(plan, brief, tmp_path / "review")
     path = plan.record / "dispatch.json"
     document = json.loads(path.read_text(encoding="utf-8"))
     document["planned_at"] = moment.isoformat()
@@ -2108,7 +2108,7 @@ def test_the_plan_charge_prices_the_carried_instant(
 def test_a_native_record_carries_no_plan_charge_block(tmp_path: Path) -> None:
     plan, brief, _ = plan_for(tmp_path)
     assert plan is not None
-    dispatch.write_record(plan, brief)
+    dispatch.write_record(plan, brief, tmp_path / "review")
     document = json.loads((plan.record / "dispatch.json").read_text(encoding="utf-8"))
     assert document["plan_charge"] is None
 
@@ -2116,7 +2116,7 @@ def test_a_native_record_carries_no_plan_charge_block(tmp_path: Path) -> None:
 def test_a_written_record_reads_back_as_the_same_plan(tmp_path: Path) -> None:
     plan, brief, _ = plan_for(tmp_path)
     assert plan is not None
-    dispatch.write_record(plan, brief)
+    dispatch.write_record(plan, brief, tmp_path / "review")
     assert dispatch.load_record(plan.record) == plan
 
 
@@ -2130,7 +2130,7 @@ def test_a_record_without_planned_at_is_an_error_not_an_invented_instant(tmp_pat
     """
     plan, brief, _ = plan_for(tmp_path)
     assert plan is not None
-    dispatch.write_record(plan, brief)
+    dispatch.write_record(plan, brief, tmp_path / "review")
     path = plan.record / "dispatch.json"
     document = json.loads(path.read_text(encoding="utf-8"))
     del document["planned_at"]
@@ -2147,7 +2147,7 @@ def test_planned_at_reads_back_from_the_z_spelling(tmp_path: Path) -> None:
     # discriminates between two implementations.
     plan, brief, _ = plan_for(tmp_path, now=OFF_PEAK)
     assert plan is not None
-    dispatch.write_record(plan, brief)
+    dispatch.write_record(plan, brief, tmp_path / "review")
     path = plan.record / "dispatch.json"
     document = json.loads(path.read_text(encoding="utf-8"))
     document["planned_at"] = OFF_PEAK.isoformat().replace("+00:00", "Z")
@@ -2175,7 +2175,7 @@ def test_an_unreadable_record_refuses_rather_than_raising_into_the_detached_chil
     """The child has no caller to raise at, so it refuses with a class and records it."""
     plan, brief, _ = plan_for(tmp_path)
     assert plan is not None
-    dispatch.write_record(plan, brief)
+    dispatch.write_record(plan, brief, tmp_path / "review")
     path = plan.record / "dispatch.json"
     document = json.loads(path.read_text(encoding="utf-8"))
     document[field] = value
@@ -2195,7 +2195,7 @@ def test_a_record_missing_a_file_refuses_rather_than_raising(tmp_path: Path, mis
     """An absent half of the record is the same condition: `OSError`, refused by name."""
     plan, brief, _ = plan_for(tmp_path)
     assert plan is not None
-    dispatch.write_record(plan, brief)
+    dispatch.write_record(plan, brief, tmp_path / "review")
     (plan.record / missing).unlink()
 
     code, lines = dispatch.run_dispatch(plan.record, {"HOME": str(tmp_path)})
@@ -2527,7 +2527,7 @@ def test_an_advisory_is_kept_on_the_dispatch_record(tmp_path: Path) -> None:
     plan, brief, refusal = plan_for(tmp_path, issue_body=str(ruling))
     assert refusal is None
     assert plan is not None
-    dispatch.write_record(plan, brief)
+    dispatch.write_record(plan, brief, tmp_path / "review")
     document = json.loads((plan.record / "dispatch.json").read_text(encoding="utf-8"))
     assert document["readiness_advisories"] == list(plan.advisories)
     assert dispatch.load_record(plan.record).advisories == plan.advisories
@@ -2626,7 +2626,7 @@ def test_the_clock_the_rule_is_judged_against_is_the_real_one(
 def test_the_child_refuses_a_worktree_that_is_not_its_assignment(tmp_path: Path) -> None:
     plan, brief, _ = plan_for(tmp_path)
     assert plan is not None
-    dispatch.write_record(plan, brief)
+    dispatch.write_record(plan, brief, tmp_path / "review")
     # Move the assignment to a directory that is not a git top level, which is what a
     # harness handing the agent the wrong tree looks like from inside the child.
     document = json.loads((plan.record / "dispatch.json").read_text(encoding="utf-8"))
@@ -2655,7 +2655,7 @@ def test_the_child_refuses_a_worktree_that_has_been_removed(tmp_path: Path) -> N
     """
     plan, brief, _ = plan_for(tmp_path)
     assert plan is not None
-    dispatch.write_record(plan, brief)
+    dispatch.write_record(plan, brief, tmp_path / "review")
     shutil.rmtree(plan.worktree)
 
     code, lines = dispatch.run_dispatch(plan.record, {"HOME": str(tmp_path)})
@@ -2712,7 +2712,7 @@ def test_the_child_re_checks_the_credential_the_plan_already_checked(tmp_path: P
         now=OFF_PEAK,
     )
     assert plan is not None
-    dispatch.write_record(plan, brief)
+    dispatch.write_record(plan, brief, tmp_path / "review")
     credentials.unlink()
 
     code, lines = dispatch.run_dispatch(plan.record, {"HOME": str(tmp_path)})
@@ -2832,7 +2832,7 @@ def test_review_delivery_posts_the_captured_report_once(tmp_path: Path) -> None:
     assert refusal is None
     assert plan is not None
     assert dispatch.REVIEW_DELIVERY_PROTOCOL in brief_text
-    dispatch.write_record(plan, brief_text)
+    dispatch.write_record(plan, brief_text, tmp_path / "review")
     capture = tmp_path / "review-child.txt"
     gh_call = tmp_path / "gh-call.txt"
     gh_body = tmp_path / "gh-body.md"
@@ -3038,7 +3038,7 @@ def test_dispatch_recovers_plan_written_by_child_and_keeps_refusal(tmp_path: Pat
     )
     assert refusal is None
     assert plan is not None
-    dispatch.write_record(plan, brief_text)
+    dispatch.write_record(plan, brief_text, tmp_path / "review")
     capture = tmp_path / "review-child.txt"
     gh_call = tmp_path / "gh-call.txt"
     gh_body = tmp_path / "gh-body.md"
@@ -3302,7 +3302,7 @@ def test_review_delivery_precedes_post_child_classification_and_breaker_failures
     )
     assert refusal is None
     assert plan is not None
-    dispatch.write_record(plan, brief_text)
+    dispatch.write_record(plan, brief_text, tmp_path / "review")
     report = "No findings."
     completed = subprocess.CompletedProcess(
         plan.argv,
@@ -3357,7 +3357,7 @@ def test_delivery_refusal_survives_a_later_classification_failure(
     )
     assert refusal is None
     assert plan is not None
-    dispatch.write_record(plan, brief_text)
+    dispatch.write_record(plan, brief_text, tmp_path / "review")
     completed = subprocess.CompletedProcess(
         plan.argv,
         0,
@@ -3454,7 +3454,7 @@ def test_a_non_disposable_codex_review_without_a_body_file_ends_in_named_deliver
     assert refusal is None
     assert plan is not None
     assert plan.permission_mode == "plan"
-    dispatch.write_record(plan, brief_text)
+    dispatch.write_record(plan, brief_text, tmp_path / "review")
     gh_call = tmp_path / "gh-call.txt"
     gh_body = tmp_path / "gh-body.md"
     report = "claim=1 route=defect file=tools/dispatch.py:1 sha=abc"
@@ -3541,7 +3541,7 @@ def test_subprocess_run_raising_before_launch_records_unknown_child_state(
     plan, brief_text, refusal = plan_for(tmp_path)
     assert refusal is None
     assert plan is not None
-    dispatch.write_record(plan, brief_text)
+    dispatch.write_record(plan, brief_text, tmp_path / "review")
     monkeypatch.setattr(dispatch, "git", lambda *_args, **_kwargs: str(plan.worktree))
     message = "runner missing"
 
@@ -3571,7 +3571,7 @@ def test_subprocess_run_wait_baseexception_after_launch_records_unknown_child_st
     plan = plan._replace(
         argv=(sys.executable, "-c", "import time; time.sleep(60)"),
     )
-    dispatch.write_record(plan, brief_text)
+    dispatch.write_record(plan, brief_text, tmp_path / "review")
     monkeypatch.setattr(dispatch, "git", lambda *_args, **_kwargs: str(plan.worktree))
     message = "launch interrupted"
     started_pids: list[int] = []
@@ -3604,7 +3604,7 @@ def test_breaker_journaling_baseexception_records_post_child_harness_failure(
     plan, brief_text, refusal = plan_for(tmp_path)
     assert refusal is None
     assert plan is not None
-    dispatch.write_record(plan, brief_text)
+    dispatch.write_record(plan, brief_text, tmp_path / "review")
     completed = subprocess.CompletedProcess(plan.argv, 17)
     monkeypatch.setattr(
         dispatch,
@@ -3638,7 +3638,7 @@ def test_gate_clock_baseexception_after_child_exit_records_post_child_harness_fa
     plan, brief_text, refusal = plan_for(tmp_path)
     assert refusal is None
     assert plan is not None
-    dispatch.write_record(plan, brief_text)
+    dispatch.write_record(plan, brief_text, tmp_path / "review")
     monkeypatch.setattr(dispatch, "git", lambda *_args, **_kwargs: str(plan.worktree))
     completed = subprocess.CompletedProcess(plan.argv, 19)
     monkeypatch.setattr(dispatch.subprocess, "run", lambda *_args, **_kwargs: completed)
@@ -3665,7 +3665,7 @@ def test_returned_harness_failure_is_distinct_from_the_child_result(
     plan, brief_text, refusal = plan_for(tmp_path)
     assert refusal is None
     assert plan is not None
-    dispatch.write_record(plan, brief_text)
+    dispatch.write_record(plan, brief_text, tmp_path / "review")
     completed = subprocess.CompletedProcess(plan.argv, 0)
     monkeypatch.setattr(
         dispatch,
@@ -3861,7 +3861,7 @@ def test_a_dispatch_whose_gate_clock_append_fails_still_runs_and_writes_result(
     plan, brief_text, refusal = plan_for(tmp_path, worktree=str(worktree))
     assert refusal is None
     assert plan is not None
-    dispatch.write_record(plan, brief_text)
+    dispatch.write_record(plan, brief_text, tmp_path / "review")
 
     code, lines = dispatch.run_dispatch(
         plan.record,
@@ -4631,7 +4631,7 @@ def test_a_record_round_trips_its_strata(tmp_path: Path) -> None:
     plan, brief_text, refusal = plan_for(tmp_path)
     assert refusal is None
     assert plan is not None
-    dispatch.write_record(plan, brief_text)
+    dispatch.write_record(plan, brief_text, tmp_path / "review")
     reloaded = dispatch.load_record(plan.record)
     assert reloaded.strata == plan.strata
 

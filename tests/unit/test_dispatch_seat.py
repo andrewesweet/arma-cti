@@ -644,7 +644,7 @@ def test_the_record_names_the_chosen_profile_and_what_it_walked_past(tmp_path: P
     plan, brief, refusal = plan_for(tmp_path)
     assert refusal is None
     assert plan is not None
-    dispatch.write_record(plan, brief)
+    dispatch.write_record(plan, brief, tmp_path / "review")
     document = json.loads((plan.record / "dispatch.json").read_text(encoding="utf-8"))
     assert document["profile"] == "opus-low"
     assert document["route"]["named"] is False
@@ -659,7 +659,7 @@ def test_the_record_names_the_chosen_profile_and_what_it_walked_past(tmp_path: P
 def test_a_recorded_route_reads_back_as_the_route_that_was_written(tmp_path: Path) -> None:
     plan, brief, _ = plan_for(tmp_path)
     assert plan is not None
-    dispatch.write_record(plan, brief)
+    dispatch.write_record(plan, brief, tmp_path / "review")
     assert dispatch.load_record(plan.record) == plan
 
 
@@ -669,7 +669,7 @@ def test_a_record_written_before_routes_existed_reads_back_as_the_named_route_it
     """Every dispatch before #321 named its profile, because naming it was the only way."""
     plan, brief, _ = plan_for(tmp_path, lane="claude-native", profile="opus-high")
     assert plan is not None
-    dispatch.write_record(plan, brief)
+    dispatch.write_record(plan, brief, tmp_path / "review")
     path = plan.record / "dispatch.json"
     document = json.loads(path.read_text(encoding="utf-8"))
     del document["route"]
@@ -692,7 +692,7 @@ def test_writing_an_implementer_record_arrives_at_implementation(
     attribute_registry.record_stage_arrival("brief", 223, root, PEAK.timestamp())
     plan, brief, _ = plan_for(tmp_path)
     assert plan is not None
-    dispatch.write_record(plan, brief)
+    dispatch.write_record(plan, brief, tmp_path / "review")
     rows = [
         json.loads(line)
         for line in (root / "223" / attribute_registry.STAGE_JOURNAL)
@@ -706,20 +706,29 @@ def test_writing_an_implementer_record_arrives_at_implementation(
 def test_writing_a_review_record_arrives_at_review_not_implementation(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    root = tmp_path / "review"
-    monkeypatch.setenv("CTI_REVIEW_DIR", str(root))
+    """The stage is `review`, and the arrival lands at the root the caller named (#677).
+
+    The environment deliberately names a different root: since #677 the arrival
+    follows `write_record`'s parameter — one decision per process, the caller's root
+    over the environment's — so the journal is read from the parameter's root and the
+    environment's stays empty.
+    """
+    environment_root = tmp_path / "review"
+    parameter_root = tmp_path / "review-records"
+    monkeypatch.setenv("CTI_REVIEW_DIR", str(environment_root))
     plan, brief, _ = plan_for(
-        tmp_path, seat="review", reviewing="opus-high", review_root=str(tmp_path / "review-records")
+        tmp_path, seat="review", reviewing="opus-high", review_root=str(parameter_root)
     )
     assert plan is not None
-    dispatch.write_record(plan, brief)
+    dispatch.write_record(plan, brief, parameter_root)
     (row,) = [
         json.loads(line)
-        for line in (root / "223" / attribute_registry.STAGE_JOURNAL)
+        for line in (parameter_root / "223" / attribute_registry.STAGE_JOURNAL)
         .read_text(encoding="utf-8")
         .splitlines()
     ]
     assert row["attributes"]["cti.stage.name"] == "review"
+    assert not (environment_root / "223").exists()
 
 
 def test_a_planner_dispatch_records_no_arrival(
@@ -730,7 +739,7 @@ def test_a_planner_dispatch_records_no_arrival(
     monkeypatch.setenv("CTI_REVIEW_DIR", str(root))
     plan, brief, _ = plan_for(tmp_path, seat="planner")
     assert plan is not None
-    dispatch.write_record(plan, brief)
+    dispatch.write_record(plan, brief, tmp_path / "review")
     assert not (root / "223").exists()
 
 

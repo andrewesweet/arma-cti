@@ -567,7 +567,7 @@ def test_a_declaration_the_records_carry_is_recorded_as_checked_and_not_as_verif
         " (all excluded from the candidate list; not a finding that any of them"
         " wrote the diff)" in plan.route.lines()
     )
-    dispatch.write_record(plan, brief)
+    dispatch.write_record(plan, brief, tmp_path / "review")
     document = json.loads((plan.record / "dispatch.json").read_text(encoding="utf-8"))
     assert document["route"]["reviewing_checked"] is True
     assert document["route"]["reviewing_potential_authors"] == ["opus-high"]
@@ -597,7 +597,7 @@ def test_an_unchecked_subject_is_recorded_as_unchecked_rather_than_as_a_pass(
         " (the caller's declaration, unchecked; ADR-0071 ruling 4's landing check"
         " refuses on this)" in plan.route.lines()
     )
-    dispatch.write_record(plan, brief)
+    dispatch.write_record(plan, brief, tmp_path / "review")
     document = json.loads((plan.record / "dispatch.json").read_text(encoding="utf-8"))
     assert document["route"]["reviewing_checked"] is False
     assert document["route"]["reviewing_unchecked_why"] == "no_dispatch_records"
@@ -818,7 +818,7 @@ def test_one_unreadable_record_leaves_the_whole_scan_unchecked(tmp_path: Path) -
         " refuses on this)" in plan.route.lines()
     )
     assert plan.identity.profile != "opus-low"
-    dispatch.write_record(plan, brief)
+    dispatch.write_record(plan, brief, tmp_path / "review")
     document = json.loads((plan.record / "dispatch.json").read_text(encoding="utf-8"))
     assert document["route"]["reviewing_checked"] is False
 
@@ -948,7 +948,7 @@ def test_a_plan_that_does_not_name_its_profile_is_a_record_that_could_not_be_rea
     # The other half, unchanged: the profile that *was* read is still excluded.
     assert plan.route.authorship.potential == ("opus-low",)
     assert plan.identity.profile != "opus-low"
-    dispatch.write_record(plan, brief)
+    dispatch.write_record(plan, brief, tmp_path / "review")
     document = json.loads((plan.record / "dispatch.json").read_text(encoding="utf-8"))
     assert document["route"]["reviewing_checked"] is False
 
@@ -1009,7 +1009,7 @@ def test_a_checked_route_reads_back_off_the_record_as_checked(tmp_path: Path) ->
     dispatch_record(tmp_path, profile="opus-high")
     plan, brief, _ = plan_for(tmp_path, reviewing="opus-high")
     assert plan is not None
-    dispatch.write_record(plan, brief)
+    dispatch.write_record(plan, brief, tmp_path / "review")
     assert dispatch.load_record(plan.record) == plan
     assert dispatch.load_record(plan.record).route.authorship.complete
 
@@ -1028,7 +1028,7 @@ def test_an_unchecked_route_reads_back_off_the_record_carrying_its_reason(
     (broken / "dispatch.json").write_text("{ not json", encoding="utf-8")
     plan, brief, _ = plan_for(tmp_path, reviewing="opus-low")
     assert plan is not None
-    dispatch.write_record(plan, brief)
+    dispatch.write_record(plan, brief, tmp_path / "review")
     reloaded = dispatch.load_record(plan.record).route.authorship
     assert reloaded.potential == ("opus-low",)
     assert reloaded.why == "records_unreadable"
@@ -1144,7 +1144,7 @@ def test_the_record_names_the_profile_under_review(tmp_path: Path) -> None:
     plan, brief, refusal = plan_for(tmp_path)
     assert refusal is None
     assert plan is not None
-    dispatch.write_record(plan, brief)
+    dispatch.write_record(plan, brief, tmp_path / "review")
     document = json.loads((plan.record / "dispatch.json").read_text(encoding="utf-8"))
     assert document["route"]["reviewing"] == REVIEWED
     assert document["permission_mode"] == "plan"
@@ -1155,7 +1155,7 @@ def test_a_recorded_review_route_reads_back_as_the_route_that_was_written(
 ) -> None:
     plan, brief, _ = plan_for(tmp_path)
     assert plan is not None
-    dispatch.write_record(plan, brief)
+    dispatch.write_record(plan, brief, tmp_path / "review")
     assert dispatch.load_record(plan.record) == plan
 
 
@@ -1165,7 +1165,7 @@ def test_a_record_written_before_this_landed_reads_back_with_no_subject(
     """No review before #322 declared one, which is the finding the ADR records."""
     plan, brief, _ = plan_for(tmp_path)
     assert plan is not None
-    dispatch.write_record(plan, brief)
+    dispatch.write_record(plan, brief, tmp_path / "review")
     path = plan.record / "dispatch.json"
     document = json.loads(path.read_text(encoding="utf-8"))
     del document["route"]["reviewing"]
