@@ -1562,13 +1562,14 @@ def test_the_watchdog_leaves_no_process_of_the_run_behind(tmp_path: Path) -> Non
     `run.sh` had started goes with it — which is what makes the freed lock mean
     something to the next holder.
 
-    The confirm below is a bound on "nothing touches it again", not a settle:
-    the heartbeat's own period is 0.2 s, so anything still alive rewrites the
-    marker within one period of the kill and every further 0.2 s after that. One
-    second is five periods, which is the same detection a longer window gives —
-    a survivor is seen at its first touch, not at the window's expiry — so the
-    old 3 s only waited longer to say the same thing. Its floor is the period,
-    not the old number.
+    The confirm below is an absence window, and an absence window is its own
+    subject: the assertion is that nothing rewrote the marker *for a window*, so
+    shortening the window narrows the claim — a survivor descheduled past it
+    escapes a shorter window that a longer one catches. Its detection floor is
+    the heartbeat's own 0.2 s period, since anything alive rewrites within one
+    period of the kill; 3 s holds fifteen of them, margin a shortened window
+    would spend, so the wait is kept at its original length rather than
+    converted.
     """
     marker = tmp_path / "grandchild-alive"
     hanging = executable(
@@ -1586,7 +1587,7 @@ def test_the_watchdog_leaves_no_process_of_the_run_behind(tmp_path: Path) -> Non
     assert result.returncode == EXIT_INFRA_UNAVAILABLE, result.stderr[-4000:]
     assert marker.exists(), "the stub never started the child this test is about"
     settled = marker.stat().st_mtime
-    time.sleep(1)
+    time.sleep(3)
     assert marker.stat().st_mtime == settled, "a process of the killed run is still running"
 
 
@@ -1628,12 +1629,14 @@ def test_a_signalled_pool_takes_its_flights_down_with_it(tmp_path: Path) -> None
     The heartbeat is the assertion: a stub that keeps touching a file for as
     long as it lives, read after the pool has exited.
 
-    The confirm at the end is a bound on "nothing touches it again", not a
-    settle: the heartbeat's own period is 0.2 s, so a flight that survived the
-    SIGTERM rewrites the marker within one period and every further 0.2 s after
-    that. One second is five periods — the same detection the old 3 s window
-    gave, because a survivor is seen at its first touch rather than at the
-    window's expiry — and its floor is the period, not the old number.
+    The confirm at the end is an absence window, and an absence window is its
+    own subject: the assertion is that no flight rewrote the marker *for a
+    window*, so shortening the window narrows the claim — a flight descheduled
+    past it escapes a shorter window that a longer one catches. Its detection
+    floor is the heartbeat's own 0.2 s period, since a survivor rewrites within
+    one period of the SIGTERM; 3 s holds fifteen of them, margin a shortened
+    window would spend, so the wait is kept at its original length rather than
+    converted.
     """
     marker = tmp_path / "flight-alive"
     flying = executable(tmp_path / "flying-run.sh", STUB_RUN_FLYING.format(marker=marker))
@@ -1664,5 +1667,5 @@ def test_a_signalled_pool_takes_its_flights_down_with_it(tmp_path: Path) -> None
     assert "infra_unavailable\tSIGTERM stopped the pool" in refusals, refusals
 
     settled = marker.stat().st_mtime
-    time.sleep(1)
+    time.sleep(3)
     assert marker.stat().st_mtime == settled, "a process of the signalled run is still running"
