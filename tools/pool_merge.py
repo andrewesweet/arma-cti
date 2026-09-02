@@ -765,8 +765,10 @@ def run_merge(args: argparse.Namespace) -> int:
         merged = merged._replace(
             notices=[
                 *merged.notices,
-                "the pool stopped and nothing in its evidence explains why — "
-                "untyped_harness_failure, not a result",
+                (
+                    "the pool stopped and nothing in its evidence explains why — "
+                    "untyped_harness_failure, not a result"
+                ),
             ],
             worst_class="untyped_harness_failure",
         )
