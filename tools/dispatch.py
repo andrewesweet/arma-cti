@@ -5562,7 +5562,7 @@ def _cleanup_plan_worktree(plan: Plan) -> tuple[Refusal | None, tuple[str, ...]]
     return dispatch_stop.cleanup_disposable_worktree(owner)
 
 
-def plan_dispatch(  # noqa: C901, PLR0911, PLR0912 — planning owns the ordered refusal ladder
+def plan_dispatch(  # noqa: C901, PLR0911, PLR0912, PLR0915 — planning owns the ordered refusal ladder, and #349's brief gate is one more rung in it
     args: argparse.Namespace,
     root: Path,
     now: datetime,
