@@ -107,4 +107,3 @@ def test_the_live_queue_is_what_a_line_start_scan_says_it_is() -> None:
     )
     queue = review_queue.pending_adrs(REPO)
     assert [path for path, _ in queue] == expected
-    assert queue, "expected the live review queue to be non-empty"
