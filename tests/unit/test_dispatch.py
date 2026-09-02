@@ -3965,6 +3965,13 @@ def test_the_seam_forks_nothing_for_a_dry_run(tmp_path: Path) -> None:
             str(credentials_file(tmp_path, f"ZAI_API_KEY={FAKE_TOKEN}\n")),
             "--dispatch-dir",
             str(tmp_path / "dispatches"),
+            # A review seat's author set is read from `--review-root`'s value, which
+            # defaults to this box's real declaration root — `CTI_REVIEW_DIR` never
+            # reaches it, because the flag is read and not the environment (#423). An
+            # empty root of this test's own keeps the read hermetic like every other
+            # state directory this argv names.
+            "--review-root",
+            str(tmp_path / "review"),
         ],
         seam_env(tmp_path, capture),
     )

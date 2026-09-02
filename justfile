@@ -775,18 +775,22 @@ discard path="" ruling="":
 # `--seat review` is the one seat with an extra required option and a forced
 # containment (#322, ADR-0071 ruling 4). `--reviewing <profile>` names the
 # profile whose work is under review: resolution removes it — and every other
-# profile the issue's own dispatch records place on the work — from the seat's
-# preference list before walking it, and prefers an entry on a different lane
-# among what is left, so a review is never produced by an instance that worked
-# on the change. Those records are read as a *potential*-author set and never as
-# proof: nothing on a record names the commits a run produced, so the route says
-# `reviewing_checked` and never `reviewing_verified`. A dispatch that names no
-# subject is refused `review_subject_unknown`; one whose declaration a complete
-# read of the records contradicts is refused `review_subject_contradicted`; one
-# naming a profile the records carry with `--profile` is refused
-# `review_same_profile`; and where a record could not be read at all, the route
-# is recorded `reviewing_checked: false` with the reason rather than passed off
-# as checked, while everything that was read is still excluded. The seat's
+# profile the issue's own dispatch records place on the work, merged with every
+# profile an interactive session declared there (`just review-loop author`,
+# #402) — from the seat's preference list before walking it, and prefers an
+# entry on a different lane among what is left, so a review is never produced
+# by an instance that worked on the change. Those sources are read as a
+# *potential*-author set and never as proof: nothing on a record names the
+# commits a run produced, so the route says `reviewing_checked` and never
+# `reviewing_verified`. A dispatch that names no subject is refused
+# `review_subject_unknown`; one whose declaration a complete read of both
+# sources contradicts is refused `review_subject_contradicted`; one naming a
+# profile those sources carry with `--profile` is refused
+# `review_same_profile`; a declaration that will not read, or whose record is
+# gone, refuses outright; and where a dispatch record could not be read at all,
+# the route is recorded `reviewing_checked: false` with the reason rather than
+# passed off as checked, while everything that was read is still excluded. The
+# seat's
 # permission mode is
 # **forced** rather than defaulted — `plan` on the `claude` family and
 # `--sandbox read-only` on `codex` — because a containment a caller can switch

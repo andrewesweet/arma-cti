@@ -1380,6 +1380,53 @@ def test_a_declared_profile_the_walk_was_not_going_to_take_changes_nothing(
     assert plan.identity.profile == "codex-sol-xhigh"
 
 
+def test_a_declaration_alone_makes_the_read_complete_and_can_contradict(
+    tmp_path: Path,
+) -> None:
+    """The #402 flip on an issue with no dispatch record at all, pinned (#423).
+
+    Before #402 this arrangement read an empty record scan, left the subject unchecked
+    (`route_reviewing_checked=no`) and dispatched. The merge clears `why` for the empty
+    states, so the declared set alone is complete — and a subject it does not name is
+    refused here rather than spent on a review the landing's rung would refuse anyway.
+    Both halves are pinned: the refusal on a foreign subject, and the checked dispatch
+    on the subject the declaration itself carries, which is what was impossible before.
+    """
+    record = review_loop.authorship_path(_declare(tmp_path, "codex-luna-max"), 322)
+
+    plan, _, refusal = plan_for(tmp_path)
+
+    assert plan is None
+    assert refusal is not None
+    assert refusal.kind == "review_subject_contradicted"
+    assert "potential_authors=codex-luna-max" in refusal.found
+    assert f"records={record}" in refusal.found, "the name's source is stated beside it"
+    assert "merged read is complete even when the declaration is its only record" in refusal.action
+
+
+def test_a_subject_the_declaration_alone_carries_dispatches_checked(
+    tmp_path: Path,
+) -> None:
+    """And the same completeness in the direction that dispatches (#423).
+
+    The set is the declaration's alone and the subject is in it, so the read is complete
+    and the route says so — never the unchecked line an empty scan used to leave, which
+    ADR-0071 ruling 4's landing check refuses on.
+    """
+    record = review_loop.authorship_path(_declare(tmp_path, REVIEWED), 322)
+
+    plan, _, refusal = plan_for(tmp_path)
+
+    assert refusal is None, refusal
+    assert plan is not None
+    assert plan.route.authorship.potential == (REVIEWED,)
+    assert plan.route.authorship.records == (str(record),)
+    assert plan.route.authorship.complete is True
+    assert f"route_reviewing_checked=yes potential_authors={REVIEWED} records={record}" in (
+        "\n".join(plan.route.lines())
+    )
+
+
 def test_the_route_records_the_merged_set_and_its_declared_record(
     tmp_path: Path,
 ) -> None:

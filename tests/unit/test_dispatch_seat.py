@@ -114,6 +114,9 @@ def plan_for(tmp_path: Path, **overrides: object) -> tuple[Any, str, Any]:
         "base_sha": "",
         "permission_mode": "acceptEdits",
         "dispatch_dir": str(tmp_path / "dispatches"),
+        # This test's own declaration root, for `--dispatch-dir`'s reason (#402, #423):
+        # the review arrangements here must not read whatever this box has declared.
+        "review_root": str(tmp_path / "review"),
         "credentials": str(tmp_path / "credentials.env"),
         "breaker_dir": str(tmp_path / "breaker"),
         "issue_body": str(READY_BODY),

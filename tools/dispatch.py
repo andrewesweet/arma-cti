@@ -269,8 +269,14 @@ import readiness
 
 # `review_exchange` is imported for its push half alone (#405): a harness-side commit is
 # handed over on exactly the ref the review loop already reads, rather than on a second
-# convention. It reads no dispatch record and imports nothing from here, so there is no cycle.
+# convention. It imports this module only lazily, so there is no cycle through it.
 import review_exchange
+
+# `review_loop` is read here for the landing's author-set merge, so the dispatcher and
+# `just land` cannot disagree about who authored a change (#402). The cycle runs one way
+# at module level only: `review_loop` imports this module lazily in its `escalate` and
+# `author` handlers — `escalate` also names `arbiter` for the same reason — so this import
+# is safe today and those edges cannot move up without cycling them back.
 import review_loop
 import routing_policy
 import worktree as worktree_tool
@@ -2470,6 +2476,16 @@ def contradicted_refusal(seat: Seat, reviewed: str, issue: int, authorship: Auth
     could be sitting in the record that would not open — refusing there would turn a gap in
     the scan into an accusation about the caller.
 
+    **A declaration alone is a complete read** (#423). `with_declared_authors` clears `why`
+    for the two empty states, so on a change the dispatch records cannot speak to — a
+    `.claude/` edit's shape — the merged set is complete with only the declared names in it.
+    A subject none of them names is refused here on that set, exactly as a record-placed one
+    would be: the caller controls both halves, the `records=` line shows which names came
+    from the declaration record, and the remedy — declare the subject's own session too with
+    `just review-loop author` — is real. Before #402 this arrangement dispatched with the
+    subject recorded unchecked; the landing's rung would have refused it there anyway, so
+    failing here spends no dispatch on a route the landing would not clear.
+
     **No failure class**, for `pair_block`'s reason: the provider is up, the lane is
     reachable, both profiles are registered, and this is an incorrect request. Nothing was
     found about any code under test.
@@ -2484,14 +2500,15 @@ def contradicted_refusal(seat: Seat, reviewed: str, issue: int, authorship: Auth
             f"records={' '.join(authorship.records)}",
         ),
         (
-            f"The dispatch records for #{issue} place its work on "
+            f"The dispatch records and any declared authorship for #{issue} place its work on "
             f"{' and '.join(authorship.potential)}, and this dispatch declares it is reviewing "
             f"{reviewed}, which is none of them. One of the two is wrong, and the declaration "
-            "is the half a caller controls, so it is the half that is refused. Nothing was "
+            "is the half a caller controls, so it is the half that is refused. This merged "
+            "read is complete even when the declaration is its only record. Nothing was "
             "dispatched. Name a profile the records carry, or — if the work was done somewhere "
-            "these records cannot see — say so on the issue and dispatch from a box that holds "
-            "the record, because a subject nobody can check is the hole this refusal exists to "
-            f"close. {NEVER_ALONE}"
+            "these records cannot see — declare the subject's own session too with `just "
+            "review-loop author`, because a subject nobody can check is the hole this refusal "
+            f"exists to close. {NEVER_ALONE}"
         ),
     )
 

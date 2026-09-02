@@ -1467,8 +1467,9 @@ def render_landing(  # noqa: PLR0913 — the terminus record carries what the la
 # `terminus`, `show`. Refusals are typed and named, exit 1; a GitHub or filesystem act
 # that could not be performed is exit 3, "could not look", the handoff tool's split — a
 # negative result and no result are different answers. `escalate` lazy-imports `arbiter`
-# and `dispatch` because `arbiter` imports this module: the import is a handler-local
-# fact, and making it module-level would be a cycle.
+# and `dispatch`, and `author` lazy-imports `dispatch`: `arbiter` imports this module, while
+# `dispatch` imports it at module load (#402). These imports are handler-local facts; moving
+# either `dispatch` edge to module scope would cycle.
 
 OK: Final = 0
 REFUSED: Final = 1
@@ -1857,7 +1858,9 @@ def _arbiter_routing_inputs(issue: int) -> tuple[routing_policy.Policy, tuple[st
     not, having no network to stall on.
     """
     # Handler-local for the same reason `_cmd_escalate`'s `arbiter` import is: the
-    # exchange module imports this one, so a module-level import here is a cycle.
+    # exchange module imports this one, so a module-level import here is a cycle. Since
+    # #402 the lazy direction is load-bearing from the other side too — `dispatch` holds
+    # this module at module level — so neither edge here can move up without cycling it.
     from review_exchange import review_ref  # noqa: PLC0415 — the cycle is real; see above
 
     try:
@@ -1892,9 +1895,11 @@ def _cmd_escalate(
     args: argparse.Namespace, clock: Callable[[], float], _create: object, _post: object
 ) -> int:
     # Handler-local, and necessarily so: `arbiter` imports this module, so a module-level
-    # import here is a cycle.
+    # import here is a cycle. Since #402 `dispatch` holds this module at module level too,
+    # so this edge is load-bearing in that second direction and cannot move up without
+    # cycling it directly.
     import arbiter  # noqa: PLC0415 — the cycle is real; see the comment above
-    import dispatch  # noqa: PLC0415 — same cycle, same reason
+    import dispatch  # noqa: PLC0415 — same cycle, same reason (and #402's, in reverse)
 
     root = Path(args.root)
     loop = _read_loop(root, args.issue)
@@ -2076,7 +2081,9 @@ def _cmd_author(
     — this protects against the accident and the shortcut, not against a deceptive agent; a
     convention with a mechanical floor, not a guarantee.
     """
-    import dispatch  # noqa: PLC0415 — the same cycle `_cmd_escalate` documents, same reason
+    # Handler-local because `dispatch` imports this module at module load (#402); moving
+    # this edge up would cycle `dispatch` back through `review_loop`.
+    import dispatch  # noqa: PLC0415 — the cycle is real; see the comment above
 
     dispatched = os.environ.get("CTI_DISPATCH_ID", "").strip()
     if dispatched:
