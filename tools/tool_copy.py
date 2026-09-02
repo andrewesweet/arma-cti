@@ -25,8 +25,13 @@ that is the fact "a landing has superseded this copy". A tree carrying its own c
 a session mid-work, and its drifted paths are its own candidate, never a report. Reading
 ``origin/main`` uses the local ref without fetching — ``just land`` and ``just worktree
 add`` fetch as a matter of routine, so the ref is fresh exactly where the loop needs it
-to be. Blob shas come from ``git hash-object`` over the working-tree bytes, so an
-uncommitted edit shows as drift too; where a checkout filter rewrites bytes, the two
+to be. The walk is over the **union** of the two governed sets — this tree's and
+``origin/main``'s — so a path the landing added is surveyed though no local set could
+hold it, and the record and the rung carry the blob sha each of the three sides holds:
+the working tree, ``HEAD`` and ``origin/main``, empty where a side does not hold the
+path. ``HEAD`` is what tells a landed removal from the session's own new work, which
+neither commit has. Blob shas come from ``git hash-object`` over the working-tree bytes,
+so an uncommitted edit shows as drift too; where a checkout filter rewrites bytes, the
 shas a drifted path carries are the evidence a reader needs to see it.
 """
 
@@ -41,7 +46,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
+    from collections.abc import Mapping, Sequence
 
 GOVERNED_JUSTFILE: Final = "justfile"
 GOVERNED_HOOK_DIR: Final = ".claude/hooks"
@@ -115,17 +120,20 @@ class Survey:
     """One read of a tree's copies against ``origin/main``, at one instant.
 
     ``paths`` carries **only** the governed paths whose working-tree bytes and
-    ``origin/main`` bytes differ — the drift, with both blob shas beside each other so a
-    reader sees which side is which without a second read. Every other path is current
-    and is deliberately absent: a full listing per dispatch would be a dashboard of
-    sameness (#209).
+    ``origin/main`` bytes differ — the drift, walked over the **union** of the two
+    governed sets, with the blob sha each of the three sides holds beside the others:
+    ``worktree`` (the working tree), ``head`` (the tree's own ``HEAD`` commit) and
+    ``origin_main`` — empty where that side does not hold the path. Every other path is
+    current and is deliberately absent: a full listing per dispatch would be a dashboard
+    of sameness (#209).
     """
 
     head: str
     origin_main: str
-    # ``None`` is "could not tell" — git refused, or the ref is not there. It is never
-    # folded into ``False``, because an unreadable ref reads as health nowhere else in
-    # this project's reporting.
+    # ``None`` is "could not tell" — git refused, or the ref is not there, or
+    # `merge-base --is-ancestor` failed rather than answering. It is never folded into
+    # ``False``, because an unreadable ref reads as health nowhere else in this
+    # project's reporting.
     behind_origin_main: bool | None
     paths: Mapping[str, Mapping[str, str]] = field(default_factory=dict)
 
@@ -135,13 +143,18 @@ class Survey:
         Two exclusions keep the report from crying wolf. A tree carrying its own commits
         is not behind even where its bytes differ from ``origin/main`` — that drift is the
         session's own candidate, and naming it would report every mid-issue tree as stale.
-        And a path ``origin/main`` does not have is this tree's own new work, which no
-        landing has superseded: only a path the landing changed, or one it has and this
-        tree has lost, is behind.
+        And a path only the working tree holds — ``origin/main`` and ``HEAD`` both empty —
+        is this session's own new work, which no landing has superseded. A path
+        ``origin/main`` has **deleted**, by contrast, is named: ``HEAD`` still holds what
+        the landing removed, so it is drift with its two sides stated like any other.
         """
         if self.behind_origin_main is not True:
             return ()
-        return tuple(name for name in sorted(self.paths) if self.paths[name].get("origin_main", ""))
+        return tuple(
+            name
+            for name in sorted(self.paths)
+            if self.paths[name].get("origin_main", "") or self.paths[name].get("head", "")
+        )
 
     def document(self) -> dict[str, object]:
         """Render the record half: the instant's heads, and both sides of every drift."""
@@ -203,11 +216,30 @@ def _origin_governed(root: Path) -> tuple[str, ...]:
     listed = _git(
         "ls-tree", "-r", "--name-only", "-z", "origin/main", "--", GOVERNED_HOOK_DIR, root=root
     )
-    names.update(Path(line) for line in listed.split("\0") if line)
+    # The same exclusion the local read applies: interpreter output under the hook
+    # surface is not a hook, on either side.
+    names.update(
+        Path(line) for line in listed.split("\0") if line and "__pycache__" not in Path(line).parts
+    )
     return tuple(sorted({name.as_posix() for name in names}))
 
 
-def _origin_side(root: Path, names: tuple[str, ...]) -> tuple[str, dict[str, str]]:
+def _ls_tree_blobs(rev: str, names: Sequence[str], root: Path) -> dict[str, str]:
+    """Each name's blob sha as ``rev`` holds it; absent where ``rev`` does not have it."""
+    blobs: dict[str, str] = {}
+    if not names:
+        return blobs
+    for entry in _git("ls-tree", "-z", rev, "--", *names, root=root).split("\0"):
+        if not entry:
+            continue
+        meta, _, path = entry.partition("\t")
+        parts = meta.split()
+        if len(parts) >= _LS_TREE_FIELDS:
+            blobs[path] = parts[2]
+    return blobs
+
+
+def _origin_side(root: Path, names: tuple[str, ...]) -> tuple[str, tuple[str, ...], dict[str, str]]:
     """``origin/main``'s half: its head, its governed set, and each governed path's blob.
 
     The origin side derives its own governed set, so a path the landing added or renamed
@@ -217,18 +249,9 @@ def _origin_side(root: Path, names: tuple[str, ...]) -> tuple[str, dict[str, str
     """
     origin_main = _git("rev-parse", "origin/main", root=root).strip()
     origin_names = _origin_governed(root)
-    blobs: dict[str, str] = {}
-    listing = list(dict.fromkeys([*names, *origin_names]))
-    if listing:
-        # One listing over the whole surveyed set, rather than a `rev-parse` per path.
-        for entry in _git("ls-tree", "-z", "origin/main", "--", *listing, root=root).split("\0"):
-            if not entry:
-                continue
-            meta, _, path = entry.partition("\t")
-            parts = meta.split()
-            if len(parts) >= _LS_TREE_FIELDS:
-                blobs[path] = parts[2]
-    return origin_main, blobs
+    # One listing over the whole surveyed set, rather than a `rev-parse` per path.
+    blobs = _ls_tree_blobs("origin/main", list(dict.fromkeys([*names, *origin_names])), root)
+    return origin_main, origin_names, blobs
 
 
 def _git_code(*args: str, root: Path) -> int:
@@ -249,9 +272,18 @@ def _git_code(*args: str, root: Path) -> int:
         raise _GitUnreadableError(str(unreadable)) from unreadable
 
 
-def _is_behind(root: Path) -> bool:
-    """Whether this tree's HEAD is an ancestor of ``origin/main``."""
-    return _git_code("merge-base", "--is-ancestor", "HEAD", "origin/main", root=root) == 0
+def _is_behind(root: Path) -> bool | None:
+    """Whether this tree's HEAD is an ancestor of ``origin/main``, or ``None`` where git errored.
+
+    ``merge-base --is-ancestor`` answers in its exit code — 0 for yes, 1 for no — and
+    exits with anything else when it fails rather than answering, so a failure is
+    untellable, never a folded "no" (git-merge-base's own contract; #676 review round
+    two).
+    """
+    code = _git_code("merge-base", "--is-ancestor", "HEAD", "origin/main", root=root)
+    if code in (0, 1):
+        return code == 0
+    raise _GitUnreadableError(f"git merge-base --is-ancestor: exit {code}")
 
 
 def survey(root: Path) -> Survey:
@@ -266,15 +298,24 @@ def survey(root: Path) -> Survey:
     except _GitUnreadableError:
         return Survey(head="", origin_main="", behind_origin_main=None, paths={})
     try:
-        origin_main, origin = _origin_side(root, names)
+        origin_main, origin_names, origin = _origin_side(root, names)
         behind = _is_behind(root)
+        drifted = {
+            name: {
+                "worktree": local.get(name, ""),
+                "head": "",
+                "origin_main": origin.get(name, ""),
+            }
+            for name in sorted(set(names).union(origin_names))
+            if local.get(name, "") != origin.get(name, "")
+        }
+        # A path only the working tree holds is the session's own new work and stays out
+        # of the report; `HEAD` holding the blob is what separates that from a landed
+        # removal this tree has not taken yet.
+        for name, blob in _ls_tree_blobs("HEAD", sorted(drifted), root).items():
+            drifted[name]["head"] = blob
     except _GitUnreadableError:
         return Survey(head=head, origin_main="", behind_origin_main=None, paths={})
-    drifted = {
-        name: {"worktree": local.get(name, ""), "origin_main": origin.get(name, "")}
-        for name in names
-        if local.get(name, "") != origin.get(name, "")
-    }
     return Survey(head=head, origin_main=origin_main, behind_origin_main=behind, paths=drifted)
 
 

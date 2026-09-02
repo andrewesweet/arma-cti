@@ -23,6 +23,8 @@ from typing import TYPE_CHECKING
 from conftest import load_tool
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from pathlib import Path
 
     import pytest
@@ -88,9 +90,11 @@ def _with_origin(tmp_path: Path) -> Path:
     return root
 
 
-def _advance_origin(root: Path, tmp_path: Path, path: str, content: str) -> None:
-    """Land one commit on `origin/main` that changes `path`, without the local tree moving."""
-    ahead = tmp_path / f"ahead-{path.replace('/', '-')}"
+def _advance_origin_with(
+    root: Path, tmp_path: Path, label: str, edit: Callable[[Path], None]
+) -> None:
+    """Land one commit on `origin/main` built by `edit`, without the local tree moving."""
+    ahead = tmp_path / f"ahead-{label}"
     subprocess.run(  # noqa: S603
         ["git", "clone", "-q", str(tmp_path / "remote.git"), str(ahead)],  # noqa: S607
         check=True,
@@ -98,12 +102,21 @@ def _advance_origin(root: Path, tmp_path: Path, path: str, content: str) -> None
     )
     _git("config", "user.email", "t@example.invalid", cwd=ahead)
     _git("config", "user.name", "t", cwd=ahead)
-    target = ahead / path
-    target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_text(content, encoding="utf-8")
+    edit(ahead)
     _commit_all(ahead, "feat: ahead")
     _git("push", "-q", "origin", "main", cwd=ahead)
     _git("fetch", "-q", "origin", cwd=root)
+
+
+def _advance_origin(root: Path, tmp_path: Path, path: str, content: str) -> None:
+    """Land one commit on `origin/main` that changes `path`, without the local tree moving."""
+
+    def write(ahead: Path) -> None:
+        target = ahead / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(content, encoding="utf-8")
+
+    _advance_origin_with(root, tmp_path, path.replace("/", "-"), write)
 
 
 def test_governed_paths_are_what_the_justfile_and_the_hook_surfaces_run(tmp_path: Path) -> None:
@@ -171,6 +184,69 @@ def test_a_governed_path_origin_main_does_not_have_is_never_named_behind(
     assert "tools/b.py" not in survey.stale_paths()
     assert survey.stale_paths() == ("justfile",)
     assert "tools/b.py" in survey.paths
+
+
+def test_a_governed_path_only_origin_main_has_is_surveyed_and_named(tmp_path: Path) -> None:
+    root = _with_origin(tmp_path)
+
+    def add(ahead: Path) -> None:
+        (ahead / "tools" / "new.py").write_text("new = 1\n", encoding="utf-8")
+        (ahead / "justfile").write_text(
+            JUSTFILE + "    uv run python tools/new.py run\n", encoding="utf-8"
+        )
+
+    _advance_origin_with(root, tmp_path, "adds-a-tool", add)
+
+    survey = tool_copy.survey(root)
+
+    # A landing that adds machinery this tree's justfile has never heard of is the case
+    # this issue is most about: the union of the two governed sets is what is walked, so
+    # the origin side's new path is named even though no local set could have held it.
+    assert survey.behind_origin_main is True
+    assert survey.stale_paths() == ("justfile", "tools/new.py")
+    assert survey.paths["tools/new.py"]["worktree"] == ""
+    assert survey.paths["tools/new.py"]["origin_main"]
+
+
+def test_a_governed_path_origin_main_deleted_is_named_behind(tmp_path: Path) -> None:
+    root = _with_origin(tmp_path)
+
+    def delete(ahead: Path) -> None:
+        (ahead / "tools" / "a.py").unlink()
+
+    _advance_origin_with(root, tmp_path, "deletes-a-tool", delete)
+
+    survey = tool_copy.survey(root)
+
+    # A path the landing removed is not "nothing to say": it is a landed removal this
+    # tree has not taken yet, named like any other drift. The `head` blob is what tells
+    # it from this session's own new work, which HEAD does not hold either.
+    assert survey.behind_origin_main is True
+    assert "tools/a.py" in survey.stale_paths()
+    assert survey.paths["tools/a.py"]["origin_main"] == ""
+    assert survey.paths["tools/a.py"]["head"]
+
+
+def test_a_failing_ancestry_check_is_untellable_not_current(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    root = _with_origin(tmp_path)
+    _advance_origin(root, tmp_path, "tools/a.py", "run = 2\n")
+    # `merge-base --is-ancestor` answers in its exit code — 0 yes, 1 no — and errors with
+    # 128. Head's own commit object removed makes that real: the origin side still reads,
+    # while the ancestry question cannot be answered at all.
+    head = _git("rev-parse", "HEAD", cwd=root)
+    (root / ".git" / "objects" / head[:2] / head[2:]).unlink()
+
+    survey = tool_copy.survey(root)
+
+    # Git failing to answer is untellable, never a folded "no": the rung says so out loud
+    # rather than reading as health.
+    assert survey.behind_origin_main is None
+    assert survey.stale_paths() == ()
+    assert tool_copy.main(["report", "--repo", str(root)]) == 0
+    assert "cannot tell" in capsys.readouterr().out
 
 
 def test_an_origin_main_that_cannot_be_read_is_reported_as_untellable(
