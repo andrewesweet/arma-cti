@@ -9,7 +9,7 @@ is the exact arrangement the recipe must override.
 from __future__ import annotations
 
 import os
-import xml.etree.ElementTree as ET
+import time
 from typing import TYPE_CHECKING
 
 import pytest
@@ -33,6 +33,22 @@ def test_worker():
 """
 
 
+# A module whose one test spawns a grandchild meant to outlive it: the holder
+# shape the tool's own subjects (`test_pool_slots`, `test_client_lock`) take.
+# The grandchild's pid is recorded where the outer test can read it, and it
+# sleeps far past the deadline, so only a kill that reaches the whole process
+# group can stop it — a direct-child kill leaves it running and this test red.
+GRANDCHILD_PROBE = """
+import os, pathlib, subprocess, sys, time
+
+def test_staged_holder():
+    grandchild = subprocess.Popen(
+        [sys.executable, "-c", "import time; time.sleep(120)"]
+    )
+    pathlib.Path(os.environ["MODULE_COST_GRANDCHILD_OUT"]).write_text(str(grandchild.pid))
+"""
+
+
 def make_sample(**overrides: object) -> module_cost.Sample:
     """One green-looking sample, with the caller's fields replaced."""
     fields: dict[str, object] = {
@@ -44,11 +60,6 @@ def make_sample(**overrides: object) -> module_cost.Sample:
         "load_end": 1.30,
         "foreign_start": 0,
         "foreign_end": 0,
-        "collected": 47,
-        "failed": 0,
-        "errored": 0,
-        "skipped": 0,
-        "junit_readable": True,
         "exit_code": 0,
     }
     fields.update(overrides)
@@ -64,7 +75,7 @@ def test_row_names_serial_and_every_figure() -> None:
     assert "cpu=13.54s (user 10.13s + sys 3.41s)" in row
     assert "load_1m=1.13 -> 1.30" in row
     assert "foreign_gate_processes=0 -> 0" in row
-    assert "tests=47 failed=0 errored=0 skipped=0 exit=0 readable_junit=yes" in row
+    assert "exit=0" in row
 
 
 def test_row_shows_null_for_a_reading_it_could_not_take() -> None:
@@ -79,72 +90,12 @@ def test_row_shows_null_for_a_foreign_count_it_could_not_take() -> None:
     assert "foreign_gate_processes=null -> null" in row
 
 
-def test_row_marks_unreadable_junit_and_nulls_every_count() -> None:
-    """A report the child did not write is `readable_junit=no` and four nulls."""
-    row = module_cost.format_row(
-        make_sample(collected=None, failed=None, errored=None, skipped=None, junit_readable=False)
-    )
-    assert "tests=null failed=null errored=null skipped=null exit=0 readable_junit=no" in row
-
-
-def test_argv_is_serial_and_counts_through_junit(tmp_path: Path) -> None:
-    """`-n0` is in the child's argv after the module, with a junit path beside it."""
-    argv = module_cost.build_pytest_argv("python", "tests/unit/test_x.py", tmp_path / "j.xml")
+def test_argv_is_serial() -> None:
+    """`-n0` is in the child's argv after the module, and nothing counted."""
+    argv = module_cost.build_pytest_argv("python", "tests/unit/test_x.py")
     assert argv[:4] == ["python", "-m", "pytest", "tests/unit/test_x.py"]
     assert "-n0" in argv
-    assert "--junit-xml=" + str(tmp_path / "j.xml") in argv
-
-
-def test_junit_counts_read_the_suite(tmp_path: Path) -> None:
-    """Collected, failed, errored and skipped come from the suite's attributes.
-
-    pytest's xunit2 nests the suite inside `<testsuites>`; the counts live on
-    the `<testsuite>` element, which is where the reader looks.
-    """
-    root = ET.Element("testsuites")
-    ET.SubElement(
-        root,
-        "testsuite",
-        {"tests": "4", "failures": "1", "errors": "1", "skipped": "1"},
-    )
-    path = tmp_path / "junit.xml"
-    ET.ElementTree(root).write(path)
-    assert module_cost.junit_counts(path) == (4, 1, 1, 1)
-
-
-def test_junit_counts_read_a_bare_suite_root(tmp_path: Path) -> None:
-    """The xunit1 shape, with the counts on the root element, reads the same."""
-    path = tmp_path / "junit.xml"
-    path.write_text('<testsuite tests="4" failures="1" errors="1" skipped="1"></testsuite>')
-    assert module_cost.junit_counts(path) == (4, 1, 1, 1)
-
-
-@pytest.mark.parametrize(
-    "content",
-    [
-        None,
-        "<not-xml",
-        "<testsuites></testsuites>",
-        '<testsuite tests="oops"></testsuite>',
-        "<testsuite></testsuite>",
-        '<testsuite tests="4" failures="0"></testsuite>',
-    ],
-)
-def test_junit_counts_unknown_is_none_not_zero(tmp_path: Path, content: str | None) -> None:
-    """A report the child did not write leaves the counts unknown, never zero.
-
-    Zero would read as a fact — "no tests ran" — that the missing report
-    cannot support, which is the token-versus-thing failure the row exists to
-    avoid; the absence is `None`, named by `readable_junit` in the row. A
-    well-formed but incomplete suite — `<testsuite/>` with no attributes, or
-    one carrying only some of the four — parses cleanly and would have
-    defaulted every absent count to zero, so all four attributes are required
-    before any reading is reported.
-    """
-    path = tmp_path / "junit.xml"
-    if content is not None:
-        path.write_text(content)
-    assert module_cost.junit_counts(path) is None
+    assert not any(arg.startswith("--junit-xml") for arg in argv)
 
 
 def stage_module(root: Path, body: str, name: str = "test_staged.py") -> str:
@@ -165,22 +116,20 @@ def test_measure_runs_serial_against_a_parallel_addopts(tmp_path: Path) -> None:
     finally:
         os.environ.pop("MODULE_COST_WORKER_OUT", None)
     assert sample.exit_code == 0
-    assert sample.collected == 1
-    assert sample.failed == 0
     assert out.read_text() == "serial"
     assert sample.wall_s > 0.0
     assert sample.cpu_user_s + sample.cpu_sys_s > 0.0
 
 
-def test_measure_counts_a_red_module_and_propagates_its_exit(tmp_path: Path) -> None:
-    """A red module is still a measurement: counts named, exit code carried."""
+def test_measure_propagates_a_red_modules_exit(tmp_path: Path) -> None:
+    """A red module is still a measurement: the child's exit code is carried."""
     module = stage_module(
         tmp_path,
         "def test_pass():\n    assert True\n\n\ndef test_fail():\n    assert False\n",
     )
     sample = module_cost.measure(module, root=tmp_path)
-    assert (sample.collected, sample.failed) == (2, 1)
     assert sample.exit_code == 1
+    assert sample.timed_out is False
 
 
 def test_measure_kills_a_child_at_its_deadline(tmp_path: Path) -> None:
@@ -188,17 +137,55 @@ def test_measure_kills_a_child_at_its_deadline(tmp_path: Path) -> None:
 
     The staged module sleeps well past the one-second deadline, so the kill is
     the run's own path — wall and CPU up to the kill are real readings, the
-    exit is 124, `timed_out` is set and the counts stay unknown because a run
-    that never finished has no counts.
+    exit is 124 and `timed_out` is set, because a run that never finished is
+    not a measurement.
     """
     module = stage_module(tmp_path, "import time\n\ndef test_hangs():\n    time.sleep(60)\n")
     sample = module_cost.measure(module, root=tmp_path, child_timeout_s=1.0)
     assert sample.timed_out is True
     assert sample.exit_code == 124
-    assert sample.collected is None
-    assert sample.junit_readable is False
     assert sample.wall_s >= 1.0
     assert sample.cpu_user_s + sample.cpu_sys_s > 0.0
+
+
+def _pid_alive(pid: int) -> bool:
+    """Whether `pid` still exists — `kill(pid, 0)` probes without signalling."""
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:  # pragma: no cover — a live pid outside our ownership
+        return True
+    return True
+
+
+def test_measure_kills_the_grandchild_of_a_timed_out_child(tmp_path: Path) -> None:
+    """The deadline kill reaches the whole process group, not just the direct child.
+
+    `subprocess.run`'s timeout terminates the direct pytest only, so a module
+    whose tests spawn holders of their own — the exact shape of this tool's
+    own subjects, `test_pool_slots` and `test_client_lock` — would leave those
+    holders alive. The staged module's test spawns a grandchild of its own
+    session that sleeps far past the deadline and records its pid where this
+    test reads it, so the pid surviving the run is the leak the finding names.
+    """
+    module = stage_module(tmp_path, GRANDCHILD_PROBE)
+    out = tmp_path / "grandchild.txt"
+    out.write_text("unwritten")
+    os.environ["MODULE_COST_GRANDCHILD_OUT"] = str(out)
+    try:
+        sample = module_cost.measure(module, root=tmp_path, child_timeout_s=5.0)
+    finally:
+        os.environ.pop("MODULE_COST_GRANDCHILD_OUT", None)
+    assert sample.timed_out is True
+    assert sample.exit_code == 124
+    pid_text = out.read_text()
+    assert pid_text != "unwritten", "the staged test never ran; the deadline was too short"
+    pid = int(pid_text)
+    deadline = time.monotonic() + 10.0
+    while _pid_alive(pid) and time.monotonic() < deadline:
+        time.sleep(0.2)
+    assert not _pid_alive(pid), f"grandchild {pid} survived the deadline kill"
 
 
 def test_measure_reads_staged_kernel_files(tmp_path: Path) -> None:
@@ -241,7 +228,7 @@ def test_main_prints_a_timeout_note_not_a_red_note(
     monkeypatch.setattr(
         module_cost,
         "measure",
-        lambda *_, **__: make_sample(timed_out=True, exit_code=124, junit_readable=False),
+        lambda *_, **__: make_sample(timed_out=True, exit_code=124),
     )
     assert module_cost.main(["tests/unit/test_example.py"]) == 124
     out = capsys.readouterr().out

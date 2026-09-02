@@ -20,11 +20,7 @@ and the row says `mode=serial` so a reader cannot mistake a contended figure for
 an isolated one.
 
 Every number is a real reading, and a reading that cannot be taken is `null`
-rather than a guess — the same rule `gate_clock`'s recorder holds. That rule
-reaches the test counts too: a junit report the child did not write, or wrote
-in a form that will not parse, or one that parses but omits a count attribute,
-leaves every count `null` with `readable_junit`
-naming the absence in the row, never four zeroes that read as a fact. Load and
+rather than a guess — the same rule `gate_clock`'s recorder holds. Load and
 the foreign gate-process count are read before the child starts and after it
 exits: `/proc/loadavg` for the 1-minute load, and `gate_clock`'s
 `foreign_gate_processes` for the `pytest|cargo test` count. Read outside the
@@ -35,9 +31,12 @@ involved and no shell arrives between.
 
 The run is bounded at both seams. The recipe's `timeout` is the outer bound
 ADR-0049 requires of every `uv run`; inside it, the child pytest carries its
-own shorter deadline, and a child that reaches it is killed and reported as
-`timed_out` — exit 124, counts `null` — because a timed-out run is not a
-measurement, and never becomes one by waiting longer.
+own shorter deadline, and a child that reaches it is killed with its whole
+process group and reported as `timed_out` — exit 124 — because a timed-out run
+is not a measurement, and never becomes one by waiting longer. The group is
+the bound that matters: the modules this tool exists to measure are the ones
+that spawn holders (`test_pool_slots`, `test_client_lock`), and a kill aimed at
+the direct child alone would leave those holders alive.
 
 The module path is the only argument. A red module is still a measurement: the
 row prints whatever the run produced and the child's exit code is propagated,
@@ -47,13 +46,13 @@ so a red is visible without the figure being withheld.
 from __future__ import annotations
 
 import argparse
+import contextlib
 import os
 import resource
+import signal
 import subprocess
 import sys
-import tempfile
 import time
-import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -75,16 +74,17 @@ SERIAL_FLAG = "-n0"
 # killed instead of holding the caller. `--child-timeout-seconds` overrides.
 CHILD_TIMEOUT_S = 1500.0
 
+# How long the deadline kill waits after SIGTERM before escalating to SIGKILL.
+TERM_GRACE_S = 5.0
+
 
 @dataclass(frozen=True)
 class Sample:
     """One serial run's figures. A reading that could not be taken is `None`.
 
-    The test counts are `None` as a set when the junit report is absent,
-    malformed or unreadable — `junit_readable` is the row's name for that —
-    because a zero there would read as a fact. `timed_out` marks a child
-    killed at its deadline: the wall and CPU up to the kill are real, but the
-    run is not a measurement and nothing downstream may read it as one.
+    `timed_out` marks a child killed at its deadline: the wall and CPU up to
+    the kill are real, but the run is not a measurement and nothing downstream
+    may read it as one.
     """
 
     module: str
@@ -95,23 +95,15 @@ class Sample:
     load_end: float | None
     foreign_start: int | None
     foreign_end: int | None
-    collected: int | None
-    failed: int | None
-    errored: int | None
-    skipped: int | None
-    junit_readable: bool
     exit_code: int
     timed_out: bool = False
 
 
-def build_pytest_argv(python: str, module: str, junit_xml: Path) -> list[str]:
-    """Build the child's argv: serial, and counted through junit.
+def build_pytest_argv(python: str, module: str) -> list[str]:
+    """Build the child's argv: serial, and nothing else that could drift.
 
     `-n0` comes after pyproject's addopts, so it wins over `-n auto` — the
-    serial guarantee lives here and nowhere else. junit-xml carries the
-    collected and failed counts, which pytest's summary line would have to be
-    parsed to get and which a passing run with zero tests must still be able
-    to distinguish.
+    serial guarantee lives here and nowhere else.
     """
     return [
         python,
@@ -119,38 +111,9 @@ def build_pytest_argv(python: str, module: str, junit_xml: Path) -> list[str]:
         "pytest",
         module,
         SERIAL_FLAG,
-        f"--junit-xml={junit_xml}",
         "-p",
         "no:cacheprovider",
     ]
-
-
-def junit_counts(xml_path: Path) -> tuple[int, int, int, int] | None:
-    """Read `(collected, failed, errored, skipped)`, or `None` when the report is unreadable.
-
-    The child writes the file itself; a missing, malformed or truncated report
-    means the counts are unknown, and unknown is `None` — never four zeroes,
-    which would read as a fact a reader could quote. A well-formed suite that
-    omits any of the four count attributes is the same absence: the defaults
-    would have manufactured a confident `tests=0` out of no reading at all. The
-    row's `readable_junit` field carries this answer beside the counts.
-    """
-    try:
-        root = ET.parse(xml_path).getroot()  # noqa: S314 — the child's own report, not untrusted input
-    except (OSError, ET.ParseError):
-        return None
-    suite = root if root.tag == "testsuite" else root.find("testsuite")
-    if suite is None:
-        return None
-    try:
-        return (
-            int(suite.get("tests", "")),
-            int(suite.get("failures", "")),
-            int(suite.get("errors", "")),
-            int(suite.get("skipped", "")),
-        )
-    except ValueError:
-        return None
 
 
 def format_load(load: float | None) -> str:
@@ -167,8 +130,7 @@ def format_row(sample: Sample) -> str:
     """Render the row a reader quotes into an issue: one figure per line, serial named.
 
     The `mode=serial` line is criterion 2's own statement — a figure pasted
-    without it cannot prove it was taken in isolation — and `readable_junit`
-    says whether the counts are readings or an absence.
+    without it cannot prove it was taken in isolation.
     """
     return (
         f"module={sample.module}\n"
@@ -178,10 +140,44 @@ def format_row(sample: Sample) -> str:
         f"load_1m={format_load(sample.load_start)} -> {format_load(sample.load_end)}\n"
         f"foreign_gate_processes={format_count(sample.foreign_start)}"
         f" -> {format_count(sample.foreign_end)}\n"
-        f"tests={format_count(sample.collected)} failed={format_count(sample.failed)}"
-        f" errored={format_count(sample.errored)} skipped={format_count(sample.skipped)}"
-        f" exit={sample.exit_code} readable_junit={'yes' if sample.junit_readable else 'no'}"
+        f"exit={sample.exit_code}"
     )
+
+
+def run_child(
+    argv: list[str], cwd: Path, env: dict[str, str], timeout_s: float
+) -> tuple[int, bool]:
+    """Run the child in its own session and return `(return_code, timed_out)`.
+
+    `start_new_session` makes the child its own process-group leader, so the
+    deadline kill reaches the group rather than the direct pytest alone —
+    `subprocess.run`'s timeout kills only that direct child, and the modules
+    this tool exists to measure spawn holders of their own, which a
+    direct-child kill would strand. SIGTERM first; SIGKILL only where the
+    group survives it. The child's output is discarded: the row reads its own
+    instrument's figures, never the child's.
+    """
+    child = subprocess.Popen(  # noqa: S603 — argv is built here, no shell
+        argv,
+        cwd=cwd,
+        env=env,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        start_new_session=True,
+    )
+    try:
+        child.wait(timeout=timeout_s)
+    except subprocess.TimeoutExpired:
+        with contextlib.suppress(ProcessLookupError):
+            os.killpg(child.pid, signal.SIGTERM)
+        try:
+            child.wait(timeout=TERM_GRACE_S)
+        except subprocess.TimeoutExpired:
+            with contextlib.suppress(ProcessLookupError):
+                os.killpg(child.pid, signal.SIGKILL)
+            child.wait()
+        return 124, True
+    return child.returncode, False
 
 
 def measure(
@@ -202,51 +198,26 @@ def measure(
     system time when this call is the only thing spawning between the two reads.
     `proc` resolves where the kernel's files are read from, so a test can stage
     them — the same shape `gate_clock`'s readers expose. A child still running
-    at `child_timeout_s` is killed: the returned sample is `timed_out` with
-    exit 124 and no counts, because a hung module is a synchronisation finding,
-    not a longer wait.
+    at `child_timeout_s` is killed with its whole process group: the returned
+    sample is `timed_out` with exit 124, because a hung module is a
+    synchronisation finding, not a longer wait.
     """
-    fd, junit_name = tempfile.mkstemp(suffix="-module-cost-junit.xml")
-    os.close(fd)
-    junit_xml = Path(junit_name)
     # This tool is usually launched from inside a pytest run — a gate, a suite —
     # whose own pytest coordination variables (`PYTEST_XDIST_WORKER` among them)
     # would otherwise reach the child through the inherited environment and put
     # a module that is not running under xdist into a worker it did not ask
     # for. The child's arrangement is this tool's `-n0`, nothing inherited.
     env = {key: value for key, value in os.environ.items() if not key.startswith("PYTEST_")}
-    try:
-        argv = build_pytest_argv(python, module, junit_xml)
-        before = resource.getrusage(resource.RUSAGE_CHILDREN)
-        load_start = read_loadavg(proc / "loadavg")
-        foreign_start = foreign_gate_processes(proc)
-        started = time.monotonic()
-        try:
-            completed = subprocess.run(  # noqa: S603 — argv is built here, no shell
-                argv,
-                cwd=root,
-                capture_output=True,
-                text=True,
-                check=False,
-                env=env,
-                timeout=child_timeout_s,
-            )
-        except subprocess.TimeoutExpired:
-            timed_out = True
-            return_code = 124
-        else:
-            timed_out = False
-            return_code = completed.returncode
-        wall_s = time.monotonic() - started
-        after = resource.getrusage(resource.RUSAGE_CHILDREN)
-        load_end = read_loadavg(proc / "loadavg")
-        foreign_end = foreign_gate_processes(proc)
-        # A killed child's report is at best a partial record of a run that
-        # never finished, so it is not read at all: the counts stay unknown.
-        counts = None if timed_out else junit_counts(junit_xml)
-    finally:
-        junit_xml.unlink(missing_ok=True)
-    collected, failed, errored, skipped = counts if counts is not None else (None, None, None, None)
+    argv = build_pytest_argv(python, module)
+    before = resource.getrusage(resource.RUSAGE_CHILDREN)
+    load_start = read_loadavg(proc / "loadavg")
+    foreign_start = foreign_gate_processes(proc)
+    started = time.monotonic()
+    return_code, timed_out = run_child(argv, root, env, child_timeout_s)
+    wall_s = time.monotonic() - started
+    after = resource.getrusage(resource.RUSAGE_CHILDREN)
+    load_end = read_loadavg(proc / "loadavg")
+    foreign_end = foreign_gate_processes(proc)
     return Sample(
         module=module,
         wall_s=wall_s,
@@ -256,11 +227,6 @@ def measure(
         load_end=load_end,
         foreign_start=foreign_start,
         foreign_end=foreign_end,
-        collected=collected,
-        failed=failed,
-        errored=errored,
-        skipped=skipped,
-        junit_readable=counts is not None,
         exit_code=return_code,
         timed_out=timed_out,
     )
