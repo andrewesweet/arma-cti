@@ -1,2 +1,2 @@
 ### Fixed
-- The mutation gate's pre-flight refusal now reports pytest's stderr alongside the stdout tail and caps the durations table's rows in that tail, so a red pre-flight carries the failing assertion that classifies the red instead of only per-test duration rows (#680).
+- The mutation gate's pre-flight refusal now reports pytest's stderr alongside the stdout tail and caps the durations-report rows in that tail, so a red pre-flight usually carries the failing assertion that classifies the red instead of only per-test duration rows (#680). The retention stays bounded and is stated rather than promised: the stdout tail keeps its last 6,000 characters and the stderr its last 2,000, so a failure section longer than the window that retains it is still cut off.

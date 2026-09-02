@@ -374,7 +374,7 @@ def test_durations_are_summed_over_a_tests_three_phases() -> None:
 # --- the failure report's durations cap (#680) --------------------------------
 
 
-def durations_output(rows: int, *, failures_after_table: bool) -> str:
+def durations_output(rows: int, *, failures_after_table: bool, body_lines: int = 1) -> str:
     """Return a pytest transcript's shape: a durations table, optionally a traceback."""
     header = "============================ slowest durations ============================\n"
     table = "".join(
@@ -384,7 +384,8 @@ def durations_output(rows: int, *, failures_after_table: bool) -> str:
     failures = (
         "=============================== FAILURES ================================\n"
         "________________________________ test_red ________________________________\n"
-        ">       assert False, 'the failing assertion'\n"
+        + "".join(f"       frame line {index}\n" for index in range(body_lines - 1))
+        + ">       assert False, 'the failing assertion'\n"
     )
     footer = "====================== 1 failed, 9 passed in 1.00s ======================\n"
     if failures_after_table:
@@ -418,9 +419,19 @@ def test_a_durations_table_under_the_cap_is_left_alone() -> None:
     assert smoke_tool.cap_durations(output) == output
 
 
-def test_a_durations_table_that_never_closes_is_left_whole() -> None:
-    # Fail-closed: a table with no closing section header gives the cap nothing to
-    # bound against, so it keeps the whole output rather than guessing an end.
+def test_an_under_cap_table_before_a_long_failure_loses_nothing() -> None:
+    # An under-cap table keeps all of its rows and deletes nothing behind it:
+    # rows are dropped individually by shape, so a short table can never send
+    # the cap hunting past its own end into the traceback (#680, round three;
+    # rounds one and two hunted the terminator and both went wrong).
+    output = durations_output(5, failures_after_table=True, body_lines=30)
+    assert smoke_tool.cap_durations(output) == output
+
+
+def test_a_durations_table_that_never_closes_still_caps_its_rows() -> None:
+    # A table with no closing section header needs no terminator any more: each
+    # row is provably a row on its own, so the cap bounds it without knowing
+    # where the section ends.
     output = (
         "============================ slowest durations ============================\n"
         + "".join(
@@ -428,7 +439,59 @@ def test_a_durations_table_that_never_closes_is_left_whole() -> None:
             for index in range(40)
         )
     )
-    assert smoke_tool.cap_durations(output) == output
+    capped = smoke_tool.cap_durations(output)
+    assert count_duration_rows(capped) == smoke_tool.DURATION_ROWS_KEPT
+    assert "... 20 duration rows hidden" in capped
+
+
+def test_a_phrase_in_a_traceback_never_stands_in_for_the_table() -> None:
+    # The two rounds of header-matching both died here: a traceback line that
+    # merely contains the phrase was taken for the section header, and the cap
+    # then deleted traceback frames as though they were duration rows. The cap
+    # no longer reads the header at all — a line is dropped only if it *is* a
+    # duration row by the same shape test `read_durations` reads the table with.
+    output = (
+        "=============================== FAILURES ================================\n"
+        "________________________________ test_red ________________________________\n"
+        "E       AssertionError: assert 'slowest durations' == 'other'\n"
+        + "".join(f"       frame line {index}\n" for index in range(30))
+        + durations_output(40, failures_after_table=True)
+    )
+    capped = smoke_tool.cap_durations(output)
+    assert "the failing assertion" in capped
+    assert "AssertionError: assert 'slowest durations' == 'other'" in capped
+    assert capped.count("frame line") == 30
+    assert count_duration_rows(capped) == smoke_tool.DURATION_ROWS_KEPT
+
+
+def test_a_captured_line_shaped_like_a_row_is_dropped_like_one() -> None:
+    # The one ambiguity left, stated rather than hidden: a line of captured
+    # output reproducing a bare duration row exactly is dropped and counted
+    # with the rest — `read_durations` has the same blind spot on the green
+    # path, and one shape test, one answer, is the point (#680, round three).
+    # It sits past the keep window so the cap really drops it. pytest's own
+    # `E `-prefixed quoting of captured output does not reproduce the shape —
+    # four fields, not three — so a quoted row is kept wherever it sits.
+    early = "".join(
+        f"0.{index:02d}s call     tests/unit/test_x.py::test_early{index:02d}\n"
+        for index in range(20)
+    )
+    output = (
+        early + "________________________________ test_red ________________________________\n"
+        ">       assert captured == expected, captured\n"
+        "E       1.00s call     tests/unit/test_x.py::test_quoted\n"
+        "1.00s call     tests/unit/test_x.py::test_shadow\n"
+        + durations_output(40, failures_after_table=True)
+    )
+    capped = smoke_tool.cap_durations(output)
+    assert "test_quoted" in capped
+    assert "test_shadow" not in capped
+    # Two hidden runs: the captured shadow row alone, then the table's rows
+    # once the keep window is spent — each run carries its own count.
+    assert "... 1 duration rows hidden" in capped
+    assert "... 40 duration rows hidden" in capped
+    assert capped.count("duration rows hidden") == 2
+    assert "the failing assertion" in capped
 
 
 def test_an_output_without_a_durations_table_is_left_alone() -> None:
@@ -1579,6 +1642,7 @@ def test_a_module_that_is_not_green_still_refuses_before_mutation(tmp_path: Path
         smoke_tool.smoke(tmp_path, name, cap=8, budget=120.0, rows={})
     assert "the failing assertion" in str(raised.value)
     assert "--- pytest stderr (" in str(raised.value)
+    assert " characters, last 2000 shown) ---" in str(raised.value)
 
 
 # --- the ratchet, end to end (#244) -----------------------------------------

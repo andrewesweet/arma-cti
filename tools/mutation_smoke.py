@@ -1160,6 +1160,27 @@ def _is_product(path: str) -> bool:
     return normalised.startswith(PRODUCT_ROOTS) and not normalised.startswith("tests/")
 
 
+def _duration_fields(line: str) -> tuple[str, str, str] | None:
+    """Decide whether a line is a `--durations` report row.
+
+    A row is `0.12s call     tests/unit/test_x.py::test_y` — pytest writes it
+    with `f"{rep.duration:02.2f}s {rep.when:<8} {rep.nodeid}"` (_pytest/
+    runner.py). Read rather than inferred, and shared by the green path's
+    `read_durations` and the failure report's `cap_durations`, so the module
+    has one answer to what a duration row is and never two that can disagree
+    (#680, round three). A line of *captured output* reproducing that shape
+    exactly would be misread by both halves alike; that is the one ambiguity
+    the shape carries, and it is the same one either half would carry alone.
+    """
+    parts = line.split()
+    if len(parts) != DURATION_FIELDS or not parts[0].endswith("s"):
+        return None
+    seconds, phase, name = parts
+    if phase not in ("call", "setup", "teardown") or "::" not in name:
+        return None
+    return seconds, phase, name
+
+
 def read_durations(output: str) -> dict[str, float]:
     """Seconds per test id, from pytest's own `--durations=0` report.
 
@@ -1170,12 +1191,10 @@ def read_durations(output: str) -> dict[str, float]:
     """
     costs: dict[str, float] = {}
     for line in output.splitlines():
-        parts = line.split()
-        if len(parts) != DURATION_FIELDS or not parts[0].endswith("s"):
+        fields = _duration_fields(line)
+        if fields is None:
             continue
-        seconds, phase, name = parts
-        if phase not in ("call", "setup", "teardown") or "::" not in name:
-            continue
+        seconds, _phase, name = fields
         try:
             costs[name] = costs.get(name, 0.0) + float(seconds.removesuffix("s"))
         except ValueError:
@@ -1479,37 +1498,51 @@ DURATION_ROWS_KEPT = 20
 
 
 def cap_durations(output: str) -> str:
-    """Bound pytest's durations table so a red suite's traceback reaches the reader.
+    """Bound pytest's durations rows so a red suite's traceback reaches the reader.
 
     The pre-flight asks pytest for `--durations=0 --durations-min=0` because
-    `read_durations` prices every test id out of that report, so the table
-    cannot simply be turned off. On a red module the table is one row per test,
-    and a tail window over the raw output shows the reader durations where the
-    `FAILURES` traceback — the only evidence that classifies the red — sits
-    (#680). Keep the table's first rows and say how many were hidden; every
-    line outside the table is untouched, and a table that never closes is kept
-    whole rather than guessed at.
+    `read_durations` prices every test id out of that report, so the flag
+    cannot simply be dropped. On a red module the table is one row per test and
+    can fill the whole retained tail, where the `FAILURES` traceback — the only
+    evidence that classifies the red — is not shown at all (#680).
+
+    The failure report does not compete with a table it never reads: every
+    line pytest printed as a duration row is dropped wherever it sits, told
+    apart by `_duration_fields` — the same shape test `read_durations` reads
+    the green run's table with — and one note says how many were dropped. The
+    cap needs neither the section's header nor its terminator, because a row
+    is the one thing pytest's own writer defines and both rounds of matching
+    the header by text went wrong (#680, rounds one and two). The rows are
+    never consumed on this path — they feed the selection ordering on the
+    green run alone, `measure`'s `read_durations(done.stdout)` — so the first
+    `DURATION_ROWS_KEPT` are kept only for the reader's eye, and every line
+    that is not a row is untouched.
     """
-    lines = output.splitlines(keepends=True)
-    for _header_line_number, line in enumerate(lines):
-        if "slowest durations" in line:
-            break
-    else:
-        return output
-    kept_end = _header_line_number + 1 + DURATION_ROWS_KEPT
-    cursor = kept_end
-    while cursor < len(lines) and not lines[cursor].startswith("="):
-        cursor += 1
-    if cursor >= len(lines):
-        return output
-    hidden = cursor - kept_end
-    if hidden <= 0:
-        return output
-    note = (
-        f"  ... {hidden} duration rows hidden by the failure report's cap; "
-        "`read_durations` still reads the uncapped run.\n"
-    )
-    return "".join(lines[:kept_end]) + note + "".join(lines[cursor:])
+    kept: list[str] = []
+    kept_rows = 0
+    hidden = 0
+
+    def flush() -> None:
+        nonlocal hidden
+        if hidden:
+            kept.append(
+                f"  ... {hidden} duration rows hidden by the failure report's cap; "
+                "durations are only read on a green run.\n"
+            )
+            hidden = 0
+
+    for line in output.splitlines(keepends=True):
+        if _duration_fields(line) is not None:
+            if kept_rows < DURATION_ROWS_KEPT:
+                kept_rows += 1
+                kept.append(line)
+            else:
+                hidden += 1
+            continue
+        flush()
+        kept.append(line)
+    flush()
+    return "".join(kept)
 
 
 def measure(root: Path, test_module: str, *, timeout: float) -> Collected:
@@ -1560,7 +1593,7 @@ def measure(root: Path, test_module: str, *, timeout: float) -> Collected:
             message = (
                 f"{test_module} is not green on its own — mutation says nothing about a red "
                 f"suite. pytest exit {done.returncode}:\n{cap_durations(done.stdout)[-6000:]}\n"
-                f"--- pytest stderr ({len(done.stderr)} bytes, last 2000 shown) ---\n"
+                f"--- pytest stderr ({len(done.stderr)} characters, last 2000 shown) ---\n"
                 f"{done.stderr[-2000:]}"
             )
             raise Refusal(message)
