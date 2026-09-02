@@ -1,17 +1,17 @@
 ### Added
 
-- **`just dispatch` refuses a half-failed brief by name (#349).** Composing a brief and
-  dispatching it are two operations, and the first can half-fail silently (#316's four
-  instances: a splice died, the placeholder or a stale lane note went out anyway). Before
-  anything is written or launched, the dispatcher checks the brief it is about to send:
-  `brief_placeholder` when a line still opens one of the composer's unfilled fields (the
-  `> **TO BE WRITTEN BY THE ORCHESTRATOR.**` blockquote prefix the composer renders; a
-  mention of the placeholder text in prose does not refuse), `brief_route_marker_missing`
-  when the brief carries no composer route marker at all — a brief this composer did not
-  write, or one whose composition half-failed and lost the marker the composer emits last —
-  and `brief_lane_mismatch` when that marker names a seat, lane or profile other than what
-  the dispatch resolved (an `unresolved` field cannot mismatch). Prose is never a route
-  claim, so a carried handoff or gate report quoting a prior brief's route does not
-  refuse. The marker emitter and the placeholder prefix are owned by `tools/dispatch.py`
-  and imported by `tools/brief.py`, so composer and gate cannot drift. Nothing is launched
-  on any refusal.
+- **`just dispatch` reads a brief's placeholders and route marker at fixed positions (#349).** Composing
+  a brief and dispatching it are two operations, and the first can half-fail silently
+  (#316's four instances: a splice died, the placeholder or a stale lane note went out
+  anyway). Before anything is written or launched, the dispatcher reads the brief it is
+  about to send at two fixed positions: `brief_placeholder` on the composer's
+  unfilled-field structure inside the region the composer writes unfilled fields —
+  between its task heading and its Single-shot heading — and `brief_route_marker_missing`
+  when the brief's final line is not the composer's route marker
+  (`<!-- cti-brief-route ... -->`). The marker names the seat, and the lane and profile
+  when the composing `just brief` was given `--lane`/`--profile`; the gate compares the
+  marker's three values against the route this dispatch resolved, refusing
+  `brief_lane_mismatch` on any difference, and a field spelled `unresolved` is no claim.
+  The marker emitter, the placeholder prefix and the two bounding headings are owned by
+  `tools/dispatch.py` and imported by `tools/brief.py`, so composer and gate cannot drift.
+  Nothing is launched on any refusal.

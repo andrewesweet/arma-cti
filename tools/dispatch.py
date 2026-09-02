@@ -3300,8 +3300,30 @@ BRIEF_PLACEHOLDER_LINE: Final = f"> **{BRIEF_PLACEHOLDER}.**"
 # gate below compares it against the identity this dispatch resolved. A field the composer
 # did not resolve is spelled `unresolved` rather than omitted, so the marker always carries
 # all three fields and the gate's comparison is the same three comparisons every time.
+#
+# Round four moved the read from the first marker anywhere in the file to the brief's final
+# line, because a carried handoff can quote an earlier brief's marker whole, and a search
+# cannot tell them apart. Position can: the composer emits the marker last, so a quoted
+# marker inside carried content is never the final line and can never satisfy the read, and
+# a composition truncated before its own marker has no marker at that position to satisfy
+# it with. The pattern is matched against that one line with `fullmatch` — anything before
+# or after the marker on the final line refuses too.
 BRIEF_ROUTE_MARK: Final = "cti-brief-route"
 _UNRESOLVED_ROUTE_FIELD: Final = "unresolved"
+_BRIEF_ROUTE_MARKER_LINE: Final = re.compile(
+    rf"<!-- {BRIEF_ROUTE_MARK} seat=([a-z0-9-]+) lane=(\S+) profile=(\S+) -->"
+)
+
+# The two composer headings that bound the region the placeholder read covers (#349, round
+# four). The composer writes unfilled fields only between them — the task statement under
+# the first, the seat and review-subject fields under the second's predecessor — so a
+# carried handoff or gate report quoting an old placeholder line sits outside the region
+# and cannot refuse a clean brief. Homed here, beside `BRIEF_PLACEHOLDER_LINE` above, for
+# that constant's own reason: the composer imports them, so the region the gate reads and
+# the region the composer writes cannot drift apart.
+BRIEF_TASK_HEADING: Final = "## Task, scope, ground truth"
+BRIEF_SINGLE_SHOT_HEADING: Final = "## Single-shot"
+
 _BRIEF_PLACEHOLDER_LINE: Final = re.compile(
     rf"^{re.escape(BRIEF_PLACEHOLDER_LINE)}.*$", re.MULTILINE
 )
@@ -3466,15 +3488,8 @@ def default_brief(
     return rendered
 
 
-# The route claims the gate reads (#349, round three): one marker, the composer's own.
-# Freeform prose is deliberately never parsed — every round that scanned it refused briefs
-# that legitimately quote or discuss a route (a carried handoff, a gate report, this issue's
-# own task text naming the placeholder), and free text cannot tell a route a brief asserts
-# from one it mentions. The names come from the registries, matched in the registries' own
-# spelling; the marker's shape is pinned by test, beside the emitter `brief_route_marker`.
-_BRIEF_ROUTE_MARKER_LINE: Final = re.compile(
-    rf"^<!-- {BRIEF_ROUTE_MARK} seat=([a-z0-9-]+) lane=(\S+) profile=(\S+) -->$", re.MULTILINE
-)
+# The marker's shape is pinned by test, beside the emitter `brief_route_marker`; the
+# gate's reads are `brief_refusal` below.
 
 
 def brief_refusal(text: str, identity: Identity) -> Refusal | None:
@@ -3488,18 +3503,24 @@ def brief_refusal(text: str, identity: Identity) -> Refusal | None:
     fail-closed here, at the second operation, where every composition route — `just
     brief`, a hand edit, a heredoc splice — converges.
 
-    Three refusals. `brief_placeholder` fires on the composer's placeholder *structure* —
-    the `BRIEF_PLACEHOLDER_LINE` prefix the composer renders ahead of every unfilled
-    field — and quotes the offending line, so prose that merely mentions the placeholder
-    never refuses. `brief_route_marker_missing` fires when the brief carries no route
-    marker at all: a brief this composer did not write, or one whose composition
-    half-failed and lost the marker the composer emits last. `brief_lane_mismatch` fires
-    on the marker's three fields against the identity this dispatch resolved; a field
-    spelled `unresolved` is no claim and cannot mismatch. Neither carries a failure
-    class, for `off_peak_refusal`'s reason: nothing was found about a provider or about
-    code under test; the request was self-contradictory. Nothing is launched either way.
+    Three refusals, each a read at a fixed position rather than a search, because a
+    carried handoff or gate report legitimately quotes all of this brief's vocabulary:
+    an earlier brief's marker, an old placeholder line. `brief_placeholder` fires on the
+    composer's placeholder *structure* inside the region the composer writes unfilled
+    fields — between `BRIEF_TASK_HEADING` and `BRIEF_SINGLE_SHOT_HEADING` — and quotes
+    the offending line. `brief_route_marker_missing` fires when the brief's **final
+    line** is not the composer's route marker: a brief this composer did not write, one
+    truncated before its marker, or one with content appended after it. A marker quoted
+    inside carried content is never the final line and can never satisfy the read —
+    that is the whole property, and why position rather than pattern carries it.
+    `brief_lane_mismatch` fires on the marker's three fields against the identity this
+    dispatch resolved; a field spelled `unresolved` is no claim and cannot mismatch.
+    Neither refusal carries a failure class, for `off_peak_refusal`'s reason: nothing
+    was found about a provider or about code under test; the request was
+    self-contradictory. Nothing is launched either way.
     """
-    unfilled = _BRIEF_PLACEHOLDER_LINE.search(text)
+    unfilled_region = text.partition(BRIEF_TASK_HEADING)[2].partition(BRIEF_SINGLE_SHOT_HEADING)[0]
+    unfilled = _BRIEF_PLACEHOLDER_LINE.search(unfilled_region)
     if unfilled is not None:
         return Refusal(
             "brief_placeholder",
@@ -3511,16 +3532,17 @@ def brief_refusal(text: str, identity: Identity) -> Refusal | None:
                 "half and dispatch again. Nothing was launched."
             ),
         )
-    marker = _BRIEF_ROUTE_MARKER_LINE.search(text)
+    marker = _BRIEF_ROUTE_MARKER_LINE.fullmatch(text.removesuffix("\n").rpartition("\n")[2])
     if marker is None:
         return Refusal(
             "brief_route_marker_missing",
             (),
             (
-                "The brief carries no composer route marker (`<!-- cti-brief-route ... -->`),"
-                " so this composer did not write it or its composition half-failed and lost"
-                " the marker the composer emits last. Compose the brief with `just brief"
-                " <issue>` and dispatch again. Nothing was launched."
+                "The brief's final line is not the composer's route marker"
+                " (`<!-- cti-brief-route ... -->`), so this composer did not write it,"
+                " its composition half-failed before the marker, or something was"
+                " appended after it. Compose the brief with `just brief <issue>` and"
+                " dispatch again. Nothing was launched."
             ),
         )
     fields: list[str] = []

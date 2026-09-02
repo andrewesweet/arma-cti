@@ -1010,6 +1010,15 @@ class Briefing(NamedTuple):
     # Briefing has proved that a thread was read, so the default must remain unavailable; review
     # composition supplies the fetched state explicitly.
     gate_report: GateReport = GateReport(GATE_REPORT_UNAVAILABLE)
+    # The route the composing orchestrator intends to dispatch (#349, round four). The
+    # marker asserts all three values, so a half-failed edit that leaves a stale lane
+    # note contradicts something and is refused `brief_lane_mismatch`; a composition
+    # made route-blind leaves the two fields explicitly unresolved, which is no claim
+    # the gate can contradict. The composer resolves no route of its own — that is the
+    # dispatcher's job, and a composer that guessed one would refuse every dispatch
+    # whose live resolution walked past the guess.
+    lane: str = ""
+    profile: str = ""
 
 
 def escalation_for(body: str, seat_name: str, repo: Path) -> escalation.Evaluation:
@@ -1228,7 +1237,7 @@ def compose(briefing: Briefing) -> str:
     lines += _escalation_lines(briefing.escalation)
     lines += [
         "",
-        "## Task, scope, ground truth",
+        dispatch.BRIEF_TASK_HEADING,
         _placeholder(TASK_PLACEHOLDER),
         "",
         f"## Seat: {seat.name}",
@@ -1249,7 +1258,7 @@ def compose(briefing: Briefing) -> str:
     # cannot let an agent learn the hard way (#279).
     lines += [
         "",
-        "## Single-shot",
+        dispatch.BRIEF_SINGLE_SHOT_HEADING,
         dispatch.SINGLE_SHOT_CONTRACT,
     ]
     if briefing.reserved:
@@ -1273,15 +1282,18 @@ def compose(briefing: Briefing) -> str:
         ),
         "",
     ]
-    # The route marker is the brief's one machine-readable route claim (#349, round
-    # three) — the dispatcher's gate reads it and nothing else, so it is emitted last:
-    # a composition that dies partway loses the marker and is refused
-    # `brief_route_marker_missing` rather than passing with an unmarked tail. `just
-    # brief` resolves no lane or profile — that is the dispatcher's job, and a composer
-    # that guessed one would refuse every dispatch whose live resolution walked past
-    # the guess — so the marker asserts the seat and leaves the other two fields
-    # explicitly unresolved rather than silent.
-    lines += [dispatch.brief_route_marker(seat.name), ""]
+    # The route marker is the brief's one machine-readable route claim (#349) — the
+    # dispatcher's gate reads it and nothing else, and since round four it reads the
+    # brief's *final line*, so the marker is emitted last and nothing may follow it: a
+    # composition that dies partway loses the marker and is refused
+    # `brief_route_marker_missing` rather than passing with an unmarked tail, and a
+    # marker quoted inside a carried handoff is never the final line and can never
+    # satisfy the read. `just brief` resolves no route of its own — that is the
+    # dispatcher's job, and a composer that guessed one would refuse every dispatch
+    # whose live resolution walked past the guess — so the lane and profile arrive as
+    # `--lane`/`--profile` from the orchestrator that already knows them, and a
+    # composition made route-blind leaves the two fields explicitly unresolved.
+    lines += [dispatch.brief_route_marker(seat.name, briefing.lane, briefing.profile), ""]
     return "\n".join(lines)
 
 
@@ -1359,6 +1371,16 @@ def parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
         metavar="PROFILE",
         help="the profile whose work is under review; carried into a --seat review briefing",
     )
+    # The route the marker asserts (#349, round four). Both or neither, matching the
+    # dispatcher's own rule for its `--lane`/`--profile` pair — a marker asserting one
+    # resolved value and one unresolved is a claim the gate can never satisfy.
+    parser.add_argument("--lane", default="", help="the lane this brief will dispatch on")
+    parser.add_argument(
+        "--profile",
+        default="",
+        metavar="PROFILE",
+        help="the profile this brief will dispatch on",
+    )
     parser.add_argument("--out", default="", help="write the brief here instead of stdout")
     parser.add_argument(
         "--prior-work",
@@ -1372,6 +1394,8 @@ def parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
     )
     parser.add_argument("--repo", default=REPO_SLUG, help=argparse.SUPPRESS)
     args = parser.parse_args(argv)
+    if bool(args.lane) != bool(args.profile):
+        parser.error("--lane and --profile stand together: name both, or neither")
     refusal = reviewing_refusal(args.seat or DEFAULT_SEAT, args.reviewing)
     if refusal is not None:
         for line in refusal.lines():
@@ -1482,6 +1506,8 @@ def main(  # noqa: PLR0913 — one keyword seam per external read, each injected
             handoff=handoff,
             gate_report=thread_report,
             escalation=escalation_for(body, seat.name, repo),
+            lane=args.lane,
+            profile=args.profile,
         )
     )
     if str(document.get("state") or "").upper() == "CLOSED":
