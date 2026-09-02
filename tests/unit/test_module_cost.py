@@ -10,11 +10,16 @@ from __future__ import annotations
 
 import os
 import xml.etree.ElementTree as ET
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
-
 from conftest import load_tool
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+load_tool("gate_clock")  # the sibling `module_cost` imports, registered first
+module_cost = load_tool("module_cost")
 
 load_tool("gate_clock")  # the sibling `module_cost` imports, registered first
 module_cost = load_tool("module_cost")

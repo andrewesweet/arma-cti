@@ -78,7 +78,7 @@ class Sample:
 
 
 def build_pytest_argv(python: str, module: str, junit_xml: Path) -> list[str]:
-    """The child's argv: serial, quiet about it, and counted through junit.
+    """Build the child's argv: serial, and counted through junit.
 
     `-n0` comes after pyproject's addopts, so it wins over `-n auto` — the
     serial guarantee lives here and nowhere else. junit-xml carries the
@@ -106,7 +106,7 @@ def junit_counts(xml_path: Path) -> tuple[int, int, int, int]:
     visible in `readable_junit` rather than a crash after the figures printed.
     """
     try:
-        root = ET.parse(xml_path).getroot()
+        root = ET.parse(xml_path).getroot()  # noqa: S314 — the child's own report, not untrusted input
     except (OSError, ET.ParseError):
         return (0, 0, 0, 0)
     suite = root if root.tag == "testsuite" else root.find("testsuite")
@@ -129,7 +129,7 @@ def format_load(load: float | None) -> str:
 
 
 def format_row(sample: Sample) -> str:
-    """The row a reader quotes into an issue: one figure per line, serial named.
+    """Render the row a reader quotes into an issue: one figure per line, serial named.
 
     The `mode=serial` line is criterion 2's own statement — a figure pasted
     without it cannot prove it was taken in isolation.
@@ -218,9 +218,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("module", help="the test module's path, as pytest takes it")
     args = parser.parse_args(argv)
     sample = measure(args.module)
-    print(format_row(sample))
+    print(format_row(sample))  # noqa: T201 — the row is this CLI's public result
     if sample.exit_code != 0:
-        print(
+        print(  # noqa: T201 — the red note is this CLI's public result
             "note: the module is red; a red module is still a measurement,"
             " but the figure is not an isolated green baseline"
         )
