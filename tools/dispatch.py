@@ -3506,6 +3506,20 @@ def main_checkout(cwd: Path) -> Path:
     return trees[0] if trees else cwd
 
 
+def dispatcher_tree() -> Path:
+    """Return the tree whose own copy of this module is running.
+
+    The survey that lands in the record reads **this** tree, never the planning root:
+    `main_checkout` answers where sibling worktrees are minted and stays the planning
+    root, but the copy whose staleness the record describes is the `tools/dispatch.py`
+    the session actually loaded — and from a linked session worktree that is not the main
+    checkout. Surveying the planning root instead could read a fresh main checkout while
+    a stale worktree's own `dispatch.py` produced the dispatch (#676 round three,
+    finding 1).
+    """
+    return Path(__file__).resolve().parents[1]
+
+
 # Where a `codex` dispatch sends its telemetry. This is on **argv, per invocation**, and
 # not in `~/.codex/config.toml`, for the same reason `ANTHROPIC_BASE_URL` is not in a shell
 # profile: a box-wide setting makes a lane's behaviour a property of the machine. The
@@ -5627,7 +5641,7 @@ def plan_dispatch(  # noqa: C901, PLR0911, PLR0912 — planning owns the ordered
         routing=routing_clearance(args, root, found, now),
         strata=capture_strata(found.body, args.issue, root, body_from_file=bool(args.issue_body)),
         disposable_worktree=disposable,
-        copy_state=tool_copy.survey(root),
+        copy_state=tool_copy.survey(dispatcher_tree()),
     )
     if disposable and materialize_worktree:
         return _materialize_disposable_plan(

@@ -17,14 +17,15 @@ stubbed git would let them pass over code that cannot read a tree at all.
 
 from __future__ import annotations
 
+import os
 import subprocess
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from conftest import load_tool
 
 if TYPE_CHECKING:
     from collections.abc import Callable
-    from pathlib import Path
 
     import pytest
 
@@ -118,14 +119,18 @@ def _advance_origin(root: Path, tmp_path: Path, path: str, content: str) -> None
     _advance_origin_with(root, tmp_path, path.replace("/", "-"), write)
 
 
-def test_governed_paths_are_what_the_justfile_and_the_hook_surfaces_run(tmp_path: Path) -> None:
+def test_governed_paths_are_the_machinery_directories_and_their_wiring(tmp_path: Path) -> None:
     root = _with_origin(tmp_path)
     names = {str(path) for path in tool_copy.governed_paths(root)}
-    # Referenced by the justfile, the hook surface, the harness wiring, and the justfile
-    # itself — the machinery this tree executes, not the whole tree.
+    # The whole of tools/ — the helpers dispatch.py imports and runs are machinery no
+    # recipe names — beside the hook surface, the wiring and the justfile. Naming a
+    # landed change to a tool this session never invoked is the correct direction of
+    # error (#676's narrowing ruling): "your copy is not what landed" stays true either
+    # way, while under-reporting silently ships a stale dispatcher.
     assert names == {
         "justfile",
         "tools/a.py",
+        "tools/unused.py",
         ".claude/hooks/a.py",
         ".claude/settings.json",
     }
@@ -292,3 +297,63 @@ def test_the_record_document_names_both_sides_of_a_drifted_path(tmp_path: Path) 
     assert drifted["tools/a.py"]["worktree"]
     assert drifted["tools/a.py"]["origin_main"]
     assert drifted["tools/a.py"]["worktree"] != drifted["tools/a.py"]["origin_main"]
+
+
+def test_a_path_only_the_origin_set_governs_is_hashed_not_named_superseded(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Round three, finding 3: "not hashed" was being read as "not present".
+
+    Origin newly governs a file this tree holds byte-identical, but the local set does not
+    name it — here arranged with a narrowed local set, the shape a future set definition
+    could produce. The union walk must hash the file the tree actually holds rather than
+    read the absent map entry as an empty worktree sha and report the path superseded.
+    """
+    root = _with_origin(tmp_path)
+    (root / "tools" / "extra.py").write_text("extra = 1\n", encoding="utf-8")
+
+    def add(ahead: Path) -> None:
+        (ahead / "tools" / "extra.py").write_text("extra = 1\n", encoding="utf-8")
+        (ahead / "justfile").write_text(
+            JUSTFILE + "    uv run python tools/extra.py run\n", encoding="utf-8"
+        )
+
+    _advance_origin_with(root, tmp_path, "governs-extra", add)
+    monkeypatch.setattr(
+        tool_copy,
+        "governed_paths",
+        lambda _root: (Path("justfile"), Path("tools/a.py")),
+    )
+
+    survey = tool_copy.survey(root)
+
+    assert survey.behind_origin_main is True
+    assert survey.stale_paths() == ("justfile",)
+    assert survey.paths.get("tools/extra.py") is None
+
+
+def test_a_git_read_that_never_answers_is_untellable_not_a_hang(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Round three, finding 4's Python half: the survey is bounded, so the turn-top read is.
+
+    A git that never answers must surface as the typed "cannot tell" verdict the module
+    already has, never as a stalled `just watch-report` (ADR-0049). The git here is real
+    — a PATH shim that sleeps — and the module's own timeout is shortened for the test.
+    """
+    root = _with_origin(tmp_path)
+    _advance_origin(root, tmp_path, "tools/a.py", "run = 2\n")
+    shim = tmp_path / "shim"
+    shim.mkdir()
+    (shim / "git").write_text("#!/bin/sh\nsleep 30\n", encoding="utf-8")
+    # The file, not the directory: a non-executable candidate on PATH is skipped silently
+    # by execvp's search, and the real git answers — the bug the shim exists to catch.
+    (shim / "git").chmod(0o755)
+    monkeypatch.setenv("PATH", f"{shim}:{os.environ['PATH']}")
+    monkeypatch.setattr(tool_copy, "GIT_TIMEOUT", 1.0)
+
+    survey = tool_copy.survey(root)
+
+    assert survey.behind_origin_main is None
+    assert tool_copy.main(["report", "--repo", str(root)]) == 0
+    assert "cannot tell" in capsys.readouterr().out

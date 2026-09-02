@@ -1396,8 +1396,14 @@ def test_watch_report_prints_the_verdicts_and_stays_silent_when_nothing_is_tripp
         "CTI_WATCH_DIR": str(tmp_path / "watch"),
     }
 
-    def watch_report() -> str:
-        return subprocess.run(
+    def watch_report() -> tuple[int, str]:
+        """Return the recipe's own verdict: its exit status beside its stdout, never stdout alone.
+
+        A rung that crashed or was killed used to be invisible here — empty stdout in the
+        healthy arm and earlier output in the tripped arm both passed (round three,
+        finding 5). The read has to answer, not merely print.
+        """
+        done = subprocess.run(
             # S607: `just` resolves off PATH on purpose, like every other tool this
             # project shells out to — the recipe under test is the one a caller runs.
             ["just", "watch-report"],  # noqa: S607
@@ -1406,9 +1412,12 @@ def test_watch_report_prints_the_verdicts_and_stays_silent_when_nothing_is_tripp
             text=True,
             check=False,
             env=environment,
-        ).stdout
+        )
+        return done.returncode, done.stdout
 
-    assert watch_report().strip() == "", "every lane fine, and the read says nothing"
+    code, out = watch_report()
+    assert code == 0, "the read answers — a failed rung must not read as a passing one"
+    assert out.strip() == "", "every lane fine, and the read says nothing"
 
     # The recipe reads the wall clock, so the staged window has to be a real future one:
     # a reset already in the past would have settled to half-open and read as fine.
@@ -1419,7 +1428,9 @@ def test_watch_report_prints_the_verdicts_and_stays_silent_when_nothing_is_tripp
         breaker.Outcome(breaker.QUOTA_EXHAUSTED, reset_at=wall + HOUR),
         wall,
     )
-    printed = [line for line in watch_report().splitlines() if line.startswith("lane=")]
+    code, out = watch_report()
+    assert code == 0
+    printed = [line for line in out.splitlines() if line.startswith("lane=")]
     assert len(printed) == 1, "one line for the one lane that needs one"
     assert "lane=zai" in printed[0]
     assert "class=quota_exhausted" in printed[0]
@@ -1433,6 +1444,9 @@ def test_the_recipe_folds_the_breaker_into_the_read_at_the_top_of_a_turn() -> No
     assert "tools/queue_policy.py report" in body
     assert "tools/stall_watch.py report" in body
     assert "tools/trial.py report" in body
+    # #676's rung is present, and reads last — after every lane verdict, never before.
+    assert "tools/tool_copy.py report" in body
+    assert body.index("tools/tool_copy.py report") > body.index("trial.py")
     assert body.index("breaker.py") < body.index("stall_watch.py"), "the verdicts read first"
     assert body.index("breaker.py") < body.index("queue_policy.py")
     assert body.index("queue_policy.py") < body.index("stall_watch.py")

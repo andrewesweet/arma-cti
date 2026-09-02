@@ -968,14 +968,18 @@ watch-report *args:
     # never automatic. Reads `CTI_GATE_CLOCK_DIR`, the same seam.
     uv run python tools/gate_clock.py report
     # The dispatching session's own copy of the command machinery (#676): one line per
-    # governed path — the tools/ files the justfile runs, the .claude/hooks/ surface and
-    # its wiring — whose working-tree bytes `origin/main` has superseded. A landing that
-    # changes the dispatch path does not govern the session that landed it until this
-    # read names it, and the report names it without fixing it: rebasing a live session's
-    # tree is a judgement, never something a report does. Silent while current, and loud
-    # rather than silent where git could not answer at all. Reads the local `origin/main`
-    # ref without fetching, on the same ground the other rungs read local state.
-    uv run python tools/tool_copy.py report
+    # governed path — the whole of tools/, the .claude/hooks/ surface and its wiring —
+    # whose working-tree bytes `origin/main` has superseded. A landing that changes the
+    # dispatch path does not govern the session that landed it until this read names it,
+    # and the report names it without fixing it: rebasing a live session's tree is a
+    # judgement, never something a report does. Silent while current, and loud rather
+    # than silent where git could not answer at all. Reads the local `origin/main` ref
+    # without fetching, on the same ground the other rungs read local state.
+    # Bounded twice (ADR-0049): every git read inside is on a 30 s timeout and answers
+    # "cannot tell" where git hangs, and the rung itself is on a 60 s `timeout` whose
+    # failure prints one typed line and never reads as silence — a hung uv or a crashed
+    # interpreter must neither stall the turn-top read nor pass as health.
+    timeout 60 uv run python tools/tool_copy.py report || echo "tool-copy: rung did not answer (exit $?) — untellable, never current"
 
 # The gate-duration read's other half (#446): per-recipe record counts, green
 # medians, spans and the anchor each recipe holds with its set date, for the

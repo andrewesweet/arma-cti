@@ -13,11 +13,16 @@ halves and never goes further:
   silent while current, and fixes nothing. Rebasing a live session's tree is a judgement
   with uncommitted state at stake, so the report is a verdict, never an act.
 
-The governed set is what this tree executes as machinery, not the whole tree: every
-existing file under ``tools/`` the justfile names, the ``.claude/hooks/`` surface the
-harness runs from this tree's own copy (the #120 shape), the ``.claude/settings.json``
-that wires it, and the justfile itself. Test modules, docs and other sources are
-deliberately outside it — they are read, not executed, and naming them would turn every
+The governed set is the machinery this tree loads, and it is deliberately coarser than
+the paths this session's own commands invoke: the **whole of** ``tools/`` — the helpers
+``tools/dispatch.py`` imports and runs are machinery no recipe names — beside the
+``.claude/hooks/`` surface the harness runs from this tree's own copy (the #120 shape),
+the ``.claude/settings.json`` that wires it, and the justfile itself. It will therefore
+name a landed change to a tool this session never invoked, and that over-report is the
+correct direction of error: "your copy is not what landed" is true either way and the
+reader's response is the same, while under-reporting is what silently ships a stale
+dispatcher (#676, the narrowing ruling of round three). Test modules, docs and other
+sources stay outside it — they are read, not executed, and naming them would turn every
 landing into a drift report.
 
 A path is **behind** only where this tree's ``HEAD`` is an ancestor of ``origin/main``:
@@ -39,7 +44,6 @@ from __future__ import annotations
 
 import argparse
 import os
-import re
 import subprocess
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -51,13 +55,16 @@ if TYPE_CHECKING:
 GOVERNED_JUSTFILE: Final = "justfile"
 GOVERNED_HOOK_DIR: Final = ".claude/hooks"
 GOVERNED_SETTINGS: Final = ".claude/settings.json"
-
-# The justfile is shell, where a path is spelled the same wherever it is invoked; every
-# existing hit that resolves to a file in this tree is machinery a recipe runs or reads.
-_TOOL_REFERENCE: Final = re.compile(r"tools/[A-Za-z0-9_./-]+")
+GOVERNED_TOOL_DIR: Final = "tools"
 
 # A `git ls-tree` entry is `<mode> <type> <sha>\t<path>`; fewer fields carries no blob.
 _LS_TREE_FIELDS: Final = 3
+
+# Every git read is bounded, because this module runs at the top of an orchestrator turn
+# (the `just watch-report` rung) and a git that never answers would stall that turn rather
+# than fail it (#676 round three, finding 4). A timed-out read is untellable, like every
+# other read git refused.
+GIT_TIMEOUT: Final = 30.0
 
 # The state-directory seam the other rungs carry (#249), so a test never depends on what
 # the box is holding. This one reads the repository instead of a state directory, so the
@@ -70,7 +77,7 @@ class _GitUnreadableError(Exception):
 
 
 def _git(*args: str, root: Path) -> str:
-    """Run one git command and return its stdout; raise where git could not answer."""
+    """Run one bounded git command and return its stdout; raise where git could not answer."""
     try:
         done = subprocess.run(  # noqa: S603
             ["git", *args],  # noqa: S607 — the checkout's toolchain is the caller's
@@ -78,9 +85,13 @@ def _git(*args: str, root: Path) -> str:
             capture_output=True,
             text=True,
             check=False,
+            timeout=GIT_TIMEOUT,
         )
     except OSError as unreadable:
         raise _GitUnreadableError(str(unreadable)) from unreadable
+    except subprocess.TimeoutExpired as unanswered:
+        detail = f"git {' '.join(args)}: no answer within {GIT_TIMEOUT:g}s"
+        raise _GitUnreadableError(detail) from unanswered
     if done.returncode != 0:
         detail = (done.stderr or "").strip().splitlines()
         raise _GitUnreadableError(
@@ -89,29 +100,33 @@ def _git(*args: str, root: Path) -> str:
     return done.stdout
 
 
-def governed_paths(root: Path) -> tuple[Path, ...]:
-    """Return the files this tree executes as its own command machinery, sorted, posix-named.
+def _directory_files(root: Path, relative: str) -> set[Path]:
+    """Every file under ``root/relative``, repo-relative; empty where there is no directory."""
+    directory = root / relative
+    if not directory.is_dir():
+        return set()
+    return {
+        path.relative_to(root)
+        for path in directory.rglob("*")
+        if path.is_file() and "__pycache__" not in path.parts
+    }
 
-    A justfile reference to a file this tree does not have names nothing a session can
-    run, so it is not governed; ``__pycache__`` under the hook surface is interpreter
-    output, not a hook.
+
+def governed_paths(root: Path) -> tuple[Path, ...]:
+    """Return the files this tree loads as its own command machinery, sorted, posix-named.
+
+    The set is deliberately coarser than the paths this session's own commands invoke:
+    the whole of ``tools/`` — the helpers ``tools/dispatch.py`` imports and runs are
+    machinery no recipe names — beside the ``.claude/hooks/`` surface and its wiring and
+    the justfile. So it names a landed change to a tool this session never invoked, and
+    that over-report is the correct direction of error: "your copy is not what landed" is
+    true either way and the reader's response is the same, while under-reporting is what
+    silently ships a stale dispatcher (#676, the narrowing ruling of round three).
+    ``__pycache__`` is interpreter output, not machinery, in either directory.
     """
     governed = {Path(GOVERNED_JUSTFILE), Path(GOVERNED_SETTINGS)}
-    try:
-        justfile = (root / GOVERNED_JUSTFILE).read_text(encoding="utf-8")
-    except OSError:
-        justfile = ""
-    for reference in _TOOL_REFERENCE.findall(justfile):
-        candidate = Path(reference)
-        if ".." not in candidate.parts and (root / candidate).is_file():
-            governed.add(candidate)
-    hook_dir = root / GOVERNED_HOOK_DIR
-    if hook_dir.is_dir():
-        governed.update(
-            path.relative_to(root)
-            for path in hook_dir.rglob("*")
-            if path.is_file() and "__pycache__" not in path.parts
-        )
+    for relative in (GOVERNED_TOOL_DIR, GOVERNED_HOOK_DIR):
+        governed |= _directory_files(root, relative)
     return tuple(sorted(governed, key=lambda path: path.as_posix()))
 
 
@@ -184,40 +199,49 @@ class Survey:
         )
 
 
+def _worktree_hashes(root: Path, names: Sequence[str]) -> dict[str, str]:
+    """Each name's blob sha as the working tree holds it; absent where the tree has no such file.
+
+    Absent from the result is "not present", never "not hashed": a name the caller has no
+    entry for yet is hashed here on demand, so an unchanged file a landing newly governs
+    cannot be read as an empty worktree sha and reported superseded (#676 round three,
+    finding 3).
+    """
+    present = [name for name in names if (root / name).is_file()]
+    if not present:
+        return {}
+    listed = _git("hash-object", "--", *present, root=root).split()
+    return dict(zip(present, listed, strict=False))
+
+
 def _local_side(root: Path) -> tuple[str, tuple[str, ...], dict[str, str]]:
     """Read this tree's own half: HEAD, the governed set, each path's working-tree blob."""
     head = _git("rev-parse", "HEAD", root=root).strip()
     names = tuple(path.as_posix() for path in governed_paths(root))
-    blobs: dict[str, str] = {}
-    if names:
-        listed = _git("hash-object", "--", *names, root=root).split()
-        blobs = dict(zip(names, listed, strict=False))
-    return head, names, blobs
+    return head, names, _worktree_hashes(root, names)
 
 
 def _origin_governed(root: Path) -> tuple[str, ...]:
     """Read the governed set as ``origin/main`` names it, without a checkout.
 
-    The justfile comes off ``git show``; the hook surface and the wiring come off one
-    ``ls-tree``. A path that exists only here is still governed on the origin side's
-    read of nothing: what the landing changed is what the landing's own tree names.
+    One ``ls-tree`` over the two machinery directories, plus the justfile and the wiring
+    files — the same definition ``governed_paths`` applies to this tree, applied to the
+    landing's own tree, so the two halves of the walk cannot drift apart: a path the
+    landing added or renamed is surveyed on the origin side even where this tree has
+    never had it.
     """
-    justfile = _git("show", "origin/main:justfile", root=root)
-    names = {
-        candidate
-        for candidate in (
-            Path(reference)
-            for reference in _TOOL_REFERENCE.findall(justfile)
-            if ".." not in Path(reference).parts
-        )
-        if candidate.parts  # an empty candidate is a malformed reference, not a path
-    }
-    names.update({Path(GOVERNED_JUSTFILE), Path(GOVERNED_SETTINGS)})
     listed = _git(
-        "ls-tree", "-r", "--name-only", "-z", "origin/main", "--", GOVERNED_HOOK_DIR, root=root
+        "ls-tree",
+        "-r",
+        "--name-only",
+        "-z",
+        "origin/main",
+        "--",
+        GOVERNED_TOOL_DIR,
+        GOVERNED_HOOK_DIR,
+        root=root,
     )
-    # The same exclusion the local read applies: interpreter output under the hook
-    # surface is not a hook, on either side.
+    names = {Path(GOVERNED_JUSTFILE), Path(GOVERNED_SETTINGS)}
     names.update(
         Path(line) for line in listed.split("\0") if line and "__pycache__" not in Path(line).parts
     )
@@ -243,9 +267,9 @@ def _origin_side(root: Path, names: tuple[str, ...]) -> tuple[str, tuple[str, ..
     """``origin/main``'s half: its head, its governed set, and each governed path's blob.
 
     The origin side derives its own governed set, so a path the landing added or renamed
-    is surveyed on the origin side even where this tree has never had it — a tree whose
-    justfile lost a reference is behind on exactly that file, and deriving the set only
-    from the local justfile would read that absence as current.
+    is surveyed on the origin side even where this tree has never had it — a tool the
+    landing added is behind on exactly that file, and deriving the set only from this
+    tree would read that absence as current.
     """
     origin_main = _git("rev-parse", "origin/main", root=root).strip()
     origin_names = _origin_governed(root)
@@ -255,7 +279,7 @@ def _origin_side(root: Path, names: tuple[str, ...]) -> tuple[str, tuple[str, ..
 
 
 def _git_code(*args: str, root: Path) -> int:
-    """Run one git command for its exit code alone, which `--is-ancestor`'s answer is.
+    """Run one bounded git command for its exit code alone, which `--is-ancestor`'s answer is.
 
     A non-zero exit is an *answer* here — `merge-base --is-ancestor` writes nothing and
     exits 1 for "no" — so it must not collapse into the refusal the stdout runner raises.
@@ -267,9 +291,13 @@ def _git_code(*args: str, root: Path) -> int:
             capture_output=True,
             text=True,
             check=False,
+            timeout=GIT_TIMEOUT,
         ).returncode
     except OSError as unreadable:
         raise _GitUnreadableError(str(unreadable)) from unreadable
+    except subprocess.TimeoutExpired as unanswered:
+        detail = f"git {' '.join(args)}: no answer within {GIT_TIMEOUT:g}s"
+        raise _GitUnreadableError(detail) from unanswered
 
 
 def _is_behind(root: Path) -> bool | None:
@@ -301,13 +329,18 @@ def survey(root: Path) -> Survey:
     try:
         origin_main, origin_names, origin = _origin_side(root, names)
         behind = _is_behind(root)
+        walked = sorted(set(names).union(origin_names))
+        # A name the local set never held has no entry yet — that is "not hashed", never
+        # "not present". Hash on demand, so an unchanged file a landing newly governs is
+        # not read as an empty worktree sha and reported superseded (round three, #3).
+        local.update(_worktree_hashes(root, [name for name in walked if name not in local]))
         drifted = {
             name: {
                 "worktree": local.get(name, ""),
                 "head": "",
                 "origin_main": origin.get(name, ""),
             }
-            for name in sorted(set(names).union(origin_names))
+            for name in walked
             if local.get(name, "") != origin.get(name, "")
         }
         # A path only the working tree holds is the session's own new work and stays out

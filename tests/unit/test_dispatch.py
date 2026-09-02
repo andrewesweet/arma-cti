@@ -5087,3 +5087,52 @@ def test_a_stratum_refuses_a_code_its_flag_contradicts() -> None:
         dispatch.Stratum(value=None, checked=False, unchecked_why="", code=dispatch.STRATUM_CHECKED)
     with pytest.raises(ValueError, match="unknown Stratum code"):
         dispatch.Stratum(value="fast", checked=True, unchecked_why="", code="wat")
+
+
+def test_the_record_surveys_the_tree_the_dispatching_code_ran_from(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """#676 round three, finding 1: the record's copy read is the loading tree's own.
+
+    From a linked session worktree the production entrypoint used to convert `cwd` to the
+    main checkout before planning, so the survey could read a fresh main checkout while a
+    stale worktree's own `tools/dispatch.py` produced the dispatch — the situation this
+    issue exists to catch, reported as healthy. The survey root is the tree whose copy of
+    the module is running, and never the planning root.
+    """
+    root = git_worktree(tmp_path, name="primary")
+    (root / "config").mkdir()
+    shutil.copyfile(REPO / "CONTEXT.md", root / "CONTEXT.md")
+    shutil.copyfile(
+        REPO / "config" / "dispatch-routing-policy.json",
+        root / "config" / "dispatch-routing-policy.json",
+    )
+    dispatch.git("add", "-A", cwd=root)
+    dispatch.git("commit", "-qm", "test: planning inputs", cwd=root)
+    linked = tmp_path / "linked"
+    # S603: fixed literals; S607 sits on the argv line, where ruff reports it.
+    subprocess.run(  # noqa: S603
+        ["git", "worktree", "add", "-b", "side", str(linked)],  # noqa: S607
+        cwd=root,
+        check=True,
+        capture_output=True,
+    )
+    (linked / "tools").mkdir()
+    (linked / "tools" / "dispatch.py").write_text(
+        "# the copy this session runs\n", encoding="utf-8"
+    )
+    dispatch.git("add", "-A", cwd=linked)
+    dispatch.git("commit", "-qm", "feat: the linked worktree's own work", cwd=linked)
+    linked_head = dispatch.git("rev-parse", "HEAD", cwd=linked).strip()
+    assert linked_head != dispatch.git("rev-parse", "HEAD", cwd=root).strip()
+    # `__file__` is what `dispatcher_tree` reads, so pointing it at the linked worktree's
+    # copy stands in for "dispatching from a linked worktree" without a second checkout
+    # of this repository.
+    monkeypatch.setattr(dispatch, "__file__", str(linked / "tools" / "dispatch.py"))
+
+    plan, _, refusal = plan_for(tmp_path, root=root)
+
+    assert refusal is None, refusal
+    assert plan is not None
+    assert plan.copy_state is not None
+    assert plan.copy_state.head == linked_head
