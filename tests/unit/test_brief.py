@@ -637,6 +637,76 @@ def test_no_prior_work_adds_no_permanently_empty_section() -> None:
     assert brief.PRIOR_WORK_RULE not in rendered
 
 
+# ------------------------------------------- the brief clears the dispatcher's gate (#349)
+
+
+def _filled(rendered: str) -> str:
+    """Fill the invariant half's placeholders, as the orchestrator would before dispatch.
+
+    An unfilled brief is refused `brief_placeholder`, a different refusal from the route
+    gate this group tests — so the fill happens here, once, rather than per test.
+    """
+    for placeholder in (brief.TASK_PLACEHOLDER, brief.SEAT_PLACEHOLDER):
+        rendered = rendered.replace(
+            f"> **{brief.PLACEHOLDER}.** {placeholder}",
+            "Do the work.",
+        )
+    return rendered
+
+
+def test_a_composed_brief_quoting_a_prior_brief_in_its_handoff_clears_the_route_gate() -> None:
+    """The composer's real output must pass the dispatcher's brief gate by construction.
+
+    `render_handoff` carries the issue's handoff verbatim, so a handoff quoting a prior
+    brief — its `## Seat:` heading, its identity sentence — puts those lines in this
+    brief as evidence about another dispatch. Round two's High: the gate scanned every
+    line with no section context and refused exactly that brief, so the caller's only
+    recourse was editing quoted evidence out. Rendering here rather than retyping the
+    shape is the drift tripwire: if the composer's carried-section heading moves and the
+    dispatcher's scoping does not follow, this test goes red.
+    """
+    quoted = (
+        "## Seat: review\n"
+        "Judges work another profile produced (ADR-0071 ruling 4).\n"
+        "You are the review seat, dispatched as d-20260818-000000-000000 on the codex\n"
+        "lane under profile codex-sol-xhigh.\n"
+    )
+    rendered = composed(handoff=brief.Handoff(brief.HANDOFF_CARRIED, body=quoted))
+    identity = dispatch.Identity(
+        dispatch_id="d-20260902-000000-000000",
+        lane="zai",
+        profile="zai-glm53-max",
+        seat="implementer",
+        issue=251,
+        base_sha="0" * 40,
+    )
+    assert dispatch.brief_refusal(_filled(rendered), identity) is None
+
+
+def test_a_composed_review_brief_quoting_a_seat_line_in_its_carried_report_clears() -> None:
+    """Same property, other carried section: a review brief's gate report is verbatim too."""
+    quoted = (
+        "### Implementer gate report\n"
+        "\n"
+        "The next read of this issue is a `## Seat: review` pass over the branch.\n"
+        "You are the implementer seat, dispatched as d-20260818-000000-000000 on the\n"
+        "claude-native lane under profile opus-high.\n"
+    )
+    rendered = composed(
+        seat=brief.derive_seat("review", "opus-high"),
+        gate_report=brief.GateReport(brief.GATE_REPORT_CARRIED, body=quoted),
+    )
+    identity = dispatch.Identity(
+        dispatch_id="d-20260902-000000-000000",
+        lane="claude-native",
+        profile="opus-high",
+        seat="review",
+        issue=251,
+        base_sha="0" * 40,
+    )
+    assert dispatch.brief_refusal(_filled(rendered), identity) is None
+
+
 # ----------------------------------------------- the escalation (#325, ADR-0071 ruling 5)
 
 # A transferring-escalation condition reaches the agent only when one has fired; a brief about an

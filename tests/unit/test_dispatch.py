@@ -5107,7 +5107,7 @@ def test_a_brief_still_carrying_the_composer_s_placeholder_refuses_and_quotes(
     # the offending line, and nothing is launched — no record directory is even made.
     # The composer's real renderer is the point — the gate must fire on exactly the
     # line `just brief` emits, not on a second spelling of it.
-    unfilled = brief._placeholder("The task statement.")  # noqa: SLF001
+    unfilled = brief._placeholder("The task statement.")  # noqa: SLF001 — the composer's real renderer is the subject; the gate must fire on the exact emitted line
     plan, _, refusal = plan_for(
         tmp_path, brief_file=brief_file(tmp_path, f"# Brief\n\n{unfilled}\n")
     )
@@ -5184,9 +5184,69 @@ def test_prose_mentioning_another_lane_without_claiming_this_route_is_not_refuse
     assert plan is not None
 
 
+def test_a_brief_quoting_a_prior_seat_line_inside_its_handoff_dispatches(
+    tmp_path: Path,
+) -> None:
+    # Round two's High: the composer carries a prior brief's text verbatim under its
+    # handoff section (tools/brief.py's render_handoff), so a quoted `## Seat:` heading
+    # or an identity sentence from an earlier dispatch is evidence about that dispatch,
+    # not this brief's route claim. Refusing it would stop every clean brief whose
+    # handoff quotes one, and the caller's only recourse — editing quoted evidence out
+    # of a brief — is worse than the half-failure the gate exists to catch. This shape
+    # mirrors what `just brief` renders: the carried section opens at the handoff
+    # heading, and the brief's own seat statement sits outside it.
+    text = (
+        "## Handoff — your first read, verbatim from `just handoff`\n"
+        "\n"
+        "Handoff-for: #349\n"
+        "\n"
+        "State:      review and landing outstanding.\n"
+        "\n"
+        "## Seat: review\n"
+        "Judges work another profile produced (ADR-0071 ruling 4).\n"
+        "You are the review seat, dispatched as d-20260818-000000-000000 on the codex\n"
+        "lane under profile codex-sol-xhigh.\n"
+        "\n"
+        "## Task, scope, ground truth\n"
+        "Do the work.\n"
+        "\n"
+        "## Seat: implementer\n"
+        "Carries the work out, runs its own gate and lands it.\n"
+    )
+    plan, _, refusal = plan_for(tmp_path, brief_file=brief_file(tmp_path, text))
+    assert refusal is None
+    assert plan is not None
+
+
+def test_a_stale_seat_heading_after_the_carried_section_still_refuses(
+    tmp_path: Path,
+) -> None:
+    # The scoping cuts one way only: carried evidence is exempt because it quotes
+    # another dispatch, and the composer's own statement sits outside it. A stale
+    # heading outside the carried section is still this brief claiming a route it was
+    # not dispatched on, and must refuse exactly as before.
+    text = (
+        "## Handoff — your first read, verbatim from `just handoff`\n"
+        "\n"
+        "Handoff-for: #349\n"
+        "State:      fine.\n"
+        "\n"
+        "## Task, scope, ground truth\n"
+        "Do the work.\n"
+        "\n"
+        "## Seat: review\n"
+    )
+    _, _, refusal = plan_for(tmp_path, brief_file=brief_file(tmp_path, text))
+    assert refusal is not None
+    assert refusal.kind == "brief_lane_mismatch"
+    assert "brief_seat=review" in refusal.found
+    assert "dispatch_seat=implementer" in refusal.found
+
+
 def test_the_gate_and_the_composer_share_one_placeholder_vocabulary() -> None:
-    # Criterion 4: the marker is imported from the composer's home, not retyped here
-    # or in the dispatcher — one authority, so the two can never drift (#349).
+    # Criterion 4: the dispatcher owns the marker — it is the surface that refuses on
+    # it — and the composer imports it from there (the import direction is fixed),
+    # rather than either retyping it; one authority, so the two can never drift (#349).
     assert dispatch.BRIEF_PLACEHOLDER == brief.PLACEHOLDER
 
 

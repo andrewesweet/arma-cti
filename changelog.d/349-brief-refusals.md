@@ -7,6 +7,9 @@
   quoting the offending line — when the brief still carries its composer's placeholder
   marker, or `brief_lane_mismatch` when a route claim in the brief (a seat heading, the
   seat opening, or the identity sentence naming lane and profile) contradicts the
-  dispatch's own resolved seat, lane and profile. The marker is one authority, shared
-  with `tools/brief.py`, so the composer and the gate cannot drift. Nothing is launched
-  on either refusal.
+  dispatch's own resolved seat, lane and profile. The mismatch scan reads only the
+  brief's own statement of its route: the two blocks the composer carries verbatim — the
+  handoff body and a review brief's gate report — quote prior briefs, so a carried
+  `## Seat:` line is evidence about another dispatch and does not refuse. The marker is
+  one authority, shared with `tools/brief.py`, so the composer and the gate cannot
+  drift. Nothing is launched on either refusal.

@@ -3436,6 +3436,22 @@ def default_brief(
 # a claim about this one's route, and refusing on every lane-shaped word would break clean
 # briefs whose titles, handoffs and prior-work lines quote lane names in prose. The names
 # come from the registries, matched in the registries' own spelling.
+#
+# The scan is section-aware (round two's High on #349): the composer carries two blocks
+# into a brief verbatim — the handoff body under `tools/brief.py`'s HANDOFF_HEADING, and
+# a review brief's gate report under `tools/gate_report.py`'s HEADING — and those bodies
+# quote prior briefs, so a carried `## Seat:` heading or identity sentence is evidence
+# about another dispatch, never this brief's route claim. Scanning them refused exactly
+# the briefs `just brief` composes. A carried section closes where the composer's own
+# resume: any other `## ` heading ends it — except another carried-section heading, which
+# re-enters carried mode — and a `## Seat:` line does not close it, because a quoted prior
+# brief's seat heading is precisely the line the exemption exists for. That leaves one
+# named limit: a stale claim the composer itself placed inside a carried span would be
+# skipped too, and the scoping therefore covers what the composer renders, not what a
+# hand edit might interleave; `tests/unit/test_brief.py` renders the composer's real
+# output through this gate so the two surfaces cannot drift apart silently.
+_CARRIED_SECTION: Final = re.compile(r"^## (?:Handoff\b|Implementer's gate report)")
+_ANY_SECTION: Final = re.compile(r"^## ")
 _ROUTE_CLAIM: Final = re.compile(
     r"dispatched as \S+ on the ([a-z0-9-]+) lane under profile ([a-z0-9-]+)"
 )
@@ -3443,39 +3459,22 @@ _SEAT_HEADING: Final = re.compile(r"^## Seat: ([a-z0-9-]+)")
 _SEAT_OPENING: Final = re.compile(r"^You are the ([a-z0-9-]+) seat")
 
 
-def brief_refusal(text: str, identity: Identity) -> Refusal | None:
-    """Refuse a brief that would go out half-composed or naming the wrong route (#349).
+def _route_contradictions(text: str, identity: Identity) -> list[str]:
+    """Collect the route claims that contradict this dispatch, quoting each offending line.
 
-    Composing a brief and dispatching it are two operations, and the first can half-fail
-    silently: a splice dies mid-string, the file goes out anyway, and the dispatched
-    session obeys the artefact over any contrary prose (#345) — reading an unfilled
-    template as its task, or working to a lane note from a previous dispatch. The manual
-    checks the seat added covered the last failure mode, not the class, so the seam closes
-    fail-closed here, at the second operation, where every composition route — `just
-    brief`, a hand edit, a heredoc splice — converges.
-
-    Two refusals. `brief_placeholder` fires on the composer's own marker (`BRIEF_PLACEHOLDER`
-    above, one home shared with `tools/brief.py`) and quotes the offending line.
-    `brief_lane_mismatch` fires on a route claim — a seat heading, a seat opening, or the
-    identity clause carrying lane and profile — that names something other than what this
-    dispatch resolved to. Neither carries a failure class, for `off_peak_refusal`'s reason:
-    nothing was found about a provider or about code under test; the request was
-    self-contradictory. Nothing is launched either way.
+    The scan is section-aware (the comment on `_CARRIED_SECTION`): lines inside a carried
+    section are evidence about another dispatch and are never claims for this one.
     """
-    for line in text.splitlines():
-        if BRIEF_PLACEHOLDER in line:
-            return Refusal(
-                "brief_placeholder",
-                (f"line={line}",),
-                (
-                    "The brief still carries its composer's placeholder marker, so its "
-                    "variable half was never filled (#316's half-failed composition): the "
-                    "session would read an unfilled template as its task. Fill the task "
-                    "half and dispatch again. Nothing was launched."
-                ),
-            )
     contradictions: list[str] = []
+    carried = False
     for line in text.splitlines():
+        if _CARRIED_SECTION.match(line):
+            carried = True
+            continue
+        if carried and _ANY_SECTION.match(line) and not _SEAT_HEADING.match(line):
+            carried = False
+        if carried:
+            continue
         for pattern in (_SEAT_HEADING, _SEAT_OPENING):
             found = pattern.match(line)
             if found and found.group(1) != identity.seat:
@@ -3498,6 +3497,45 @@ def brief_refusal(text: str, identity: Identity) -> Refusal | None:
                     f"dispatch_profile={identity.profile}",
                     f"line={line}",
                 ]
+    return contradictions
+
+
+def brief_refusal(text: str, identity: Identity) -> Refusal | None:
+    """Refuse a brief that would go out half-composed or naming the wrong route (#349).
+
+    Composing a brief and dispatching it are two operations, and the first can half-fail
+    silently: a splice dies mid-string, the file goes out anyway, and the dispatched
+    session obeys the artefact over any contrary prose (#345) — reading an unfilled
+    template as its task, or working to a lane note from a previous dispatch. The manual
+    checks the seat added covered the last failure mode, not the class, so the seam closes
+    fail-closed here, at the second operation, where every composition route — `just
+    brief`, a hand edit, a heredoc splice — converges.
+
+    Two refusals. `brief_placeholder` fires on the composer's own marker (`BRIEF_PLACEHOLDER`
+    above, one home shared with `tools/brief.py`) and quotes the offending line.
+    `brief_lane_mismatch` fires on a route claim — a seat heading, a seat opening, or the
+    identity clause carrying lane and profile — that names something other than what this
+    dispatch resolved to. The scan is section-aware: the two blocks the composer carries
+    verbatim (the handoff body, a review brief's gate report) are suspended out of the
+    scan, because they quote prior briefs and a carried `## Seat:` line is evidence about
+    another dispatch, never this brief's claim (see the comment on `_CARRIED_SECTION`).
+    Neither carries a failure class, for `off_peak_refusal`'s reason:
+    nothing was found about a provider or about code under test; the request was
+    self-contradictory. Nothing is launched either way.
+    """
+    for line in text.splitlines():
+        if BRIEF_PLACEHOLDER in line:
+            return Refusal(
+                "brief_placeholder",
+                (f"line={line}",),
+                (
+                    "The brief still carries its composer's placeholder marker, so its "
+                    "variable half was never filled (#316's half-failed composition): the "
+                    "session would read an unfilled template as its task. Fill the task "
+                    "half and dispatch again. Nothing was launched."
+                ),
+            )
+    contradictions = _route_contradictions(text, identity)
     if contradictions:
         return Refusal(
             "brief_lane_mismatch",
