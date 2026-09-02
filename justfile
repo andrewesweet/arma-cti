@@ -39,10 +39,13 @@ check:
 # Static validation for the repository-managed Machine B playbooks. The live
 # inventory is deliberately absent here: syntax and lint must be available to
 # every checkout, while host facts stay in ~/.arma-cti/machine-b.toml.
+# ansible-playbook refuses non-blocking standard handles (#678), which is what
+# a dispatched session's captured output presents; blocking_exec.py satisfies
+# that precondition so the leg's verdict stops depending on who called it.
 check-machine-b:
-    uv run ansible-playbook --syntax-check -i localhost, ops/machine-b/apply.yml
-    uv run ansible-playbook --syntax-check -i localhost, ops/machine-b/laptop.yml
-    uv run ansible-lint --strict ops/machine-b/apply.yml ops/machine-b/laptop.yml
+    uv run python tools/blocking_exec.py ansible-playbook --syntax-check -i localhost, ops/machine-b/apply.yml
+    uv run python tools/blocking_exec.py ansible-playbook --syntax-check -i localhost, ops/machine-b/laptop.yml
+    uv run python tools/blocking_exec.py ansible-lint --strict ops/machine-b/apply.yml ops/machine-b/laptop.yml
 
 # Export what SQF cannot read from an authored file. The map manifests are not
 # here: the addon ships and parses the authored JSON itself (ADR-0017), so
