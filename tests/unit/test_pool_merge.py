@@ -845,8 +845,15 @@ def test_a_corrupt_record_trips_fail_closed(tmp_path: Path) -> None:
 # ------------------------------------------------- the stop-decision failures
 
 
+@pytest.mark.parametrize(
+    ("first", "second"),
+    [
+        ("infra_unavailable", "untyped_harness_failure"),
+        ("untyped_harness_failure", "infra_unavailable"),
+    ],
+)
 def test_the_merge_stands_the_worst_candidate_whichever_worker_wrote_first(
-    tmp_path: Path,
+    tmp_path: Path, first: str, second: str
 ) -> None:
     """Two racing workers leave two candidates; the worst class stands (#683).
 
@@ -857,19 +864,8 @@ def test_the_merge_stands_the_worst_candidate_whichever_worker_wrote_first(
     """
     failures = tmp_path / "stop-decision-failures"
     failures.mkdir()
-    (failures / "early-probe").write_text("infra_unavailable\n", encoding="utf-8")
-    (failures / "late-probe").write_text("untyped_harness_failure\n", encoding="utf-8")
-    assert pool_merge.read_stop_decision_failures(tmp_path) == "untyped_harness_failure"
-
-
-def test_the_selection_is_over_severity_never_over_directory_order(
-    tmp_path: Path,
-) -> None:
-    """The same two candidates under the other names give the same answer."""
-    failures = tmp_path / "stop-decision-failures"
-    failures.mkdir()
-    (failures / "early-probe").write_text("untyped_harness_failure\n", encoding="utf-8")
-    (failures / "late-probe").write_text("infra_unavailable\n", encoding="utf-8")
+    (failures / "early-probe").write_text(f"{first}\n", encoding="utf-8")
+    (failures / "late-probe").write_text(f"{second}\n", encoding="utf-8")
     assert pool_merge.read_stop_decision_failures(tmp_path) == "untyped_harness_failure"
 
 
@@ -880,31 +876,56 @@ def test_a_pool_with_no_stop_decision_failure_reads_none(tmp_path: Path) -> None
     assert pool_merge.read_stop_decision_failures(tmp_path) is None
 
 
-def test_an_unreadable_candidate_is_an_untyped_red(tmp_path: Path) -> None:
-    """A candidate the merge cannot read or parse stops worse, never silently."""
+@pytest.mark.parametrize(
+    "recorded",
+    [
+        "a class the table has never heard of",
+        "pass",
+        "node_crashed",
+    ],
+)
+def test_a_candidate_outside_the_stop_classes_is_an_untyped_red(
+    tmp_path: Path, recorded: str
+) -> None:
+    """A candidate the merge cannot trust stops worse, never silently (#683).
+
+    Only `infra_unavailable` and `untyped_harness_failure` are the two ways a
+    stop decision fails, so any other content is corrupt — a known-but-
+    disallowed class included, since ranking `pass` by the table would let a
+    corrupt candidate read greener than the failure it stands for.
+    """
     failures = tmp_path / "stop-decision-failures"
     failures.mkdir()
     (failures / "probe").write_bytes(b"\xff\xfe not utf-8")
     assert pool_merge.read_stop_decision_failures(tmp_path) == "untyped_harness_failure"
-    (failures / "probe").write_text("a class the table has never heard of\n", encoding="utf-8")
+    (failures / "probe").write_text(f"{recorded}\n", encoding="utf-8")
     assert pool_merge.read_stop_decision_failures(tmp_path) == "untyped_harness_failure"
 
 
+@pytest.mark.parametrize(
+    ("candidate", "expected"),
+    [
+        ("infra_unavailable", "infra_unavailable"),
+        # The corrupt-candidate case: `pass` is not a verdict to rank, so an
+        # all-pass pool with a corrupt candidate is still not a result (#683).
+        ("pass", "untyped_harness_failure"),
+    ],
+)
 def test_the_merge_overlays_the_worst_candidate_onto_worst_class(
-    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+    tmp_path: Path, capsys: pytest.CaptureFixture[str], candidate: str, expected: str
 ) -> None:
     """An all-pass pool that stopped on an unread decision is still not a result."""
     claim(tmp_path, "contacts", verdict={"class": "pass", "elapsed_secs": 1})
     failures = tmp_path / "stop-decision-failures"
     failures.mkdir()
-    (failures / "contacts").write_text("infra_unavailable\n", encoding="utf-8")
+    (failures / "contacts").write_text(f"{candidate}\n", encoding="utf-8")
 
     status, _, err = run_merge(tmp_path, capsys, ["contacts"])
 
     assert status == 0
     document = json.loads((tmp_path / "pool.json").read_text(encoding="utf-8"))
-    assert document["worst_class"] == "infra_unavailable"
-    assert "the stop decision failed as infra_unavailable" in err
+    assert document["worst_class"] == expected
+    assert f"the stop decision failed as {expected}" in err
 
 
 def test_the_subcommand_prints_the_lines_the_shell_acts_on(

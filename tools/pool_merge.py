@@ -106,6 +106,17 @@ MISSION_CLASSES: Final[frozenset[str]] = frozenset(CLASS_SEVERITY) - {
     "flake_quarantine",
 }
 
+# The only classes a stop-decision failure candidate may carry: the two ways a
+# stop decision can fail — unread (`infra_unavailable`) or read malformed
+# (`untyped_harness_failure`). regress.sh's writer emits no third value, so a
+# candidate holding any other class — a class the table has never heard of, or
+# a known one such as `pass` — is a corrupt record, not a verdict to rank:
+# ranking by the table would let it read greener than the failure it stands
+# for. Anything outside this set is an untyped red.
+STOP_DECISION_CLASSES: Final[frozenset[str]] = frozenset(
+    {"infra_unavailable", "untyped_harness_failure"}
+)
+
 
 def severity(class_: str) -> int:
     """Rank one class; a class the table has never heard of is an untyped red."""
@@ -190,9 +201,13 @@ def read_stop_decision_failures(pool_out: Path) -> str | None:
     module's table (CLASS_SEVERITY, #162) and a second order in the shell
     would be a second authority for what "worse" means (ADR-0049).
 
-    A candidate that cannot be read, or carries a class the table has never
-    heard of, is an untyped red — the same reading the verdict typer's
-    failure gets.
+    A candidate that cannot be read, or carries anything outside
+    STOP_DECISION_CLASSES, is an untyped red — the same reading the verdict
+    typer's failure gets. The writer emits only those two classes
+    (regress.sh's unread stop decision), so a known-but-disallowed value such
+    as `pass` is not a verdict to rank but a record that cannot be trusted:
+    ranking it by the table would let a corrupt candidate read greener than
+    the failure it stands for.
     """
     candidates_dir = pool_out / "stop-decision-failures"
     if not candidates_dir.is_dir():
@@ -209,7 +224,7 @@ def read_stop_decision_failures(pool_out: Path) -> str | None:
             failure_class = candidate.read_text(encoding="utf-8").strip()
         except (OSError, UnicodeDecodeError):
             return "untyped_harness_failure"
-        if failure_class not in CLASS_SEVERITY:
+        if failure_class not in STOP_DECISION_CLASSES:
             return "untyped_harness_failure"
         if worst is None or severity(failure_class) > severity(worst):
             worst = failure_class

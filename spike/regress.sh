@@ -807,13 +807,13 @@ STOP_FLAG="$POOL_OUT/stop"
 # exit here is a failure path out of a run in flight, not a usage refusal.
 mkdir -p "$CLAIMS" "$POOL_OUT/stop-decision-failures" || {
     {
-        printf '\n[regress] could not create the pool'"'"'s evidence directory %s — this is infra_unavailable, not a result.\n' "$POOL_OUT"
+        printf '\n[regress] could not create the pool'"'"'s evidence directories under %s — this is infra_unavailable, not a result.\n' "$POOL_OUT"
         printf 'verdict=FAIL\n'
         printf 'failure_class=infra_unavailable\n'
-        printf 'failure_detail=could not create %s\n' "$CLAIMS"
+        printf 'failure_detail=could not create the pool evidence directories under %s\n' "$POOL_OUT"
         printf 'host=%s\n' "$HOST"
     } >&2
-    record_refusal infra_unavailable "could not create the pool evidence directory $CLAIMS"
+    record_refusal infra_unavailable "could not create the pool evidence directories under $POOL_OUT"
     exit "${CLASS_RANK[infra_unavailable]}"
 }
 
