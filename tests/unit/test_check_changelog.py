@@ -13,8 +13,7 @@ if TYPE_CHECKING:
 
 check_changelog = load_tool("check_changelog")
 
-# The validator is the unit under test; staging a whole gate run per shape would test the fixture.
-_valid_fragment = check_changelog._valid_fragment  # noqa: SLF001
+_valid_fragment = check_changelog._valid_fragment  # noqa: SLF001 — the validator is the subject
 
 
 def _git(root: Path, *args: str) -> str:
