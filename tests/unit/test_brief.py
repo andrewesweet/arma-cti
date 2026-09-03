@@ -620,6 +620,87 @@ def test_the_open_issue_read_asks_for_open_issues_only(monkeypatch: pytest.Monke
     assert seen[0][seen[0].index("--state") + 1] == "open"
 
 
+# ----------------------------------------------------------------- the committed markers
+
+
+def a_quarantined_tree(tmp_path: Path, marker: str) -> Path:
+    """Write a tree whose tests carry one `quarantined:` marker, as a real module would."""
+    module = tmp_path / "tests" / "unit" / "test_watch.py"
+    module.parent.mkdir(parents=True)
+    module.write_text(f'def test_x() -> None:\n    """\n    {marker}\n    """\n', encoding="utf-8")
+    return tmp_path
+
+
+def test_a_committed_marker_keeps_the_flake_line_alive_after_its_issue_closed(
+    tmp_path: Path,
+) -> None:
+    """The round-five boundary.
+
+    `just land` closes the flake's own issue, and the marker keeps citing it anyway —
+    the thing the open-issue read could never reach.
+    """
+    out = tmp_path / "brief.md"
+    code = brief.main(
+        ["428", "--seat", "implementer", "--out", str(out)],
+        read_issue=lambda _issue, _repo: {
+            "number": 428,
+            "title": "t",
+            "body": "rewrite tools/land.py",
+            "state": "OPEN",
+        },
+        read_open=lambda _repo: [],
+        read_quarantined=lambda _repo: brief.scan_quarantined(
+            a_quarantined_tree(
+                tmp_path,
+                "quarantined: #428 tests/unit/test_watch.py::test_the_seam — one red",
+            )
+        ),
+        read_handoff=no_handoff,
+        read_gate_report=lambda _issue: pytest.fail("non-review seat must not read the thread"),
+        repo=REPO,
+    )
+    assert code == 0
+    assert "- #428 `tests/unit/test_watch.py::test_the_seam`" in out.read_text(encoding="utf-8")
+
+
+def test_a_marker_read_wins_over_the_open_issue_scan_for_the_same_issue(tmp_path: Path) -> None:
+    markers = brief.scan_quarantined(
+        a_quarantined_tree(
+            tmp_path,
+            "quarantined: #428 tests/unit/test_watch.py::test_the_seam — one red",
+        )
+    )
+    issues = brief.select_flakes([flake_row(428, "test_the_seam flakes")])
+    (merged,) = brief.merge_flakes(issues, markers)
+    assert merged.module == "tests/unit/test_watch.py"
+    assert merged.test == "test_the_seam"
+
+
+def test_a_marker_without_a_node_id_is_prose_and_not_read(tmp_path: Path) -> None:
+    tree = a_quarantined_tree(tmp_path, "quarantined: #428 — one observed red, never again")
+    assert brief.scan_quarantined(tree) == ()
+
+
+def test_a_marker_reads_a_parameterised_node_whole(tmp_path: Path) -> None:
+    tree = a_quarantined_tree(
+        tmp_path,
+        "quarantined: #428 "
+        "tests/unit/test_commands.py::test_a_payload_is_refused[a bare string] — one red",
+    )
+    (flake,) = brief.scan_quarantined(tree)
+    assert flake.test == "test_a_payload_is_refused[a bare string]"
+    assert flake.module == "tests/unit/test_commands.py"
+
+
+def test_the_marker_scan_reads_the_tree_s_tests_and_nothing_else(tmp_path: Path) -> None:
+    loose = tmp_path / "tools" / "note.py"
+    loose.parent.mkdir(parents=True)
+    loose.write_text(
+        'X = "quarantined: #9 tests/unit/test_watch.py::test_the_seam"\n', encoding="utf-8"
+    )
+    assert brief.scan_quarantined(tmp_path) == ()
+
+
 # ------------------------------------------------------------------------------ the seat
 
 
@@ -1324,7 +1405,7 @@ def test_a_deterministic_red_issue_the_name_filter_misses_reaches_the_seat_as_a_
     assert not brief.is_flake(str(row["title"]), str(row["body"]))
     assert brief.select_flakes([row]) == ()
     rendered = composed()  # the filter missed it, so the seat meets the zero branch
-    assert "an open issue whose red shows in your gate can sit outside it" in rendered
+    assert "so an issue whose red shows in your gate can sit outside it" in rendered
 
 
 def test_the_flake_response_qualifies_the_reds_it_promises_the_seat() -> None:

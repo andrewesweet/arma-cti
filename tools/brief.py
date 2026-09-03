@@ -136,7 +136,12 @@ a location rather than a surface — every brief already quotes a worktree path.
 An open flake is an issue whose **title** names a `test_` identifier and says it flakes, or
 whose body opens a line with ``Class: `flake_quarantine` ``. Both of the two live ones
 match on title. The read asks GitHub for open issues only, so a closed flake leaves the
-next briefing by itself — which is the whole reason the list is fetched rather than typed.
+next briefing through this scan alone — which is why the mechanism does not rest on it.
+The durable half is the `quarantined: #N <node id>` marker committed beside the test
+(`scan_quarantined`), the thing the issue is a proxy for: it is versioned with the test and
+true whether or not an issue is open, so the briefing still cites the quarantine after
+`just land` has closed its issue (#428 round 5). Where both name one issue, the marker's
+line wins.
 
 A flake whose title says neither is missed, and the remedy is a title edit rather than a
 looser rule: "mentions `flake_quarantine` anywhere" also matches every issue that merely
@@ -451,7 +456,9 @@ FLAKE_WORD: Final = re.compile(r"\bflak(?:e|es|ed|ing|y)\b", re.IGNORECASE)
 # The other shape: a body whose first line types the issue with the class.
 FLAKE_CLASS: Final = re.compile(r"^Class:\s*`?flake_quarantine`?", re.MULTILINE)
 # Where the flaking test lives, so a briefing can name the module and not only the test.
-TEST_MODULE: Final = re.compile(r"tests/[A-Za-z0-9_./\-]+\.py")
+# One spelling, shared with `NODE_ID` below, so the two cannot drift (#428 round 5, Low).
+_MODULE: Final = r"tests/[A-Za-z0-9_./\-]+\.py"
+TEST_MODULE: Final = re.compile(_MODULE)
 # A body's exact node ID, the identifier the retry rule tells an agent to quote (#428).
 # Real IDs carry more than one `::` segment — a test class between the module and the
 # method — and their bracketed parameter ids hold free text, spaces included
@@ -469,7 +476,7 @@ TEST_MODULE: Final = re.compile(r"tests/[A-Za-z0-9_./\-]+\.py")
 # with a bracket group free of `]`) reads whole; anything else needs a body that quotes the
 # ID delimited, not a wider pattern.
 _NODE_SEGMENT: Final = r"[A-Za-z0-9_.\-]+(?:\[[^\]\n]*\])?"
-NODE_ID: Final = re.compile(r"\btests/[A-Za-z0-9_./\-]+\.py(?:::" + _NODE_SEGMENT + r")+")
+NODE_ID: Final = re.compile(r"\b" + _MODULE + r"(?:::" + _NODE_SEGMENT + r")+")
 
 
 class Flake(NamedTuple):
@@ -523,6 +530,52 @@ def select_flakes(rows: Sequence[Mapping[str, object]]) -> tuple[Flake, ...]:
             )
         )
     return tuple(sorted(found))
+
+
+# The marker line a quarantine commits beside its test, machine-readable since #428 round 5.
+# The open-issue scan above is a proxy: `just land` closes the flake's own issue, a closed
+# issue is outside `--state open`, and so the briefing that the marker exists to cite lost
+# its citation the moment the quarantine landed — exactly the promise this issue keeps. The
+# marker is in the tree, versioned with the test, and true whether or not an issue is open.
+QUARANTINE: Final = re.compile(
+    r"^[ \t]*quarantined:[ \t]+#(?P<issue>\d+)[ \t]+(?P<rest>.+)$", re.MULTILINE
+)
+
+
+def scan_quarantined(repo: Path = REPO) -> tuple[Flake, ...]:
+    """Read every committed quarantine marker under the tree's tests, newest issue last.
+
+    The marker's node ID is read with the same `NODE_ID` grammar a body is, so the two
+    surfaces cannot disagree about what an exact selector is. A marker carrying no node ID
+    is prose and is not read: a line without the exact selector is what #428 round one
+    rendered fiction from. An unreadable file is skipped rather than raised on, because the
+    flake lines are advisory context for a gate red and must never be the thing that stops
+    a brief composing.
+    """
+    found: list[Flake] = []
+    for path in sorted((repo / "tests").rglob("*.py")):
+        try:
+            text = path.read_text(encoding="utf-8")
+        except OSError:
+            continue
+        for marker in QUARANTINE.finditer(text):
+            node = NODE_ID.search(marker.group("rest"))
+            if not node:
+                continue
+            module, _, test = node.group(0).partition("::")
+            found.append(Flake(issue=int(marker.group("issue")), test=test, module=module))
+    return tuple(sorted(found))
+
+
+def merge_flakes(issues: tuple[Flake, ...], markers: tuple[Flake, ...]) -> tuple[Flake, ...]:
+    """One flake per issue number, the committed marker's line winning over the scan's.
+
+    The marker is versioned with the test and is the thing the open-issue read proxies for,
+    so where both name one issue the marker's node ID is the one a briefing quotes.
+    """
+    by_issue = {flake.issue: flake for flake in markers}
+    by_issue.update((flake.issue, flake) for flake in issues if flake.issue not in by_issue)
+    return tuple(sorted(by_issue.values()))
 
 
 # ----------------------------------------------------------------------- the seat, cited
@@ -846,9 +899,10 @@ FLAKE_RESPONSE: Final = (
 # filter-miss away.
 FLAKE_NONE: Final = (
     "None matched the flake filter. The filter is name-based — a title naming a `test_`"
-    " that says it flakes, or a body opening `Class: flake_quarantine` — so an open issue"
-    " whose red shows in your gate can sit outside it. Before treating a red as yours,"
-    " check the tracker for an open issue naming your failing test."
+    " that says it flakes, a body opening `Class: flake_quarantine`, or a committed"
+    " `quarantined: #N <node id>` marker under `tests/` — so an issue whose red shows in"
+    " your gate can sit outside it. Before treating a red as yours, check the tracker for"
+    " an issue naming your failing test and grep the tree for a marker naming it."
 )
 # Forced-plan seats still receive a disposable tree, but containment is a capability rather
 # than an instruction to re-run the implementer's suite. The review and recon halves below
@@ -1470,6 +1524,7 @@ def main(  # noqa: PLR0913 — one keyword seam per external read, each injected
     *,
     read_issue: Callable[[int, str], dict[str, object]] = fetch_issue,
     read_open: Callable[[str], list[dict[str, object]]] = fetch_open_issues,
+    read_quarantined: Callable[[Path], tuple[Flake, ...]] = scan_quarantined,
     read_prior: Callable[[int, Path], tuple[PriorWork, ...]] = prior_work,
     read_handoff: Callable[[int], Handoff] = fetch_handoff,
     read_gate_report: Callable[[int], GateReport] = fetch_gate_report,
@@ -1516,7 +1571,7 @@ def main(  # noqa: PLR0913 — one keyword seam per external read, each injected
             issue=args.issue,
             title=str(document.get("title") or ""),
             gate=gate,
-            flakes=select_flakes(open_issues),
+            flakes=merge_flakes(select_flakes(open_issues), read_quarantined(repo)),
             seat=seat,
             tree=resolve_tree(args.issue, args.base_sha, repo),
             assessment=readiness.assess(body),
