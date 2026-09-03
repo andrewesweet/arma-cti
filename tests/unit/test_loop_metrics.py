@@ -417,11 +417,14 @@ def _landed_ledger(minute: int) -> dict[str, object]:
 def test_worktree_owing_done_joins_registrations_to_attested_landings(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """A registration counts only when its issue has a landing attested by the end."""
+    """A registration counts when its issue has any landing attested by the end."""
     dispatch_root = tmp_path / "dispatches"
     _dispatch(dispatch_root, "i50", 50, "implementer", 0, ledger=_landed_ledger(11))
     _dispatch(dispatch_root, "i51", 51, "implementer", 0)
     _dispatch(dispatch_root, "i53", 53, "implementer", 0, ledger=_landed_ledger(20))
+    # Issue 54 landed inside the window and again after it; either landing settles it.
+    _dispatch(dispatch_root, "i54", 54, "implementer", 0, ledger=_landed_ledger(9))
+    _dispatch(dispatch_root, "i54-r2", 54, "review", 0, ledger=_landed_ledger(25))
     inputs = METRICS.read_inputs(dispatch_root, tmp_path / "review", tmp_path / "queue")
     porcelain = "\n".join(
         [
@@ -445,6 +448,10 @@ def test_worktree_owing_done_joins_registrations_to_attested_landings(
             f"HEAD {'4' * 40}",
             "detached",
             "",
+            "worktree /repo/.claude/worktrees/issue-54",
+            f"HEAD {'6' * 40}",
+            "detached",
+            "",
             "worktree /repo/.codex/9f2/arma-cti",
             f"HEAD {'5' * 40}",
             "detached",
@@ -464,10 +471,11 @@ def test_worktree_owing_done_joins_registrations_to_attested_landings(
         if line.startswith("stock worktrees_owing_done")
     )
 
-    assert "level=2 " in line  # issue-50 and review-50-r2; 53 landed after the end
-    assert "registrations=5 excluded_without_issue_name=1" in line
+    assert "level=3 " in line  # 50, review-50-r2, and 54; 53 landed after the end
+    assert "registrations=6 excluded_without_issue_name=1" in line
     assert "setpoint=at_most_0 status=above_setpoint alarm=3" in line
     assert "registration_basis=current_snapshot bias=under_counts" in line
+    assert "landing_basis=ledger_landed_at" in line
     assert "tracker_closure_unseen" in line
 
 
@@ -483,6 +491,18 @@ def test_issue_registrations_skip_main_checkout_and_name_unjoinable() -> None:
         "worktree /repo/.claude/worktrees/review-525-r2\n"
         "detached\n"
         "\n"
+        "worktree /repo/.claude/worktrees/review-328b\n"
+        "detached\n"
+        "\n"
+        "worktree /repo/.claude/worktrees/review-497-guidance\n"
+        "detached\n"
+        "\n"
+        "worktree /repo/.claude/worktrees/audit-319\n"
+        "detached\n"
+        "\n"
+        "worktree /repo/.claude/worktrees/dispatch-d-20260827-103751-65cbec\n"
+        "detached\n"
+        "\n"
         "worktree /home/andre/.codex/9f2/arma-cti\n"
         "detached"
     )
@@ -490,8 +510,61 @@ def test_issue_registrations_skip_main_checkout_and_name_unjoinable() -> None:
     assert METRICS._parse_issue_registrations(porcelain) == (  # noqa: SLF001 — pin the parser
         (Path("/repo/.claude/worktrees/issue-672"), 672),
         (Path("/repo/.claude/worktrees/review-525-r2"), 525),
+        (Path("/repo/.claude/worktrees/review-328b"), 328),
+        (Path("/repo/.claude/worktrees/review-497-guidance"), 497),
+        (Path("/repo/.claude/worktrees/audit-319"), 319),
+        (Path("/repo/.claude/worktrees/dispatch-d-20260827-103751-65cbec"), None),
         (Path("/home/andre/.codex/9f2/arma-cti"), None),
     )
+
+
+def test_worktree_stock_names_the_commit_timestamp_proxy(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A landing time read from the commit itself is labelled with its bias."""
+    dispatch_root = tmp_path / "dispatches"
+    _dispatch(
+        dispatch_root,
+        "proxy",
+        60,
+        "implementer",
+        0,
+        ledger={
+            "materialised_at": _at(4),
+            "gate": {"outcome": "landed", "landed": {"sha": "b" * 40}},
+        },
+    )
+    monkeypatch.setattr(
+        METRICS, "_commit_timestamp", lambda _repo, _sha: METRICS.parse_timestamp(_at(9))
+    )
+    inputs = METRICS.read_inputs(dispatch_root, tmp_path / "review", tmp_path / "queue")
+    porcelain = "\n".join(
+        [
+            "worktree /repo",
+            f"HEAD {'0' * 40}",
+            "branch refs/heads/main",
+            "",
+            "worktree /repo/.claude/worktrees/review-60b",
+            f"HEAD {'7' * 40}",
+            "detached",
+        ]
+    )
+    monkeypatch.setattr(
+        METRICS,
+        "_issue_registrations",
+        lambda _repo: METRICS._parse_issue_registrations(porcelain),  # noqa: SLF001
+    )
+
+    window = METRICS.Window(0.0, METRICS.parse_timestamp(_at(15)), explicit=True)
+    line = next(
+        line
+        for line in METRICS.stock_lines(inputs, tmp_path, window)
+        if line.startswith("stock worktrees_owing_done")
+    )
+
+    assert "level=1" in line
+    assert "landing_basis=commit_timestamp" in line
+    assert "proxy_bias=reads_early_over_counts_near_boundary" in line
 
 
 def test_worktree_stock_names_unreadable_registrations(

@@ -77,10 +77,14 @@ NO_LEDGER_SETPOINT: Final = 0
 UNRATIFIED_SETPOINT: Final = 0
 OPEN_FINDINGS_SETPOINT: Final = 2
 
-# Worktree names the protocol mints with an issue number: `issue-672` and the
-# review seat's `review-672-r2` family.  Everything else on the registration
-# table cannot be joined to a landing and is excluded by name instead.
-ISSUE_WORKTREE_NAME: Final = re.compile(r"^(?:issue|review)-(\d+)(?:-.*)?$")
+# Worktree names that carry an issue number: `issue-672`, the review seat's
+# `review-672`, its `review-672-r2` and bare-letter `review-672b` variants, the
+# suffixed `review-672-N-note` shape, and hand-named audit trees `audit-672`.
+# Everything else on the registration table cannot be joined to a landing and
+# is excluded by name instead.
+ISSUE_WORKTREE_NAME: Final = re.compile(
+    r"^(?:issue|review|audit)-(\d+)(?:-[a-z0-9][a-z0-9-]*|[a-z][a-z0-9-]*)?$"
+)
 
 
 class DispatchRecord(NamedTuple):
@@ -1042,16 +1046,37 @@ def clean_round_lines(loops: tuple[LoopRecord, ...]) -> list[str]:
     ]
 
 
+class Landing(NamedTuple):
+    """One ledger-attested landing for an issue, and the basis of its timestamp.
+
+    ``attested`` is False where the time is the landing commit's own timestamp
+    because no ledger row recorded one — the canonical schema has no
+    ``landed_at`` (docs/telemetry-ledger.md), so this is the normal path and
+    never a rare fallback.
+    """
+
+    at: float
+    attested: bool
+
+
 def _landing_times(
     dispatches: tuple[DispatchRecord, ...], repo: Path, diagnostics: list[str]
-) -> dict[int, float]:
-    """Join landed ledger SHAs to commit timestamps, caching each SHA read."""
+) -> dict[int, tuple[Landing, ...]]:
+    """Join landed ledger SHAs to commit timestamps, caching each SHA read.
+
+    Every attested landing is kept, not just the latest: the worktree stock
+    asks whether *any* landing occurred by a window boundary, and an issue can
+    land twice (#486 carries two distinct landed SHAs).  Keeping the latest
+    alone made such an issue read as never having landed whenever its later
+    landing fell past the boundary.
+    """
     cache: dict[str, float | None] = {}
-    result: dict[int, float] = {}
+    times: dict[int, list[Landing]] = {}
     for dispatch in dispatches:
         if dispatch.landed_sha is None:
             continue
         landed_at = dispatch.landed_at
+        attested = landed_at is not None
         if landed_at is None:
             if dispatch.landed_sha not in cache:
                 cache[dispatch.landed_sha] = _commit_timestamp(repo, dispatch.landed_sha)
@@ -1061,8 +1086,8 @@ def _landing_times(
                     f"landing issue={dispatch.issue} sha={dispatch.landed_sha} status=unrecorded"
                 )
         if landed_at is not None:
-            result[dispatch.issue] = max(result.get(dispatch.issue, landed_at), landed_at)
-    return result
+            times.setdefault(dispatch.issue, []).append(Landing(landed_at, attested))
+    return {issue: tuple(landings) for issue, landings in times.items()}
 
 
 def _git_text(repo: Path, args: list[str]) -> str | None:
@@ -1100,13 +1125,13 @@ def cycle_lines(
                 starts.get(dispatch.issue, dispatch.planned_at), dispatch.planned_at
             )
     landings = _landing_times(dispatches, repo, diagnostics)
-    values = [
-        landed - starts[issue]
-        for issue, landed in landings.items()
-        if issue in starts
-        and landed >= starts[issue]
-        and (not window.explicit or window.contains(landed))
-    ]
+    values: list[float] = []
+    for issue, issue_landings in landings.items():
+        if issue not in starts:
+            continue
+        landed = max(landing.at for landing in issue_landings)
+        if landed >= starts[issue] and (not window.explicit or window.contains(landed)):
+            values.append(landed - starts[issue])
     return [_mean_text("cycle_time_per_work_item", values, extras="unit=seconds")]
 
 
@@ -1428,14 +1453,20 @@ def _worktree_stock(
     """Join current registrations to ledger-attested landings at the window end.
 
     A registration counts when its issue name matches a ledger row attesting
-    ``gate=landed`` with a landing at or before the window's end.  The tracker's
-    own closure is deliberately unseen — the reader makes no network call — and
-    the registration table is a current snapshot no durable record replays
-    historically, like the acceptance lint's repository read.  The level
-    under-counts the tracker's answer: a landing whose ledger row was never
-    materialised is invisible here (195 such rows at #602's review), while the
-    reverse error — a counted registration whose issue was reopened after the
-    landing — needs an issue to come back, which is far rarer.
+    ``gate=landed`` with **any** landing at or before the window's end — an
+    issue that landed inside the window and again after it has landed, so it
+    still counts.  The tracker's own closure is deliberately unseen — the
+    reader makes no network call — and the registration table is a current
+    snapshot no durable record replays historically, like the acceptance
+    lint's repository read.  The level under-counts the tracker's answer: a
+    landing whose ledger row was never materialised is invisible here (195
+    such rows at #602's review), while the reverse error — a counted
+    registration whose issue was reopened after the landing — needs an issue
+    to come back, which is far rarer.
+
+    Where no ledger row carried ``landed_at``, the landing time is the commit
+    timestamp and the reason says so: that proxy reads no later than the true
+    landing, so near a boundary it can over-count the level.
     """
     registrations = _issue_registrations(repo)
     if registrations is None:
@@ -1450,18 +1481,30 @@ def _worktree_stock(
     end = window.end
     owing = 0
     unjoinable = 0
+    proxy = False
     for _, issue in registrations:
         if issue is None:
             unjoinable += 1
-        elif issue in landings and (end is None or landings[issue] <= end):
+            continue
+        qualifying = tuple(
+            landing for landing in landings.get(issue, ()) if end is None or landing.at <= end
+        )
+        if qualifying:
             owing += 1
+            proxy = proxy or any(not landing.attested for landing in qualifying)
+    basis = (
+        " landing_basis=commit_timestamp proxy_bias=reads_early_over_counts_near_boundary"
+        if proxy
+        else " landing_basis=ledger_landed_at"
+    )
     return WorktreeStock(
         StockReading(
             owing,
             "unrecorded",
             "unrecorded",
             "unrecorded",
-            "registered_issue_worktrees_joined_to_ledger_attested_landings_tracker_closure_unseen",
+            "registered_issue_worktrees_joined_to_ledger_attested_landings"
+            f"_tracker_closure_unseen{basis}",
         ),
         len(registrations),
         unjoinable,
