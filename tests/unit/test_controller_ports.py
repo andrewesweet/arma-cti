@@ -192,15 +192,15 @@ def test_runtime_collector_does_not_let_terminal_history_hide_a_live_holder(
 
 
 @pytest.mark.parametrize(
-    ("state", "extra"),
+    ("state", "failure_class"),
     [
-        ("possessed", {}),  # a state no vocabulary recognises holds the slot
-        ("landed", {}),  # landed-stated without a landing SHA holds it too
-        ("non_result", {"failure_class": "interrupted"}),  # live non-result
+        ("possessed", None),  # a state no vocabulary recognises holds the slot
+        ("landed", None),  # landed-stated without a landing SHA holds it too
+        ("non_result", "interrupted"),  # live non-result
     ],
 )
 def test_runtime_collector_matches_a_holder_behind_any_live_run(
-    monkeypatch: pytest.MonkeyPatch, state: str, extra: dict[str, object]
+    monkeypatch: pytest.MonkeyPatch, state: str, failure_class: str | None
 ) -> None:
     """One liveness rule for capacity and holder matching alike (#690).
 
@@ -209,7 +209,9 @@ def test_runtime_collector_matches_a_holder_behind_any_live_run(
     two slots.
     """
     item = policy.WorkItemFact("item-7", "open", issue=7)
-    run = policy.WorkRunFact("old", state, work_item_key="item-7", issue=7, **extra)  # type: ignore[arg-type]
+    run = policy.WorkRunFact(
+        "old", state, work_item_key="item-7", issue=7, failure_class=failure_class
+    )
     facts = policy.ControlFacts(None, (), (), (item,), (run,))
     active = ports.queue_policy.Holder(7, ("dispatch:d-7",), None)
     in_flight = ports.queue_policy.InFlight((active,), (), "read")
