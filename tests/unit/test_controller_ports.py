@@ -687,10 +687,13 @@ def test_dispatch_delivery_collector_composes_recovery_before_relaunch(
 def test_dispatch_delivery_collector_releases_a_terminal_recovery_over_a_foreign_class(
     tmp_path: Path,
 ) -> None:
-    """The #690 sequence end to end: a typed delivery class survives recovery's
-    preserve-existing branch (`or "interrupted"` never fires), so the slot must
-    release on the verdict alone — a class outside `NON_RESULT_CLASSES` is a
-    record of what the delivery typed, not evidence the run is alive."""
+    """The #690 sequence end to end.
+
+    A typed delivery class survives recovery's preserve-existing branch
+    (`or "interrupted"` never fires), so the slot must release on the verdict
+    alone — a class outside `NON_RESULT_CLASSES` is a record of what the
+    delivery typed, not evidence the run is alive.
+    """
     record = tmp_path / "dispatches" / "d-1"
     record.mkdir(parents=True)
     delivery = {

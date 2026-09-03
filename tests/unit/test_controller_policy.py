@@ -648,8 +648,11 @@ def test_a_terminal_recovery_verdict_releases_a_run_without_a_failure_class() ->
 def test_an_observed_recovery_verdict_holds_a_foreign_failure_class_slot(
     recovery_kind: str,
 ) -> None:
-    """Only the concluding kinds release: an observation, or an unknown verdict,
-    is not terminal evidence, and a class outside the vocabulary then holds."""
+    """Only the concluding kinds release.
+
+    An observation, or an unknown verdict, is not terminal evidence, and a
+    class outside the vocabulary then holds.
+    """
     run = policy.WorkRunFact(
         "run-1",
         "running",
