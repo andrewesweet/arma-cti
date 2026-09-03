@@ -942,13 +942,15 @@ OVERLOAD_BODY: Final = (
     "API Error: 529 [1305][The service may be temporarily overloaded, please try again later]"
 )
 
-# The line one real Codex 404 produced (#696), spelled once for the same reason the
+# A Codex 404 of the shape #696 reported, spelled once for the same reason the
 # body above is: the classification row and the end-to-end trip test beside it must pin
-# the same bytes. `...` elides a long response id, so these are an elision and not the
-# captured bytes — the constant claims only that this shape classifies `provider_refused`,
-# never that it is what the log carried. The digit-bearing id in the second constant is
-# the elision's proof: a status-like digit run inside the id must not change the verdict,
-# because the one parsed status decides the class.
+# the same bytes. The line the log actually carried reads `ERROR: unexpected status
+# 404 Not Found: Unknown error, url: …, cf-ray: …`; the filler after the status here is
+# synthetic, not captured bytes, and the constant claims only that this shape
+# classifies `provider_refused`, never that it is what the log carried. The second
+# constant's response id is synthetic too, carrying a status-like digit run on
+# purpose: such a run must not change the verdict, because the one parsed status
+# decides the class.
 CODEX_NOT_FOUND_BODY: Final = "ERROR: unexpected status 404 Not Found: ... url: https://chatgpt.com/backend-api/codex/responses"
 CODEX_NOT_FOUND_WITH_RESPONSE_ID: Final = (
     "ERROR: unexpected status 404 Not Found: resp_4291500529"
