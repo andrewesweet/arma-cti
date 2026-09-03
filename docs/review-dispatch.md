@@ -405,6 +405,23 @@ retyping produced a plausible evidence path that resolved to nothing, which is w
 none. A review is nothing *but* paths, line numbers and SHAs, so every one of them is pasted
 from `git show`, `rg -n` or a `Read`, never retyped from memory of what was read.
 
+### Read the transcript, not just the record
+
+A measurement record composed by the agent that produced it is a self-report (#698). #695's
+record silently substituted a corrected SHA for the one its transcript shows being run, and
+omitted the invocation that returned `fatal: invalid upstream` — caught only because a
+reviewer read the transcript by hand. So when the work under review produced a measurement
+record or another write-up of what a run did, the review reads the run's own transcript and
+checks the record against it, and a claim the run's evidence does not carry is a claim like
+any other.
+
+The mechanical half is `tools/transcript_audit.py` (`docs/agents/measurement-records.md`):
+it recovers every invocation from the session transcript, and its `verify` refuses a record
+whose audit block was edited or whose prose names a SHA or a `git` invocation no transcript
+row carries. Where the tool cannot run, the citation form applies — every invocation claim
+cites the transcript line it came from, so the reviewer resolves it with `sed -n <line>p`
+rather than trusting the summary.
+
 ### The verdict binds the diff, not only the commit
 
 The verdict record beside the review's dispatch names the commit it judged and the exact
