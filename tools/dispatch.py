@@ -5505,6 +5505,70 @@ def _cleanup_plan_worktree(plan: Plan) -> tuple[Refusal | None, tuple[str, ...]]
     return dispatch_stop.cleanup_disposable_worktree(owner)
 
 
+def resolve_worktree_request(root: Path, requested: str) -> tuple[Path, Path | None]:
+    """Read `--worktree` as a worktree name or as a path, whichever its text is (#431).
+
+    A bare name — one segment by `worktree_tool.classify_name`'s rule — is a worktree
+    name, read the way `just worktree restore` reads the same string: under
+    `.claude/worktrees/`. The default branch below always built its path there, so before
+    #431 only the flag's branch disagreed with the sibling command. Anything else —
+    absolute, `~`-led, dot-led, or carrying a separator — is a path and resolves exactly
+    as it did before. The second return is a bare name's other reading, its cwd-relative
+    path, so `worktree_missing` can be refused only once both readings are genuinely
+    absent and can name where it looked.
+    """
+    if worktree_tool.classify_name(requested) is None:
+        return root / worktree_tool.WORKTREES / requested, Path.cwd() / requested
+    return Path(requested).expanduser(), None
+
+
+def assigned_worktree(
+    args: argparse.Namespace, root: Path, *, disposable: bool
+) -> tuple[Path, Refusal | None]:
+    """Resolve the tree this dispatch is assigned, refusing where it is absent (#431).
+
+    A bare `--worktree` name is read the way `just worktree restore` reads the same
+    string — under `.claude/worktrees/` (`worktree_tool.classify_name` decides which
+    strings are names); anything else is a path, exactly as before. A `worktree_missing`
+    refusal fires only once the tree is absent under every reading the argument supports,
+    and its action names every path that was looked at, so the reader checks the argument
+    rather than doubting a tree `just worktree list` shows as live.
+    """
+    worktree, path_reading = (
+        resolve_worktree_request(root, args.worktree)
+        if args.worktree
+        else (root / ".claude" / "worktrees" / f"issue-{args.issue}", None)
+    )
+    if disposable or worktree.is_dir():
+        return worktree, None
+    if path_reading is not None and path_reading.is_dir():
+        # The bare name's other reading — the cwd-relative path the old code resolved —
+        # is the one reading that worked from inside `.claude/worktrees/`, so a caller
+        # standing there keeps the tree they asked for (#431).
+        return path_reading, None
+    # The advice names a tree that would satisfy the request: a bare name can be created
+    # under that name, but a path argument was a location, not a name, so the issue's
+    # registered surface is the one worth creating (#431).
+    create = args.worktree if path_reading is not None else f"issue-{args.issue}"
+    looked = f"Looked for the tree at {worktree}"
+    if path_reading is not None:
+        looked += f", then at the path {path_reading}, and it is absent at both"
+    else:
+        looked += ", and it is absent there"
+    return worktree, Refusal(
+        "worktree_missing",
+        (f"worktree={worktree}",)
+        if path_reading is None
+        else (f"worktree={worktree}", f"path_reading={path_reading}"),
+        (
+            f"{looked}. Create it first: `just worktree add {create}`. A dispatch "
+            "does not create the tree it assigns, because creating one it cannot prove "
+            "is exclusive is exactly #105's failure."
+        ),
+        failure_class="infra_unavailable",
+    )
+
+
 def plan_dispatch(  # noqa: C901, PLR0911, PLR0912 — planning owns the ordered refusal ladder
     args: argparse.Namespace,
     root: Path,
@@ -5531,26 +5595,9 @@ def plan_dispatch(  # noqa: C901, PLR0911, PLR0912 — planning owns the ordered
     preview = bool(getattr(args, "dry_run", False))
     disposable = seat.disposable_worktree and (materialize_worktree or preview)
 
-    worktree = (
-        Path(args.worktree).expanduser()
-        if args.worktree
-        else root / ".claude" / "worktrees" / f"issue-{args.issue}"
-    )
-    if not disposable and not worktree.is_dir():
-        return (
-            None,
-            "",
-            Refusal(
-                "worktree_missing",
-                (f"worktree={worktree}",),
-                (
-                    f"Create it first: `just worktree add issue-{args.issue}`. A dispatch "
-                    "does not create the tree it assigns, because creating one it cannot "
-                    "prove is exclusive is exactly #105's failure."
-                ),
-                failure_class="infra_unavailable",
-            ),
-        )
+    worktree, missing = assigned_worktree(args, root, disposable=disposable)
+    if missing is not None:
+        return None, "", missing
 
     # #105's sixth instance: a tree is not free merely because it is clean. The pre-flight
     # answers "is this tree clean now" and the question that produced two agents in one

@@ -658,6 +658,80 @@ def test_a_persistent_dispatch_still_refuses_a_missing_worktree(tmp_path: Path) 
     assert refusal.kind == "worktree_missing"
 
 
+def test_a_bare_worktree_name_resolves_as_a_name_from_any_directory(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A bare `--worktree` name resolves under .claude/worktrees, wherever the caller stands.
+
+    The working directory is deliberately not `.claude/worktrees/`: the #431 defect was
+    invisible from the one directory where the broken path reading happened to resolve.
+    """
+    root, _sha = review_repository(tmp_path)
+    named = root / ".claude" / "worktrees" / "review-431"
+    dispatch.git("worktree", "add", "--detach", str(named), "HEAD", cwd=root)
+    monkeypatch.chdir(tmp_path)
+
+    plan, _brief, refusal = plan_for(tmp_path, root=root, worktree="review-431")
+
+    assert refusal is None, refusal
+    assert plan is not None
+    assert plan.worktree == named
+
+
+def test_a_missing_bare_name_refuses_only_after_both_readings_and_names_them(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Refusal fires when name and path are both absent, and says where it looked (#431)."""
+    root, _sha = review_repository(tmp_path)
+    standing = tmp_path / "standing"
+    standing.mkdir()
+    monkeypatch.chdir(standing)
+
+    _plan, _brief, refusal = plan_for(tmp_path, root=root, worktree="review-431")
+
+    assert refusal is not None
+    assert refusal.kind == "worktree_missing"
+    assert f"worktree={root / '.claude' / 'worktrees' / 'review-431'}" in refusal.found
+    assert f"path_reading={standing / 'review-431'}" in refusal.found
+    assert str(root / ".claude" / "worktrees" / "review-431") in refusal.action
+    assert "just worktree add review-431" in refusal.action
+
+
+def test_a_bare_name_beside_the_caller_still_resolves_as_a_path(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A bare name absent from .claude/worktrees falls back to the cwd-relative reading (#431)."""
+    root, _sha = review_repository(tmp_path)
+    standing = tmp_path / "standing"
+    beside = standing / "review-431"
+    beside.mkdir(parents=True)
+    monkeypatch.chdir(standing)
+
+    plan, _brief, refusal = plan_for(tmp_path, root=root, worktree="review-431")
+
+    assert refusal is None, refusal
+    assert plan is not None
+    assert plan.worktree == beside
+
+
+def test_a_dot_led_worktree_argument_still_reads_as_a_path(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """`./review-431` resolves as a path exactly as before the name reading existed (#431)."""
+    root, _sha = review_repository(tmp_path)
+    named = root / ".claude" / "worktrees" / "review-431"
+    dispatch.git("worktree", "add", "--detach", str(named), "HEAD", cwd=root)
+    monkeypatch.chdir(named.parent)
+
+    plan, _brief, refusal = plan_for(tmp_path, root=root, worktree="./review-431")
+
+    assert refusal is None, refusal
+    assert plan is not None
+    # The literal relative path, resolved where the old code resolved it — the name
+    # reading would have joined it under `root` instead (#431).
+    assert plan.worktree == Path("review-431")
+
+
 def test_a_dispatch_id_collision_refuses_without_removing_the_existing_tree(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
