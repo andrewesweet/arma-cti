@@ -1268,14 +1268,18 @@ PROVIDER_ERROR_MARKERS: Final = (
 # stays the mechanism rather than a per-adapter typed result: the runners are external
 # binaries whose log is the only channel a headless dispatch has, so an adapter result
 # would parse this same prose one layer earlier and add a surface for it (#696).
-PROVIDER_REFUSED_PATTERN: Final = re.compile(r"(?:unexpected status|api error):?\s+(\d\d\d)")
-# The ranges that place a parsed status, spelled so the boundaries read as the ruling:
-# the refusal class is the client-error band minus the quota status, and the provider
-# error class opens at the server-error band with no upper edge (codes past 999 cannot
-# leave the three-digit capture).
-REFUSED_STATUS_RANGE: Final = range(400, 500)
+PROVIDER_STATUS_PATTERN: Final = re.compile(
+    r"(?:unexpected status|api error):?\s+(?<!\d)(\d{3})(?!\d)"
+)
+# The bands that place a parsed status, named for the HTTP class each covers: the
+# refusal class is the client-error band minus the quota status, and the provider
+# error class is the server-error band. Both close at each edge, so a code outside
+# either — a 3xx redirect, a 600 — fits the shape but no band and stays
+# `unclassified`; the lookarounds above refuse a longer digit run outright rather
+# than reading its first three digits as a code.
+CLIENT_ERROR_STATUS_RANGE: Final = range(400, 500)
 QUOTA_STATUS: Final = 429
-PROVIDER_ERROR_STATUS_MIN: Final = 500
+PROVIDER_ERROR_STATUS_RANGE: Final = range(500, 600)
 # Claude Code prints its subscription limit as `Claude AI usage limit reached|<epoch>`,
 # which is a published reset boundary arriving on the only channel a headless run has.
 LIMIT_EPOCH_SEPARATOR: Final = "usage limit reached|"
@@ -1295,12 +1299,12 @@ def classify_run(returncode: int, output: str) -> tuple[str, float | None]:
         return QUOTA_EXHAUSTED, _limit_epoch(text)
     if any(marker in text for marker in PROVIDER_ERROR_MARKERS):
         return PROVIDER_ERROR, None
-    match = PROVIDER_REFUSED_PATTERN.search(text)
+    match = PROVIDER_STATUS_PATTERN.search(text)
     if match is not None:
         code = int(match.group(1))
-        if code in REFUSED_STATUS_RANGE and code != QUOTA_STATUS:
+        if code in CLIENT_ERROR_STATUS_RANGE and code != QUOTA_STATUS:
             return PROVIDER_REFUSED, None
-        if code >= PROVIDER_ERROR_STATUS_MIN:
+        if code in PROVIDER_ERROR_STATUS_RANGE:
             return PROVIDER_ERROR, None
     return UNCLASSIFIED, None
 

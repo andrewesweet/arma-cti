@@ -967,10 +967,20 @@ CODEX_NOT_FOUND_BODY: Final = "ERROR: unexpected status 404 Not Found: ... url: 
         (1, "unexpected status 503 Service Unavailable", breaker.PROVIDER_ERROR),
         # The status is parsed and range-checked, not merely shaped like three digits:
         # a 5xx off the marker lists is still a transient (the #696 owner ruling), and
-        # a redirect is no row at all — neither may read as a refusal streak.
+        # a redirect is no row at all — neither may read as a refusal streak. Both
+        # edges of both bands are pinned, because two rounds shipped a range that was
+        # correct only on the side someone happened to think about: a 499 is the last
+        # client error and a 600 the first code past the server band, and neither the
+        # band edges nor a longer digit run may read as the code its first three
+        # digits would truncate to.
+        (1, "unexpected status 499 (client closed)", breaker.PROVIDER_REFUSED),
         (1, "API Error: 500", breaker.PROVIDER_ERROR),
         (1, "API Error: 501 not implemented", breaker.PROVIDER_ERROR),
+        (1, "API Error: 599", breaker.PROVIDER_ERROR),
         (1, "unexpected status 302 Found", breaker.UNCLASSIFIED),
+        (1, "API Error: 600", breaker.UNCLASSIFIED),
+        (1, "unexpected status 6000", breaker.UNCLASSIFIED),
+        (1, "API Error: 4041 model not found", breaker.UNCLASSIFIED),
         # A refusal shape requires its prefix; a bare status-like number in the child's
         # own failure output is the child's own work and must keep reading unclassified
         # so somebody investigates it.
