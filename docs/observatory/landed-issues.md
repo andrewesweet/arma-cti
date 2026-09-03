@@ -221,3 +221,4 @@
 |681|c93df49d034c54e9ad65a267a7e63f619238b82c|journal|5|2|3009|codex,zai|N|U|U|
 |682|f187b11ae65c82fdcdb5dfe72e678b5fa336f1a3|journal|3|1|1630|claude-native,codex|C0.861664|U|N|
 |686|dfb30d588bd8d53c9d05ea7908abcc1e57f45308|journal|3|1|587|codex,zai|N|U|U|
+|687|570344cbdf90a2bde3ecb7dc03e9a517a6999c9b|journal|3|0|2473|claude-native,codex|C0.341951|U|N|
