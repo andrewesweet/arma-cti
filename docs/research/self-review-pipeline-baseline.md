@@ -69,6 +69,14 @@ average.** Interventions aimed at the median will not find it.
 | worktrees owing `just worktree done` | **17** |
 | dispatches with no materialised ledger row | **160 of 938** |
 
+The worktree stock deserves the same kind of note. `just loop-metrics` now derives it locally
+(#672): every registered worktree whose name carries an issue number (`issue-N`, `review-N…`)
+counts when a ledger row attests `gate=landed` for that issue, so a landing whose ledger row was
+never materialised is invisible to it and the level under-counts the tracker's answer (an issue
+reopened after its landing can push it the other way) — the report line says so in its own bytes
+(`bias=under_counts`). The frozen **17** above was measured before this derivation existed, so it
+is not directly comparable to the reader's figure.
+
 The ledger stock deserves a note. It held 6 rows on 22 August and 778 on 26 August — drained by a
 sync run on 23 August — but the newest row is from that date, so it has been refilling at roughly
 64 a day since. That is the difference between materialisation as an act and as a flow, observed

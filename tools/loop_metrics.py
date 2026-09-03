@@ -24,6 +24,7 @@ import argparse
 import json
 import math
 import os
+import re
 import subprocess
 import sys
 from collections import Counter, defaultdict
@@ -75,6 +76,11 @@ WORKTREES_SETPOINT: Final = 0
 NO_LEDGER_SETPOINT: Final = 0
 UNRATIFIED_SETPOINT: Final = 0
 OPEN_FINDINGS_SETPOINT: Final = 2
+
+# Worktree names the protocol mints with an issue number: `issue-672` and the
+# review seat's `review-672-r2` family.  Everything else on the registration
+# table cannot be joined to a landing and is excluded by name instead.
+ISSUE_WORKTREE_NAME: Final = re.compile(r"^(?:issue|review)-(\d+)(?:-.*)?$")
 
 
 class DispatchRecord(NamedTuple):
@@ -188,6 +194,14 @@ class DispatchLevel(NamedTuple):
 
     level: int | None
     excluded: int
+
+
+class WorktreeStock(NamedTuple):
+    """One joined worktree level with the registration evidence behind it."""
+
+    reading: StockReading
+    registrations: int
+    unjoinable: int
 
 
 def _is_number(value: object) -> bool:
@@ -1051,11 +1065,11 @@ def _landing_times(
     return result
 
 
-def _commit_timestamp(repo: Path, sha: str) -> float | None:
-    """Read a commit date without changing the repository."""
+def _git_text(repo: Path, args: list[str]) -> str | None:
+    """Run one fixed git query and return its stdout, or None when git cannot answer."""
     try:
-        completed = subprocess.run(  # noqa: S603 — fixed git argv; SHA is one validated data word
-            ["git", "show", "-s", "--format=%cI", sha],  # noqa: S607 — git resolves off PATH by design
+        completed = subprocess.run(  # noqa: S603 — fixed git argv; operands are data words
+            ["git", *args],  # noqa: S607 — git resolves off PATH by design
             cwd=repo,
             capture_output=True,
             text=True,
@@ -1066,7 +1080,13 @@ def _commit_timestamp(repo: Path, sha: str) -> float | None:
         return None
     if completed.returncode != 0:
         return None
-    return parse_timestamp(completed.stdout.strip())
+    return completed.stdout
+
+
+def _commit_timestamp(repo: Path, sha: str) -> float | None:
+    """Read a commit date without changing the repository."""
+    stdout = _git_text(repo, ["show", "-s", "--format=%cI", sha])
+    return parse_timestamp(stdout.strip()) if stdout is not None else None
 
 
 def cycle_lines(
@@ -1378,6 +1398,76 @@ def _ledger_stock(
     return StockReading(level, str(created), str(cleared), trend, reason), excluded
 
 
+def _parse_issue_registrations(porcelain: str) -> tuple[tuple[Path, int | None], ...]:
+    """Read ``git worktree list --porcelain`` into (path, issue) pairs."""
+    registrations: list[tuple[Path, int | None]] = []
+    seen = 0
+    for line in porcelain.splitlines():
+        if not line.startswith("worktree "):
+            continue
+        seen += 1
+        if seen == 1:
+            continue  # git lists the main checkout first; it never owes `done`
+        path = Path(line[len("worktree ") :])
+        match = ISSUE_WORKTREE_NAME.match(path.name)
+        registrations.append((path, int(match.group(1)) if match else None))
+    return tuple(registrations)
+
+
+def _issue_registrations(repo: Path) -> tuple[tuple[Path, int | None], ...] | None:
+    """Sweep the registration table locally; None means git could not answer."""
+    stdout = _git_text(repo, ["worktree", "list", "--porcelain"])
+    if stdout is None:
+        return None
+    return _parse_issue_registrations(stdout)
+
+
+def _worktree_stock(
+    dispatches: tuple[DispatchRecord, ...], repo: Path, window: Window
+) -> WorktreeStock:
+    """Join current registrations to ledger-attested landings at the window end.
+
+    A registration counts when its issue name matches a ledger row attesting
+    ``gate=landed`` with a landing at or before the window's end.  The tracker's
+    own closure is deliberately unseen — the reader makes no network call — and
+    the registration table is a current snapshot no durable record replays
+    historically, like the acceptance lint's repository read.  The level
+    under-counts the tracker's answer: a landing whose ledger row was never
+    materialised is invisible here (195 such rows at #602's review), while the
+    reverse error — a counted registration whose issue was reopened after the
+    landing — needs an issue to come back, which is far rarer.
+    """
+    registrations = _issue_registrations(repo)
+    if registrations is None:
+        return WorktreeStock(
+            StockReading(
+                None, "unrecorded", "unrecorded", "unrecorded", "worktree_registrations_unreadable"
+            ),
+            0,
+            0,
+        )
+    landings = _landing_times(dispatches, repo, [])
+    end = window.end
+    owing = 0
+    unjoinable = 0
+    for _, issue in registrations:
+        if issue is None:
+            unjoinable += 1
+        elif issue in landings and (end is None or landings[issue] <= end):
+            owing += 1
+    return WorktreeStock(
+        StockReading(
+            owing,
+            "unrecorded",
+            "unrecorded",
+            "unrecorded",
+            "registered_issue_worktrees_joined_to_ledger_attested_landings_tracker_closure_unseen",
+        ),
+        len(registrations),
+        unjoinable,
+    )
+
+
 def _provisional_stock(repo: Path) -> tuple[int | None, str]:
     """Count unique unratified provisional terms through the canonical acceptance linter."""
     try:
@@ -1414,6 +1504,7 @@ def stock_lines(inputs: Inputs, repo: Path, window: Window) -> list[str]:
     runs, runs_excluded = _dispatch_stock(inputs.dispatches, window)
     ledger, ledger_excluded = _ledger_stock(inputs.dispatches, window)
     provisional, provisional_reason = _provisional_stock(repo)
+    worktrees = _worktree_stock(inputs.dispatches, repo, window)
     open_findings, open_work_items, findings_excluded = _open_findings_level(
         _selected_loops(inputs, window)
     )
@@ -1445,10 +1536,19 @@ def stock_lines(inputs: Inputs, repo: Path, window: Window) -> list[str]:
             "reason=review_loop_open_findings"
         ),
         (
-            f"stock worktrees_owing_done level=unrecorded status=unrecorded "
-            f"setpoint=at_most_{WORKTREES_SETPOINT} alarm=3 "
+            f"stock worktrees_owing_done level={_level_text(worktrees.reading.level)} "
+            f"setpoint=at_most_{WORKTREES_SETPOINT} "
+            f"status={_maximum_setpoint_status(worktrees.reading.level, WORKTREES_SETPOINT)} "
+            "alarm=3 "
+            f"registrations={worktrees.registrations} "
+            f"excluded_without_issue_name={worktrees.unjoinable} "
             "flow_creation=unrecorded flow_clearing=unrecorded trend=unrecorded "
-            "reason=local_records_do_not_attest_tracker_closed_and_exact_worktree_done"
+            f"reason={worktrees.reading.reason}"
+            + (
+                " registration_basis=current_snapshot bias=under_counts"
+                if worktrees.reading.level is not None
+                else ""
+            )
         ),
         (
             f"stock dispatches_without_ledger level={_level_text(ledger.level)} "

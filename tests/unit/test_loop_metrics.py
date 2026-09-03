@@ -402,6 +402,117 @@ def test_dispatches_without_ledger_counts_known_rows_and_names_missing_timestamp
     assert "excluded_without_materialised_at=1" in line
 
 
+def _landed_ledger(minute: int) -> dict[str, object]:
+    """Arrange one ledger row whose gate attests a landing with a timestamp."""
+    return {
+        "materialised_at": _at(minute - 1),
+        "gate": {
+            "outcome": "landed",
+            "landed_at": _at(minute),
+            "landed": {"sha": "a" * 40, "landed_at": _at(minute)},
+        },
+    }
+
+
+def test_worktree_owing_done_joins_registrations_to_attested_landings(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A registration counts only when its issue has a landing attested by the end."""
+    dispatch_root = tmp_path / "dispatches"
+    _dispatch(dispatch_root, "i50", 50, "implementer", 0, ledger=_landed_ledger(11))
+    _dispatch(dispatch_root, "i51", 51, "implementer", 0)
+    _dispatch(dispatch_root, "i53", 53, "implementer", 0, ledger=_landed_ledger(20))
+    inputs = METRICS.read_inputs(dispatch_root, tmp_path / "review", tmp_path / "queue")
+    porcelain = "\n".join(
+        [
+            "worktree /repo",
+            f"HEAD {'0' * 40}",
+            "branch refs/heads/main",
+            "",
+            "worktree /repo/.claude/worktrees/issue-50",
+            f"HEAD {'1' * 40}",
+            "detached",
+            "",
+            "worktree /repo/.claude/worktrees/review-50-r2",
+            f"HEAD {'2' * 40}",
+            "detached",
+            "",
+            "worktree /repo/.claude/worktrees/issue-51",
+            f"HEAD {'3' * 40}",
+            "detached",
+            "",
+            "worktree /repo/.claude/worktrees/issue-53",
+            f"HEAD {'4' * 40}",
+            "detached",
+            "",
+            "worktree /repo/.codex/9f2/arma-cti",
+            f"HEAD {'5' * 40}",
+            "detached",
+        ]
+    )
+    monkeypatch.setattr(
+        METRICS,
+        "_issue_registrations",
+        lambda _repo: METRICS._parse_issue_registrations(porcelain),
+    )
+
+    window = METRICS.Window(0.0, METRICS.parse_timestamp(_at(15)), explicit=True)
+    line = next(
+        line
+        for line in METRICS.stock_lines(inputs, tmp_path, window)
+        if line.startswith("stock worktrees_owing_done")
+    )
+
+    assert "level=2 " in line  # issue-50 and review-50-r2; 53 landed after the end
+    assert "registrations=5 excluded_without_issue_name=1" in line
+    assert "setpoint=at_most_0 status=above_setpoint alarm=3" in line
+    assert "registration_basis=current_snapshot bias=under_counts" in line
+    assert "tracker_closure_unseen" in line
+
+
+def test_issue_registrations_skip_main_checkout_and_name_unjoinable() -> None:
+    """The main checkout never owes done and unnamed registrations stay visible."""
+    porcelain = "\n".join(
+        [
+            "worktree /repo",
+            "branch refs/heads/main",
+            "",
+            "worktree /repo/.claude/worktrees/issue-672",
+            "detached",
+            "",
+            "worktree /repo/.claude/worktrees/review-525-r2",
+            "detached",
+            "",
+            "worktree /home/andre/.codex/9f2/arma-cti",
+            "detached",
+        ]
+    )
+
+    assert METRICS._parse_issue_registrations(porcelain) == (
+        (Path("/repo/.claude/worktrees/issue-672"), 672),
+        (Path("/repo/.claude/worktrees/review-525-r2"), 525),
+        (Path("/home/andre/.codex/9f2/arma-cti"), None),
+    )
+
+
+def test_worktree_stock_names_unreadable_registrations(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A sweep that cannot answer stays unrecorded and never becomes zero."""
+    monkeypatch.setattr(METRICS, "_issue_registrations", lambda _repo: None)
+    inputs = METRICS.Inputs(dispatches=(), loops=(), queue_rows=(), diagnostics=())
+
+    line = next(
+        line
+        for line in METRICS.stock_lines(inputs, tmp_path, METRICS.Window(0.0, 2.0, explicit=True))
+        if line.startswith("stock worktrees_owing_done")
+    )
+
+    assert "level=unrecorded setpoint=at_most_0 status=unrecorded" in line
+    assert "reason=worktree_registrations_unreadable" in line
+    assert "bias=under_counts" not in line
+
+
 def test_queue_stock_requires_a_counted_non_boolean_baseline() -> None:
     """Uncounted and boolean baseline values cannot create queue flow or trend."""
     reading = METRICS._queue_stock(  # noqa: SLF001 — pin the baseline evidence guard
@@ -420,8 +531,11 @@ def test_queue_stock_requires_a_counted_non_boolean_baseline() -> None:
     assert reading.trend == "unrecorded"
 
 
-def test_stock_lines_report_blocked_queue_and_ruled_alarm_statuses(tmp_path: Path) -> None:
+def test_stock_lines_report_blocked_queue_and_ruled_alarm_statuses(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     """Stock output names the canonical blocked queue and evaluates every alarm."""
+    monkeypatch.setattr(METRICS, "_issue_registrations", lambda _repo: None)
     inputs = METRICS.Inputs(
         dispatches=(),
         loops=(),
@@ -439,8 +553,12 @@ def test_stock_lines_report_blocked_queue_and_ruled_alarm_statuses(tmp_path: Pat
     assert (
         "stock blocked_work level=4 setpoint=unruled status=unruled source=dispatch_slot" in joined
     )
-    assert "stock worktrees_owing_done level=unrecorded" in joined
-    assert "status=unrecorded" in next(line for line in lines if "worktrees_owing_done" in line)
+    assert (
+        "stock worktrees_owing_done level=unrecorded setpoint=at_most_0 status=unrecorded" in joined
+    )
+    assert "reason=worktree_registrations_unreadable" in next(
+        line for line in lines if "worktrees_owing_done" in line
+    )
     assert "stock dispatches_without_ledger level=0" in joined
     assert "status=at_setpoint" in next(
         line for line in lines if "dispatches_without_ledger" in line
