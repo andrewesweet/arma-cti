@@ -433,6 +433,54 @@ def test_a_selected_flake_carries_its_test_and_its_module() -> None:
     )
 
 
+def test_a_body_node_id_wins_over_a_title_that_prefix_matches_a_different_test() -> None:
+    """The body's node ID outranks a prose title that prefix-matches another test.
+
+    #428: the title's `test_stall_watch` matched before the body was read, so `just brief`
+    rendered `tests/unit/test_stall_watch.py::test_stall_watch` — a node ID that does not
+    exist. The body's node ID is the exact identifier the retry rule tells an agent to
+    quote, so it outranks the title; a title is never load-bearing for a machine read.
+    """
+    (flake,) = brief.select_flakes(
+        [
+            flake_row(
+                428,
+                "test_stall_watch's seam test flakes without a quarantine marker",
+                "FAILED tests/unit/test_stall_watch.py"
+                "::test_the_seam_reads_the_worktree_and_types_the_stall_itself",
+            )
+        ]
+    )
+    assert flake.test == "test_the_seam_reads_the_worktree_and_types_the_stall_itself"
+    assert flake.module == "tests/unit/test_stall_watch.py"
+    assert flake.line() == (
+        "- #428 `tests/unit/test_stall_watch.py"
+        "::test_the_seam_reads_the_worktree_and_types_the_stall_itself`"
+    )
+
+
+def test_a_body_naming_several_node_ids_takes_the_first_in_document_order() -> None:
+    """The body's first reproduction is the canonical one.
+
+    The retry rule asks an agent to quote *its* test, and document order is a decision a
+    reader can reproduce rather than a heuristic to discover. The issue here is typed by
+    its class line, so this also holds where the title names no test at all.
+    """
+    (flake,) = brief.select_flakes(
+        [
+            flake_row(
+                222,
+                "one red, one issue",
+                "Class: `flake_quarantine`.\n"
+                "First `tests/unit/test_a.py::test_the_first_one`, then"
+                " `tests/unit/test_b.py::test_the_second_one`, both seen.\n",
+            )
+        ]
+    )
+    assert flake.test == "test_the_first_one"
+    assert flake.module == "tests/unit/test_a.py"
+
+
 def test_a_flake_whose_body_names_no_module_still_renders_its_test() -> None:
     (flake,) = brief.select_flakes([flake_row(9, "test_something_here flakes", "")])
     assert flake.line() == "- #9 `test_something_here`"

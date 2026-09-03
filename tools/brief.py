@@ -452,6 +452,8 @@ FLAKE_WORD: Final = re.compile(r"\bflak(?:e|es|ed|ing|y)\b", re.IGNORECASE)
 FLAKE_CLASS: Final = re.compile(r"^Class:\s*`?flake_quarantine`?", re.MULTILINE)
 # Where the flaking test lives, so a briefing can name the module and not only the test.
 TEST_MODULE: Final = re.compile(r"tests/[A-Za-z0-9_./\-]+\.py")
+# A body's exact node ID, the identifier the retry rule tells an agent to quote (#428).
+NODE_ID: Final = re.compile(r"\btests/[A-Za-z0-9_./\-]+\.py::[A-Za-z0-9_.\[\]-]+")
 
 
 class Flake(NamedTuple):
@@ -481,13 +483,23 @@ def select_flakes(rows: Sequence[Mapping[str, object]]) -> tuple[Flake, ...]:
         body = str(row.get("body") or "")
         if not is_flake(title, body):
             continue
-        named = FLAKE_TEST.search(title) or FLAKE_TEST.search(body)
-        module = TEST_MODULE.search(body)
+        # A body node ID outranks a title match (#428): the title is prose and may name only
+        # the module, so trusting it first renders a node ID that does not exist. Several
+        # node IDs take the first in document order — the body's first reproduction is the
+        # canonical one, and the order is a decision a reader can reproduce.
+        node = NODE_ID.search(body) or NODE_ID.search(title)
+        if node:
+            module, _, test = node.group(0).partition("::")
+        else:
+            named = FLAKE_TEST.search(title) or FLAKE_TEST.search(body)
+            module_match = TEST_MODULE.search(body)
+            test = named.group(0) if named else ""
+            module = module_match.group(0) if module_match else ""
         found.append(
             Flake(
                 issue=int(row.get("number") or 0),
-                test=named.group(0) if named else "",
-                module=module.group(0) if module else "",
+                test=test,
+                module=str(module),
             )
         )
     return tuple(sorted(found))
