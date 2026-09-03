@@ -1269,6 +1269,13 @@ PROVIDER_ERROR_MARKERS: Final = (
 # binaries whose log is the only channel a headless dispatch has, so an adapter result
 # would parse this same prose one layer earlier and add a surface for it (#696).
 PROVIDER_REFUSED_PATTERN: Final = re.compile(r"(?:unexpected status|api error):?\s+(\d\d\d)")
+# The ranges that place a parsed status, spelled so the boundaries read as the ruling:
+# the refusal class is the client-error band minus the quota status, and the provider
+# error class opens at the server-error band with no upper edge (codes past 999 cannot
+# leave the three-digit capture).
+REFUSED_STATUS_RANGE: Final = range(400, 500)
+QUOTA_STATUS: Final = 429
+PROVIDER_ERROR_STATUS_MIN: Final = 500
 # Claude Code prints its subscription limit as `Claude AI usage limit reached|<epoch>`,
 # which is a published reset boundary arriving on the only channel a headless run has.
 LIMIT_EPOCH_SEPARATOR: Final = "usage limit reached|"
@@ -1291,9 +1298,9 @@ def classify_run(returncode: int, output: str) -> tuple[str, float | None]:
     match = PROVIDER_REFUSED_PATTERN.search(text)
     if match is not None:
         code = int(match.group(1))
-        if 400 <= code <= 499 and code != 429:
+        if code in REFUSED_STATUS_RANGE and code != QUOTA_STATUS:
             return PROVIDER_REFUSED, None
-        if code >= 500:
+        if code >= PROVIDER_ERROR_STATUS_MIN:
             return PROVIDER_ERROR, None
     return UNCLASSIFIED, None
 
