@@ -119,6 +119,21 @@ def head_of(repo: Path) -> str:
     return worktree.git("rev-parse", "HEAD", cwd=repo).strip()
 
 
+def external_exchange(repo: Path, issue: int = 332) -> review_exchange.Report:
+    """Call the harness-only external exchange seam explicitly."""
+    return review_exchange.exchange(repo, issue, allow_external_worktree=True)
+
+
+def issue_worktree(repo: Path, issue: int) -> Path:
+    """Create the issue-named linked worktree a real exchange resolves."""
+    exclude = repo / ".git" / "info" / "exclude"
+    exclude.write_text(".claude/worktrees/\n", encoding="utf-8")
+    path = repo / ".claude" / "worktrees" / f"issue-{issue}"
+    worktree.git("worktree", "add", "--detach", str(path), "HEAD", cwd=repo)
+    commit(path, "candidate", "candidate", "candidate")
+    return path
+
+
 def ahead_repo(tmp_path: Path) -> tuple[Path, str]:
     """Build a repository whose HEAD is one work commit ahead of its own `origin/main`.
 
@@ -1251,6 +1266,28 @@ def test_scan_of_an_empty_root_is_empty(tmp_path: Path) -> None:
 # --------------------------------------------------------------- the exchange
 
 
+def test_exchange_from_another_worktree_refuses_and_publishes_nothing(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """An issue ref must never receive a sibling worktree's HEAD (#688)."""
+    repo = init_repo(tmp_path)
+    candidate = issue_worktree(repo, 332)
+    monkeypatch.chdir(repo)
+
+    code = review_exchange.main(["exchange", "332"])
+
+    captured = capsys.readouterr()
+    assert code == 1
+    assert captured.out == ""
+    lines = captured.err.splitlines()
+    assert lines[0] == "refusal=exchange_outside_issue_worktree"
+    assert f"caller_worktree={repo}" in lines
+    assert f"issue_worktree={candidate}" in lines
+    assert worktree.remote_ref_sha(repo, "refs/heads/issue-332") is None
+
+
 def test_the_review_root_reads_the_environment_not_only_the_home_directory() -> None:
     """The journal's hermeticity is structural, not remembered (#484 round 2, finding 3).
 
@@ -1273,7 +1310,7 @@ def test_exchange_pushes_and_the_remote_holds_the_sha(
     # the queue reads `CTI_QUEUE_DIR`) rather than a patched module constant.
     journal = tmp_path / "waits.jsonl"
     monkeypatch.setenv("CTI_REVIEW_DIR", str(tmp_path))
-    report = review_exchange.exchange(repo, 332)
+    report = external_exchange(repo)
     assert report.code == 0
     assert "ok=review_branch_exchanged" in report.lines
     assert f"reviewed_sha={head}" in report.lines
@@ -1294,7 +1331,7 @@ def test_a_successful_exchange_records_the_exchange_stage_arrival(
     repo = init_repo(tmp_path)
     for stage in ("brief", "implementation", "own_gate"):
         attribute_registry.record_stage_arrival(stage, 332, root, 1_800_000_000.0)
-    report = review_exchange.exchange(repo, 332)
+    report = external_exchange(repo)
     assert report.code == 0
     rows = [
         json.loads(line)
@@ -1323,7 +1360,7 @@ def test_an_exchange_from_a_dispatched_non_pipeline_seat_records_no_stage_arriva
     monkeypatch.setenv("CTI_DISPATCH_SEAT", "retro")
     repo = init_repo(tmp_path)
 
-    report = review_exchange.exchange(repo, 332)
+    report = external_exchange(repo)
 
     assert report.code == 0
     assert not (root / "332" / attribute_registry.STAGE_JOURNAL).exists(), (
@@ -1334,7 +1371,7 @@ def test_an_exchange_from_a_dispatched_non_pipeline_seat_records_no_stage_arriva
 def test_exchange_refuses_a_dirty_tree_and_pushes_nothing(tmp_path: Path) -> None:
     repo = init_repo(tmp_path)
     (repo / "dirty").write_text("uncommitted", encoding="utf-8")
-    report = review_exchange.exchange(repo, 332)
+    report = external_exchange(repo)
     assert report.code == 1
     assert report.lines[0] == "refusal=dirty_tree"
     assert worktree.remote_ref_sha(repo, "refs/heads/issue-332") is None
@@ -1345,7 +1382,7 @@ def test_exchange_force_moves_the_ref_for_an_amended_round(
 ) -> None:
     repo = init_repo(tmp_path)
     monkeypatch.setenv("CTI_REVIEW_DIR", str(tmp_path))
-    review_exchange.exchange(repo, 332)
+    external_exchange(repo)
     first = head_of(repo)
     (repo / "README").write_text("two", encoding="utf-8")
     worktree.git("add", ".", cwd=repo)
@@ -1361,7 +1398,7 @@ def test_exchange_force_moves_the_ref_for_an_amended_round(
         "two",
         cwd=repo,
     )
-    second = review_exchange.exchange(repo, 332)
+    second = external_exchange(repo)
     assert second.code == 0
     moved = head_of(repo)
     assert moved != first
@@ -1371,7 +1408,7 @@ def test_exchange_force_moves_the_ref_for_an_amended_round(
 def test_exchange_refuses_a_non_repository(tmp_path: Path) -> None:
     empty = tmp_path / "empty"
     empty.mkdir()
-    report = review_exchange.exchange(empty, 332)
+    report = external_exchange(empty)
     assert report.code == 1
     assert report.lines[0] == "refusal=git_failed"
 
@@ -1391,7 +1428,7 @@ def test_exchange_refuses_when_status_fails_for_real_and_pushes_nothing(
     # exchange refuses `git_failed` and pushes nothing.
     repo = init_repo(tmp_path)
     (repo / ".git" / "index").write_bytes(b"not an index file")
-    report = review_exchange.exchange(repo, 332)
+    report = external_exchange(repo)
     assert report.code == 1
     assert report.lines[0] == "refusal=git_failed"
     assert worktree.remote_ref_sha(repo, "refs/heads/issue-332") is None

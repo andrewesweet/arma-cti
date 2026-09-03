@@ -2192,6 +2192,56 @@ def test_a_landing_from_a_tree_that_names_no_issue_refuses_rather_than_guesses(
     assert report.lines[0] == "refusal=review_issue_unknown"
 
 
+def test_land_from_another_worktree_refuses_before_nothing_to_land(
+    repo: tuple[Path, Path, Path],
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The CLI must name both trees, not report the caller's empty tree (#688)."""
+    _origin, main, here = repo
+    (main / ".git" / "info" / "exclude").write_text(".claude/worktrees/\n", encoding="utf-8")
+    _commit(here, "feature.txt", "work\n")
+    audit_file = tmp_path / "audit.md"
+    audit_file.write_text("criterion audit\n", encoding="utf-8")
+    monkeypatch.chdir(main)
+
+    code = land.main(["--issue", "213", "--audit-file", str(audit_file)])
+
+    captured = capsys.readouterr()
+    assert code == land.EXIT_REFUSED
+    assert captured.out == ""
+    lines = captured.err.splitlines()
+    assert lines[0] == "refusal=land_outside_issue_worktree"
+    assert f"caller_worktree={main}" in lines
+    assert f"issue_worktree={here}" in lines
+    assert "refusal=nothing_to_land" not in lines
+
+
+def test_land_from_main_without_an_issue_refuses_before_nothing_to_land(
+    repo: tuple[Path, Path, Path],
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The default wrong-directory invocation has no silent subject guess (#688)."""
+    _origin, main, here = repo
+    (main / ".git" / "info" / "exclude").write_text(".claude/worktrees/\n", encoding="utf-8")
+    _commit(here, "feature.txt", "work\n")
+    audit_file = tmp_path / "audit.md"
+    audit_file.write_text("criterion audit\n", encoding="utf-8")
+    monkeypatch.chdir(main)
+
+    code = land.main(["--audit-file", str(audit_file)])
+
+    captured = capsys.readouterr()
+    assert code == land.EXIT_REFUSED
+    lines = captured.err.splitlines()
+    assert lines[0] == "refusal=land_issue_unknown"
+    assert f"caller_worktree={main}" in lines
+    assert "refusal=nothing_to_land" not in lines
+
+
 # ------------------------------------------------------- closing the landed issue
 
 

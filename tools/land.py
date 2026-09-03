@@ -141,6 +141,11 @@ exit code.
     corpus_check_unreadable the corpus rung could not run; fail closed
     review_issue_unknown    the tree is not an `issue-<n>` worktree, so the rung
                             cannot know whose review to read (#334)
+    land_issue_unknown      the command was not given an issue and the caller is not
+                            an issue-named worktree
+    land_outside_issue_worktree
+                            the caller is not the canonical worktree for the issue
+                            being landed; nothing was pushed
     review_issue_mismatch   the verdict names another item than the one landing
     no_dispatch_records / records_unreadable / no_review_dispatch
                             #332's derivation refuses: no records, unreadable
@@ -236,10 +241,12 @@ from check_conflict_markers import Finding, find_in_tree
 from worktree import (
     BASE,
     REMOTE_READ_TIMEOUT_S,
+    WORKTREES,
     GitError,
     Preflight,
     Refusal,
     git,
+    issue_worktree,
     main_checkout,
     read_status,
 )
@@ -999,6 +1006,29 @@ def _issue_from(here: Path) -> int | None:
     """
     match = re.fullmatch(r"issue-(\d+)", here.name)
     return int(match.group(1)) if match else None
+
+
+def _issue_arg(value: str | None) -> int | None:
+    """Parse an optional landing issue number without letting argparse own the refusal."""
+    if value is None:
+        return None
+    try:
+        issue = int(value)
+    except ValueError:
+        return None
+    return issue if issue > 0 else None
+
+
+def _outside_issue_worktree(root: Path, here: Path, issue: int) -> Refusal | None:
+    """Refuse a landing whose caller tree is not the issue's canonical linked tree."""
+    expected = issue_worktree(root, issue)
+    if here == expected:
+        return None
+    return Refusal(
+        "land_outside_issue_worktree",
+        (f"caller_worktree={here}", f"issue_worktree={expected}"),
+        "Run the landing from the issue worktree above. Nothing was pushed.",
+    )
 
 
 def _record_clean_rebase(
@@ -2017,6 +2047,13 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
         help="the pool evidence directory of the full `just regress` run over this tree",
     )
     parser.add_argument(
+        "--issue",
+        type=str,
+        default=None,
+        metavar="N",
+        help="the issue whose canonical worktree is being landed (derived when omitted)",
+    )
+    parser.add_argument(
         "--audit-file",
         type=Path,
         default=None,
@@ -2065,18 +2102,47 @@ def _main_report(args: argparse.Namespace, audit: Audit | None) -> Report:
     try:
         here = Path(git("rev-parse", "--show-toplevel", cwd=Path.cwd()).strip()).resolve()
         root = main_checkout(here).resolve()
-        report = (
-            stage(root, here)
-            if args.stage
-            else land(
-                root,
-                here,
-                dry_run=args.dry_run,
-                lane=os.environ.get("CTI_DISPATCH_LANE", CLAUDE_LANE),
-                corpus=args.corpus,
-                audit=audit,
+        raw_issue = getattr(args, "issue", None)
+        issue = _issue_arg(raw_issue)
+        if raw_issue is not None and issue is None:
+            report = Report.refused(
+                Refusal(
+                    "invalid_issue",
+                    (f"issue={raw_issue}",),
+                    "Name the issue whose worktree this is, e.g. `--issue 688`.",
+                )
             )
-        )
+        else:
+            issue = issue or _issue_from(here)
+            if issue is None:
+                report = Report.refused(
+                    Refusal(
+                        "land_issue_unknown",
+                        (
+                            f"caller_worktree={here}",
+                            f"issue_worktree={root / WORKTREES / 'issue-<N>'}",
+                        ),
+                        "Name the issue with `--issue N`, or run from its issue-named worktree."
+                        " Nothing was pushed.",
+                    )
+                )
+            else:
+                outside = _outside_issue_worktree(root, here, issue)
+                if outside is not None:
+                    report = Report.refused(outside)
+                else:
+                    report = (
+                        stage(root, here)
+                        if args.stage
+                        else land(
+                            root,
+                            here,
+                            dry_run=args.dry_run,
+                            lane=os.environ.get("CTI_DISPATCH_LANE", CLAUDE_LANE),
+                            corpus=args.corpus,
+                            audit=audit,
+                        )
+                    )
     except GitError as failure:
         report = Report.refused(
             Refusal(

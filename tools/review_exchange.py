@@ -233,15 +233,37 @@ def _git_failed(cwd: Path, failure: worktree.GitError) -> Report:
     )
 
 
+def _resolve_issue_worktree(cwd: Path, issue: int) -> tuple[Path | None, Report | None]:
+    """Resolve the issue tree and refuse a caller that is not standing in it."""
+    try:
+        caller = Path(worktree.git("rev-parse", "--show-toplevel", cwd=cwd).strip()).resolve()
+        root = worktree.main_checkout(caller).resolve()
+    except worktree.GitError as failure:
+        return None, _git_failed(cwd, failure)
+    expected = worktree.issue_worktree(root, issue)
+    if caller != expected:
+        return None, Report.refused(
+            Refusal(
+                "exchange_outside_issue_worktree",
+                (f"caller_worktree={caller}", f"issue_worktree={expected}"),
+                "Run the exchange from the issue worktree above. Nothing was pushed.",
+            )
+        )
+    return caller, None
+
+
 def exchange(  # noqa: PLR0911 — one return per refusal, so each stays a whole thought
-    cwd: Path, issue: int
+    cwd: Path, issue: int, *, allow_external_worktree: bool = False
 ) -> Report:
-    """Push this tree's HEAD to the issue's review ref and verify the remote holds it.
+    """Push the issue tree's HEAD to its review ref and verify the remote holds it.
 
     The whole of the implementer's half of the handover: a clean tree (what is handed
     over is committed work), one push, one `ls-remote` confirmation that the ref now
     resolves to this exact HEAD. The reviewer's half is `just worktree restore` from
-    the ref, so no step of the loop ever has two instances in one directory.
+    the ref, so no step of the loop ever has two instances in one directory. The
+    dispatcher harness may explicitly opt into publishing its disposable dispatch
+    tree, which is outside the issue-named worktree; the command-line exchange never
+    does.
     """
     if issue <= 0:
         return Report.refused(
@@ -251,21 +273,27 @@ def exchange(  # noqa: PLR0911 — one return per refusal, so each stays a whole
                 "Name the issue whose review branch this is, e.g. `exchange 332`.",
             )
         )
+    source = cwd
+    if not allow_external_worktree:
+        resolved, refusal = _resolve_issue_worktree(cwd, issue)
+        if refusal is not None:
+            return refusal
+        source = resolved if resolved is not None else cwd
     try:
-        head = worktree.git("rev-parse", "HEAD", cwd=cwd).strip()
+        head = worktree.git("rev-parse", "HEAD", cwd=source).strip()
         # `check` stays on: a status command that fails and prints nothing must
         # refuse as `git_failed`, never read as an empty — that is, clean — tree.
         # A filter or a crash that removes every line turns presence into absence
         # (#105's invariant), and this path exists to stop two
         # agents sharing one tree, so an unestablished clean is a refusal.
-        status = worktree.read_status(worktree.git("status", "--porcelain", cwd=cwd))
+        status = worktree.read_status(worktree.git("status", "--porcelain", cwd=source))
     except worktree.GitError as failure:
-        return _git_failed(cwd, failure)
+        return _git_failed(source, failure)
     if not status.clean:
         return Report.refused(
             Refusal(
                 "dirty_tree",
-                (f"worktree={cwd}", f"head={head[:7]}", *_exchange_found(status)),
+                (f"worktree={source}", f"head={head[:7]}", *_exchange_found(status)),
                 "Commit first: the exchange hands over committed work, and a dirty tree"
                 " is either yours unfinished or another agent's — never hand over either.",
             )
@@ -280,17 +308,17 @@ def exchange(  # noqa: PLR0911 — one return per refusal, so each stays a whole
             "--force",
             "origin",
             f"HEAD:{ref}",
-            cwd=cwd,
+            cwd=source,
             timeout=worktree.REMOTE_READ_TIMEOUT_S,
         )
-        remote_sha = worktree.remote_ref_sha(cwd, ref)
+        remote_sha = worktree.remote_ref_sha(source, ref)
     except worktree.GitError as failure:
-        return _git_failed(cwd, failure)
+        return _git_failed(source, failure)
     if remote_sha is None:
         return Report.refused(
             Refusal(
                 "not_on_remote",
-                (f"worktree={cwd}", f"head={head}", f"ref={ref}", "resolved=no"),
+                (f"worktree={source}", f"head={head}", f"ref={ref}", "resolved=no"),
                 "The push reported success but the remote does not resolve the ref to"
                 " this HEAD. Read the remote's own state before handing anything over.",
             )
@@ -299,7 +327,7 @@ def exchange(  # noqa: PLR0911 — one return per refusal, so each stays a whole
         return Report.refused(
             Refusal(
                 "ref_mismatch",
-                (f"worktree={cwd}", f"head={head}", f"ref={ref}", f"resolved={remote_sha}"),
+                (f"worktree={source}", f"head={head}", f"ref={ref}", f"resolved={remote_sha}"),
                 "Another push moved the ref between this push and the check. Re-run the"
                 " exchange, or stop and report: two implementers on one issue is the"
                 " collision this protocol exists to prevent.",
