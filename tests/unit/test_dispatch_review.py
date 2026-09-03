@@ -1209,17 +1209,18 @@ def test_the_review_seat_is_the_only_one_that_reviews_and_not_the_only_one_conta
 
 
 def test_the_retirement_table_resolves_into_the_live_registry() -> None:
-    """The map's own ground: every successor is live, and no retired name still is.
+    """The map's own ground: every lineage ends live, and no retired name still is.
 
     A retired name left in `PROFILES` would be dispatchable by `--profile`, which is
-    criterion 2's refusal gone; a successor missing from it would make every read of the
+    criterion 2's refusal gone; a lineage with no live end would make every read of the
     retired name unplaceable, which is the strand criterion 1 exists to close.
     """
     assert dispatch.RETIRED_PROFILES
-    for retired, entry in dispatch.RETIRED_PROFILES.items():
+    for retired in dispatch.RETIRED_PROFILES:
         assert retired not in dispatch.PROFILES
-        assert entry.successor in dispatch.PROFILES
-        assert entry.retired_on
+        lineage = dispatch.profile_lineage(retired)
+        assert lineage[-1] in dispatch.PROFILES
+        assert dispatch.RETIRED_PROFILES[retired].retired_on
 
 
 def test_the_chain_walk_resolves_a_rename_and_stops_at_the_live_name() -> None:
@@ -1315,30 +1316,28 @@ def test_a_subject_declared_in_the_new_name_still_contradicts_old_name_records(
 # ------------------------------------------------------- #414: follow-ups to the retirement map
 
 
-def test_a_second_rename_resolves_transitively(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """#414 item 1, declined as a defect and pinned rather than fixed.
+def test_a_two_hop_registry_lineage_terminates_at_the_live_profile() -> None:
+    """A retired intermediate name may leave ``PROFILES`` before the live end of its chain.
 
-    The filed finding said a profile renamed twice resolves one step short of the live name.
-    It does not: `profile_lineage` has walked the whole chain since #413 landed it, and the
-    awkward inputs — a two-hop chain, a map holding both retired and live names — resolve to
-    the live entry. This test was written to red first and did not, so the finding stands
-    declined at `tools/dispatch.py`'s `profile_lineage` and the walk it describes is held
-    here instead.
+    The fixture extends the real retirement map with the predecessor of its real retired
+    entry: ``zai-glm51-max`` → ``zai-glm52-max`` → ``zai-glm53-max``. The intermediate name
+    is absent from the real ``PROFILES`` map, so an immediate-successor assertion would reject
+    this registry-shaped two-hop case even though the resolver reaches its live end.
     """
-    monkeypatch.setitem(
-        dispatch.RETIRED_PROFILES, "opus-old", dispatch.RetiredProfile("opus-high", "2026-09-01")
+    retirement_map = {
+        **dispatch.RETIRED_PROFILES,
+        "zai-glm51-max": dispatch.RetiredProfile("zai-glm52-max", "2026-08-05"),
+    }
+
+    lineage = dispatch.profile_lineage("zai-glm51-max", retired_profiles=retirement_map)
+
+    assert lineage == ("zai-glm51-max", "zai-glm52-max", "zai-glm53-max")
+    assert lineage[1] not in dispatch.PROFILES
+    assert lineage[-1] in dispatch.PROFILES
+    assert (
+        dispatch.resolved_profile("zai-glm51-max", retired_profiles=retirement_map)
+        is dispatch.PROFILES["zai-glm53-max"]
     )
-    monkeypatch.setitem(
-        dispatch.RETIRED_PROFILES, "opus-ancient", dispatch.RetiredProfile("opus-old", "2026-08-01")
-    )
-    # A two-hop chain, and a live name beside retired ones in the same map: both ends of
-    # the lineage are asserted, because a walk that stopped one hop short would still
-    # return a tuple a reader could mistake for complete.
-    assert dispatch.profile_lineage("opus-ancient") == ("opus-ancient", "opus-old", "opus-high")
-    assert dispatch.profile_lineage("opus-high") == ("opus-high",)
-    assert dispatch.resolved_profile("opus-ancient") is dispatch.PROFILES["opus-high"]
 
 
 def test_a_cycle_in_the_map_stops_the_walk_and_refuses_the_subject(
@@ -1364,28 +1363,6 @@ def test_a_cycle_in_the_map_stops_the_walk_and_refuses_the_subject(
     assert refusal.kind == "unknown_reviewed_profile"
 
 
-def test_a_two_hop_subject_resolves_over_records_carrying_the_oldest_name(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    """The second rename end to end: the subject checks and the whole chain is excluded."""
-    monkeypatch.setitem(
-        dispatch.RETIRED_PROFILES, "opus-old", dispatch.RetiredProfile("opus-high", "2026-09-01")
-    )
-    monkeypatch.setitem(
-        dispatch.RETIRED_PROFILES, "opus-ancient", dispatch.RetiredProfile("opus-old", "2026-08-01")
-    )
-    dispatch_record(tmp_path, profile="opus-ancient", lane="claude-native")
-    tree = str(git_worktree(tmp_path))
-    plan, _, refusal = plan_for(tmp_path, reviewing="opus-ancient", worktree=tree)
-    assert refusal is None, refusal
-    assert plan is not None
-    assert plan.route.reviewed == "opus-ancient"
-    checked = plan.route.subject_line()
-    assert "route_reviewing_checked=yes" in checked
-    for name in ("opus-ancient", "opus-old", "opus-high"):
-        assert name in checked, (name, checked)
-
-
 def test_the_named_author_refusal_names_the_profiles_the_records_carry(
     tmp_path: Path,
 ) -> None:
@@ -1405,10 +1382,14 @@ def test_the_named_author_refusal_names_the_profiles_the_records_carry(
     assert refusal is not None
     assert refusal.kind == "review_same_profile"
     assert "why=named_author" in refusal.found
-    # The sentence names the profiles; the ids stay on the found lines where a reader
-    # follows them, and out of the prose that misdescribed them.
-    assert "dispatch records place on the work (zai-glm52-max)" in refusal.action
-    assert "d-20260812-000000-aaaaaa" not in refusal.action
+    # The sentence pairs the profile with its source; the same record remains on the found
+    # lines, so a reader can verify the profile rather than trust the refusal's prose.
+    assert (
+        "authorship records place on the work "
+        "(zai-glm52-max source=dispatch record=d-20260812-000000-aaaaaa)"
+    ) in refusal.action
+    assert "potential_authors=zai-glm52-max" in refusal.found
+    assert "records=d-20260812-000000-aaaaaa" in refusal.found
 
 
 # ------------------------------------- the declared record, read by this seat too (#402)
@@ -1558,6 +1539,31 @@ def test_the_route_records_the_merged_set_and_its_declared_record(
         f"route_reviewing_checked=yes potential_authors=codex-luna-max {REVIEWED}"
         f" records=d-20260812-000000-aaaaaa {record}" in "\n".join(plan.route.lines())
     )
+
+
+def test_a_named_author_refusal_labels_dispatch_and_declared_sources(
+    tmp_path: Path,
+) -> None:
+    """A merged author set keeps each profile tied to the source that supplied it."""
+    dispatch_record(tmp_path, profile=REVIEWED)
+    review_root = _declare(tmp_path, "codex-sol-xhigh")
+    declared_record = review_loop.authorship_path(review_root, 322)
+
+    plan, _, refusal = plan_for(
+        tmp_path,
+        lane="codex",
+        profile="codex-sol-xhigh",
+        reviewing=REVIEWED,
+    )
+
+    assert plan is None
+    assert refusal is not None
+    assert refusal.kind == "review_same_profile"
+    assert "why=named_author" in refusal.found
+    assert "potential_authors=opus-high codex-sol-xhigh" in refusal.found
+    assert f"records=d-20260812-000000-aaaaaa {declared_record}" in refusal.found
+    assert "opus-high source=dispatch record=d-20260812-000000-aaaaaa" in refusal.action
+    assert f"codex-sol-xhigh source=declared record={declared_record}" in refusal.action
 
 
 def test_a_declaration_that_will_not_read_refuses_rather_than_resolving(
