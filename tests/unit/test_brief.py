@@ -481,6 +481,82 @@ def test_a_body_naming_several_node_ids_takes_the_first_in_document_order() -> N
     assert flake.module == "tests/unit/test_a.py"
 
 
+def test_a_class_scoped_node_id_is_taken_whole() -> None:
+    """A class-scoped ID is one node ID, not a class that cannot red.
+
+    #428 round 3: the pattern stopped at the second `::`, so a class-scoped ID was
+    truncated to the class alone — an identifier the retry rule cannot quote because no
+    test answers to it. The ID here is one the tree really collects.
+    """
+    (flake,) = brief.select_flakes(
+        [
+            flake_row(
+                500,
+                "the gated-path guard flakes on Codex payloads",
+                "Class: `flake_quarantine`.\n"
+                "FAILED tests/unit/test_hook_parity.py"
+                "::TestGatedPathsDenyOnCodexPayloads::test_denies[Write0]\n",
+            )
+        ]
+    )
+    assert flake.module == "tests/unit/test_hook_parity.py"
+    assert flake.test == "TestGatedPathsDenyOnCodexPayloads::test_denies[Write0]"
+    assert flake.line() == (
+        "- #500 `tests/unit/test_hook_parity.py"
+        "::TestGatedPathsDenyOnCodexPayloads::test_denies[Write0]`"
+    )
+
+
+def test_a_node_id_whose_parameter_contains_spaces_is_taken_whole() -> None:
+    """A bracketed parameter id keeps its spaces instead of truncating at the first one.
+
+    #428 round 3, and the same shape that made #680 re-parse pytest's durations table with
+    `maxsplit`: parameterised ids carry free text, so `test_a_payload_…[a bare string is
+    not a Command]` used to render as an invalid prefix of itself.
+    """
+    (flake,) = brief.select_flakes(
+        [
+            flake_row(
+                501,
+                "the command parser's refusals flake",
+                "Class: `flake_quarantine`.\n"
+                "FAILED tests/unit/test_commands.py"
+                "::test_a_payload_that_is_not_a_command_is_refused"
+                "[a bare string is not a Command]\n",
+            )
+        ]
+    )
+    assert flake.module == "tests/unit/test_commands.py"
+    assert flake.test == (
+        "test_a_payload_that_is_not_a_command_is_refused[a bare string is not a Command]"
+    )
+    assert flake.line() == (
+        "- #501 `tests/unit/test_commands.py"
+        "::test_a_payload_that_is_not_a_command_is_refused"
+        "[a bare string is not a Command]`"
+    )
+
+
+def test_a_body_without_a_node_id_keeps_the_title_prefix_match_fallback() -> None:
+    """A node ID is read from the body only; a title is never searched with the pattern.
+
+    #428 round 3: the fallback `NODE_ID.search(title)` made a prose title load-bearing
+    again — a title that happened to carry a full node ID would override the body's own
+    module read. With no node ID in the body, the pre-#428 prefix match stands unchanged.
+    """
+    (flake,) = brief.select_flakes(
+        [
+            flake_row(
+                502,
+                "tests/unit/test_other.py::test_in_the_title flakes",
+                "Class: `flake_quarantine`.",
+            )
+        ]
+    )
+    assert flake.test == "test_other"
+    assert flake.module == ""
+
+
 def test_a_flake_whose_body_names_no_module_still_renders_its_test() -> None:
     (flake,) = brief.select_flakes([flake_row(9, "test_something_here flakes", "")])
     assert flake.line() == "- #9 `test_something_here`"

@@ -453,7 +453,14 @@ FLAKE_CLASS: Final = re.compile(r"^Class:\s*`?flake_quarantine`?", re.MULTILINE)
 # Where the flaking test lives, so a briefing can name the module and not only the test.
 TEST_MODULE: Final = re.compile(r"tests/[A-Za-z0-9_./\-]+\.py")
 # A body's exact node ID, the identifier the retry rule tells an agent to quote (#428).
-NODE_ID: Final = re.compile(r"\btests/[A-Za-z0-9_./\-]+\.py::[A-Za-z0-9_.\[\]-]+")
+# Real IDs carry more than one `::` segment — a test class between the module and the
+# method — and their bracketed parameter ids hold free text, spaces included
+# (`tests/unit/test_commands.py::test_a_payload_…[a bare string is not a Command]`), the
+# shape that made #680 re-parse pytest's durations table with `maxsplit`. Each segment is
+# therefore identifier characters followed by one bracket group, which may contain
+# anything but a closing bracket or a newline.
+_NODE_SEGMENT: Final = r"[A-Za-z0-9_.\-]+(?:\[[^\]\n]*\])?"
+NODE_ID: Final = re.compile(r"\btests/[A-Za-z0-9_./\-]+\.py(?:::" + _NODE_SEGMENT + r")+")
 
 
 class Flake(NamedTuple):
@@ -484,10 +491,13 @@ def select_flakes(rows: Sequence[Mapping[str, object]]) -> tuple[Flake, ...]:
         if not is_flake(title, body):
             continue
         # A body node ID outranks a title match (#428): the title is prose and may name only
-        # the module, so trusting it first renders a node ID that does not exist. Several
-        # node IDs take the first in document order — the body's first reproduction is the
-        # canonical one, and the order is a decision a reader can reproduce.
-        node = NODE_ID.search(body) or NODE_ID.search(title)
+        # the module, so trusting it first renders a node ID that does not exist. The
+        # pattern reads the body alone — a title that happened to carry a node ID must not
+        # override a body that names none, because a title is never load-bearing for a
+        # machine read (#428 round 3). Several node IDs take the first in document order —
+        # the body's first reproduction is the canonical one, and the order is a decision a
+        # reader can reproduce.
+        node = NODE_ID.search(body)
         if node:
             module, _, test = node.group(0).partition("::")
         else:
