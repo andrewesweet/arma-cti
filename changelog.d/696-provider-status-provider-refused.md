@@ -16,10 +16,13 @@
   beside it, a 404 whose body says `internal server error` is still a refusal
   and a 402 whose body says `out of credits` is still an availability failure;
   a status-like digit run inside a response id on the same line (`resp_a429b`)
-  can no longer read as a `429`; and the status shape is read only where it
+  can no longer read as a `429`; and the status shape is parsed only where it
   begins the line, so a provider-shaped string inside the child's own terminal
-  failure output reads `unclassified`. Only a last line with no status shape
-  at all falls back to the free-text marker lists. A line that carries the
-  shape but no code the bands can place, and any other status — a 3xx
-  redirect, a code outside those bands, a longer digit run where a status
-  would sit — still reads `unclassified` and moves no streak.
+  failure output is never read as a status. Such a line falls through to the
+  free-text marker lists, which match anywhere in it, so it classifies by the
+  marker words it carries — `provider_error` for `internal server error`, a
+  typed transient that counts against no refusal streak. Only a last line that
+  carries no status shape and no marker word reads `unclassified` — as do a
+  line that carries the shape but no code the bands can place, and any other
+  status: a 3xx redirect, a code outside those bands, a longer digit run where
+  a status would sit. Each of those moves no streak.
