@@ -74,7 +74,8 @@ SERIAL_FLAG = "-n0"
 # killed instead of holding the caller. `--child-timeout-seconds` overrides.
 CHILD_TIMEOUT_S = 1500.0
 
-# How long the deadline kill waits after SIGTERM before escalating to SIGKILL.
+# How long the deadline kill waits after SIGTERM before re-probing the group
+# and escalating to SIGKILL where anything survives it.
 TERM_GRACE_S = 5.0
 
 
@@ -144,6 +145,17 @@ def format_row(sample: Sample) -> str:
     )
 
 
+def group_alive(pgid: int) -> bool:
+    """Whether any process still belongs to the group — `kill(pgid, 0)` probes."""
+    try:
+        os.killpg(pgid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:  # pragma: no cover — a live group outside our ownership
+        return True
+    return True
+
+
 def run_child(
     argv: list[str], cwd: Path, env: dict[str, str], timeout_s: float
 ) -> tuple[int, bool]:
@@ -153,9 +165,12 @@ def run_child(
     deadline kill reaches the group rather than the direct pytest alone —
     `subprocess.run`'s timeout kills only that direct child, and the modules
     this tool exists to measure spawn holders of their own, which a
-    direct-child kill would strand. SIGTERM first; SIGKILL only where the
-    group survives it. The child's output is discarded: the row reads its own
-    instrument's figures, never the child's.
+    direct-child kill would strand. SIGTERM first; then the group is re-probed
+    rather than trusted, because the direct child can exit on SIGTERM while a
+    descendant ignores it and survives — SIGKILL goes to whatever is left, and
+    only when nothing is left does the run count as collected. The child's
+    output is discarded: the row reads its own instrument's figures, never the
+    child's.
     """
     child = subprocess.Popen(  # noqa: S603 — argv is built here, no shell
         argv,
@@ -170,9 +185,9 @@ def run_child(
     except subprocess.TimeoutExpired:
         with contextlib.suppress(ProcessLookupError):
             os.killpg(child.pid, signal.SIGTERM)
-        try:
+        with contextlib.suppress(subprocess.TimeoutExpired):
             child.wait(timeout=TERM_GRACE_S)
-        except subprocess.TimeoutExpired:
+        if group_alive(child.pid):
             with contextlib.suppress(ProcessLookupError):
                 os.killpg(child.pid, signal.SIGKILL)
             child.wait()
