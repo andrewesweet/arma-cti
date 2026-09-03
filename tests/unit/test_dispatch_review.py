@@ -1223,17 +1223,17 @@ def test_the_retirement_table_resolves_into_the_live_registry() -> None:
 
 
 def test_the_chain_walk_resolves_a_rename_and_stops_at_the_live_name() -> None:
-    """`retired_names` states the lineage one function, because three rungs read it."""
-    assert dispatch.retired_names("opus-high") == ("opus-high",)
-    assert dispatch.retired_names("zai-glm52-max") == ("zai-glm52-max", "zai-glm53-max")
+    """`profile_lineage` states the lineage one function, because three rungs read it."""
+    assert dispatch.profile_lineage("opus-high") == ("opus-high",)
+    assert dispatch.profile_lineage("zai-glm52-max") == ("zai-glm52-max", "zai-glm53-max")
     assert dispatch.resolved_profile("zai-glm52-max") == dispatch.PROFILES["zai-glm53-max"]
     assert dispatch.resolved_profile("zai-glm54-max") is None
 
 
-def test_no_registered_name_is_also_claimed_by_retired_names() -> None:
+def test_no_registered_name_is_also_claimed_by_profile_lineage() -> None:
     """A name both tables claim would route and read as two different profiles (#433).
 
-    `retired_names` on a registered name must stop at the name itself: a registered name
+    `profile_lineage` on a registered name must stop at the name itself: a registered name
     that is also a retirement-table key is dispatchable by `--profile` (which reads
     `PROFILES`) while `resolved_profile` and every review rung resolve it away to its
     successor, so the same dispatch would be two profiles depending on who reads it.
@@ -1241,7 +1241,7 @@ def test_no_registered_name_is_also_claimed_by_retired_names() -> None:
     future name too, which is why the loop is over the registry and not over the two.
     """
     for name in dispatch.PROFILES:
-        assert dispatch.retired_names(name) == (name,), name
+        assert dispatch.profile_lineage(name) == (name,), name
 
 
 def test_a_retired_name_is_a_subject_a_review_may_declare_and_not_a_route_it_may_take(
@@ -1310,6 +1310,105 @@ def test_a_subject_declared_in_the_new_name_still_contradicts_old_name_records(
     assert refusal is not None
     assert refusal.kind == "review_subject_contradicted"
     assert "potential_authors=zai-glm52-max" in refusal.found
+
+
+# ------------------------------------------------------- #414: follow-ups to the retirement map
+
+
+def test_a_second_rename_resolves_transitively(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """#414 item 1, declined as a defect and pinned rather than fixed.
+
+    The filed finding said a profile renamed twice resolves one step short of the live name.
+    It does not: `profile_lineage` has walked the whole chain since #413 landed it, and the
+    awkward inputs — a two-hop chain, a map holding both retired and live names — resolve to
+    the live entry. This test was written to red first and did not, so the finding stands
+    declined at `tools/dispatch.py`'s `profile_lineage` and the walk it describes is held
+    here instead.
+    """
+    monkeypatch.setitem(
+        dispatch.RETIRED_PROFILES, "opus-old", dispatch.RetiredProfile("opus-high", "2026-09-01")
+    )
+    monkeypatch.setitem(
+        dispatch.RETIRED_PROFILES, "opus-ancient", dispatch.RetiredProfile("opus-old", "2026-08-01")
+    )
+    # A two-hop chain, and a live name beside retired ones in the same map: both ends of
+    # the lineage are asserted, because a walk that stopped one hop short would still
+    # return a tuple a reader could mistake for complete.
+    assert dispatch.profile_lineage("opus-ancient") == ("opus-ancient", "opus-old", "opus-high")
+    assert dispatch.profile_lineage("opus-high") == ("opus-high",)
+    assert dispatch.resolved_profile("opus-ancient") is dispatch.PROFILES["opus-high"]
+
+
+def test_a_cycle_in_the_map_stops_the_walk_and_refuses_the_subject(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The hazard a second rename adds: a cycle must refuse, never loop (#414 item 1).
+
+    `profile_lineage` stops rather than loops, so a cycled pair leaves a chain with no
+    registered end, `resolved_profile` answers `None`, and the dispatch refuses
+    `unknown_reviewed_profile` — the same typed refusal any unplaceable subject gets.
+    """
+    monkeypatch.setitem(
+        dispatch.RETIRED_PROFILES, "loop-a", dispatch.RetiredProfile("loop-b", "2026-09-01")
+    )
+    monkeypatch.setitem(
+        dispatch.RETIRED_PROFILES, "loop-b", dispatch.RetiredProfile("loop-a", "2026-09-02")
+    )
+    assert dispatch.profile_lineage("loop-a") == ("loop-a", "loop-b")
+    assert dispatch.resolved_profile("loop-a") is None
+    plan, _, refusal = plan_for(tmp_path, reviewing="loop-a")
+    assert plan is None
+    assert refusal is not None
+    assert refusal.kind == "unknown_reviewed_profile"
+
+
+def test_a_two_hop_subject_resolves_over_records_carrying_the_oldest_name(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The second rename end to end: the subject checks and the whole chain is excluded."""
+    monkeypatch.setitem(
+        dispatch.RETIRED_PROFILES, "opus-old", dispatch.RetiredProfile("opus-high", "2026-09-01")
+    )
+    monkeypatch.setitem(
+        dispatch.RETIRED_PROFILES, "opus-ancient", dispatch.RetiredProfile("opus-old", "2026-08-01")
+    )
+    dispatch_record(tmp_path, profile="opus-ancient", lane="claude-native")
+    tree = str(git_worktree(tmp_path))
+    plan, _, refusal = plan_for(tmp_path, reviewing="opus-ancient", worktree=tree)
+    assert refusal is None, refusal
+    assert plan is not None
+    assert plan.route.reviewed == "opus-ancient"
+    checked = plan.route.subject_line()
+    assert "route_reviewing_checked=yes" in checked
+    for name in ("opus-ancient", "opus-old", "opus-high"):
+        assert name in checked, (name, checked)
+
+
+def test_the_named_author_refusal_names_the_profiles_the_records_carry(
+    tmp_path: Path,
+) -> None:
+    """#414 item 2's reproducible half: the refusal's action quoted record ids as profiles.
+
+    `named_author`'s action rendered `authorship.records` — dispatch ids, the pointers a
+    reader follows — into a sentence promising the profiles the records carry. Found while
+    probing the filed mismatch, which itself could not be reproduced as described (see the
+    close): every typed refusal a retired name produces matches the type its surface
+    promises, and this wording defect is the one false claim the probes turned up.
+    """
+    dispatch_record(tmp_path, profile="zai-glm52-max", lane="zai")
+    plan, _, refusal = plan_for(
+        tmp_path, reviewing="zai-glm52-max", profile="zai-glm53-max", lane="zai"
+    )
+    assert plan is None
+    assert refusal is not None
+    assert refusal.kind == "review_same_profile"
+    assert "why=named_author" in refusal.found
+    # The sentence names the profiles; the ids stay on the found lines where a reader
+    # follows them, and out of the prose that misdescribed them.
+    assert "dispatch records place on the work (zai-glm52-max)" in refusal.action
+    assert "d-20260812-000000-aaaaaa" not in refusal.action
 
 
 # ------------------------------------- the declared record, read by this seat too (#402)
