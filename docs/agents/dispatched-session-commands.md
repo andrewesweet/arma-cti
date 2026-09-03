@@ -82,3 +82,47 @@ What this buys is a brief that costs nothing to compose and a dispatch that does
 
 - Anything about `awk`, `python3 -c` or `uv run python -c` under the removed rewrite: they were refused on their own merits on 2026-08-10 and were **not** re-measured on 2026-08-16, because nothing about their cause changed. A seat that needs one still reaches for a `just` recipe.
 - Anything about a foreign lane. Every row here is `claude-native`; Codex and z.ai reach the shell through different sandboxes and would each have to be measured.
+
+## Git history rewrite: a designed experiment (2026-09-03, #695)
+
+#691's measurement failed twelve review rounds because it ran commands in the course of other work and wrote the table afterwards. This section is written in the opposite order and landed in that order: the design commit carries the arrangement, the hypothesis, the falsifier and the route list, and carries no result; the results commit follows it on the same branch and only fills the results rows. A reader can see from the branch's history that the design predated every result.
+
+### Arrangement
+
+- **The session.** A dispatched session, seat `implementer`, issue #695, worktree `.claude/worktrees/issue-695`, base `fd55969e`. Dispatched is observed, not assumed: the `deny-dispatched-background` hook refused this session's one `run_in_background` Bash call with `inside a dispatched session (env CTI_DISPATCH_ID is set)` — the hook's own bytes.
+- **Lane, profile and permission mode are not derivable from inside, and are recorded as such rather than guessed.** `printenv CTI_DISPATCH_ID …` was refused; `ls /home/andre/.arma-cti/dispatches` was refused; `cat /proc/self/environ` was refused; a Read of the user-level `~/.claude/settings.json` — which `docs/multi-provider-dispatch.md` names as the source of at least one out-of-project grant (`Bash(git push *)`) — asked for a permission nobody can answer. Every refusal string is quoted under Results. The dispatching record names the three fields; the landing comment on #695 carries them. What the rows below are scoped to is therefore a **surface**, not a lane label: a session whose Bash decisions resolve through this repository's project allowlist plus whatever the harness auto-approves — the surface both `claude-native` and `zai` inherit, and which #691's rounds showed is neither necessary nor sufficient as a bound. `codex` reads no allowlist at all and is out of scope: this session cannot dispatch (`Bash(just dispatch)` has no grant) and cannot spawn a lane binary, so no Codex row could be provoked from here.
+- **The scratch repository.** `.spike-out/695-scratch/` inside this worktree (gitignored), its own history, no remote, one base commit `B` plus four commits `C1`–`C4` above it. The permission decision is taken on the command string, not on which repository the command addresses, so the scratch exercises the same surface without putting a single scratch commit on this branch's ancestry — the specific mistake #691's first dispatch made and four rounds paid for. The scratch is deleted before the gate runs; it lands nowhere.
+
+### Hypothesis and falsifier
+
+**H.** On a session whose Bash decisions resolve through the surface above, every route that collapses four commits into one is closed: each candidate route either meets a harness approval refusal or cannot move a ref, so the only history rewrite available is `git commit --amend` of HEAD.
+
+**Falsifier.** One sequence of commands this session is permitted to run that leaves the scratch branch one commit where it had four, with the same final tree. Either half alone is not enough — a permitted command that cannot move the ref has collapsed nothing, and a ref move that changed the tree is not the shape #668 needed.
+
+**Not claimed.** Nothing about any command absent from the results table. `git push --dry-run` was permitted on this machine with no project grant, so an absent row is absence of measurement, never evidence of refusal.
+
+### The routes, as they will be provoked
+
+`B` is the scratch base commit, `C1`–`C4` the four above it, `<scratch-branch>` its default branch. The results commit carries every invocation literally — no `<B>`-shaped placeholder survives into it; the SHAs are filled with the values the run actually used.
+
+| # | Route | Command shape |
+|---|---|---|
+| 1 | Soft reset onto the base — the canonical collapse's first half | `git reset --soft <B>` |
+| 2 | Interactive rebase to squash | `git rebase -i <B>` |
+| 2b | The same verb behind an environment assignment, to see whether a prefix the harness does not recognise changes the decision | `GIT_SEQUENCE_EDITOR=true git rebase -i <B>` |
+| 3 | A non-interactive rebase that *does* select commits above its upstream (`<C1>..HEAD` replayed onto `<B>`) — measures the verb, not a collapse | `git rebase --onto <B> <C1>` |
+| 4 | Plumbing collapse, first half: mint one commit with the tree of `HEAD` and parent `<B>` | `git commit-tree <tree-of-HEAD> -p <B> -m collapsed` |
+| 4b | Plumbing collapse, second half: move the branch ref to what 4 minted | `git update-ref refs/heads/<scratch-branch> <minted>` |
+| 4c | The other ref move a collapse would need | `git branch -f <scratch-branch> <minted>` |
+| 5 | #691's round-five command reproduced where it can be watched: `--onto <C3> HEAD` selects nothing above its upstream, so if it runs it drops `HEAD` rather than collapsing anything | `git rebase --onto <C3> HEAD` |
+| 6 | Control — git's own refusal through a project grant: `git commit` is granted, and on a clean index git itself refuses | `git commit -m nothing-to-commit` |
+| 7 | Control — a verb outside the grant whose git execution would be distinctive if it happened: git says `No rebase in progress?` when the verb actually executes | `git rebase --continue` |
+| 8 | The known counterexample, re-provoked on a repository with no remote: permitted verb, git-level failure, both facts visible | `git push --dry-run origin HEAD:main` |
+| 9 | #691's refused read-only row, re-provoked | `git var GIT_COMMITTER_IDENT` |
+| 10 | The known positive, re-provoked so this session's row stands in its own record rather than borrowed from #691's | `git commit --amend -m <message>` |
+
+**Refusal classification.** A refusal is attributed to the harness only on the evidence that git never ran: the text is the harness's approval-demand string and no git framing (`fatal:`, `error:`, usage) appears. A refusal is attributed to git when the output is git's own and an exit status accompanies it. Routes 6 and 7 are the calibration pair — one failure from a granted verb, one from an ungranted verb — so the two shapes are shown side by side rather than argued.
+
+### Results
+
+Filled by the results commit that follows this one. Until then this subsection states only: no route had been provoked when the design above was committed.
