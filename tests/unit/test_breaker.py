@@ -905,8 +905,10 @@ def test_the_ledger_reads_only_this_lanes_dispatches(tmp_path: Path) -> None:
         (1, "API Error: 503 Service Unavailable", breaker.PROVIDER_ERROR),
         (
             1,
-            "API Error: 529 [1305][The service may be temporarily overloaded,"
-            " please try again later]",
+            (
+                "API Error: 529 [1305][The service may be temporarily overloaded,"
+                " please try again later]"
+            ),
             breaker.PROVIDER_ERROR,
         ),
         (1, "the agent decided the issue was already done", breaker.UNCLASSIFIED),
