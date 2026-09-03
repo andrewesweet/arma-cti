@@ -234,18 +234,15 @@ QUOTA_RULE: Final = TripRule(
     escalates=False,
     failure_class=QUOTA_EXHAUSTED,
 )
-# The provider-error window. "Three in a minute" is the stated rule, so this is the
-# minute: three errors 60 s apart is three separate bad moments, not a lane that is
-# down, and the count prunes as they age rather than accumulating forever.
-PROVIDER_ERROR_WINDOW: Final = 60.0
-
 PROVIDER_ERROR_RULE: Final = TripRule(
     # #420's decision, stated: the breaker does hold the lane on repeated 5xx, on this
     # rule rather than a new one. A single 529 is noise — the same brief re-dispatched
-    # by hand landed immediately — so one is not enough to trip; three within
-    # PROVIDER_ERROR_WINDOW seconds is a lane that is down, and errors older than the
-    # window fall out of the count. A classified outcome of another kind still resets
-    # it outright: the lane answered, so the streak is not evidence any more.
+    # by hand landed immediately — so one is not enough to trip. Three consecutive
+    # provider errors hold the lane whatever the interval between them (ADR-0066
+    # Decision 3): no window prunes the count, because a pruning window is a timer
+    # this project chose, and one spaced at minutes still leaves a lane that is down
+    # reading as healthy. The only sanctioned reset is a classified outcome of another
+    # kind — the lane answered, so the streak is not evidence any more.
     # `auto_reset=False` is load-bearing: no 5xx carries a boundary its provider
     # published, and CLAUDE.md forbids a wait this project chose, so the lane reopens
     # on the quota feed's evidence it is serving again, or by a human's hand after the
@@ -257,7 +254,6 @@ PROVIDER_ERROR_RULE: Final = TripRule(
     auto_reset=False,
     escalates=True,
     failure_class="infra_unavailable",
-    window=PROVIDER_ERROR_WINDOW,
 )
 QUALITY_RULE: Final = TripRule(
     name="quality",

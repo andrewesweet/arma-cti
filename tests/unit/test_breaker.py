@@ -208,50 +208,39 @@ def test_three_provider_errors_hold_the_lane_and_no_amount_of_time_reopens_it() 
     ), "a lane that cannot be reached is the infra row, not the quota one"
 
 
-def test_three_provider_errors_spread_across_minutes_do_not_trip_the_window() -> None:
-    """#420 round two: the rule says "three in a minute", so the window is real.
+def test_three_provider_errors_far_apart_still_hold_the_lane() -> None:
+    """ADR-0066 Decision 3: the hold is consecutive, never time-pruned (#686).
 
-    Spaced past the window, each error prunes the ones before it and no three are
-    ever in evidence together — the case the one-second-apart tests cannot reach.
+    Spaced hours apart — well beyond any plausible pruning window — each error
+    still counts, so a window reintroduced here fails this test. Only a
+    classified non-provider outcome is evidence the lane answered; the clock is
+    never evidence, because a pruning window is a timer this project chose and
+    ADR-0066 forbids reopening on one.
     """
     circuit = breaker.Circuit()
-    for offset in (0.0, 120.0, 240.0):
-        circuit, transition = breaker.advance(
-            circuit, breaker.LANE_RULES, breaker.Outcome(breaker.PROVIDER_ERROR), NOW + offset
-        )
-        assert transition is None
-    assert circuit.state == breaker.CLOSED
-    assert circuit.streak("provider_errors") == 1
-
-
-def test_the_provider_error_window_prunes_only_what_has_fallen_out_of_it() -> None:
-    """Two errors 50 s apart keep each other company; the one at 100 s does not join them."""
-    circuit = breaker.Circuit()
-    for offset in (0.0, 50.0):
+    for offset in (0.0, 2 * HOUR, 4 * HOUR):
         circuit, _ = breaker.advance(
             circuit, breaker.LANE_RULES, breaker.Outcome(breaker.PROVIDER_ERROR), NOW + offset
         )
-    assert circuit.streak("provider_errors") == 2
-    circuit, transition = breaker.advance(
-        circuit, breaker.LANE_RULES, breaker.Outcome(breaker.PROVIDER_ERROR), NOW + 100.0
-    )
-    assert transition is None
-    assert circuit.state == breaker.CLOSED
-    assert circuit.streak("provider_errors") == 2
+    assert circuit.state == breaker.OPEN
+    assert circuit.rule == "provider_errors"
+    assert circuit.reset_at is None
+    assert circuit.streak("provider_errors") == 3
 
 
-def test_an_intervening_non_provider_outcome_clears_the_provider_error_window() -> None:
-    """A classified outcome of another kind is evidence the lane answered, so it resets."""
+def test_an_intervening_non_provider_outcome_clears_the_provider_error_streak() -> None:
+    """The only sanctioned reset: a classified outcome of another kind is evidence
+    the lane answered, so it clears the streak — whatever the intervals."""
     circuit = breaker.Circuit()
-    for offset in (0.0, 1.0):
+    for offset in (0.0, 2 * HOUR):
         circuit, _ = breaker.advance(
             circuit, breaker.LANE_RULES, breaker.Outcome(breaker.PROVIDER_ERROR), NOW + offset
         )
     circuit, _ = breaker.advance(
-        circuit, breaker.LANE_RULES, breaker.Outcome(breaker.GATE_FAILED), NOW + 2.0
+        circuit, breaker.LANE_RULES, breaker.Outcome(breaker.GATE_FAILED), NOW + 4 * HOUR
     )
     circuit, transition = breaker.advance(
-        circuit, breaker.LANE_RULES, breaker.Outcome(breaker.PROVIDER_ERROR), NOW + 3.0
+        circuit, breaker.LANE_RULES, breaker.Outcome(breaker.PROVIDER_ERROR), NOW + 6 * HOUR
     )
     assert transition is None
     assert circuit.state == breaker.CLOSED
@@ -943,6 +932,14 @@ def test_the_ledger_reads_only_this_lanes_dispatches(tmp_path: Path) -> None:
 # --------------------------------------------------------- classifying a finished run
 
 
+# The exact body one real 529 produced, spelled once: the classification row below and
+# the hold test beside it must pin the same bytes, so a fixture correction cannot leave
+# them pinning different bodies while both pass (#686).
+OVERLOAD_BODY: Final = (
+    "API Error: 529 [1305][The service may be temporarily overloaded, please try again later]"
+)
+
+
 @pytest.mark.parametrize(
     ("returncode", "output", "expected"),
     [
@@ -953,14 +950,7 @@ def test_the_ledger_reads_only_this_lanes_dispatches(tmp_path: Path) -> None:
         (1, "Error: insufficient quota for this key", breaker.QUOTA_EXHAUSTED),
         (1, "connection refused", breaker.PROVIDER_ERROR),
         (1, "API Error: 503 Service Unavailable", breaker.PROVIDER_ERROR),
-        (
-            1,
-            (
-                "API Error: 529 [1305][The service may be temporarily overloaded,"
-                " please try again later]"
-            ),
-            breaker.PROVIDER_ERROR,
-        ),
+        (1, OVERLOAD_BODY, breaker.PROVIDER_ERROR),
         (1, "the agent decided the issue was already done", breaker.UNCLASSIFIED),
         (2, "", breaker.UNCLASSIFIED),
     ],
@@ -982,11 +972,6 @@ def test_a_limit_with_no_epoch_yields_no_reset_rather_than_a_computed_one() -> N
     outcome, reset_at = breaker.classify_run(1, "429 rate limit exceeded, try later")
     assert outcome == breaker.QUOTA_EXHAUSTED
     assert reset_at is None
-
-
-OVERLOAD_BODY: Final = (
-    "API Error: 529 [1305][The service may be temporarily overloaded, please try again later]"
-)
 
 
 def test_three_529_overloads_hold_the_lane(tmp_path: Path) -> None:
