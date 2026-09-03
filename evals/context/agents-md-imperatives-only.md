@@ -2,7 +2,7 @@
 
 Derived from `AGENTS.md`; the sha256 below is the content-addressed pin for this
 source reduction, rather than a commit reference:
-`ab1d7734947153491cedf7f5b425807dc6d7971b7e1f7dc6468ea2fb58143d73`. The rule of
+`d61283fc22760859acd162027c38d1f934e4fdf126edbc161ab037f2503e42a5`. The rule of
 derivation: directive sentences only, taken from the **Contract** and **Working style**
 sections; the `_(validated ×N …)_` evidence annotations, every table, and narrative
 rationale are dropped. Refresh by hand when the underlying rules move materially. This
