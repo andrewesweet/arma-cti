@@ -439,7 +439,7 @@ def test_a_body_node_id_wins_over_a_title_that_prefix_matches_a_different_test()
     #428: the title's `test_stall_watch` matched before the body was read, so `just brief`
     rendered `tests/unit/test_stall_watch.py::test_stall_watch` — a node ID that does not
     exist. The body's node ID is the exact identifier the retry rule tells an agent to
-    quote, so it outranks the title; a title is never load-bearing for a machine read.
+    quote, so it outranks the title when the body carries one.
     """
     (flake,) = brief.select_flakes(
         [
@@ -535,6 +535,29 @@ def test_a_node_id_whose_parameter_contains_spaces_is_taken_whole() -> None:
         "::test_a_payload_that_is_not_a_command_is_refused"
         "[a bare string is not a Command]`"
     )
+
+
+def test_a_parameter_id_carrying_a_close_bracket_is_not_taken_whole() -> None:
+    """A parameter id containing `]` is the pattern's stated bound, and it truncates.
+
+    #428 round 4: pytest's explicit ids are free text and may carry a `]`, and no grammar
+    decides where such an id ends — matching greedily to the last `]` would swallow
+    trailing prose and merge two bracketed IDs quoted on one line. The truncation is the
+    deliberate answer: a selector that cannot red, over the same outcome arrived at by
+    reading too much. This test pins the limit so a future reader reads it as a decision.
+    No id in this tree carries a `]`; the case is synthetic.
+    """
+    (flake,) = brief.select_flakes(
+        [
+            flake_row(
+                503,
+                "the bracketed flake",
+                "Class: `flake_quarantine`.\nFAILED tests/unit/test_x.py::test_x[a]b]\n",
+            )
+        ]
+    )
+    assert flake.module == "tests/unit/test_x.py"
+    assert flake.test == "test_x[a]"
 
 
 def test_a_body_without_a_node_id_keeps_the_title_prefix_match_fallback() -> None:

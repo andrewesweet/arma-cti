@@ -459,6 +459,15 @@ TEST_MODULE: Final = re.compile(r"tests/[A-Za-z0-9_./\-]+\.py")
 # shape that made #680 re-parse pytest's durations table with `maxsplit`. Each segment is
 # therefore identifier characters followed by one bracket group, which may contain
 # anything but a closing bracket or a newline.
+#
+# The bound, deliberately: pytest's *explicit* ids are free text and may themselves carry
+# a `]`, and no grammar decides where such an id ends — matching greedily to the last `]`
+# would swallow trailing prose and merge two bracketed IDs quoted on one line into one,
+# trading the truncated selector for a selector that reads too much. So a parameter id
+# containing `]` is NOT read whole here: the match stops at its first `]` and yields a
+# prefix no test answers to. Every id this tree collects (plain, class-scoped, parameterised
+# with a bracket group free of `]`) reads whole; anything else needs a body that quotes the
+# ID delimited, not a wider pattern.
 _NODE_SEGMENT: Final = r"[A-Za-z0-9_.\-]+(?:\[[^\]\n]*\])?"
 NODE_ID: Final = re.compile(r"\btests/[A-Za-z0-9_./\-]+\.py(?:::" + _NODE_SEGMENT + r")+")
 
@@ -490,13 +499,14 @@ def select_flakes(rows: Sequence[Mapping[str, object]]) -> tuple[Flake, ...]:
         body = str(row.get("body") or "")
         if not is_flake(title, body):
             continue
-        # A body node ID outranks a title match (#428): the title is prose and may name only
-        # the module, so trusting it first renders a node ID that does not exist. The
-        # pattern reads the body alone — a title that happened to carry a node ID must not
-        # override a body that names none, because a title is never load-bearing for a
-        # machine read (#428 round 3). Several node IDs take the first in document order —
-        # the body's first reproduction is the canonical one, and the order is a decision a
-        # reader can reproduce.
+        # A body node ID is authoritative when present (#428): the title is prose and may
+        # name only the module, so trusting it first renders a node ID that does not exist.
+        # The pattern searches the body alone — a title that happened to carry a node ID
+        # must not override a body that names none (#428 round 3). Where the body carries
+        # none, the pre-#428 behaviour stands unchanged: the `test_` prefix match, tried on
+        # the title first and then the body, with the module read from the body. Several
+        # node IDs take the first in document order — the body's first reproduction is the
+        # canonical one, and the order is a decision a reader can reproduce.
         node = NODE_ID.search(body)
         if node:
             module, _, test = node.group(0).partition("::")
