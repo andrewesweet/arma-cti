@@ -135,6 +135,10 @@ class TripRule(NamedTuple):
     auto_reset: bool
     escalates: bool
     failure_class: str
+    # None is a pure consecutive count with no clock in it. A window makes N mean
+    # "N within this many seconds": events older than the window fall out of the
+    # count as they age, so sparse errors never accumulate into a trip.
+    window: float | None = None
 
 
 class Circuit(NamedTuple):
@@ -147,6 +151,9 @@ class Circuit(NamedTuple):
     reset_at: float | None = None
     escalated: bool = False
     streaks: tuple[tuple[str, int], ...] = ()
+    # Per-rule in-window event times, for rules that carry a `window`. Kept beside
+    # `streaks` rather than inside it because a streak is a count and this is evidence.
+    windows: tuple[tuple[str, tuple[float, ...]], ...] = ()
 
     def streak(self, rule: str) -> int:
         """How many consecutive counting outcomes this rule has seen."""
@@ -160,6 +167,19 @@ class Circuit(NamedTuple):
         else:
             counts.pop(rule, None)
         return self._replace(streaks=tuple(sorted(counts.items())))
+
+    def window_times(self, rule: str) -> tuple[float, ...]:
+        """Return the counting outcomes for this rule that are still inside its window."""
+        return dict(self.windows).get(rule, ())
+
+    def with_window(self, rule: str, times: tuple[float, ...]) -> Circuit:
+        """Return this circuit with one rule's in-window event times replaced."""
+        kept = dict(self.windows)
+        if times:
+            kept[rule] = times
+        else:
+            kept.pop(rule, None)
+        return self._replace(windows=tuple(sorted(kept.items())))
 
 
 class Outcome(NamedTuple):
@@ -214,14 +234,22 @@ QUOTA_RULE: Final = TripRule(
     escalates=False,
     failure_class=QUOTA_EXHAUSTED,
 )
+# The provider-error window. "Three in a minute" is the stated rule, so this is the
+# minute: three errors 60 s apart is three separate bad moments, not a lane that is
+# down, and the count prunes as they age rather than accumulating forever.
+PROVIDER_ERROR_WINDOW: Final = 60.0
+
 PROVIDER_ERROR_RULE: Final = TripRule(
     # #420's decision, stated: the breaker does hold the lane on repeated 5xx, on this
     # rule rather than a new one. A single 529 is noise — the same brief re-dispatched
-    # by hand landed immediately — so one is not enough to trip; three in a minute is a
-    # lane that is down. `auto_reset=False` is load-bearing: no 5xx carries a boundary
-    # its provider published, and CLAUDE.md forbids a wait this project chose, so the
-    # lane reopens on the quota feed's evidence it is serving again, or by a human's
-    # hand after the escalation, never on a timer.
+    # by hand landed immediately — so one is not enough to trip; three within
+    # PROVIDER_ERROR_WINDOW seconds is a lane that is down, and errors older than the
+    # window fall out of the count. A classified outcome of another kind still resets
+    # it outright: the lane answered, so the streak is not evidence any more.
+    # `auto_reset=False` is load-bearing: no 5xx carries a boundary its provider
+    # published, and CLAUDE.md forbids a wait this project chose, so the lane reopens
+    # on the quota feed's evidence it is serving again, or by a human's hand after the
+    # escalation, never on a timer.
     name="provider_errors",
     on=frozenset({PROVIDER_ERROR}),
     consecutive=CONSECUTIVE_N,
@@ -229,6 +257,7 @@ PROVIDER_ERROR_RULE: Final = TripRule(
     auto_reset=False,
     escalates=True,
     failure_class="infra_unavailable",
+    window=PROVIDER_ERROR_WINDOW,
 )
 QUALITY_RULE: Final = TripRule(
     name="quality",
@@ -319,14 +348,20 @@ def _tripped(
         # streak still counts, and the escalation still stands.
         return moved, None
     streak = moved.streak(rule.name)
+    basis = (
+        f"{streak} {outcome.name} within {int(rule.window)}s"
+        if rule.window is not None
+        else f"{streak} consecutive {outcome.name}"
+    )
     opened = Circuit(
         state=OPEN,
         rule=rule.name,
-        reason=outcome.detail or f"{streak} consecutive {outcome.name}",
+        reason=outcome.detail or basis,
         opened_at=now,
         reset_at=outcome.reset_at if rule.auto_reset else None,
         escalated=rule.escalates,
         streaks=moved.streaks,
+        windows=moved.windows,
     )
     already = (
         circuit.state == OPEN and circuit.rule == rule.name and circuit.reset_at == opened.reset_at
@@ -355,9 +390,11 @@ def advance(
 
     This is the function #72's corpus loop wants. Three behaviours and nothing else:
 
-    - `UNCLASSIFIED` changes nothing at all, streaks included.
-    - `OK` clears every streak, and closes a half-open circuit — the probe worked.
-    - anything else advances the streak of every rule that counts it, resets the streak
+    - `UNCLASSIFIED` changes nothing at all, streaks and windows included.
+    - `OK` clears every streak and window, and closes a half-open circuit — the probe
+      worked.
+    - anything else advances the streak of every rule that counts it — pruning a
+      windowed rule's events that have aged out first — resets the streak and window
       of every rule that does not, and trips the first rule to reach its N.
     """
     if outcome.name == UNCLASSIFIED:
@@ -365,12 +402,20 @@ def advance(
     if outcome.name == OK:
         if circuit.state == HALF_OPEN:
             return _closed_by_probe(circuit, outcome, now)
-        return circuit._replace(streaks=()), None
+        return circuit._replace(streaks=(), windows=()), None
 
     moved = circuit
     for rule in rules:
         counts = outcome.name in rule.on
-        moved = moved.with_streak(rule.name, moved.streak(rule.name) + 1 if counts else 0)
+        if counts and rule.window is not None:
+            times = tuple(
+                when for when in (*moved.window_times(rule.name), now) if when > now - rule.window
+            )
+            moved = moved.with_window(rule.name, times).with_streak(rule.name, len(times))
+        else:
+            moved = moved.with_streak(
+                rule.name, moved.streak(rule.name) + 1 if counts else 0
+            ).with_window(rule.name, ())
 
     for rule in rules:
         if outcome.name in rule.on and moved.streak(rule.name) >= rule.consecutive:
@@ -1280,6 +1325,7 @@ class LaneState(NamedTuple):
                 "reset_at": self.circuit.reset_at,
                 "escalated": self.circuit.escalated,
                 "streaks": dict(self.circuit.streaks),
+                "windows": {rule: list(times) for rule, times in self.circuit.windows},
             },
             "quota": None if self.reading is None else self.reading.document(),
         }
@@ -1309,6 +1355,7 @@ def read_state(breaker_dir: Path, lane: str) -> LaneState:
     circuit = Circuit()
     if isinstance(block, dict):
         streaks = block.get("streaks")
+        windows = block.get("windows", {})
         circuit = Circuit(
             state=str(block.get("state", CLOSED)),
             rule=str(block.get("rule", "")),
@@ -1318,6 +1365,17 @@ def read_state(breaker_dir: Path, lane: str) -> LaneState:
             escalated=bool(block.get("escalated", False)),
             streaks=tuple(sorted((str(k), int(v)) for k, v in streaks.items()))
             if isinstance(streaks, dict)
+            else (),
+            # A state file written before the window existed carries none, which is the
+            # safe reading: no recorded times means no in-window evidence.
+            windows=tuple(
+                sorted(
+                    (str(k), tuple(float(t) for t in times))
+                    for k, times in windows.items()
+                    if isinstance(times, list)
+                )
+            )
+            if isinstance(windows, dict)
             else (),
         )
     quota = document.get("quota")

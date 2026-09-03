@@ -208,6 +208,56 @@ def test_three_provider_errors_hold_the_lane_and_no_amount_of_time_reopens_it() 
     ), "a lane that cannot be reached is the infra row, not the quota one"
 
 
+def test_three_provider_errors_spread_across_minutes_do_not_trip_the_window() -> None:
+    """#420 round two: the rule says "three in a minute", so the window is real.
+
+    Spaced past the window, each error prunes the ones before it and no three are
+    ever in evidence together — the case the one-second-apart tests cannot reach.
+    """
+    circuit = breaker.Circuit()
+    for offset in (0.0, 120.0, 240.0):
+        circuit, transition = breaker.advance(
+            circuit, breaker.LANE_RULES, breaker.Outcome(breaker.PROVIDER_ERROR), NOW + offset
+        )
+        assert transition is None
+    assert circuit.state == breaker.CLOSED
+    assert circuit.streak("provider_errors") == 1
+
+
+def test_the_provider_error_window_prunes_only_what_has_fallen_out_of_it() -> None:
+    """Two errors 50 s apart keep each other company; the one at 100 s does not join them."""
+    circuit = breaker.Circuit()
+    for offset in (0.0, 50.0):
+        circuit, _ = breaker.advance(
+            circuit, breaker.LANE_RULES, breaker.Outcome(breaker.PROVIDER_ERROR), NOW + offset
+        )
+    assert circuit.streak("provider_errors") == 2
+    circuit, transition = breaker.advance(
+        circuit, breaker.LANE_RULES, breaker.Outcome(breaker.PROVIDER_ERROR), NOW + 100.0
+    )
+    assert transition is None
+    assert circuit.state == breaker.CLOSED
+    assert circuit.streak("provider_errors") == 2
+
+
+def test_an_intervening_non_provider_outcome_clears_the_provider_error_window() -> None:
+    """A classified outcome of another kind is evidence the lane answered, so it resets."""
+    circuit = breaker.Circuit()
+    for offset in (0.0, 1.0):
+        circuit, _ = breaker.advance(
+            circuit, breaker.LANE_RULES, breaker.Outcome(breaker.PROVIDER_ERROR), NOW + offset
+        )
+    circuit, _ = breaker.advance(
+        circuit, breaker.LANE_RULES, breaker.Outcome(breaker.GATE_FAILED), NOW + 2.0
+    )
+    circuit, transition = breaker.advance(
+        circuit, breaker.LANE_RULES, breaker.Outcome(breaker.PROVIDER_ERROR), NOW + 3.0
+    )
+    assert transition is None
+    assert circuit.state == breaker.CLOSED
+    assert circuit.streak("provider_errors") == 1
+
+
 def test_an_unclassified_outcome_moves_no_streak_in_either_direction() -> None:
     """A class we could not read is not evidence — the #41 shape, refused here."""
     circuit = breaker.Circuit()
