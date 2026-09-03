@@ -497,9 +497,11 @@ def test_worktree_owing_done_joins_registrations_to_attested_landings(
         "closed_issue_without_landing:under_counts,"
         "issue_reopened_after_landing:over_counts,"
         "landed_issue_still_open:over_counts,"
+        "landing_time_unreadable:under_counts,"
         "hand_made_registrations_without_dispatch:under_counts,"
         "tree_created_before_first_dispatch:under_counts,"
-        "worktrees_removed_before_boundary:over_counts"
+        "worktrees_removed_before_boundary:over_counts,"
+        "unreadable_worktree_field:under_counts"
     ) in line
     # The temporal caveat is its own field, not a suffix of the basis value:
     # assert the field boundary, not merely the token.
@@ -592,10 +594,10 @@ def test_worktree_stock_names_the_planned_at_undercount(
     assert "trees_created_before_their_first_dispatch" in line
 
 
-def test_worktree_stock_unreadable_landing_is_unknown_never_zero(
+def test_worktree_stock_unreadable_landing_is_excluded_and_named(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """A landed SHA whose time cannot be read leaves the level unknown, never zero."""
+    """A landed SHA whose time cannot be read is excluded and named, not a stock-wide unknown."""
     dispatch_root = tmp_path / "dispatches"
     # The canonical schema has no `landed_at`: `gate=landed` with a SHA and no
     # time is well-formed input, and the commit lookup failing must not read as
@@ -623,22 +625,25 @@ def test_worktree_stock_unreadable_landing_is_unknown_never_zero(
         if line.startswith("stock worktrees_owing_done")
     )
 
-    assert "level=unrecorded setpoint=at_most_0 status=unrecorded" in line
-    assert "level=0" not in line
+    # The one tree's settlement is unknown, so the level of 0 is a bound the
+    # excluded tree could still break: named beside the level, never claimed
+    # at_setpoint.
+    assert "level=0 " in line
+    assert "registrations=1 excluded_without_issue_name=0 excluded_without_landing_time=1" in line
+    assert "setpoint=at_most_0 status=unresolved" in line
     assert "status=at_setpoint" not in line
-    assert "reason=landing_time_unresolved" in line
-    assert "landing_basis" not in line
-    assert "bias_paths" not in line
+    assert "landing_basis=none_no_qualifying_landing" in line
+    assert "landing_time_unreadable:under_counts" in line
     assert any(
         diagnostic.startswith("landing issue=61 sha=") and diagnostic.endswith("status=unrecorded")
         for diagnostic in diagnostics
     )
 
 
-def test_worktree_stock_resolved_landing_settles_a_level_despite_a_sibling(
+def test_worktree_stock_resolved_landing_settles_its_tree_despite_an_unresolved_sibling(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """One unresolved landing makes the whole level unknown — never a partial count."""
+    """A resolved landing settles its tree; the unresolved sibling is excluded and named."""
     dispatch_root = tmp_path / "dispatches"
     _dispatch(
         dispatch_root,
@@ -671,11 +676,42 @@ def test_worktree_stock_resolved_landing_settles_a_level_despite_a_sibling(
         if line.startswith("stock worktrees_owing_done")
     )
 
-    # Issue 62's landing resolved, but issue 63's tree has no readable landing,
-    # so no count that silently dropped it may be emitted: the level is unknown
-    # stock-wide, not per tree.
-    assert "level=unrecorded" in line
-    assert "reason=landing_time_unresolved" in line
+    # Issue 62's landing resolved, so its tree is counted; issue 63's tree has
+    # no readable landing, so it is excluded and named rather than dropping the
+    # whole stock to unknown.
+    assert "level=1 " in line
+    assert "registrations=2 excluded_without_issue_name=0 excluded_without_landing_time=1" in line
+    assert "status=above_setpoint" in line
+    assert "landing_basis=ledger_landed_at " in line
+    assert "landing_time_unreadable:under_counts" in line
+
+
+def test_worktree_stock_damages_are_named_once_per_report(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """`report_lines` derives the landing evidence twice; one damage is named once."""
+    dispatch_root = tmp_path / "dispatches"
+    _dispatch(
+        dispatch_root,
+        "opaque",
+        64,
+        "implementer",
+        0,
+        ledger={
+            "materialised_at": _at(4),
+            "gate": {"outcome": "landed", "landed": {"sha": "f" * 40}},
+        },
+        worktree="/repo/.claude/worktrees/issue-64",
+    )
+    monkeypatch.setattr(METRICS, "_commit_timestamp", lambda _repo, _sha: None)
+    inputs = METRICS.read_inputs(dispatch_root, tmp_path / "review", tmp_path / "queue")
+
+    window = METRICS.Window(0.0, METRICS.parse_timestamp(_at(15)), explicit=True)
+    lines = METRICS.report_lines(inputs, tmp_path, window)
+
+    landing_lines = [line for line in lines if line.startswith("landing issue=64 sha=")]
+    assert len(landing_lines) == 1
+    assert landing_lines[0].endswith("status=unrecorded")
 
 
 def test_issue_registrations_skip_main_checkout_and_name_unjoinable() -> None:
@@ -852,10 +888,10 @@ def test_worktree_stock_without_a_qualifying_landing_names_no_basis(
     assert "proxy_bias" not in line
 
 
-def test_worktree_stock_current_window_states_its_two_bias_paths(
+def test_worktree_stock_current_window_states_its_bias_paths(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Without a boundary the sweep is the answer: two paths, no as-of caveat."""
+    """Without a boundary the sweep is the answer: the standing paths, no as-of caveat."""
     dispatch_root = tmp_path / "dispatches"
     _dispatch(dispatch_root, "cur", 70, "implementer", 0, ledger=_landed_ledger(3))
     inputs = METRICS.read_inputs(dispatch_root, tmp_path / "review", tmp_path / "queue")
@@ -887,7 +923,8 @@ def test_worktree_stock_current_window_states_its_two_bias_paths(
         "bias_paths=unmaterialised_ledger_landings:under_counts,"
         "closed_issue_without_landing:under_counts,"
         "issue_reopened_after_landing:over_counts,"
-        "landed_issue_still_open:over_counts"
+        "landed_issue_still_open:over_counts,"
+        "landing_time_unreadable:under_counts"
     ) in line
     assert "bias=mixed net_direction=undetermined" in line
     assert "not_as_of_window_end" not in line

@@ -78,12 +78,16 @@ timestamped — so both halves now honour a bounded window, and the caveat narro
 the records cannot place at the boundary: a hand-made tree with no dispatch behind it, and a
 tree created before its first dispatch (a record's `planned_at` bounds the tree's existence
 from below; it does not date its creation). A landing whose time cannot be read is not an
-absent landing: where it is a registered issue's only candidate landing, the level is
-`unrecorded` rather than zero and the damaged record is diagnosed. The level is a proxy for
+absent landing: where it is a registered issue's only candidate landing, that tree is
+excluded from the level and counted beside it, so the level that remains is the known lower
+bound and no `at_setpoint` is claimed while the exclusions could still move it across the
+setpoint, and the damaged record is diagnosed. The level is a proxy for
 the tracker's answer, and the report discloses every way that proxy can err — landings
 invisible for want of a materialised ledger row, issues closed without a landing, issues
-landed but not yet closed, issues reopened after landing, and, for a bounded window, hand-made
-trees, pre-dispatch trees and trees removed again before the boundary — while claiming no
+landed but not yet closed, issues reopened after landing, landings whose time cannot be
+read, and, for a bounded window, hand-made
+trees, pre-dispatch trees, trees removed again before the boundary and records whose
+`worktree` field cannot be read — while claiming no
 single net direction. The frozen **17** above was measured before this derivation existed, so
 it is not directly comparable to the reader's figure.
 
