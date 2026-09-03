@@ -243,11 +243,14 @@ class _FixedPidOS:
 
 
 def _run_forced_port_block(
-    arguments: tuple[int, Lock, Barrier, str, str, Queue],
+    arguments: tuple[int, Lock, Barrier, str, Queue],
 ) -> None:
     """Run one child with the same controlled PID-derived candidate as its peer."""
-    index, allocation_lock, barrier, lock_dir, run_dir, results = arguments
-    os.environ["CTI_TEST_PORT_LOCK_DIR"] = lock_dir
+    index, allocation_lock, barrier, run_dir, results = arguments
+    # No per-suite lock dir here: the children must serialise on the machine
+    # lock root, because with a per-test dir two concurrent suites both draw
+    # candidate 30000 with nothing locking it between them, which is the very
+    # race this test exists to prove closed (#693).
     free_port_block.__globals__["os"] = _FixedPidOS
 
     real_free = free_port_block
@@ -293,7 +296,6 @@ def test_concurrent_runs_with_one_candidate_get_disjoint_blocks(tmp_path: Path) 
     allocation_lock = ctx.Lock()
     barrier = ctx.Barrier(2)
     results = ctx.Queue()
-    lock_dir = str(tmp_path / "port-locks")
     processes = [
         ctx.Process(
             target=_run_forced_port_block,
@@ -302,7 +304,6 @@ def test_concurrent_runs_with_one_candidate_get_disjoint_blocks(tmp_path: Path) 
                     index,
                     allocation_lock,
                     barrier,
-                    lock_dir,
                     str(tmp_path / f"run-{index}"),
                     results,
                 ),
