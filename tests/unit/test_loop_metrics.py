@@ -788,6 +788,27 @@ def test_worktree_exclusions_derive_every_disclosure_from_one_structure() -> Non
     assert METRICS.WorktreeExclusions().total == 0
 
 
+def test_worktree_bias_tokens_live_beside_their_counts() -> None:
+    """The reconstruction-only fact rides the same body as the count it qualifies."""
+    tokens = METRICS.WorktreeExclusions.BIAS_TOKENS
+
+    assert set(tokens) == set(METRICS.WorktreeExclusions._fields)
+    assert tokens["without_issue_name"] == ("registrations_without_issue_name:under_counts", False)
+    assert tokens["without_readable_worktree"] == ("unreadable_worktree_field:under_counts", True)
+
+
+def test_worktree_exclusions_refuse_a_miskeyed_body() -> None:
+    """A field without a token, or a token without a field, refuses before any report."""
+    fields = ("without_issue_name", "without_landing_time")
+
+    with pytest.raises(RuntimeError, match="disagree over: extra"):
+        METRICS._require_bias_keys(  # noqa: SLF001 — the import-time check is the subject
+            fields, {"without_issue_name": ("t", False), "extra": ("x", True)}
+        )
+    with pytest.raises(RuntimeError, match="disagree over: without_landing_time"):
+        METRICS._require_bias_keys(fields, {"without_issue_name": ("t", False)})  # noqa: SLF001
+
+
 def test_issue_registrations_skip_main_checkout_and_name_unjoinable() -> None:
     """The main checkout never owes done and unnamed registrations stay visible."""
     porcelain = (

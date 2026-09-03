@@ -32,7 +32,11 @@ from datetime import UTC, datetime
 from itertools import pairwise
 from pathlib import Path
 from statistics import pvariance
-from typing import Final, NamedTuple
+from types import MappingProxyType
+from typing import TYPE_CHECKING, Final, NamedTuple
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
 
 # ``tools/`` is a collection of standalone scripts.  Keep the existing queue and
 # acceptance readers available without turning the directory into a package.
@@ -216,26 +220,17 @@ class DispatchLevel(NamedTuple):
     excluded: int
 
 
-# The bias-account token each exclusion category names, keyed by field name.
-# Declared beside the structure so a category added to `WorktreeExclusions`
-# owes its token here, one edit away, rather than nowhere.
-_EXCLUSION_BIAS_PATHS = {
-    "without_issue_name": "registrations_without_issue_name:under_counts",
-    "without_landing_time": "landing_time_unreadable:under_counts",
-    "without_readable_worktree": "unreadable_worktree_field:under_counts",
-}
-
-
 class WorktreeExclusions(NamedTuple):
     """The evidence a joined worktree level excludes, held as one structure.
 
     Every category the level excludes is a field here, and the three things
-    said about exclusions all derive from this one structure: ``total`` is
-    what the setpoint reads, ``fields`` is what the report line discloses,
-    and ``bias_paths`` is what the bias account names.  A category added to
-    the structure therefore joins all three by construction rather than by
-    an edit remembered at a second site — the fourth appearance of that
-    class, which this shape exists to end.
+    said about exclusions all derive from this one body: ``total`` is what
+    the setpoint reads, ``fields`` is what the report line discloses, and
+    ``bias_paths`` is what the bias account names.  A category is therefore
+    one field plus its ``BIAS_TOKENS`` entry, both in this body — the count
+    is the field and the entry names its token and who may speak it.  A
+    field and its entry falling out of step refuses at import through
+    `_require_bias_keys`, before any report can read the structure.
     """
 
     # Registrations whose directory name carries no issue number: the tree
@@ -252,6 +247,19 @@ class WorktreeExclusions(NamedTuple):
     # table itself and never has one.
     without_readable_worktree: int = 0
 
+    # One entry per field above, beside those fields: the value is the
+    # category's bias-account token and whether only a reconstruction can
+    # speak it.  A live sweep reads the table itself, so an unplaced record
+    # is never one of its categories.  Read-only and bare-assigned, never
+    # annotated — under PEP 563 an annotation here becomes a field.
+    BIAS_TOKENS = MappingProxyType(
+        {
+            "without_issue_name": ("registrations_without_issue_name:under_counts", False),
+            "without_landing_time": ("landing_time_unreadable:under_counts", False),
+            "without_readable_worktree": ("unreadable_worktree_field:under_counts", True),
+        }
+    )
+
     @property
     def total(self) -> int:
         """Every excluded unit, whatever its damage."""
@@ -265,14 +273,30 @@ class WorktreeExclusions(NamedTuple):
     def bias_paths(self, *, reconstruction: bool) -> tuple[str, ...]:
         """Name each category's error-direction token, in declaration order.
 
-        ``without_readable_worktree`` is spoken only by a reconstruction: a
-        live sweep reads the table itself and never has an unplaced record.
+        A category whose ``BIAS_TOKENS`` entry says reconstruction-only is
+        spoken only when ``reconstruction`` is set.
         """
         return tuple(
-            _EXCLUSION_BIAS_PATHS[name]
+            self.BIAS_TOKENS[name][0]
             for name in self._asdict()
-            if reconstruction or name != "without_readable_worktree"
+            if reconstruction or not self.BIAS_TOKENS[name][1]
         )
+
+
+def _require_bias_keys(fields: tuple[str, ...], tokens: Mapping[str, object]) -> None:
+    """Refuse a `WorktreeExclusions` body whose fields and tokens disagree.
+
+    The structure's promise is one body per category, so a field without a
+    token — or a token without a field — is a broken definition rather than
+    a report-time surprise, and this is called at import to say so.
+    """
+    miskeyed = set(fields) ^ set(tokens)
+    if miskeyed:
+        names = ", ".join(sorted(miskeyed))
+        raise RuntimeError("WorktreeExclusions fields and BIAS_TOKENS disagree over: " + names)
+
+
+_require_bias_keys(WorktreeExclusions._fields, WorktreeExclusions.BIAS_TOKENS)
 
 
 class WorktreeStock(NamedTuple):
