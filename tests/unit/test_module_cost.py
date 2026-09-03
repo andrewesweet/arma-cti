@@ -52,6 +52,24 @@ def test_staged_holder():
 """
 
 
+# The same holder shape, but the grandchild ignores SIGTERM: the group's
+# SIGTERM kills the direct pytest (default disposition) while the grandchild
+# survives it, so only a kill that re-probes the group after the direct child's
+# exit can stop it.
+TERM_RESISTANT_PROBE = """
+import os, pathlib, signal, subprocess, sys, time
+
+def test_staged_holder_ignores_term():
+    grandchild = subprocess.Popen(
+        [sys.executable, "-c",
+         "import signal, time; signal.signal(signal.SIGTERM, signal.SIG_IGN);"
+         " time.sleep(120)"]
+    )
+    pathlib.Path(os.environ["MODULE_COST_GRANDCHILD_OUT"]).write_text(str(grandchild.pid))
+    time.sleep(120)
+"""
+
+
 def make_sample(**overrides: object) -> module_cost.Sample:
     """One green-looking sample, with the caller's fields replaced."""
     fields: dict[str, object] = {
@@ -162,17 +180,14 @@ def _pid_alive(pid: int) -> bool:
     return True
 
 
-def test_measure_kills_the_grandchild_of_a_timed_out_child(tmp_path: Path) -> None:
-    """The deadline kill reaches the whole process group, not just the direct child.
+def run_holder_probe(tmp_path: Path, body: str) -> tuple[module_cost.Sample, int]:
+    """Run a staged holder module past its deadline and return `(sample, grandchild pid)`.
 
-    `subprocess.run`'s timeout terminates the direct pytest only, so a module
-    whose tests spawn holders of their own — the exact shape of this tool's
-    own subjects, `test_pool_slots` and `test_client_lock` — would leave those
-    holders alive. The staged module's test spawns a grandchild of its own
-    session that sleeps far past the deadline and records its pid where this
-    test reads it, so the pid surviving the run is the leak the finding names.
+    The shared scaffolding of the two group-kill tests: stage the module, point
+    its pid file at `tmp_path`, run past a five-second deadline, and assert the
+    run was killed rather than finished.
     """
-    module = stage_module(tmp_path, GRANDCHILD_PROBE)
+    module = stage_module(tmp_path, body)
     out = tmp_path / "grandchild.txt"
     out.write_text("unwritten")
     os.environ["MODULE_COST_GRANDCHILD_OUT"] = str(out)
@@ -184,11 +199,41 @@ def test_measure_kills_the_grandchild_of_a_timed_out_child(tmp_path: Path) -> No
     assert sample.exit_code == 124
     pid_text = out.read_text()
     assert pid_text != "unwritten", "the staged test never ran; the deadline was too short"
-    pid = int(pid_text)
+    return sample, int(pid_text)
+
+
+def assert_grandchild_dead(pid: int) -> None:
+    """Wait briefly for the group kill to land, and fail naming the survivor."""
     deadline = time.monotonic() + 10.0
     while _pid_alive(pid) and time.monotonic() < deadline:
         time.sleep(0.2)
     assert not _pid_alive(pid), f"grandchild {pid} survived the deadline kill"
+
+
+def test_measure_kills_the_grandchild_of_a_timed_out_child(tmp_path: Path) -> None:
+    """The deadline kill reaches the whole process group, not just the direct child.
+
+    `subprocess.run`'s timeout terminates the direct pytest only, so a module
+    whose tests spawn holders of their own — the exact shape of this tool's
+    own subjects, `test_pool_slots` and `test_client_lock` — would leave those
+    holders alive. The staged module's test spawns a grandchild of its own
+    session that sleeps far past the deadline and records its pid where this
+    test reads it, so the pid surviving the run is the leak the finding names.
+    """
+    _, pid = run_holder_probe(tmp_path, GRANDCHILD_PROBE)
+    assert_grandchild_dead(pid)
+
+
+def test_measure_kills_a_descendant_that_ignores_sigterm(tmp_path: Path) -> None:
+    """A descendant that ignores SIGTERM dies even though the direct child exits on it.
+
+    The group's SIGTERM kills the direct pytest (its default disposition) while
+    the staged grandchild ignores it, so the wait on the direct child alone
+    succeeds and a kill that never re-probes the group after that exit leaves
+    the survivor running — the hole round four's review found.
+    """
+    _, pid = run_holder_probe(tmp_path, TERM_RESISTANT_PROBE)
+    assert_grandchild_dead(pid)
 
 
 def test_measure_reads_staged_kernel_files(tmp_path: Path) -> None:
