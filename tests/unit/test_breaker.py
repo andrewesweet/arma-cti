@@ -947,8 +947,8 @@ OVERLOAD_BODY: Final = (
 # the same bytes. `...` elides a long response id, so these are an elision and not the
 # captured bytes — the constant claims only that this shape classifies `provider_refused`,
 # never that it is what the log carried. The digit-bearing id in the second constant is
-# the elision's proof: status-like digit runs inside the id must not change the verdict,
-# because the classifier reads the whole terminal line.
+# the elision's proof: a status-like digit run inside the id must not change the verdict,
+# because the one parsed status decides the class.
 CODEX_NOT_FOUND_BODY: Final = "ERROR: unexpected status 404 Not Found: ... url: https://chatgpt.com/backend-api/codex/responses"
 CODEX_NOT_FOUND_WITH_RESPONSE_ID: Final = (
     "ERROR: unexpected status 404 Not Found: resp_4291500529"
@@ -970,6 +970,24 @@ CODEX_NOT_FOUND_WITH_RESPONSE_ID: Final = (
         (1, CODEX_NOT_FOUND_BODY, breaker.PROVIDER_REFUSED),
         (1, CODEX_NOT_FOUND_WITH_RESPONSE_ID, breaker.PROVIDER_REFUSED),
         (1, "API Error: 404 model not found", breaker.PROVIDER_REFUSED),
+        # Round five's collision: a status-looking digit run inside an alphanumeric
+        # identifier used to be found by the bare-number searches that ran before the
+        # explicit status was parsed, so a 404 whose response id carried `429` read
+        # `quota_exhausted` and one carrying `500` read `provider_error`. There is one
+        # decision site now — the parsed status — so an identifier on the same line
+        # cannot outrank it.
+        (
+            1,
+            "ERROR: unexpected status 404 Not Found: resp_a429b"
+            " url: https://chatgpt.com/backend-api/codex/responses",
+            breaker.PROVIDER_REFUSED,
+        ),
+        (
+            1,
+            "ERROR: unexpected status 404 Not Found: resp_a500b"
+            " url: https://chatgpt.com/backend-api/codex/responses",
+            breaker.PROVIDER_REFUSED,
+        ),
         # Ordering, not just membership: a status line that the stronger class also
         # claims must lose to it, or a 429 would count as a refusal and a 5xx as both.
         (1, "unexpected status 429 Too Many Requests", breaker.QUOTA_EXHAUSTED),
@@ -990,15 +1008,32 @@ CODEX_NOT_FOUND_WITH_RESPONSE_ID: Final = (
         (1, "API Error: 600", breaker.UNCLASSIFIED),
         (1, "unexpected status 6000", breaker.UNCLASSIFIED),
         (1, "API Error: 4041 model not found", breaker.UNCLASSIFIED),
-        # The free-text markers match whole numbers, not substrings: `4290` contains
-        # `429` and `1500` contains `500`, and neither truncation is a status the
+        # A longer digit run where a status would sit is no status: `4290` would
+        # truncate to `429` and `1500` to `500`, and neither truncation is a code the
         # provider returned, so neither may take the class its fragment would claim.
         (1, "API Error: 4290", breaker.UNCLASSIFIED),
         (1, "API Error: 1500 ", breaker.UNCLASSIFIED),
-        # A refusal shape requires its prefix; a bare status-like number in the child's
-        # own failure output is the child's own work and must keep reading unclassified
-        # so somebody investigates it.
+        # An auth or account failure is the availability family, never quality: the
+        # token or the account, not the request, is what failed (ADR-0061 sends OAuth
+        # expiry to `infra_unavailable`; ADR-0066 Decision 3 places an inability to
+        # serve there). A bare `402` carries no published boundary, so it is the
+        # unknowable case — held, never an invented wait.
+        (1, "API Error: 401 Unauthorized", breaker.PROVIDER_ERROR),
+        (1, "unexpected status 403 Forbidden", breaker.PROVIDER_ERROR),
+        (1, "API Error: 402 Payment Required", breaker.PROVIDER_ERROR),
+        (1, "unexpected status 408 Request Timeout", breaker.PROVIDER_ERROR),
+        # A refusal shape requires its prefix at the line's start: the provider said it
+        # there, and nowhere else. A bare status-like number in the child's own failure
+        # output, and the child's own terminal failure quoting a provider shape, are
+        # the child's own work and must keep reading unclassified so somebody
+        # investigates them.
         (1, "FAILED tests/unit/test_x.py - assert 2 == 404", breaker.UNCLASSIFIED),
+        (
+            1,
+            'FAILED tests/unit/test_x.py - AssertionError: expected "API Error: 404"',
+            breaker.UNCLASSIFIED,
+        ),
+        (1, 'assert got == "unexpected status 500"', breaker.UNCLASSIFIED),
         (1, "the agent decided the issue was already done", breaker.UNCLASSIFIED),
         (2, "", breaker.UNCLASSIFIED),
     ],
@@ -1092,6 +1127,30 @@ def test_three_codex_404s_trip_the_quality_rule(tmp_path: Path) -> None:
     assert verdict.conducting is False
     assert verdict.failure_class == "provider_refused"
     assert circuit.escalated is True
+
+
+def test_three_oauth_401s_hold_the_lane_as_availability_never_quality(tmp_path: Path) -> None:
+    """#696 round five: an expired token is the availability family, never quality.
+
+    Classified end to end like the two holds above, because the point is the wiring: a
+    401 used to read `provider_refused`, so a dead OAuth token counted against the
+    profile's quality and three of them held the lane on the one rule a human must
+    clear — for a failure a re-auth fixes, on a lane that was serving fine. The same
+    three now hold the lane as availability, whose failure class is
+    `infra_unavailable` (ADR-0061; ADR-0066 Decision 3), and the quality streak has
+    not moved.
+    """
+    state = store(tmp_path)
+    circuit = feed(state, "codex", [breaker.classify_run(1, "API Error: 401 Unauthorized")[0]] * 3)
+    assert circuit is not None
+    assert circuit.state == breaker.OPEN
+    assert circuit.rule == "provider_errors"
+    assert circuit.reset_at is None, "no auth failure publishes a boundary, so none is invented"
+    verdict = breaker.lane_verdict(state, "codex", NOW + 10)
+    assert verdict.conducting is False
+    assert verdict.failure_class == "infra_unavailable"
+    assert circuit.escalated is True
+    assert circuit.streak("quality") == 0, "an expired token says nothing about quality"
 
 
 # ------------------------------------------------------------------ store and telemetry
