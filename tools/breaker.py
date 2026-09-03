@@ -1244,46 +1244,57 @@ PROVIDER_ERROR_MARKERS: Final = (
     "network error",
     "timed out",
 )
-# The status shorthands the two lists used to carry as free text — `429` and the
-# marker-known 5xx codes — as whole numbers instead. A substring marker read inside a
-# longer run: `API Error: 4290` contains `429` and `API Error: 1500` contains `500 `,
-# and neither is a status the provider returned. The lookarounds refuse a digit on
-# either side, the same refusal `PROVIDER_STATUS_PATTERN`'s lookarounds make, so a
-# code that would truncate to a known status reads nothing here.
-QUOTA_STATUS_NUMBER: Final = re.compile(r"(?<!\d)429(?!\d)")
-PROVIDER_ERROR_STATUS_NUMBERS: Final = re.compile(r"(?<!\d)(?:500|502|503|504|529)(?!\d)")
 # A status code the provider's own endpoint returned is *typed by what the status means*
 # rather than left `unclassified` or collapsed into one class (#696's owner ruling on the
-# original criterion, which had demanded the 529 be a refusal too): a non-429 4xx is the
-# provider answering and refusing the request — the `provider_refused` row of AGENTS.md's
-# table, not a result, re-dispatch elsewhere, a streak the quality rule counts — while a
-# 5xx stays `provider_error`, a transient ordinary load produces repeatedly and never a
-# refusal, because counting those would hold `claude-native` through a busy hour on a rule
-# only a human clears. A status outside both ranges (a 3xx redirect, say) fits the shape
-# but no row and stays `unclassified`, where somebody investigates it. The two prefixes
-# are the only shapes observed, both from #696's two lanes (`ERROR: unexpected status 404
-# Not Found` from Codex; Claude Code's `API Error: <code>`, whose 529 shape the bounded
-# numbers above already pin). Checked *after* both marker lists on purpose, so a 429 keeps
-# `quota_exhausted` and a marker-known 5xx keeps `provider_error` — the stronger class
-# wins, and a bare status code in the child's own output (a test count, a line number)
-# matches nothing here because the prefixes are required. Every list above reads only the
-# run's *terminal* line — see `_terminal_line` — so a provider-shaped line the run survived
-# never types a failure the provider did not cause. Parsing the run's own output
-# stays the mechanism rather than a per-adapter typed result: the runners are external
-# binaries whose log is the only channel a headless dispatch has, so an adapter result
-# would parse this same prose one layer earlier and add a surface for it (#696).
+# original criterion, which had demanded the 529 be a refusal too). One decision site:
+# the pattern parses the one explicit status the terminal line carries — anchored to the
+# line's start, because `API Error: 404` is a provider shape only where a provider would
+# have said it, and the child's own terminal failure quoting that shape (`FAILED ...
+# expected "API Error: 404"`) is the child's work, not the provider's. Everything a
+# bare-number search used to claim is decided from that parsed value instead, so a
+# digit run inside an identifier (`resp_a429b`) can never outrank the status on the
+# same line — round five's collision, where the two searches disagreed and the search
+# that ran first won. The two prefixes are the only shapes observed, both from #696's
+# two lanes (`ERROR: unexpected status 404 Not Found` from Codex; Claude Code's
+# `API Error: <code>`, whose 529 shape the marker list also carries as free text).
+# Checked *after* both marker lists on purpose, so a line the free text already types
+# keeps that class; a 429 or a 5xx with none reaches the parse and is typed the same
+# way here. An unanchored shape elsewhere on the line, a bare status code in the
+# child's own output (a test count, a line number), a longer digit run where a status
+# would sit, and a status outside the bands below all read `unclassified`, where
+# somebody investigates. Every list above reads only the run's *terminal* line — see
+# `_terminal_line` — so a provider-shaped line the run survived never types a failure
+# the provider did not cause. Parsing the run's own output stays the mechanism rather
+# than a per-adapter typed result: the runners are external binaries whose log is the
+# only channel a headless dispatch has, so an adapter result would parse this same
+# prose one layer earlier and add a surface for it (#696).
 PROVIDER_STATUS_PATTERN: Final = re.compile(
-    r"(?:unexpected status|api error):?\s+(?<!\d)(\d{3})(?!\d)"
+    r"(?:error:\s*)?(?:unexpected status|api error):?\s+(?<!\d)(\d{3})(?!\d)"
 )
-# The bands that place a parsed status, named for the HTTP class each covers: the
-# refusal class is the client-error band minus the quota status, and the provider
-# error class is the server-error band. Both close at each edge, so a code outside
-# either — a 3xx redirect, a 600 — fits the shape but no band and stays
-# `unclassified`; the lookarounds above refuse a longer digit run outright rather
-# than reading its first three digits as a code.
+# The bands that place a parsed status, named for the HTTP class each covers. Both
+# close at each edge, so a code outside either — a 3xx redirect, a 600 — fits the
+# shape but no band and stays `unclassified`; the lookarounds above refuse a longer
+# digit run outright rather than reading its first three digits as a code.
 CLIENT_ERROR_STATUS_RANGE: Final = range(400, 500)
 QUOTA_STATUS: Final = 429
 PROVIDER_ERROR_STATUS_RANGE: Final = range(500, 600)
+# The client errors that are *not* refusals. 401 and 403 are the auth family: the
+# token, not the request, is what failed, so the class is the availability one —
+# ADR-0061 sends OAuth expiry to `infra_unavailable` unchanged, and the `provider_error`
+# outcome is that family's outcome here (its rule's `failure_class` is
+# `infra_unavailable`, and the ledger types it the same). Counting an expired token as
+# a refusal would trip the quality rule — the family whose clearing is a human act —
+# for a failure a re-auth fixes, on a lane that was serving fine. 402 is the account
+# out of credit with no published boundary in the status alone; the quota family's wait
+# is computed from a published window, so without one it is ADR-0066 Decision 3's
+# unknowable case — held, never given an invented wait. 408 is the provider declaring
+# the request timed out, the same transient the free-text `timed out` marker carries.
+# Every other client error is the provider answering and refusing the request — the
+# `provider_refused` row of AGENTS.md's table, not a result, re-dispatch elsewhere, a
+# streak the quality rule counts; while a 5xx stays `provider_error`, a transient
+# ordinary load produces repeatedly and never a refusal, because counting those would
+# hold `claude-native` through a busy hour on a rule only a human clears.
+NON_REFUSAL_CLIENT_STATUSES: Final = frozenset({401, 402, 403, 408})
 # Claude Code prints its subscription limit as `Claude AI usage limit reached|<epoch>`,
 # which is a published reset boundary arriving on the only channel a headless run has.
 LIMIT_EPOCH_SEPARATOR: Final = "usage limit reached|"
@@ -1316,25 +1327,26 @@ def classify_run(returncode: int, output: str) -> tuple[str, float | None]:
     Only the run's terminal line is classified (`_terminal_line`): a provider failure is
     the provider's death of the run, so a provider-shaped line anywhere earlier is a
     warning the run survived, and the child's own last word keeps its classification.
+    A status the provider returned is parsed once, from an anchored provider shape, and
+    every status-based class is decided from that one parsed value.
     """
     if returncode == 0:
         return OK, None
     text = _terminal_line(output)
-    if any(marker in text for marker in QUOTA_MARKERS) or (
-        QUOTA_STATUS_NUMBER.search(text) is not None
-    ):
+    if any(marker in text for marker in QUOTA_MARKERS):
         return QUOTA_EXHAUSTED, _limit_epoch(text)
-    if any(marker in text for marker in PROVIDER_ERROR_MARKERS) or (
-        PROVIDER_ERROR_STATUS_NUMBERS.search(text) is not None
-    ):
+    if any(marker in text for marker in PROVIDER_ERROR_MARKERS):
         return PROVIDER_ERROR, None
-    match = PROVIDER_STATUS_PATTERN.search(text)
-    if match is not None:
-        code = int(match.group(1))
-        if code in CLIENT_ERROR_STATUS_RANGE and code != QUOTA_STATUS:
-            return PROVIDER_REFUSED, None
-        if code in PROVIDER_ERROR_STATUS_RANGE:
-            return PROVIDER_ERROR, None
+    match = PROVIDER_STATUS_PATTERN.match(text)
+    if match is None:
+        return UNCLASSIFIED, None
+    code = int(match.group(1))
+    if code == QUOTA_STATUS:
+        return QUOTA_EXHAUSTED, _limit_epoch(text)
+    if code in NON_REFUSAL_CLIENT_STATUSES or code in PROVIDER_ERROR_STATUS_RANGE:
+        return PROVIDER_ERROR, None
+    if code in CLIENT_ERROR_STATUS_RANGE:
+        return PROVIDER_REFUSED, None
     return UNCLASSIFIED, None
 
 
