@@ -942,6 +942,11 @@ OVERLOAD_BODY: Final = (
     "API Error: 529 [1305][The service may be temporarily overloaded, please try again later]"
 )
 
+# The exact line one real Codex 404 produced (#696), spelled once for the same reason the
+# body above is: the classification row and the end-to-end trip test beside it must pin
+# the same bytes. `...` elides a long response id, not anything the classifier reads.
+CODEX_NOT_FOUND_BODY: Final = "ERROR: unexpected status 404 Not Found: ... url: https://chatgpt.com/backend-api/codex/responses"
+
 
 @pytest.mark.parametrize(
     ("returncode", "output", "expected"),
@@ -954,6 +959,16 @@ OVERLOAD_BODY: Final = (
         (1, "connection refused", breaker.PROVIDER_ERROR),
         (1, "API Error: 503 Service Unavailable", breaker.PROVIDER_ERROR),
         (1, OVERLOAD_BODY, breaker.PROVIDER_ERROR),
+        (1, CODEX_NOT_FOUND_BODY, breaker.PROVIDER_REFUSED),
+        (1, "API Error: 404 model not found", breaker.PROVIDER_REFUSED),
+        # Ordering, not just membership: a status line that the stronger class also
+        # claims must lose to it, or a 429 would count as a refusal and a 5xx as both.
+        (1, "unexpected status 429 Too Many Requests", breaker.QUOTA_EXHAUSTED),
+        (1, "unexpected status 503 Service Unavailable", breaker.PROVIDER_ERROR),
+        # A refusal shape requires its prefix; a bare status-like number in the child's
+        # own failure output is the child's own work and must keep reading unclassified
+        # so somebody investigates it.
+        (1, "FAILED tests/unit/test_x.py - assert 2 == 404", breaker.UNCLASSIFIED),
         (1, "the agent decided the issue was already done", breaker.UNCLASSIFIED),
         (2, "", breaker.UNCLASSIFIED),
     ],
@@ -994,6 +1009,26 @@ def test_three_529_overloads_hold_the_lane(tmp_path: Path) -> None:
     verdict = breaker.lane_verdict(state, "zai", NOW + 10)
     assert verdict.conducting is False
     assert verdict.failure_class == "infra_unavailable"
+
+
+def test_three_codex_404s_trip_the_quality_rule(tmp_path: Path) -> None:
+    """#696: the exact body that read `unclassified` now feeds the breaker's count.
+
+    Same end-to-end shape as the 529 hold above, down the *other* family: a provider
+    that answers and refuses the request is the `provider_refused` row of AGENTS.md's
+    table — not a result, and a streak the quality rule counts. It trips at three,
+    escalates, and publishes no boundary, because a 404 carries none.
+    """
+    state = store(tmp_path)
+    circuit = feed(state, "codex", [breaker.classify_run(1, CODEX_NOT_FOUND_BODY)[0]] * 3)
+    assert circuit is not None
+    assert circuit.state == breaker.OPEN
+    assert circuit.rule == "quality"
+    assert circuit.reset_at is None, "no refusal publishes a boundary, so no cooldown is invented"
+    verdict = breaker.lane_verdict(state, "codex", NOW + 10)
+    assert verdict.conducting is False
+    assert verdict.failure_class == "provider_refused"
+    assert circuit.escalated is True
 
 
 # ------------------------------------------------------------------ store and telemetry

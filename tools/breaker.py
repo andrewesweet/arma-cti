@@ -70,6 +70,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import stat
 import subprocess
 import sys
@@ -1249,6 +1250,19 @@ PROVIDER_ERROR_MARKERS: Final = (
     "network error",
     "timed out",
 )
+# A status code the provider's own endpoint returned: the provider answered and refused
+# the request, which is the `provider_refused` row of AGENTS.md's table — not a result,
+# re-dispatch elsewhere, and a streak the quality rule counts. The two prefixes are the
+# only shapes observed, both from #696's two lanes (`ERROR: unexpected status 404 Not
+# Found` from Codex; Claude Code's `API Error: <code>`, whose 529 shape the markers
+# above already pin). Checked *after* both marker lists on purpose, so a 429 keeps
+# `quota_exhausted` and a 5xx keeps `provider_error` — the stronger class wins, and a
+# bare status code in the child's own output (a test count, a line number) matches
+# nothing here because the prefixes are required. Parsing the run's own output stays
+# the mechanism rather than a per-adapter typed result: the runners are external
+# binaries whose log is the only channel a headless dispatch has, so an adapter result
+# would parse this same prose one layer earlier and add a surface for it (#696).
+PROVIDER_REFUSED_PATTERN: Final = re.compile(r"(?:unexpected status|api error):?\s+\d\d\d")
 # Claude Code prints its subscription limit as `Claude AI usage limit reached|<epoch>`,
 # which is a published reset boundary arriving on the only channel a headless run has.
 LIMIT_EPOCH_SEPARATOR: Final = "usage limit reached|"
@@ -1268,6 +1282,8 @@ def classify_run(returncode: int, output: str) -> tuple[str, float | None]:
         return QUOTA_EXHAUSTED, _limit_epoch(text)
     if any(marker in text for marker in PROVIDER_ERROR_MARKERS):
         return PROVIDER_ERROR, None
+    if PROVIDER_REFUSED_PATTERN.search(text):
+        return PROVIDER_REFUSED, None
     return UNCLASSIFIED, None
 
 
