@@ -1317,6 +1317,22 @@ def _terminal_line(output: str) -> str:
     return ""
 
 
+def _status_outcome(code: int) -> str:
+    """Place one parsed provider status in its class, per the bands and exceptions above.
+
+    The one decision site the round-five refactor exists for: every status-based class
+    is decided from the parsed value alone, so nothing else on the line — an identifier
+    carrying a status-shaped digit run, most of all — can outrank it.
+    """
+    if code == QUOTA_STATUS:
+        return QUOTA_EXHAUSTED
+    if code in NON_REFUSAL_CLIENT_STATUSES or code in PROVIDER_ERROR_STATUS_RANGE:
+        return PROVIDER_ERROR
+    if code in CLIENT_ERROR_STATUS_RANGE:
+        return PROVIDER_REFUSED
+    return UNCLASSIFIED
+
+
 def classify_run(returncode: int, output: str) -> tuple[str, float | None]:
     """Read a finished dispatch's exit code and output into an outcome and a reset time.
 
@@ -1328,7 +1344,7 @@ def classify_run(returncode: int, output: str) -> tuple[str, float | None]:
     the provider's death of the run, so a provider-shaped line anywhere earlier is a
     warning the run survived, and the child's own last word keeps its classification.
     A status the provider returned is parsed once, from an anchored provider shape, and
-    every status-based class is decided from that one parsed value.
+    every status-based class is decided from that one parsed value (`_status_outcome`).
     """
     if returncode == 0:
         return OK, None
@@ -1341,13 +1357,7 @@ def classify_run(returncode: int, output: str) -> tuple[str, float | None]:
     if match is None:
         return UNCLASSIFIED, None
     code = int(match.group(1))
-    if code == QUOTA_STATUS:
-        return QUOTA_EXHAUSTED, _limit_epoch(text)
-    if code in NON_REFUSAL_CLIENT_STATUSES or code in PROVIDER_ERROR_STATUS_RANGE:
-        return PROVIDER_ERROR, None
-    if code in CLIENT_ERROR_STATUS_RANGE:
-        return PROVIDER_REFUSED, None
-    return UNCLASSIFIED, None
+    return _status_outcome(code), (_limit_epoch(text) if code == QUOTA_STATUS else None)
 
 
 def _limit_epoch(text: str) -> float | None:
