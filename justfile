@@ -629,7 +629,8 @@ worktree *args:
 # 181 changed lines of the daemon's transport with no corpus run at all.
 #
 # Refusals are named, each says what was found and what to do, and the exit code
-# separates the two kinds: 1 is nothing landed (audit_file_unreadable, dirty_tree, nothing_to_land,
+# separates the two kinds: 1 is nothing landed (invalid_issue,
+# audit_file_unreadable, dirty_tree, nothing_to_land,
 # rebase_conflict, gate_red, gate_blocked, corpus_owed, corpus_not_pass,
 # corpus_check_unreadable, not_fast_forward, git_failed), 2 is the work IS on
 # origin/main and a step is outstanding (merge_blocked_by_sandbox,
@@ -642,7 +643,7 @@ land *args:
 # The never-alone handover: a review branch instead of a shared tree, and the
 # verdict that review becomes (#332, ADR-0071 ruling 4). No Arma, no lock.
 #
-#   just review exchange 332        push this tree's HEAD to refs/heads/issue-332,
+#   just review exchange 332        push the issue worktree's HEAD to refs/heads/issue-332,
 #                                  force-moving the ref, then verify the remote
 #                                  resolves it to this exact SHA — the implementer's
 #                                  half of the handover; the reviewer's half is
@@ -677,7 +678,7 @@ land *args:
 #
 # Refusals are named, each says what was found and what to do: invalid_issue,
 # invalid_sha, commit_not_found, invalid_diff_id, invalid_findings,
-# input_unreadable, dirty_tree,
+# input_unreadable, dirty_tree, exchange_outside_issue_worktree,
 # not_on_remote, ref_mismatch, git_failed, no_dispatch_records,
 # no_review_dispatch, records_unreadable, verdict_exists, verdict_unreadable,
 # verdict_unwritten, no_verdict, unknown_dispatch, sha_mismatch,

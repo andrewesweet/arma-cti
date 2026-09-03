@@ -1288,6 +1288,33 @@ def test_exchange_from_another_worktree_refuses_and_publishes_nothing(
     assert worktree.remote_ref_sha(repo, "refs/heads/issue-332") is None
 
 
+def test_exchange_run_by_cli_from_the_issue_worktree_publishes_that_tree(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """`main(["exchange", N])` from inside the issue worktree publishes *that* tree (#688).
+
+    Every other success-path test rides `allow_external_worktree=True`, the harness-only
+    seam, so a resolution that stopped resolving and fell back to the caller's cwd would
+    leave them all green while the CLI published the caller's tree again — the exact
+    defect this issue was filed on, restored behind a passing suite.
+    """
+    repo = init_repo(tmp_path)
+    candidate = issue_worktree(repo, 332)
+    head = head_of(candidate)
+    monkeypatch.setenv("CTI_REVIEW_DIR", str(tmp_path))
+    monkeypatch.chdir(candidate)
+
+    code = review_exchange.main(["exchange", "332"])
+
+    captured = capsys.readouterr()
+    assert code == 0
+    assert "ok=review_branch_exchanged" in captured.out.splitlines()
+    assert f"reviewed_sha={head}" in captured.out.splitlines()
+    assert worktree.remote_ref_sha(repo, "refs/heads/issue-332") == head
+
+
 def test_the_review_root_reads_the_environment_not_only_the_home_directory() -> None:
     """The journal's hermeticity is structural, not remembered (#484 round 2, finding 3).
 

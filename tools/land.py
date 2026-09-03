@@ -141,6 +141,8 @@ exit code.
     corpus_check_unreadable the corpus rung could not run; fail closed
     review_issue_unknown    the tree is not an `issue-<n>` worktree, so the rung
                             cannot know whose review to read (#334)
+    invalid_issue           the `--issue` argument was given but is not a positive
+                            integer, so no issue worktree can be named for it
     land_issue_unknown      the command was not given an issue and the caller is not
                             an issue-named worktree
     land_outside_issue_worktree
