@@ -1144,10 +1144,12 @@ class TerminalLineCase(NamedTuple):
 
 
 # quality streak must show it never moved. Every one of these holds opens escalated,
-# because `PROVIDER_ERROR_RULE` and `QUALITY_RULE` both carry `escalates=True` and
-# clearing either is a human act; a case leaves `escalated` unset only where it
-# asserts nothing about it, and `None` there skips the assertion rather than
-# asserting its absence.
+# because `PROVIDER_ERROR_RULE` and `QUALITY_RULE` both carry `escalates=True`; the
+# two rules part on how the hold ends. A provider-error hold reopens on fresh
+# first-party evidence that the lane is answering again — evidence, never a timer
+# (ADR-0066 Decision 3) — while a quality trip never auto-resets, and clearing it
+# is a human act. A case leaves `escalated` unset only where it asserts nothing
+# about it, and `None` there skips the assertion rather than asserting its absence.
 @pytest.mark.parametrize(
     "case",
     [
