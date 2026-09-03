@@ -47,7 +47,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-import rc_health
+sys.path.insert(0, str(Path(__file__).parent))
+
+import rc_health  # noqa: E402 — the tools/ dir is the import root for sibling scripts
 
 DEFAULT_PROJECTS_ROOT = Path.home() / ".claude" / "projects"
 COMMAND_HEAD = 200
@@ -62,6 +64,7 @@ class AuditRefusal(Exception):
     """A typed refusal: the audit could not answer, so it says which rung stopped it."""
 
     def __init__(self, code: str, detail: str) -> None:
+        """Carry the machine-readable code and the human-readable rung."""
         super().__init__(f"{code}: {detail}")
         self.code = code
         self.detail = detail
@@ -81,6 +84,7 @@ class Invocation:
     sidechain: bool
 
     def searchable(self) -> str:
+        """The row text the prose claim-scan searches; the command plus its output."""
         return f"{self.command}\n{self.output}"
 
 

@@ -94,6 +94,13 @@ ignore = [
 # refusal kinds cannot drift by helper (#617), and a refusal's kind IS its
 # machine-readable interface — the shape tools/guidance_eval.py records for the
 # same reasons.
+"tools/transcript_audit.py" = [
+  "C901",    # extract is one ordered fail-closed ladder over the transcript's event shapes
+  "EM101",   # a refusal's code IS the machine-readable interface, as in guidance_eval
+  "TRY003",  # ditto
+  "T201",    # stdout is the CLI's result channel, as in machine_b
+  "ANN401",  # tool_result content arrives as str or list-of-parts by the harness's own shape
+]
 "tools/eval_corpus.py" = [
   "C901",     # the task-loader's validation ladder stays whole so its refusals cannot drift
   "EM101",    # a refusal's kind IS the machine-readable interface, as in guidance_eval

@@ -14,7 +14,9 @@ happened to hold.
 from __future__ import annotations
 
 import json
-from typing import Any
+from pathlib import Path
+
+import pytest
 
 from conftest import load_tool
 
@@ -29,7 +31,7 @@ EVENT_TAIL = {
     "sessionId": "s",
     "uuid": "u",
     "timestamp": "2026-09-03T19:32:30.623Z",
-    "cwd": "/tmp/wt",
+    "cwd": "/stage/wt",
 }
 
 
@@ -72,7 +74,7 @@ def _result(tool_use_id: str, text: str) -> str:
     )
 
 
-def _stage(tmp_path, lines: list[str]):
+def _stage(tmp_path: Path, lines: list[str]) -> tuple[Path, Path]:
     """Write one transcript into a staged project dir; return (root, transcript)."""
     directory = tmp_path / "projects" / "proj"
     directory.mkdir(parents=True)
@@ -90,7 +92,7 @@ TWO_COMMANDS = [
 ]
 
 
-def test_extract_pairs_invocation_and_output(tmp_path) -> None:
+def test_extract_pairs_invocation_and_output(tmp_path: Path) -> None:
     root, transcript = _stage(tmp_path, TWO_COMMANDS)
     assert root.exists()
     rows = transcript_audit.extract(transcript)
@@ -100,29 +102,23 @@ def test_extract_pairs_invocation_and_output(tmp_path) -> None:
     assert not any(row.output_truncated for row in rows)
 
 
-def test_extract_refuses_transcript_without_invocations(tmp_path) -> None:
+def test_extract_refuses_transcript_without_invocations(tmp_path: Path) -> None:
     root, transcript = _stage(tmp_path, [json.dumps({"type": "queue-operation"})])
     assert root.exists()
-    try:
+    with pytest.raises(transcript_audit.AuditRefusal) as raised:
         transcript_audit.extract(transcript)
-    except transcript_audit.AuditRefusal as refusal:
-        assert refusal.code == "harness_unsupported"
-    else:
-        raise AssertionError("expected harness_unsupported")
+    assert raised.value.code == "harness_unsupported"
 
 
-def test_extract_refuses_malformed_line(tmp_path) -> None:
+def test_extract_refuses_malformed_line(tmp_path: Path) -> None:
     root, transcript = _stage(tmp_path, ["{not json", _assistant("u1", "git status")])
     assert root.exists()
-    try:
+    with pytest.raises(transcript_audit.AuditRefusal) as raised:
         transcript_audit.extract(transcript)
-    except transcript_audit.AuditRefusal as refusal:
-        assert refusal.code == "transcript_malformed"
-    else:
-        raise AssertionError("expected transcript_malformed")
+    assert raised.value.code == "transcript_malformed"
 
 
-def test_render_is_deterministic(tmp_path) -> None:
+def test_render_is_deterministic(tmp_path: Path) -> None:
     root, transcript = _stage(tmp_path, TWO_COMMANDS)
     assert root.exists()
     rows = transcript_audit.extract(transcript)
@@ -134,13 +130,13 @@ def test_render_is_deterministic(tmp_path) -> None:
     assert "fatal: invalid upstream" in first
 
 
-def _record_with_block(tmp_path, block: str, prose: str):
+def _record_with_block(tmp_path: Path, block: str, prose: str) -> Path:
     record = tmp_path / "record.md"
     record.write_text(prose + "\n\n" + block + "\n", encoding="utf-8")
     return record
 
 
-def test_verify_holds_when_record_matches_transcript(tmp_path) -> None:
+def test_verify_holds_when_record_matches_transcript(tmp_path: Path) -> None:
     root, transcript = _stage(tmp_path, TWO_COMMANDS)
     assert root.exists()
     block = transcript_audit.render(transcript_audit.extract(transcript), transcript)
@@ -155,7 +151,7 @@ def test_verify_holds_when_record_matches_transcript(tmp_path) -> None:
     assert rows == 2
 
 
-def test_six_nine_five_substituted_sha_refuses(tmp_path) -> None:
+def test_six_nine_five_substituted_sha_refuses(tmp_path: Path) -> None:
     root, transcript = _stage(tmp_path, TWO_COMMANDS)
     assert root.exists()
     block = transcript_audit.render(transcript_audit.extract(transcript), transcript)
@@ -166,17 +162,18 @@ def test_six_nine_five_substituted_sha_refuses(tmp_path) -> None:
     assert rows == 2
 
 
-def test_six_nine_five_omitted_invocation_refuses(tmp_path) -> None:
+def test_six_nine_five_omitted_invocation_refuses(tmp_path: Path) -> None:
     root, transcript = _stage(tmp_path, TWO_COMMANDS)
     assert root.exists()
     block = transcript_audit.render(transcript_audit.extract(transcript), transcript)
     kept = "\n".join(line for line in block.splitlines() if "fatal" not in line)
     record = _record_with_block(tmp_path, kept, "Prose.\n")
     problems, _rows = transcript_audit.verify(record, transcript)
-    assert problems and problems[0][0] == "record_block_modified"
+    assert problems
+    assert problems[0][0] == "record_block_modified"
 
 
-def test_verify_refuses_record_without_block(tmp_path) -> None:
+def test_verify_refuses_record_without_block(tmp_path: Path) -> None:
     root, transcript = _stage(tmp_path, TWO_COMMANDS)
     assert root.exists()
     record = tmp_path / "record.md"
@@ -186,7 +183,7 @@ def test_verify_refuses_record_without_block(tmp_path) -> None:
     assert rows == 0
 
 
-def test_verify_refuses_ambiguous_blocks(tmp_path) -> None:
+def test_verify_refuses_ambiguous_blocks(tmp_path: Path) -> None:
     root, transcript = _stage(tmp_path, TWO_COMMANDS)
     assert root.exists()
     block = transcript_audit.render(transcript_audit.extract(transcript), transcript)
@@ -195,18 +192,19 @@ def test_verify_refuses_ambiguous_blocks(tmp_path) -> None:
     assert problems[0][0] == "record_block_ambiguous"
 
 
-def test_verify_refuses_fabricated_git_command(tmp_path) -> None:
+def test_verify_refuses_fabricated_git_command(tmp_path: Path) -> None:
     root, transcript = _stage(tmp_path, TWO_COMMANDS)
     assert root.exists()
     block = transcript_audit.render(transcript_audit.extract(transcript), transcript)
     prose = "Nothing here ran `git push --force origin main`.\n"
     record = _record_with_block(tmp_path, block, prose)
     problems, rows = transcript_audit.verify(record, transcript)
-    assert problems and problems[0][0] == "claim_not_in_transcript"
+    assert problems
+    assert problems[0][0] == "claim_not_in_transcript"
     assert rows == 2
 
 
-def test_find_transcript_prefers_newest(tmp_path) -> None:
+def test_find_transcript_prefers_newest(tmp_path: Path) -> None:
     import os
 
     worktree = str(tmp_path / "wt")
@@ -221,18 +219,13 @@ def test_find_transcript_prefers_newest(tmp_path) -> None:
     assert found.name == "b.jsonl"
 
 
-def test_find_transcript_refuses_missing_dir(tmp_path) -> None:
-    try:
-        found = transcript_audit.find_transcript(
-            transcript_audit.Path(str(tmp_path / "nowhere")), tmp_path
-        )
-    except transcript_audit.AuditRefusal as refusal:
-        assert refusal.code == "transcript_not_found"
-    else:
-        raise AssertionError(f"expected refusal, got {found}")
+def test_find_transcript_refuses_missing_dir(tmp_path: Path) -> None:
+    with pytest.raises(transcript_audit.AuditRefusal) as raised:
+        transcript_audit.find_transcript(transcript_audit.Path(str(tmp_path / "nowhere")), tmp_path)
+    assert raised.value.code == "transcript_not_found"
 
 
-def test_cli_emit_and_verify_round_trip(tmp_path, capsys) -> None:
+def test_cli_emit_and_verify_round_trip(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     worktree = str(tmp_path / "wt")
     directory = tmp_path / transcript_audit.rc_health.project_dir_name(worktree)
     directory.mkdir()
