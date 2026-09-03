@@ -1463,7 +1463,7 @@ def record_human_verdict(  # noqa: C901, PLR0911, PLR0913 — one explicit refus
         authored = tuple(
             record
             for profile_name, record in zip(authorship.potential, authorship.records, strict=True)
-            if reviewer_profile in dispatch.retired_names(profile_name)
+            if reviewer_profile in dispatch.profile_lineage(profile_name)
         )
         return Refusal(
             "review_same_profile",

@@ -954,7 +954,7 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
             (),
         )
     authorship = dispatch.with_declared_authors(authorship, declared, str(declared_record))
-    # Resolved through `retired_names`, not plain membership (#413): a reviewer that is the
+    # Resolved through `profile_lineage`, not plain membership (#413): a reviewer that is the
     # successor of a retired author is the one arrangement dispatch refuses and a plain
     # string comparison would clear, because the records carry the old name and the verdict
     # carries the new one. Same set `excluded_from_review` builds at dispatch time, minus
@@ -963,7 +963,7 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
         authored = tuple(
             record
             for profile, record in zip(authorship.potential, authorship.records, strict=True)
-            if binding.profile in dispatch.retired_names(profile)
+            if binding.profile in dispatch.profile_lineage(profile)
         )
         return Outcome(
             Refusal(

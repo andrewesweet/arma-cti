@@ -2523,8 +2523,13 @@ def contradicted_refusal(seat: Seat, reviewed: str, issue: int, authorship: Auth
     )
 
 
-def retired_names(name: str) -> tuple[str, ...]:
-    """Return the name and every successor a rename chain replaced it with, newest last (#413).
+def profile_lineage(name: str) -> tuple[str, ...]:
+    """Return the name and every name the rename chain replaced it with, newest last (#413).
+
+    The result spans the whole chain, not the retired half of it: the name itself (live or
+    retired), every retired name on the way, and the live name the chain ends at. That span
+    is why this is `profile_lineage` and not `retired_names` (#414) — a reader who took the
+    old name at its word would treat the live end of the chain as retired, which it is not.
 
     One entry is all the table has ever carried; the walk is for the second rename of the
     same profile, which a single hop would resolve one step short of the live name. A cycle
@@ -2550,7 +2555,7 @@ def resolved_profile(name: str) -> Profile | None:
     name whose chain resolves to nothing registered returns `None`, which every caller
     treats as unplaceable rather than as empty.
     """
-    for candidate in reversed(retired_names(name)):
+    for candidate in reversed(profile_lineage(name)):
         if candidate in PROFILES:
             return PROFILES[candidate]
     return None
@@ -2560,11 +2565,11 @@ def never_alone_exclusions(authorship: Authorship) -> frozenset[str]:
     """Every profile name a reviewer must not be, taken from the authorship set alone (#413).
 
     `excluded_from_review` minus the declared subject, which the landing does not have —
-    the verdict's own dispatch already refused that route. Both read `retired_names`, so a
+    the verdict's own dispatch already refused that route. Both read `profile_lineage`, so a
     rename cannot make dispatch refuse a reviewer the landing then clears, which is the
     disagreement the retired name would otherwise open between the two rungs.
     """
-    return frozenset(name for profile in authorship.potential for name in retired_names(profile))
+    return frozenset(name for profile in authorship.potential for name in profile_lineage(profile))
 
 
 def excluded_from_review(reviewed: str, authorship: Authorship) -> frozenset[str]:
@@ -2581,13 +2586,13 @@ def excluded_from_review(reviewed: str, authorship: Authorship) -> frozenset[str
     too much costs a resolution step down the seat's list; excluding too little costs the
     invariant. Those prices are not comparable, so the conservative side is the only one —
     and since #413 that includes each retired name's successor, resolved through
-    `retired_names` rather than left as a string no preference list carries.
+    `profile_lineage` rather than left as a string no preference list carries.
 
     One home, so that resolution, the refusal text and the printed route cannot disagree
     about which profiles this dispatch was never going to take.
     """
     return frozenset(
-        name for source in (reviewed, *authorship.potential) for name in retired_names(source)
+        name for source in (reviewed, *authorship.potential) for name in profile_lineage(source)
     )
 
 
@@ -2683,9 +2688,10 @@ def same_profile_refusal(
     elif why == "named_author":
         action = (
             f"You named {named}, which is not the declared subject but is a profile this "
-            f"issue's own dispatch records carry ({' '.join(authorship.records)}) — so it may "
-            "have coauthored the change it would be clearing. The invariant is about every "
-            "profile that worked on the change, not the one a caller chose to declare. Name a "
+            f"issue's own dispatch records place on the work ({' '.join(authorship.potential)})"
+            " — so it may have coauthored the change it would be clearing. The invariant is "
+            "about every profile that worked on the change, not the one a caller chose to "
+            "declare. Name a "
             "different one, or leave --lane and --profile out and let the seat resolve: it "
             f"walks {resolves_to} for this subject. Nothing was dispatched. {NEVER_ALONE}"
         )
