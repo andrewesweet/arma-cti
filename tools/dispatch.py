@@ -1166,6 +1166,21 @@ def with_declared_authors(
     )
 
 
+def _authorship_record_source(record: str) -> str:
+    """Name the source kind encoded by one entry in ``Authorship.records``."""
+    if Path(record).name == review_loop.AUTHORSHIP_FILE:
+        return review_loop.DECLARED
+    return "dispatch"
+
+
+def potential_author_provenance(authorship: Authorship) -> str:
+    """Render each potential profile beside the record that put it in the set."""
+    return " ".join(
+        f"{profile} source={_authorship_record_source(record)} record={record}"
+        for profile, record in zip(authorship.potential, authorship.records, strict=True)
+    )
+
+
 class Resolution(NamedTuple):
     """Which profile this dispatch runs on, and why that one (ADR-0071 ruling 2, #321).
 
@@ -2523,7 +2538,11 @@ def contradicted_refusal(seat: Seat, reviewed: str, issue: int, authorship: Auth
     )
 
 
-def profile_lineage(name: str) -> tuple[str, ...]:
+def profile_lineage(
+    name: str,
+    *,
+    retired_profiles: Mapping[str, RetiredProfile] = RETIRED_PROFILES,
+) -> tuple[str, ...]:
     """Return the name and every name the rename chain replaced it with, newest last (#413).
 
     The result spans the whole chain, not the retired half of it: the name itself (live or
@@ -2536,15 +2555,19 @@ def profile_lineage(name: str) -> tuple[str, ...]:
     in the table is a registry bug, and it stops the walk rather than looping on it.
     """
     chain = [name]
-    while chain[-1] in RETIRED_PROFILES:
-        successor = RETIRED_PROFILES[chain[-1]].successor
+    while chain[-1] in retired_profiles:
+        successor = retired_profiles[chain[-1]].successor
         if successor in chain:
             break
         chain.append(successor)
     return tuple(chain)
 
 
-def resolved_profile(name: str) -> Profile | None:
+def resolved_profile(
+    name: str,
+    *,
+    retired_profiles: Mapping[str, RetiredProfile] = RETIRED_PROFILES,
+) -> Profile | None:
     """Return the registry entry a name resolves to for reading records (#413).
 
     The name itself where it is registered, else the successor a rename left.
@@ -2555,7 +2578,7 @@ def resolved_profile(name: str) -> Profile | None:
     name whose chain resolves to nothing registered returns `None`, which every caller
     treats as unplaceable rather than as empty.
     """
-    for candidate in reversed(profile_lineage(name)):
+    for candidate in reversed(profile_lineage(name, retired_profiles=retired_profiles)):
         if candidate in PROFILES:
             return PROFILES[candidate]
     return None
@@ -2688,7 +2711,8 @@ def same_profile_refusal(
     elif why == "named_author":
         action = (
             f"You named {named}, which is not the declared subject but is a profile this "
-            f"issue's own dispatch records place on the work ({' '.join(authorship.potential)})"
+            "issue's authorship records place on the work ("
+            f"{potential_author_provenance(authorship)})"
             " — so it may have coauthored the change it would be clearing. The invariant is "
             "about every profile that worked on the change, not the one a caller chose to "
             "declare. Name a "
@@ -2711,6 +2735,8 @@ def same_profile_refusal(
             f"reviewing={reviewed}",
             f"why={why}",
             *((f"profile={named}",) if named else ()),
+            f"potential_authors={' '.join(authorship.potential)}",
+            f"records={' '.join(authorship.records)}",
             f"excluded={' '.join(sorted(excluded))}",
             f"candidates={' '.join(candidates) or 'none'}",
         ),
