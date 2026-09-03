@@ -14,11 +14,14 @@ happened to hold.
 from __future__ import annotations
 
 import json
-from pathlib import Path
+import os
+from typing import TYPE_CHECKING
 
 import pytest
-
 from conftest import load_tool
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 transcript_audit = load_tool("transcript_audit")
 
@@ -205,8 +208,6 @@ def test_verify_refuses_fabricated_git_command(tmp_path: Path) -> None:
 
 
 def test_find_transcript_prefers_newest(tmp_path: Path) -> None:
-    import os
-
     worktree = str(tmp_path / "wt")
     directory = tmp_path / transcript_audit.rc_health.project_dir_name(worktree)
     directory.mkdir()

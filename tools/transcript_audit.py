@@ -49,7 +49,7 @@ from typing import Any
 
 sys.path.insert(0, str(Path(__file__).parent))
 
-import rc_health  # noqa: E402 — the tools/ dir is the import root for sibling scripts
+import rc_health  # the tools/ dir is the import root for sibling scripts
 
 DEFAULT_PROJECTS_ROOT = Path.home() / ".claude" / "projects"
 COMMAND_HEAD = 200
@@ -60,7 +60,7 @@ BEGIN = "<!-- transcript-audit begin "
 END = "<!-- transcript-audit end -->"
 
 
-class AuditRefusal(Exception):
+class AuditRefusal(Exception):  # noqa: N818 — the repo names this shape `Refusal`, and a refusal is not an error
     """A typed refusal: the audit could not answer, so it says which rung stopped it."""
 
     def __init__(self, code: str, detail: str) -> None:
@@ -84,7 +84,7 @@ class Invocation:
     sidechain: bool
 
     def searchable(self) -> str:
-        """The row text the prose claim-scan searches; the command plus its output."""
+        """Return the row text the prose claim-scan searches: command plus output."""
         return f"{self.command}\n{self.output}"
 
 
@@ -195,8 +195,10 @@ def render(rows: list[Invocation], transcript: Path) -> str:
     digest = hashlib.sha256(transcript.read_bytes()).hexdigest()[:16]
     lines = [
         f"{BEGIN}transcript={transcript.name} sha256={digest} rows={len(rows)} -->",
-        "Generated from the transcript; regenerate, never edit. Resolve a row with"
-        " `sed -n <line>p <transcript>`.",
+        (
+            "Generated from the transcript; regenerate, never edit. Resolve a row with"
+            " `sed -n <line>p <transcript>`."
+        ),
         "| line | timestamp | tool | command | output |",
         "|---|---|---|---|---|",
     ]
@@ -246,28 +248,36 @@ def verify(record: Path, transcript: Path) -> tuple[list[tuple[str, str]], int]:
         got = text[begin:end].splitlines()
         want = expected.splitlines()
         first = next(
-            (n for n, (a, b) in enumerate(zip(got, want)) if a != b), min(len(got), len(want))
+            (n for n, (a, b) in enumerate(zip(got, want, strict=False)) if a != b),
+            min(len(got), len(want)),
         )
         return [
             (
                 "record_block_modified",
-                f"{record}: block differs from the regenerated audit at line {first + 1}"
-                f" ({len(got)} recorded lines, {len(want)} generated)",
+                (
+                    f"{record}: block differs from the regenerated audit at line {first + 1}"
+                    f" ({len(got)} recorded lines, {len(want)} generated)"
+                ),
             )
         ], 0
     searchable = "\n".join(row.searchable() for row in rows)
     prose = text[:begin] + text[end:]
     for number, line in enumerate(prose.splitlines(), start=1):
-        for token in SHA_TOKEN.findall(line):
-            if token not in searchable:
-                problems.append(("claim_not_in_transcript", f"{record}:{number}: SHA {token}"))
-        for command in GIT_TICK.findall(line):
-            if command not in searchable:
-                problems.append(("claim_not_in_transcript", f"{record}:{number}: `{command}`"))
+        problems.extend(
+            ("claim_not_in_transcript", f"{record}:{number}: SHA {token}")
+            for token in SHA_TOKEN.findall(line)
+            if token not in searchable
+        )
+        problems.extend(
+            ("claim_not_in_transcript", f"{record}:{number}: `{command}`")
+            for command in GIT_TICK.findall(line)
+            if command not in searchable
+        )
     return problems, len(rows)
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Print the emit block or the verify verdict; exit 0 only when the record holds."""
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     sub = parser.add_subparsers(dest="verb", required=True)
     for name in ("emit", "verify"):
