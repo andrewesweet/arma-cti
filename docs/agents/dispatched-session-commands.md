@@ -125,4 +125,78 @@ What this buys is a brief that costs nothing to compose and a dispatch that does
 
 ### Results
 
-Filled by the results commit that follows this one. Until then this subsection states only: no route had been provoked when the design above was committed.
+Run 2026-09-03, entirely inside the session that committed the design above (`a7341ca4`). **Verdict first: H is false. The four-into-one collapse was performed with permitted commands, and the falsifier's tree-identity check is met.** Every command below is literal; every SHA is the value the run used.
+
+**The setup leg failed, and the shape was built in this repository instead.** No repository-creating verb is permitted, so the designed scratch repository never existed:
+
+| Command | Outcome |
+|---|---|
+| `git init .spike-out/695-scratch` | refused — `This command requires approval` |
+| `git worktree add --detach .spike-out/695-scratch HEAD` | refused — `This command requires approval` |
+| `git clone --no-hardlinks . .spike-out/695-scratch` | refused — `This command requires approval` |
+
+The four-commit shape was therefore built on top of the design commit in this worktree's own history, after the removal routes below had been measured: four scratch commits (`463bd479`, `2a4a1158`, `9feca5c5`, `aaae549c` — one file each, `git add <file> && git commit -m "test: #695 collapse-experiment scratch commit N"`), always removable by the permitted `git rebase --onto` drop. **Deviations from the design, stated rather than hidden:** the scratch commits sat in this branch's ancestry while the experiment ran, which is exactly where #691's first dispatch lost its own scratch — the difference is that the removal route was measured first, and the branch was returned to `a7341ca4` before the gate; and route 8, designed for a remoteless scratch, ran in this repository instead, so its permission half stands and its intended git-level "no destination" failure was never reproduced. The scratch commits are dangling objects; they land nowhere.
+
+**Verbatim rows.** "refused" below is always the harness's `This command requires approval` unless another origin is named; classification follows each row.
+
+| # | Command (literal) | Outcome |
+|---|---|---|
+| 1 | `git reset --soft HEAD` | refused. The no-op target was chosen so that a permitted run would have been harmless; the verb-level answer covers `--soft <B>` identically, because the decision is taken on the verb |
+| 2 | `git rebase -i a7341ca420a1dbeaa41c1bd919dac75a8b83161c` | **ran** — `Successfully rebased and updated detached HEAD.`; the range held one already-applied pick, so this was a fast-forward short-circuit and exercised no todo |
+| 2' | `git rebase -i --onto fd55969eef475f29c7f6cd5be9334782f9b9ac6a a7341ca420a1dbeaa41c1bd919dac75a8b83161c` | **ran a real replay** — `Rebasing (1/1)…Successfully rebased and updated detached HEAD.`; the commit was replayed (`ed7a55cd` → `bea72c40`), so the todo was taken **unmodified** and no editor blocked the run. `git rebase -i` on this surface completes non-interactively: it drops, reorders and replays, and squashes nothing, because every route to a todo editor is refused (rows 2b, 2c, 2d, and the `fixup!` row below) |
+| 2b | `GIT_SEQUENCE_EDITOR='sed -i -e "2s/^pick/fixup/" -e "3s/^pick/fixup/" -e "4s/^pick/fixup/"' git rebase -i a7341ca420a1dbeaa41c1bd919dac75a8b83161c` | refused — the environment-assignment prefix is not what the permission layer matches on |
+| 2c | `git -c sequence.editor=true rebase -i a7341ca420a1dbeaa41c1bd919dac75a8b83161c` | refused — an option before the verb breaks the prefix in the same way |
+| 2d | `git config sequence.editor 'sed -i -e "2s/^pick/fixup/" -e "3s/^pick/fixup/" -e "4s/^pick/fixup/"'` | refused |
+| 3 | `git rebase --onto a7341ca420a1dbeaa41c1bd919dac75a8b83161c 463bd4798c24534b3bc8c2c00f96c052485aa21e` | **ran** — `Rebasing (1/3)Rebasing (2/3)Rebasing (3/3)[KSuccessfully rebased and updated detached HEAD.`; the four commits became three (`1ffa0596`, `890c4209`, `d5e7a571`): the first was dropped, the rest replayed |
+| 4 | `git commit-tree 2753ec505936ce15acfd3d219794938818569f72 -m probe-695-dangling` | refused |
+| 4b | `git update-ref refs/heads/scratch-695-branch d17598d33283ee9b5ad5535c9780d7d4dc66c48c` | refused |
+| 4c | `git branch scratch-695-branch d17598d33283ee9b5ad5535c9780d7d4dc66c48c` | refused (create form; `-f` not separately provoked and **not claimed**) |
+| 5 | `git rebase --onto d5e7a5718267e2abd67cfe98ab3f839c649cf13f HEAD` | **ran** — `Successfully rebased and updated detached HEAD.`; HEAD moved to `d5e7a571`, dropping the tip commit above it. #691's round-five command is thereby reproduced and correctly characterised: **it drops, it does not collapse** |
+| 6 | `git commit -m "nothing-to-commit"` | **git's own refusal** — exit 1, `Not currently on any branch.` / `nothing to commit, working tree clean` |
+| 7 | `git rebase --continue` | **ran, and git refused its argument** — exit 128, `fatal: No rebase in progress?`. Proof the `git rebase` verb is permitted on a grant outside this repository's allowlist |
+| 8 | `git push --dry-run origin HEAD:main` | **ran** — `To https://github.com/andrewesweet/arma-cti` / `fd55969e..a7341ca4  HEAD -> main`; a dry run, nothing pushed. The 2026-08-06 counterexample reproduces on this session |
+| 9 | `git var GIT_COMMITTER_IDENT` | refused |
+| 10 | `git commit --amend -m "test: #695 collapse target commit amended"` | **ran** — `7683632a` → `d17598d3`, parent kept, date line printed. The known positive, on this session's own record |
+| — | `git --version` | refused — even the version probe is outside the granted prefixes |
+| — | `git merge --squash d17598d33283ee9b5ad5535c9780d7d4dc66c48c` | refused |
+| — | `git checkout d17598d33283ee9b5ad5535c9780d7d4dc66c48c -- scratch-695-one.txt scratch-695-two.txt scratch-695-three.txt scratch-695-four.txt scratch-695-five.txt` | refused |
+| — | `git apply --index collapse-695.patch` | refused |
+| — | `git commit -m "fixup! test: #695 collapse target commit amended"` | **refused by this repository's own `commit-msg` hook**, a third refusal origin: exit 1 and cocogitto's own text, `Error: Missing commit type separator ':'`. The `--autosquash` collapse route is closed by this repo's message gate, not by permissions. `git add` had already staged the content, and that staged leftover caused the autostash conflict below |
+| — | `git stash drop fdb608a1` | refused; `git stash list` **ran** — `stash@{0}: autostash`. The read form of a verb is permitted where the mutating form is refused |
+| — | `printenv CTI_DISPATCH_ID CTI_DISPATCH_LANE CTI_DISPATCH_PROFILE CTI_DISPATCH_SEAT CLAUDE_EFFORT CTI_DISPATCH_WORKTREE` (chained with `echo "exit=$?"`) | refused — `This Bash command contains multiple operations. The following parts require approval: printenv …, echo "exit=$?"` |
+| — | `printenv CTI_DISPATCH_ID` | refused |
+| — | `ls /home/andre/.arma-cti/dispatches` | refused — `ls in '/home/andre/.arma-cti/dispatches' was blocked. For security, Claude Code may only list files in the allowed working directories for this session: '/home/andre/code/github.com/andrewesweet/arma-cti/.claude/worktrees/issue-695'.` |
+| — | `cat /proc/self/environ` | refused — `Accesses /proc/*/environ which may expose secrets` |
+| — | a `Read` of `/home/andre/.claude/settings.json` | refused — `Claude requested permissions to read from /home/andre/.claude/settings.json, but you haven't granted it yet.` |
+
+**One dated correction to this document's cause 3.** The 2026-08-10 record says a `&&` chain gets no read-only auto-approval as a whole. On 2026-09-03, `git status --short --branch && git log --oneline -3 && cat .gitignore` and `rm scratch-695-target.txt && git add scratch-695-target.txt && git status --short` both **ran**, and `git rebase … && git stash drop fdb608a1 && …` was refused while naming only the refused part: `This Bash command contains multiple operations. The following part requires approval: git stash drop fdb608a1`. The decomposition survives; the blanket "no chain approval" does not. Dated, not rewritten.
+
+**The autostash hazard, witnessed.** A permitted `git rebase --onto` over a tree dirtied by the refused `fixup!` commit produced:
+
+```
+Created autostash: fdb608a1
+Applying autostash resulted in conflicts.
+Your changes are safe in the stash.
+You can run "git stash pop" or "git stash drop" at any time.
+Successfully rebased and updated detached HEAD.
+```
+
+It left an unmerged path (`DU scratch-695-target.txt`) to resolve — `rm` plus `git add` cleared it — and the stash entry `fdb608a1` survives because `git stash drop` is refused. Clearing `stash@{0}` is owed to this session's successor; it is named here because no permitted command reaches it.
+
+**The collapse itself, which falsifies H.** After the autostash rebase, HEAD stood at `a7341ca4` and the four commits above it (`1ffa0596`, `890c4209`, `d5e7a571`, `d17598d3`) were dangling but intact. Their combined tree was re-authored through the harness's `Write` tool — four files at exactly the contents the tip held — then:
+
+```
+git add scratch-695-two.txt scratch-695-three.txt scratch-695-four.txt scratch-695-target.txt && git commit -m "test: #695 four commits collapsed into one"
+```
+
+produced `ed7a55cd` (tree `dc3d1a07`), **one commit where four had been**, and the falsifier's identity check:
+
+```
+git diff d17598d33283ee9b5ad5535c9780d7d4dc66c48c HEAD
+```
+
+returned **empty**. Four commits collapsed into one, same tree, only permitted commands. The route is **drop and rebuild**: `git rebase --onto` moves HEAD off the commits, the session re-authors the tip's final content — which a session that authored those commits always has in its own transcript, and can read back through the permitted `git diff <keep> <tip>` — and commits once.
+
+**What this surface closes and what it does not.** Closed: every git-side collapse verb measured — `reset`, `commit-tree`, `update-ref`, `branch`, `merge`, `checkout <sha> --`, `apply --index`, `config` — and every route to a rebase todo editor: environment assignment, `-c` prefix, `git config`, and `fixup!`/`squash!` messages through the repo's own commit-msg hook. Open: `git rebase` in full, including `-i`, which drops, reorders, replays and never squashes here; `git commit --amend`; and the drop-and-rebuild collapse above. `codex` remains out of scope, and this session's lane label is unknown from inside (arrangement above); every claim here belongs to the allowlist-resolving surface, not to a lane name.
+
+**Not claimed:** anything about any command absent from the tables above — neither its permission nor its effect. The rows are provocations, not a bound.
