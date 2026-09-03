@@ -215,6 +215,13 @@ QUOTA_RULE: Final = TripRule(
     failure_class=QUOTA_EXHAUSTED,
 )
 PROVIDER_ERROR_RULE: Final = TripRule(
+    # #420's decision, stated: the breaker does hold the lane on repeated 5xx, on this
+    # rule rather than a new one. A single 529 is noise — the same brief re-dispatched
+    # by hand landed immediately — so one is not enough to trip; three in a minute is a
+    # lane that is down. `auto_reset=False` is load-bearing: no 5xx carries a boundary
+    # its provider published, and CLAUDE.md forbids a wait this project chose, so the
+    # lane reopens on the quota feed's evidence it is serving again, or by a human's
+    # hand after the escalation, never on a timer.
     name="provider_errors",
     on=frozenset({PROVIDER_ERROR}),
     consecutive=CONSECUTIVE_N,
@@ -1189,6 +1196,13 @@ PROVIDER_ERROR_MARKERS: Final = (
     "502 ",
     "503 ",
     "504 ",
+    # #420: the overload body `API Error: 529 [1305][The service may be temporarily
+    # overloaded, please try again later]` matched none of the markers above and read
+    # `unclassified` — a provider-side overload counted against the lane's work. The
+    # code and the body phrase are both pinned so the mapping is not re-derived from a
+    # log the next time z.ai has a bad ten minutes.
+    "529 ",
+    "temporarily overloaded",
     "bad gateway",
     "service unavailable",
     "network error",

@@ -30,6 +30,7 @@ from conftest import REPO, load_tool
 if TYPE_CHECKING:
     from pathlib import Path
     from types import ModuleType
+    from typing import Final
 
 breaker: ModuleType = load_tool("breaker")
 otel_event: ModuleType = load_tool("otel_event")
@@ -902,6 +903,12 @@ def test_the_ledger_reads_only_this_lanes_dispatches(tmp_path: Path) -> None:
         (1, "Error: insufficient quota for this key", breaker.QUOTA_EXHAUSTED),
         (1, "connection refused", breaker.PROVIDER_ERROR),
         (1, "API Error: 503 Service Unavailable", breaker.PROVIDER_ERROR),
+        (
+            1,
+            "API Error: 529 [1305][The service may be temporarily overloaded,"
+            " please try again later]",
+            breaker.PROVIDER_ERROR,
+        ),
         (1, "the agent decided the issue was already done", breaker.UNCLASSIFIED),
         (2, "", breaker.UNCLASSIFIED),
     ],
@@ -923,6 +930,30 @@ def test_a_limit_with_no_epoch_yields_no_reset_rather_than_a_computed_one() -> N
     outcome, reset_at = breaker.classify_run(1, "429 rate limit exceeded, try later")
     assert outcome == breaker.QUOTA_EXHAUSTED
     assert reset_at is None
+
+
+OVERLOAD_BODY: Final = (
+    "API Error: 529 [1305][The service may be temporarily overloaded, please try again later]"
+)
+
+
+def test_three_529_overloads_hold_the_lane(tmp_path: Path) -> None:
+    """#420: the exact body that read `unclassified` now feeds the breaker's hold.
+
+    Classified end to end — `classify_run`'s outcome through `record_outcome` — because
+    the point is the wiring, not the marker: the dispatch's own path reads the log,
+    classifies, and journals, and a lane having a bad ten minutes must reach one hold
+    rather than N separate failures.
+    """
+    state = store(tmp_path)
+    circuit = feed(state, "zai", [breaker.classify_run(1, OVERLOAD_BODY)[0]] * 3)
+    assert circuit is not None
+    assert circuit.state == breaker.OPEN
+    assert circuit.rule == "provider_errors"
+    assert circuit.reset_at is None, "no 5xx publishes a boundary, so no cooldown is invented"
+    verdict = breaker.lane_verdict(state, "zai", NOW + 10)
+    assert verdict.conducting is False
+    assert verdict.failure_class == "infra_unavailable"
 
 
 # ------------------------------------------------------------------ store and telemetry
