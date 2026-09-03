@@ -599,6 +599,73 @@ def test_an_unpublished_unclassified_non_result_still_holds_its_slot() -> None:
     assert policy.eligible_work_items(facts) == ()
 
 
+@pytest.mark.parametrize("recovery_kind", ["lost_work", "finished_and_cleaned"])
+def test_a_terminal_recovery_verdict_releases_a_foreign_failure_class(
+    recovery_kind: str,
+) -> None:
+    """A recovery conclusion releases the slot whatever `failure_class` survived it.
+
+    `_with_recovery` stamps `failure_class=run.failure_class or "interrupted"`,
+    so the default never fires where a delivery already typed one: a class
+    outside `NON_RESULT_CLASSES` — `assertion_failed` is a result class, not a
+    non-result — stays on the fact through the terminal branch.  The verdict,
+    not the class text, is the fact that ends the run (#690).
+    """
+    run = policy.WorkRunFact(
+        "run-1",
+        "non_result",
+        work_item_key="item",
+        dispatch_id="dispatch-1",
+        issue=1,
+        failure_class="assertion_failed",
+        recovery_kind=recovery_kind,
+    )
+    item = policy.WorkItemFact("item", "open", issue=1)
+    facts = coordination_facts((item,), runs=(run,), limit=1)
+
+    assert policy.live_work_runs(facts) == ()
+    assert policy.eligible_work_items(facts) == (item,)
+
+
+def test_a_terminal_recovery_verdict_releases_a_run_without_a_failure_class() -> None:
+    """The verdict alone is terminal evidence; the class text was never required."""
+    run = policy.WorkRunFact(
+        "run-1",
+        "non_result",
+        work_item_key="item",
+        dispatch_id="dispatch-1",
+        issue=1,
+        recovery_kind="lost_work",
+    )
+    facts = coordination_facts(
+        (policy.WorkItemFact("item", "open", issue=1),), runs=(run,), limit=1
+    )
+
+    assert policy.live_work_runs(facts) == ()
+
+
+@pytest.mark.parametrize("recovery_kind", ["still_live", "unproven", "invented_kind"])
+def test_an_observed_recovery_verdict_holds_a_foreign_failure_class_slot(
+    recovery_kind: str,
+) -> None:
+    """Only the concluding kinds release: an observation, or an unknown verdict,
+    is not terminal evidence, and a class outside the vocabulary then holds."""
+    run = policy.WorkRunFact(
+        "run-1",
+        "running",
+        work_item_key="item",
+        dispatch_id="dispatch-1",
+        issue=1,
+        failure_class="assertion_failed",
+        recovery_kind=recovery_kind,
+    )
+    facts = coordination_facts(
+        (policy.WorkItemFact("item", "open", issue=1),), runs=(run,), limit=1
+    )
+
+    assert policy.live_work_runs(facts) == (run,)
+
+
 def test_non_result_cannot_be_replaced_by_later_completion() -> None:
     non_result = _delivery_run(
         state="non_result",

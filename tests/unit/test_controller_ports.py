@@ -160,8 +160,22 @@ def test_runtime_collector_exhaustively_matches_an_issue_keyed_run(
 def test_runtime_collector_does_not_let_terminal_history_hide_a_live_holder(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """A released run is terminal history; a live holder must still be counted.
+
+    `quota_exhausted` with a published result is a release disjunct of
+    `work_run_owns_slot`, so the run owns no slot and the holder's dispatch is
+    appended rather than matched away — an unevidenced `landed` state would not
+    do, because #671's capacity rule holds that slot (#690).
+    """
     item = policy.WorkItemFact("item-7", "open", issue=7)
-    terminal = policy.WorkRunFact("old", "landed", work_item_key="item-7", issue=7)
+    terminal = policy.WorkRunFact(
+        "old",
+        "non_result",
+        work_item_key="item-7",
+        issue=7,
+        failure_class="quota_exhausted",
+        result_published=True,
+    )
     facts = policy.ControlFacts(None, (), (), (item,), (terminal,))
     active = ports.queue_policy.Holder(7, ("dispatch:d-7",), None)
     in_flight = ports.queue_policy.InFlight((active,), (), "read")
@@ -175,6 +189,38 @@ def test_runtime_collector_does_not_let_terminal_history_hide_a_live_holder(
         terminal,
         ports.policy.WorkRunFact("d-7", "running", "item-7", "d-7", None, None, 7),
     )
+
+
+@pytest.mark.parametrize(
+    ("state", "extra"),
+    [
+        ("possessed", {}),  # a state no vocabulary recognises holds the slot
+        ("landed", {}),  # landed-stated without a landing SHA holds it too
+        ("non_result", {"failure_class": "interrupted"}),  # live non-result
+    ],
+)
+def test_runtime_collector_matches_a_holder_behind_any_live_run(
+    monkeypatch: pytest.MonkeyPatch, state: str, extra: dict[str, object]
+) -> None:
+    """One liveness rule for capacity and holder matching alike (#690).
+
+    Under the old second vocabulary these runs failed to match their holder, so
+    a synthetic `running` run was appended beside them and one Work Item took
+    two slots.
+    """
+    item = policy.WorkItemFact("item-7", "open", issue=7)
+    run = policy.WorkRunFact("old", state, work_item_key="item-7", issue=7, **extra)  # type: ignore[arg-type]
+    facts = policy.ControlFacts(None, (), (), (item,), (run,))
+    active = ports.queue_policy.Holder(7, ("dispatch:d-7",), None)
+    in_flight = ports.queue_policy.InFlight((active,), (), "read")
+    monkeypatch.setattr(ports.queue_policy, "gather", lambda _root, _dispatch: in_flight)
+
+    collected = ports.RuntimeFactCollector(
+        ports.FakeFactCollector(facts), Path("/repo"), Path("/dispatches")
+    ).collect()
+
+    assert collected.work_runs == facts.work_runs
+    assert len(policy.live_work_runs(collected)) == 1
 
 
 def test_dispatch_delivery_collector_reads_typed_candidate_evidence(tmp_path: Path) -> None:
@@ -631,6 +677,43 @@ def test_dispatch_delivery_collector_composes_recovery_before_relaunch(
     assert calls == ["d-1"]
     assert observed[0].state == "non_result"
     assert observed[0].failure_class == "interrupted"
+    assert observed[0].recovery_kind == "lost_work"
+    assert (
+        ports.policy.live_work_runs(policy.ControlFacts(None, (), (), (), observed, wip_limit=1))
+        == ()
+    )
+
+
+def test_dispatch_delivery_collector_releases_a_terminal_recovery_over_a_foreign_class(
+    tmp_path: Path,
+) -> None:
+    """The #690 sequence end to end: a typed delivery class survives recovery's
+    preserve-existing branch (`or "interrupted"` never fires), so the slot must
+    release on the verdict alone — a class outside `NON_RESULT_CLASSES` is a
+    record of what the delivery typed, not evidence the run is alive."""
+    record = tmp_path / "dispatches" / "d-1"
+    record.mkdir(parents=True)
+    delivery = {
+        "schema": ports.DELIVERY_SCHEMA,
+        "work_run": {
+            "key": "run-1",
+            "state": "running",
+            "dispatch_id": "d-1",
+            "failure_class": "assertion_failed",
+        },
+    }
+    (record / "delivery.json").write_text(json.dumps(delivery) + "\n", encoding="utf-8")
+
+    class Recovery:
+        def classify(self, _run: Any) -> str:  # noqa: ANN401 — dynamic policy module
+            return "lost_work"
+
+    observed = ports.DispatchDeliveryFactCollector(
+        tmp_path / "dispatches", recovery=Recovery()
+    ).collect(())
+
+    assert observed[0].state == policy.NON_RESULT
+    assert observed[0].failure_class == "assertion_failed"
     assert observed[0].recovery_kind == "lost_work"
     assert (
         ports.policy.live_work_runs(policy.ControlFacts(None, (), (), (), observed, wip_limit=1))

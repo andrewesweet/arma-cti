@@ -303,7 +303,10 @@ class RuntimeFactCollector:
                 ),
                 None,
             )
-            if any(_run_matches_holder(run, item_key, holder.issue, dispatch_id) for run in runs):
+            if any(
+                _run_matches_holder(run, item_key, holder.issue, dispatch_id, facts.work_items)
+                for run in runs
+            ):
                 continue
             runs.append(
                 policy.WorkRunFact(
@@ -329,23 +332,23 @@ def _run_matches_holder(
     item_key: str,
     issue: int,
     dispatch_id: str | None,
+    items: tuple[policy.WorkItemFact, ...],
 ) -> bool:
-    """Avoid duplicating a queue holder while retaining distinct terminal history."""
+    """Avoid duplicating a queue holder while retaining distinct terminal history.
+
+    The fallback asks ``policy.work_run_owns_slot`` — the same liveness rule
+    capacity accounting asks — whether the run still holds the slot the holder
+    occupies.  It never keeps a vocabulary of its own: a second definition here
+    appended a synthetic ``running`` run beside a live one whose state it did
+    not recognise, and one Work Item took two slots (#690).  A released run is
+    terminal history the holder may supersede; a live one is the holder itself.
+    """
     same_item = run.item_key == item_key or run.issue == issue
     if dispatch_id is not None:
         if run.dispatch_id == dispatch_id:
             return True
-        return (
-            run.dispatch_id is None
-            and same_item
-            and (
-                run.state in policy.LIVE_WORK_RUN_STATES
-                or run.failure_class in policy.NON_RESULT_CLASSES
-            )
-        )
-    return same_item and (
-        run.state in policy.LIVE_WORK_RUN_STATES or run.failure_class in policy.NON_RESULT_CLASSES
-    )
+        return run.dispatch_id is None and same_item and policy.work_run_owns_slot(run, items)
+    return same_item and policy.work_run_owns_slot(run, items)
 
 
 # The recovery verdicts that conclude rather than observe.  `lost_work` and
@@ -510,6 +513,12 @@ class DispatchDeliveryFactCollector:
         if kind is None:
             return run
         if kind in TERMINAL_RECOVERY_KINDS:
+            # `failure_class` is preserved, never normalised: the `or` keeps a
+            # class the delivery already typed, and one outside
+            # `NON_RESULT_CLASSES` — a result class such as `assertion_failed`
+            # — is a record of what the delivery said, not evidence the run is
+            # alive.  The slot releases on the verdict: `work_run_owns_slot`'s
+            # second disjunct reads `recovery_kind` without the class (#690).
             return replace(
                 run,
                 state=policy.NON_RESULT,
