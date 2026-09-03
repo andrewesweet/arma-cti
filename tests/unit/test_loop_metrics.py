@@ -453,7 +453,8 @@ def test_worktree_owing_done_joins_registrations_to_attested_landings(
     monkeypatch.setattr(
         METRICS,
         "_issue_registrations",
-        lambda _repo: METRICS._parse_issue_registrations(porcelain),
+        # the sweep is stubbed so the join runs over a fixed table
+        lambda _repo: METRICS._parse_issue_registrations(porcelain),  # noqa: SLF001
     )
 
     window = METRICS.Window(0.0, METRICS.parse_timestamp(_at(15)), explicit=True)
@@ -472,23 +473,21 @@ def test_worktree_owing_done_joins_registrations_to_attested_landings(
 
 def test_issue_registrations_skip_main_checkout_and_name_unjoinable() -> None:
     """The main checkout never owes done and unnamed registrations stay visible."""
-    porcelain = "\n".join(
-        [
-            "worktree /repo",
-            "branch refs/heads/main",
-            "",
-            "worktree /repo/.claude/worktrees/issue-672",
-            "detached",
-            "",
-            "worktree /repo/.claude/worktrees/review-525-r2",
-            "detached",
-            "",
-            "worktree /home/andre/.codex/9f2/arma-cti",
-            "detached",
-        ]
+    porcelain = (
+        "worktree /repo\n"
+        "branch refs/heads/main\n"
+        "\n"
+        "worktree /repo/.claude/worktrees/issue-672\n"
+        "detached\n"
+        "\n"
+        "worktree /repo/.claude/worktrees/review-525-r2\n"
+        "detached\n"
+        "\n"
+        "worktree /home/andre/.codex/9f2/arma-cti\n"
+        "detached"
     )
 
-    assert METRICS._parse_issue_registrations(porcelain) == (
+    assert METRICS._parse_issue_registrations(porcelain) == (  # noqa: SLF001 — pin the parser
         (Path("/repo/.claude/worktrees/issue-672"), 672),
         (Path("/repo/.claude/worktrees/review-525-r2"), 525),
         (Path("/home/andre/.codex/9f2/arma-cti"), None),
