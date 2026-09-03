@@ -965,6 +965,12 @@ CODEX_NOT_FOUND_BODY: Final = "ERROR: unexpected status 404 Not Found: ... url: 
         # claims must lose to it, or a 429 would count as a refusal and a 5xx as both.
         (1, "unexpected status 429 Too Many Requests", breaker.QUOTA_EXHAUSTED),
         (1, "unexpected status 503 Service Unavailable", breaker.PROVIDER_ERROR),
+        # The status is parsed and range-checked, not merely shaped like three digits:
+        # a 5xx off the marker lists is still a transient (the #696 owner ruling), and
+        # a redirect is no row at all — neither may read as a refusal streak.
+        (1, "API Error: 500", breaker.PROVIDER_ERROR),
+        (1, "API Error: 501 not implemented", breaker.PROVIDER_ERROR),
+        (1, "unexpected status 302 Found", breaker.UNCLASSIFIED),
         # A refusal shape requires its prefix; a bare status-like number in the child's
         # own failure output is the child's own work and must keep reading unclassified
         # so somebody investigates it.
