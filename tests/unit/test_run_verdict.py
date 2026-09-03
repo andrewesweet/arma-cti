@@ -24,21 +24,31 @@ purpose and will otherwise read our own exiting client as a play session.
 
 from __future__ import annotations
 
+import fcntl
+import multiprocessing as mp
 import os
 import shutil
 import socket
 import stat
 import subprocess
+import tempfile
+from dataclasses import dataclass
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
 from conftest import REPO
 
 if TYPE_CHECKING:
-    from pathlib import Path
+    from io import TextIOBase
+    from multiprocessing.queues import Queue
+    from multiprocessing.synchronize import Barrier, Lock
 
 RUN = REPO / "spike" / "run.sh"
 BASH = shutil.which("bash") or "/bin/bash"
+# `run.sh`'s default UV_TIMEOUT is 300 seconds. Keep the outer Python watchdog
+# outside that deadline so an inner typed refusal can be recorded in results.env.
+RUN_SCRIPT_TIMEOUT = 330
 
 # The engine lines run.sh waits on, in the order it waits for them. The stub
 # prints them and then idles until teardown, exactly as a server does.
@@ -57,30 +67,77 @@ sleep 600
 """
 
 
-def free_port_block() -> tuple[int, int]:
+@dataclass
+class PortBlock:
+    """A checked port block whose interprocess lock lasts through its child run."""
+
+    server_port: int
+    daemon_port: int
+    _lock: TextIOBase
+
+    def close(self) -> None:
+        """Release the block lock after the caller's `run.sh` process is done."""
+        if self._lock.closed:
+            return
+        try:
+            fcntl.flock(self._lock.fileno(), fcntl.LOCK_UN)
+        finally:
+            self._lock.close()
+
+
+def _port_lock_root() -> Path:
+    """Return the machine-scoped lock root shared by sibling worktrees."""
+    configured = os.environ.get("CTI_TEST_PORT_LOCK_DIR")
+    return (
+        Path(configured)
+        if configured
+        else Path(tempfile.gettempdir()) / "arma-cti-test-port-blocks"
+    )
+
+
+def free_port_block() -> PortBlock:
     """Find a server span plus daemon port outside this host's ephemeral range.
 
     `run.sh` now checks all five reserved server ports, so drawing only the game
     port with `bind(0)` can put +1..+4 on another test's live ephemeral listener.
-    Start from a process-specific block, verify the whole six-port arrangement,
-    then hand the block to this worker, whose runs are sequential.
+    Start from a process-specific block, lock the candidate across worktrees,
+    verify the whole six-port arrangement, then keep that lock until the caller's
+    child has finished. The sockets are only probes; the lock is the reservation.
     """
     low = 10_000
     high = 44_000
     stride = 10
     start = low + (os.getpid() % ((high - low) // stride)) * stride
     candidates = (*range(start, high, stride), *range(low, start, stride))
+    lock_root = _port_lock_root()
+    lock_root.mkdir(parents=True, exist_ok=True)
     for candidate in candidates:
-        reservations = [socket.socket() for _ in range(6)]
+        lock = (lock_root / f"{candidate}.lock").open("a+")
+        lock_held = False
+        retained = False
+        reservations: list[socket.socket] = []
         try:
-            for offset, reservation in enumerate(reservations):
-                reservation.bind(("127.0.0.1", candidate + offset))
-        except OSError:
-            continue
+            try:
+                fcntl.flock(lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except BlockingIOError:
+                continue
+            lock_held = True
+            reservations = [socket.socket() for _ in range(6)]
+            try:
+                for offset, reservation in enumerate(reservations):
+                    reservation.bind(("127.0.0.1", candidate + offset))
+            except OSError:
+                continue
+            block = PortBlock(candidate, candidate + 5, lock)
+            retained = True
+            return block
         finally:
             for reservation in reservations:
                 reservation.close()
-        return candidate, candidate + 5
+            if lock_held and not retained:
+                fcntl.flock(lock.fileno(), fcntl.LOCK_UN)
+            if not retained:
+                lock.close()
     message = "no six-port block available for the run.sh unit fixture"
     raise RuntimeError(message)
 
@@ -116,52 +173,105 @@ def run_with_lines(
     out = tmp_path / "out"
     default_networking = tmp_path / "default-networking"
     default_networking.mkdir()
-    server_port, daemon_port = free_port_block()
-    env = dict(
-        os.environ,
-        CTI_SERVER_DIR=str(server_dir),
-        CTI_SHIM_SO=str(shim),
-        CTI_BUILT_MOD=str(built_mod),
-        CTI_SPIKE_OUT=str(out),
-        CTI_WINDOWS_TASKLIST=str(tasklist),
-        # Its own daemon on its own port: the tier is shared, and a test that
-        # took 9099 would collide with whatever else is on this machine.
-        CTI_DAEMON_PORT=str(daemon_port),
-        CTI_SERVER_PORT=str(server_port),
-        # Its own state directory for the same reason, and this one is a lock
-        # rather than a port (#132). The teardown test below sends a client, and
-        # a client run takes the machine-wide Windows client lock — which lives
-        # at $HOME/.arma-cti/windows-client.lock unless CTI_TIER_STATE moves it,
-        # and which run.sh asks for with a non-blocking try. Left unmoved, this
-        # file's no-Arma test both stole that lock from live Arma-tier runs and
-        # was refused by them: the refusal is an infra_unavailable before the
-        # launch, so the run records no windows_client_launched at all. That is
-        # the one red in 26 full-suite runs #130 reported, and two concurrent
-        # `just unit` runs in sibling worktrees reproduce it with no Arma in
-        # sight. Every other unit test that drives these scripts already isolates
-        # this; this one was the outlier.
-        CTI_TIER_STATE=str(tmp_path / "state"),
-        CTI_BASIC_CFG="",
-        CTI_HC_TIMEOUT="20",
-        CTI_HARNESS_TIMEOUT="60",
-        # Windows-client tests need the simulated mirrored boundary; server-only
-        # tests are indifferent. ``extra_env`` below still lets NAT tests override it.
-        PATH=with_networking_mode(default_networking, "mirrored"),
-    )
-    # Last word to the caller, so a test can substitute one of the defaults above
-    # as well as add to them.
-    env.update(extra_env or {})
-    # S603: this repo's own script, with paths this test just wrote.
-    command = [BASH, str(RUN), *([mode] if mode is not None else [])]
-    result = subprocess.run(  # noqa: S603
-        command, env=env, capture_output=True, text=True, check=False, timeout=300
-    )
+    port_block = free_port_block()
+    try:
+        server_port = port_block.server_port
+        daemon_port = port_block.daemon_port
+        env = dict(
+            os.environ,
+            CTI_SERVER_DIR=str(server_dir),
+            CTI_SHIM_SO=str(shim),
+            CTI_BUILT_MOD=str(built_mod),
+            CTI_SPIKE_OUT=str(out),
+            CTI_WINDOWS_TASKLIST=str(tasklist),
+            # Its own daemon on its own port: the tier is shared, and a test that
+            # took 9099 would collide with whatever else is on this machine.
+            CTI_DAEMON_PORT=str(daemon_port),
+            CTI_SERVER_PORT=str(server_port),
+            # Its own state directory for the same reason, and this one is a lock
+            # rather than a port (#132). The teardown test below sends a client, and
+            # a client run takes the machine-wide Windows client lock — which lives
+            # at $HOME/.arma-cti/windows-client.lock unless CTI_TIER_STATE moves it,
+            # and which run.sh asks for with a non-blocking try. Left unmoved, this
+            # file's no-Arma test both stole that lock from live Arma-tier runs and
+            # was refused by them: the refusal is an infra_unavailable before the
+            # launch, so the run records no windows_client_launched at all. That is
+            # the one red in 26 full-suite runs #130 reported, and two concurrent
+            # `just unit` runs in sibling worktrees reproduce it with no Arma in
+            # sight. Every other unit test that drives these scripts already isolates
+            # this; this one was the outlier.
+            CTI_TIER_STATE=str(tmp_path / "state"),
+            CTI_BASIC_CFG="",
+            CTI_HC_TIMEOUT="20",
+            CTI_HARNESS_TIMEOUT="60",
+            # Windows-client tests need the simulated mirrored boundary; server-only
+            # tests are indifferent. ``extra_env`` below still lets NAT tests override it.
+            PATH=with_networking_mode(default_networking, "mirrored"),
+        )
+        # Last word to the caller, so a test can substitute one of the defaults above
+        # as well as add to them.
+        env.update(extra_env or {})
+        # S603: this repo's own script, with paths this test just wrote.
+        command = [BASH, str(RUN), *([mode] if mode is not None else [])]
+        result = subprocess.run(  # noqa: S603
+            command,
+            env=env,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=RUN_SCRIPT_TIMEOUT,
+        )
+    finally:
+        port_block.close()
     records = dict(
         line.split("=", 1) for line in (out / "results.env").read_text().splitlines() if "=" in line
     )
     records["_returncode"] = str(result.returncode)
     records["_stderr"] = result.stderr
     return records
+
+
+class _FixedPidOS:
+    """The small `os` surface `run_with_lines` and `free_port_block` need."""
+
+    environ = os.environ
+    pathsep = os.pathsep
+
+    @staticmethod
+    def getpid() -> int:
+        return 2_000
+
+
+def _run_forced_port_block(
+    arguments: tuple[int, Lock, Barrier, str, str, Queue],
+) -> None:
+    """Run one child with the same controlled PID-derived candidate as its peer."""
+    index, allocation_lock, barrier, lock_dir, run_dir, results = arguments
+    os.environ["CTI_TEST_PORT_LOCK_DIR"] = lock_dir
+    free_port_block.__globals__["os"] = _FixedPidOS
+
+    real_free = free_port_block
+
+    def synchronized_free() -> PortBlock:
+        with allocation_lock:
+            block = real_free()
+        barrier.wait(timeout=30)
+        return block
+
+    run_with_lines.__globals__["free_port_block"] = synchronized_free
+    barrier.wait(timeout=30)
+    run_path = Path(run_dir)
+    run_path.mkdir(parents=True)
+    records = run_with_lines(run_path, ["measurement thing=1"])
+    results.put(
+        {
+            "index": str(index),
+            "server_port": records.get("server_port", ""),
+            "daemon_port": records.get("daemon_port", ""),
+            "verdict": records.get("verdict", ""),
+            "failure_class": records.get("failure_class", ""),
+        }
+    )
 
 
 def why(records: dict[str, str]) -> str:
@@ -175,6 +285,48 @@ def why(records: dict[str, str]) -> str:
     the #668 node does.
     """
     return f"{records.get('failure_class')}: {records.get('failure_detail')}"
+
+
+def test_concurrent_runs_with_one_candidate_get_disjoint_blocks(tmp_path: Path) -> None:
+    """Two callers forced to one candidate must not hand it to both children."""
+    ctx = mp.get_context("fork")
+    allocation_lock = ctx.Lock()
+    barrier = ctx.Barrier(2)
+    results = ctx.Queue()
+    lock_dir = str(tmp_path / "port-locks")
+    processes = [
+        ctx.Process(
+            target=_run_forced_port_block,
+            args=(
+                (
+                    index,
+                    allocation_lock,
+                    barrier,
+                    lock_dir,
+                    str(tmp_path / f"run-{index}"),
+                    results,
+                ),
+            ),
+        )
+        for index in range(2)
+    ]
+
+    for process in processes:
+        process.start()
+    for process in processes:
+        process.join(45)
+        if process.is_alive():
+            process.terminate()
+            process.join(5)
+
+    assert all(process.exitcode == 0 for process in processes), [
+        process.exitcode for process in processes
+    ]
+    rows = [results.get(timeout=5) for _ in processes]
+    assert all(row["verdict"] == "PASS" for row in rows), rows
+    server_ports = {row["server_port"] for row in rows}
+    assert len(server_ports) == 2, rows
+    assert all(int(row["daemon_port"]) == int(row["server_port"]) + 5 for row in rows), rows
 
 
 def with_networking_mode(tmp_path: Path, mode: str) -> str:
