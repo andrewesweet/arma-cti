@@ -1257,20 +1257,30 @@ PROVIDER_ERROR_MARKERS: Final = (
 # that ran first won. The two prefixes are the only shapes observed, both from #696's
 # two lanes (`ERROR: unexpected status 404 Not Found` from Codex; Claude Code's
 # `API Error: <code>`, whose 529 shape the marker list also carries as free text).
-# Checked *after* both marker lists on purpose, so a line the free text already types
-# keeps that class; a 429 or a 5xx with none reaches the parse and is typed the same
-# way here. An unanchored shape elsewhere on the line, a bare status code in the
-# child's own output (a test count, a line number), a longer digit run where a status
-# would sit, and a status outside the bands below all read `unclassified`, where
-# somebody investigates. Every list above reads only the run's *terminal* line — see
-# `_terminal_line` — so a provider-shaped line the run survived never types a failure
-# the provider did not cause. Parsing the run's own output stays the mechanism rather
-# than a per-adapter typed result: the runners are external binaries whose log is the
-# only channel a headless dispatch has, so an adapter result would parse this same
-# prose one layer earlier and add a surface for it (#696).
-PROVIDER_STATUS_PATTERN: Final = re.compile(
-    r"(?:error:\s*)?(?:unexpected status|api error):?\s+(?<!\d)(\d{3})(?!\d)"
-)
+# Checked *before* both marker lists, and decisive where it parses: `classify_run`
+# consults the free text only where this yields nothing, so a 404 whose body says
+# `internal server error` is still a refusal and a 402 whose body says `out of credits`
+# is still an availability failure — the ordering the round-five report asked for,
+# where the markers ran first and overrode the parsed status they sat beside. A line
+# that carries the provider shape but no code the bands can place — a longer digit run
+# where a status would sit, a truncated one — is `unclassified` there too rather than a
+# marker's guess (`PROVIDER_STATUS_SHAPE`), because the provider did say a status and
+# we failed to read it; guessing from the body after that is how round five's collision
+# was built. An unanchored shape elsewhere on the line, a bare status code in the
+# child's own output (a test count, a line number), and a status outside the bands
+# below all read `unclassified`, where somebody investigates. Every list above reads
+# only the run's *terminal* line — see `_terminal_line` — so a provider-shaped line the
+# run survived never types a failure the provider did not cause. Parsing the run's own
+# output stays the mechanism rather than a per-adapter typed result: the runners are
+# external binaries whose log is the only channel a headless dispatch has, so an
+# adapter result would parse this same prose one layer earlier and add a surface for
+# it (#696).
+_PROVIDER_STATUS_PREFIX: Final = r"(?:error:\s*)?(?:unexpected status|api error):?\s+"
+PROVIDER_STATUS_PATTERN: Final = re.compile(_PROVIDER_STATUS_PREFIX + r"(?<!\d)(\d{3})(?!\d)")
+# The same anchored shape with the code left unread: a provider-shaped line whose digit
+# run is not a status the bands can place. `classify_run` stops there — the free-text
+# markers are for a line that carries no status shape at all.
+PROVIDER_STATUS_SHAPE: Final = re.compile(_PROVIDER_STATUS_PREFIX + r"\d")
 # The bands that place a parsed status, named for the HTTP class each covers. Both
 # close at each edge, so a code outside either — a 3xx redirect, a 600 — fits the
 # shape but no band and stays `unclassified`; the lookarounds above refuse a longer
@@ -1343,21 +1353,27 @@ def classify_run(returncode: int, output: str) -> tuple[str, float | None]:
     Only the run's terminal line is classified (`_terminal_line`): a provider failure is
     the provider's death of the run, so a provider-shaped line anywhere earlier is a
     warning the run survived, and the child's own last word keeps its classification.
-    A status the provider returned is parsed once, from an anchored provider shape, and
-    every status-based class is decided from that one parsed value (`_status_outcome`).
+    The order is the round-five report's, and it is the fix: the provider's status is
+    parsed first, from an anchored provider shape, and where it parses a code the bands
+    recognise, `_status_outcome` decides from that value alone and returns — no
+    free-text marker is consulted, so the body cannot override the status beside it.
+    Only a line with no readable status shape falls through to the marker lists; a
+    line that carries the shape but no placeable code stops at `UNCLASSIFIED`.
     """
     if returncode == 0:
         return OK, None
     text = _terminal_line(output)
+    match = PROVIDER_STATUS_PATTERN.match(text)
+    if match is not None:
+        code = int(match.group(1))
+        return _status_outcome(code), (_limit_epoch(text) if code == QUOTA_STATUS else None)
+    if PROVIDER_STATUS_SHAPE.match(text) is not None:
+        return UNCLASSIFIED, None
     if any(marker in text for marker in QUOTA_MARKERS):
         return QUOTA_EXHAUSTED, _limit_epoch(text)
     if any(marker in text for marker in PROVIDER_ERROR_MARKERS):
         return PROVIDER_ERROR, None
-    match = PROVIDER_STATUS_PATTERN.match(text)
-    if match is None:
-        return UNCLASSIFIED, None
-    code = int(match.group(1))
-    return _status_outcome(code), (_limit_epoch(text) if code == QUOTA_STATUS else None)
+    return UNCLASSIFIED, None
 
 
 def _limit_epoch(text: str) -> float | None:
