@@ -1026,6 +1026,17 @@ CODEX_NOT_FOUND_WITH_RESPONSE_ID: Final = (
         (1, "unexpected status 403 Forbidden", breaker.PROVIDER_ERROR),
         (1, "API Error: 402 Payment Required", breaker.PROVIDER_ERROR),
         (1, "unexpected status 408 Request Timeout", breaker.PROVIDER_ERROR),
+        # The parsed status outranks the free text beside it, which is the ordering the
+        # round-five report asked for after two rounds shipped the markers first: a 404
+        # whose body carries a provider-error marker is still a refusal, a 402 whose
+        # body carries a quota marker is still an availability failure, and a
+        # provider-shaped line whose digit run is no status stays unclassified even
+        # though the same line carries a quota marker — the provider said a status, we
+        # failed to read it, and guessing from the body is the override this ordering
+        # exists to remove. Each row is one of the report's three named lines.
+        (1, "API Error: 404 internal server error", breaker.PROVIDER_REFUSED),
+        (1, "API Error: 402 out of credits", breaker.PROVIDER_ERROR),
+        (1, "API Error: 4290 rate limit exceeded", breaker.UNCLASSIFIED),
         # A refusal shape requires its prefix at the line's start: the provider said it
         # there, and nowhere else. A bare status-like number in the child's own failure
         # output, and the child's own terminal failure quoting a provider shape, are
@@ -1094,67 +1105,53 @@ def test_a_limit_with_no_epoch_yields_no_reset_rather_than_a_computed_one() -> N
     assert reset_at is None
 
 
-def test_three_529_overloads_hold_the_lane(tmp_path: Path) -> None:
-    """#420: the exact body that read `unclassified` now feeds the breaker's hold.
-
-    Classified end to end — `classify_run`'s outcome through `record_outcome` — because
-    the point is the wiring, not the marker: the dispatch's own path reads the log,
-    classifies, and journals, and a lane having a bad ten minutes must reach one hold
-    rather than N separate failures.
-    """
+# Three runs of one family's terminal line, classified end to end — `classify_run`'s
+# outcome through `record_outcome` — because the point is the wiring, not the marker:
+# the dispatch's own path reads the log, classifies, and journals, and a lane dying the
+# same death three times must reach one hold rather than N separate failures. The cases
+# carry their own history: the 529 is #420's overload body, which read `unclassified`
+# before the status parse typed it a transient; the 404 is #696's Codex refusal, which
+# read `unclassified` too and now counts down the quality rule, the one a human clears;
+# the 401 is the round-five correction — an expired token counted against quality until
+# the auth family moved to availability (ADR-0061; ADR-0066 Decision 3), and its
+# quality streak must show it never moved. `escalated` is asserted only where a case's
+# original test asserted it: the 529's availability hold opens without an escalation
+# and says so by staying `None` here.
+@pytest.mark.parametrize(
+    ("output", "lane", "rule", "failure_class", "escalated", "quality_streak"),
+    [
+        (OVERLOAD_BODY, "zai", "provider_errors", "infra_unavailable", None, None),
+        (CODEX_NOT_FOUND_BODY, "codex", "quality", "provider_refused", True, None),
+        ("API Error: 401 Unauthorized", "codex", "provider_errors", "infra_unavailable", True, 0),
+    ],
+)
+def test_three_runs_of_one_terminal_line_trip_the_rule_their_family_owes(
+    tmp_path: Path,
+    output: str,
+    lane: str,
+    rule: str,
+    failure_class: str,
+    escalated: bool | None,
+    quality_streak: int | None,
+) -> None:
+    """Each family's line reaches its own rule, and never another family's."""
     state = store(tmp_path)
-    circuit = feed(state, "zai", [breaker.classify_run(1, OVERLOAD_BODY)[0]] * 3)
+    circuit = feed(state, lane, [breaker.classify_run(1, output)[0]] * 3)
     assert circuit is not None
     assert circuit.state == breaker.OPEN
-    assert circuit.rule == "provider_errors"
-    assert circuit.reset_at is None, "no 5xx publishes a boundary, so no cooldown is invented"
-    verdict = breaker.lane_verdict(state, "zai", NOW + 10)
+    assert circuit.rule == rule
+    assert circuit.reset_at is None, (
+        "none of these lines carries a published boundary, so none is invented"
+    )
+    verdict = breaker.lane_verdict(state, lane, NOW + 10)
     assert verdict.conducting is False
-    assert verdict.failure_class == "infra_unavailable"
-
-
-def test_three_codex_404s_trip_the_quality_rule(tmp_path: Path) -> None:
-    """#696: the exact body that read `unclassified` now feeds the breaker's count.
-
-    Same end-to-end shape as the 529 hold above, down the *other* family: a provider
-    that answers and refuses the request is the `provider_refused` row of AGENTS.md's
-    table — not a result, and a streak the quality rule counts. It trips at three,
-    escalates, and publishes no boundary, because a 404 carries none.
-    """
-    state = store(tmp_path)
-    circuit = feed(state, "codex", [breaker.classify_run(1, CODEX_NOT_FOUND_BODY)[0]] * 3)
-    assert circuit is not None
-    assert circuit.state == breaker.OPEN
-    assert circuit.rule == "quality"
-    assert circuit.reset_at is None, "no refusal publishes a boundary, so no cooldown is invented"
-    verdict = breaker.lane_verdict(state, "codex", NOW + 10)
-    assert verdict.conducting is False
-    assert verdict.failure_class == "provider_refused"
-    assert circuit.escalated is True
-
-
-def test_three_oauth_401s_hold_the_lane_as_availability_never_quality(tmp_path: Path) -> None:
-    """#696 round five: an expired token is the availability family, never quality.
-
-    Classified end to end like the two holds above, because the point is the wiring: a
-    401 used to read `provider_refused`, so a dead OAuth token counted against the
-    profile's quality and three of them held the lane on the one rule a human must
-    clear — for a failure a re-auth fixes, on a lane that was serving fine. The same
-    three now hold the lane as availability, whose failure class is
-    `infra_unavailable` (ADR-0061; ADR-0066 Decision 3), and the quality streak has
-    not moved.
-    """
-    state = store(tmp_path)
-    circuit = feed(state, "codex", [breaker.classify_run(1, "API Error: 401 Unauthorized")[0]] * 3)
-    assert circuit is not None
-    assert circuit.state == breaker.OPEN
-    assert circuit.rule == "provider_errors"
-    assert circuit.reset_at is None, "no auth failure publishes a boundary, so none is invented"
-    verdict = breaker.lane_verdict(state, "codex", NOW + 10)
-    assert verdict.conducting is False
-    assert verdict.failure_class == "infra_unavailable"
-    assert circuit.escalated is True
-    assert circuit.streak("quality") == 0, "an expired token says nothing about quality"
+    assert verdict.failure_class == failure_class
+    if escalated is not None:
+        assert circuit.escalated is escalated
+    if quality_streak is not None:
+        assert circuit.streak("quality") == quality_streak, (
+            "an expired token says nothing about quality"
+        )
 
 
 # ------------------------------------------------------------------ store and telemetry
