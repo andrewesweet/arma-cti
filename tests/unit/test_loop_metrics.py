@@ -414,6 +414,20 @@ def _landed_ledger(minute: int) -> dict[str, object]:
     }
 
 
+def _worktree_line(
+    inputs: METRICS.Inputs,
+    repo: Path,
+    window: METRICS.Window,
+    diagnostics: list[str] | None = None,
+) -> str:
+    """Select the worktree stock line — the one selection every worktree test repeats."""
+    return next(
+        line
+        for line in METRICS.stock_lines(inputs, repo, window, diagnostics)
+        if line.startswith("stock worktrees_owing_done")
+    )
+
+
 def test_worktree_owing_done_joins_registrations_to_attested_landings(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -482,11 +496,7 @@ def test_worktree_owing_done_joins_registrations_to_attested_landings(
     )
 
     window = METRICS.Window(0.0, METRICS.parse_timestamp(_at(15)), explicit=True)
-    line = next(
-        line
-        for line in METRICS.stock_lines(inputs, tmp_path, window)
-        if line.startswith("stock worktrees_owing_done")
-    )
+    line = _worktree_line(inputs, tmp_path, window)
 
     assert "level=3 " in line  # 50, review-54-r2, and 54; 53 landed after the end
     assert "registrations=6 excluded_without_issue_name=1" in line
@@ -543,11 +553,7 @@ def test_worktree_stock_registration_after_boundary_leaves_the_past_level_alone(
     )
 
     window = METRICS.Window(0.0, METRICS.parse_timestamp(_at(15)), explicit=True)
-    line = next(
-        line
-        for line in METRICS.stock_lines(inputs, tmp_path, window)
-        if line.startswith("stock worktrees_owing_done")
-    )
+    line = _worktree_line(inputs, tmp_path, window)
 
     assert "level=1" in line  # the late tree is invisible as of minute 15
     assert "registrations=1 excluded_without_issue_name=0" in line
@@ -582,11 +588,7 @@ def test_worktree_stock_names_the_planned_at_undercount(
     )
 
     window = METRICS.Window(0.0, METRICS.parse_timestamp(_at(15)), explicit=True)
-    line = next(
-        line
-        for line in METRICS.stock_lines(inputs, tmp_path, window)
-        if line.startswith("stock worktrees_owing_done")
-    )
+    line = _worktree_line(inputs, tmp_path, window)
 
     assert "level=0" in line  # the reconstruction cannot see the tree; the bias fields say so
     assert "tree_created_before_first_dispatch:under_counts" in line
@@ -619,11 +621,7 @@ def test_worktree_stock_unreadable_landing_is_excluded_and_named(
     diagnostics: list[str] = []
 
     window = METRICS.Window(0.0, METRICS.parse_timestamp(_at(15)), explicit=True)
-    line = next(
-        line
-        for line in METRICS.stock_lines(inputs, tmp_path, window, diagnostics)
-        if line.startswith("stock worktrees_owing_done")
-    )
+    line = _worktree_line(inputs, tmp_path, window, diagnostics)
 
     # The one tree's settlement is unknown, so the level of 0 is a bound the
     # excluded tree could still break: named beside the level, never claimed
@@ -670,11 +668,7 @@ def test_worktree_stock_resolved_landing_settles_its_tree_despite_an_unresolved_
     inputs = METRICS.read_inputs(dispatch_root, tmp_path / "review", tmp_path / "queue")
 
     window = METRICS.Window(0.0, METRICS.parse_timestamp(_at(15)), explicit=True)
-    line = next(
-        line
-        for line in METRICS.stock_lines(inputs, tmp_path, window)
-        if line.startswith("stock worktrees_owing_done")
-    )
+    line = _worktree_line(inputs, tmp_path, window)
 
     # Issue 62's landing resolved, so its tree is counted; issue 63's tree has
     # no readable landing, so it is excluded and named rather than dropping the
@@ -782,11 +776,7 @@ def test_worktree_stock_names_the_commit_timestamp_proxy(
     )
 
     window = METRICS.Window(0.0, METRICS.parse_timestamp(_at(15)), explicit=True)
-    line = next(
-        line
-        for line in METRICS.stock_lines(inputs, tmp_path, window)
-        if line.startswith("stock worktrees_owing_done")
-    )
+    line = _worktree_line(inputs, tmp_path, window)
 
     assert "level=1" in line
     assert "landing_basis=commit_timestamp" in line
@@ -835,11 +825,7 @@ def test_worktree_stock_names_a_mixed_landing_basis(
         lambda _repo: METRICS._parse_issue_registrations(porcelain),  # noqa: SLF001
     )
 
-    line = next(
-        line
-        for line in METRICS.stock_lines(inputs, tmp_path, METRICS.Window(0.0, None, explicit=False))
-        if line.startswith("stock worktrees_owing_done")
-    )
+    line = _worktree_line(inputs, tmp_path, METRICS.Window(0.0, None, explicit=False))
 
     assert "level=2" in line
     assert "landing_basis=mixed_commit_timestamp_and_ledger_landed_at" in line
@@ -875,11 +861,7 @@ def test_worktree_stock_without_a_qualifying_landing_names_no_basis(
         lambda _repo: METRICS._parse_issue_registrations(porcelain),  # noqa: SLF001
     )
 
-    line = next(
-        line
-        for line in METRICS.stock_lines(inputs, tmp_path, METRICS.Window(0.0, None, explicit=False))
-        if line.startswith("stock worktrees_owing_done")
-    )
+    line = _worktree_line(inputs, tmp_path, METRICS.Window(0.0, None, explicit=False))
 
     assert "level=0" in line
     assert "landing_basis=none_no_qualifying_landing" in line
@@ -912,11 +894,7 @@ def test_worktree_stock_current_window_states_its_bias_paths(
         lambda _repo: METRICS._parse_issue_registrations(porcelain),  # noqa: SLF001
     )
 
-    line = next(
-        line
-        for line in METRICS.stock_lines(inputs, tmp_path, METRICS.Window(0.0, None, explicit=False))
-        if line.startswith("stock worktrees_owing_done")
-    )
+    line = _worktree_line(inputs, tmp_path, METRICS.Window(0.0, None, explicit=False))
 
     assert "level=1" in line
     assert (
@@ -931,6 +909,7 @@ def test_worktree_stock_current_window_states_its_bias_paths(
     assert "registrations_removed_since_boundary" not in line
     assert "landing_basis=ledger_landed_at " in line
     assert "temporal=" not in line
+    assert "excluded_without_readable_worktree=0" in line
 
 
 def test_worktree_stock_names_unreadable_registrations(
@@ -940,11 +919,7 @@ def test_worktree_stock_names_unreadable_registrations(
     monkeypatch.setattr(METRICS, "_issue_registrations", lambda _repo: None)
     inputs = METRICS.Inputs(dispatches=(), loops=(), queue_rows=(), diagnostics=())
 
-    line = next(
-        line
-        for line in METRICS.stock_lines(inputs, tmp_path, METRICS.Window(0.0, None, explicit=True))
-        if line.startswith("stock worktrees_owing_done")
-    )
+    line = _worktree_line(inputs, tmp_path, METRICS.Window(0.0, None, explicit=True))
 
     assert "level=unrecorded setpoint=at_most_0 status=unrecorded" in line
     assert "reason=worktree_registrations_unreadable" in line
@@ -980,18 +955,142 @@ def test_worktree_stock_diagnoses_a_damaged_worktree_field(
     inputs = METRICS.read_inputs(dispatch_root, tmp_path / "review", tmp_path / "queue")
 
     window = METRICS.Window(0.0, METRICS.parse_timestamp(_at(15)), explicit=True)
-    line = next(
-        line
-        for line in METRICS.stock_lines(inputs, tmp_path, window)
-        if line.startswith("stock worktrees_owing_done")
-    )
+    line = _worktree_line(inputs, tmp_path, window)
 
     assert "level=1" in line  # only the record that placed a tree joins
     assert "registrations=1" in line
+    assert "excluded_without_readable_worktree=1" in line
     assert any(
         "dispatch=damaged field=worktree status=unreadable reason=not_a_string" in diagnostic
         for diagnostic in inputs.diagnostics
     )
+
+
+def test_unreadable_worktree_field_keeps_the_setpoint_unclaimed(tmp_path: Path) -> None:
+    """A record that cannot place a tree is an exclusion the level could still feel."""
+    dispatch_root = tmp_path / "dispatches"
+    directory = dispatch_root / "damaged"
+    _write(
+        directory / "dispatch.json",
+        {
+            "dispatch_id": "damaged",
+            "issue": 73,
+            "seat": "implementer",
+            "planned_at": _at(1),
+            "worktree": 7,
+        },
+    )
+    _write(directory / "result.json", {"started_at": _at(1), "outcome": "ok", "ended_at": _at(2)})
+    inputs = METRICS.read_inputs(dispatch_root, tmp_path / "review", tmp_path / "queue")
+
+    window = METRICS.Window(0.0, METRICS.parse_timestamp(_at(15)), explicit=True)
+    line = _worktree_line(inputs, tmp_path, window)
+
+    # The reconstruction cannot prove the tree absent: a zero that claimed the
+    # setpoint would be the damaged record reading as health.
+    assert "level=0 " in line
+    assert "registrations=0" in line
+    assert "excluded_without_readable_worktree=1" in line
+    assert "status=unresolved" in line
+    assert "status=at_setpoint" not in line
+
+
+def test_setpoint_status_derives_from_its_exclusions() -> None:
+    """Exclusions hold ``at_setpoint`` back; a level already above still reads."""
+    assert METRICS._maximum_setpoint_status(0, 0, 0) == "at_setpoint"  # noqa: SLF001
+    assert METRICS._maximum_setpoint_status(0, 0, 1) == "unresolved"  # noqa: SLF001
+    assert METRICS._maximum_setpoint_status(1, 0, 1) == "above_setpoint"  # noqa: SLF001
+    assert METRICS._maximum_setpoint_status(None, 0, 0) == "unrecorded"  # noqa: SLF001
+
+
+def test_landed_sha_is_validated_before_it_reaches_git(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """An option-shaped ledger SHA is refused at read, never handed to git."""
+    dispatch_root = tmp_path / "dispatches"
+    _dispatch(
+        dispatch_root,
+        "tampered",
+        71,
+        "implementer",
+        0,
+        ledger={
+            "materialised_at": _at(4),
+            "gate": {"outcome": "landed", "landed": {"sha": "--output=/tmp/arma-cti-pwn"}},
+        },
+        worktree="/repo/.claude/worktrees/issue-71",
+    )
+    monkeypatch.setattr(
+        METRICS,
+        "_git_text",
+        lambda _repo, _args: pytest.fail("git must not be consulted for an unvalidated SHA"),
+    )
+    inputs = METRICS.read_inputs(dispatch_root, tmp_path / "review", tmp_path / "queue")
+
+    window = METRICS.Window(0.0, METRICS.parse_timestamp(_at(15)), explicit=True)
+    line = _worktree_line(inputs, tmp_path, window)
+
+    # The row attests a landing its SHA cannot support: excluded and named,
+    # never a healthy zero, and git never ran.
+    assert "level=0 " in line
+    assert "excluded_without_landing_time=1" in line
+    assert "status=unresolved" in line
+    assert "status=at_setpoint" not in line
+    assert any("reason=landed_sha" in diagnostic for diagnostic in inputs.diagnostics)
+
+
+def test_commit_timestamp_separates_the_revision_from_its_options(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The SHA rides behind `--end-of-options`, so it cannot parse as an option."""
+    captured: list[list[str]] = []
+
+    def fake_git_text(_repo: Path, args: list[str]) -> str:
+        captured.append(args)
+        return "2026-01-01T00:00:00+00:00\n"
+
+    monkeypatch.setattr(METRICS, "_git_text", fake_git_text)
+
+    timestamp = METRICS._commit_timestamp(Path("/repo"), "a" * 40)  # noqa: SLF001
+
+    assert timestamp == METRICS.parse_timestamp("2026-01-01T00:00:00+00:00")
+    assert captured == [["show", "-s", "--format=%cI", "--end-of-options", "a" * 40]]
+
+
+@pytest.mark.parametrize(
+    "gate",
+    [
+        {"outcome": "landed"},
+        {"outcome": "landed", "landed": "not-a-mapping"},
+        {"outcome": "landed", "landed": {"sha": ""}},
+        {"outcome": "landed", "landed": {"sha": "not-hex"}},
+        {"outcome": "landed", "landed": {"sha": "A" * 40}},
+        {"outcome": "landed", "landed": {"sha": "a" * 64 + "extra"}},
+    ],
+)
+def test_damaged_landed_evidence_is_unresolved_never_a_healthy_zero(
+    tmp_path: Path, gate: dict[str, object]
+) -> None:
+    """A landing the row attests but cannot read is an exclusion, never a zero."""
+    dispatch_root = tmp_path / "dispatches"
+    _dispatch(
+        dispatch_root,
+        "damaged",
+        72,
+        "implementer",
+        0,
+        ledger={"materialised_at": _at(4), "gate": gate},
+        worktree="/repo/.claude/worktrees/issue-72",
+    )
+    inputs = METRICS.read_inputs(dispatch_root, tmp_path / "review", tmp_path / "queue")
+
+    window = METRICS.Window(0.0, METRICS.parse_timestamp(_at(15)), explicit=True)
+    line = _worktree_line(inputs, tmp_path, window)
+
+    assert "level=0 " in line
+    assert "excluded_without_landing_time=1" in line
+    assert "status=unresolved" in line
+    assert "status=at_setpoint" not in line
 
 
 def test_queue_stock_requires_a_counted_non_boolean_baseline() -> None:

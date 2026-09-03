@@ -70,26 +70,15 @@ average.** Interventions aimed at the median will not find it.
 | dispatches with no materialised ledger row | **160 of 938** |
 
 The worktree stock deserves the same kind of note. `just loop-metrics` now derives it locally
-(#672): every registered worktree whose name carries an issue number (`issue-N`, `review-N…`)
-counts when a ledger row attests `gate=landed` for that issue. A window with no end sweeps the
-registration table live, and a window with an end reconstructs the registration half as of the
-boundary from the dispatch records, whose `worktree` and `planned_at` fields are durable and
-timestamped — so both halves now honour a bounded window, and the caveat narrows to the trees
-the records cannot place at the boundary: a hand-made tree with no dispatch behind it, and a
-tree created before its first dispatch (a record's `planned_at` bounds the tree's existence
-from below; it does not date its creation). A landing whose time cannot be read is not an
-absent landing: where it is a registered issue's only candidate landing, that tree is
-excluded from the level and counted beside it, so the level that remains is the known lower
-bound and no `at_setpoint` is claimed while the exclusions could still move it across the
-setpoint, and the damaged record is diagnosed. The level is a proxy for
-the tracker's answer, and the report discloses every way that proxy can err — landings
-invisible for want of a materialised ledger row, issues closed without a landing, issues
-landed but not yet closed, issues reopened after landing, landings whose time cannot be
-read, and, for a bounded window, hand-made
-trees, pre-dispatch trees, trees removed again before the boundary and records whose
-`worktree` field cannot be read — while claiming no
-single net direction. The frozen **17** above was measured before this derivation existed, so
-it is not directly comparable to the reader's figure.
+(#672): every registered worktree whose name carries an issue number counts when a ledger row
+attests `gate=landed` for that issue, a window with no end sweeps the registration table live,
+and a window with an end reconstructs the registration half as of the boundary from the
+dispatch records, whose `worktree` and `planned_at` fields are durable and timestamped — so
+both halves honour a bounded window. The reader names its bases beside the level and discloses
+every way its proxy can err while claiming no `at_setpoint` that excluded evidence could break;
+that catalogue has one home — `_worktree_stock`'s docstring in `tools/loop_metrics.py` — and
+this note does not restate it. The frozen **17** above was measured before this derivation
+existed, so it is not directly comparable to the reader's figure.
 
 The ledger stock deserves a note. It held 6 rows on 22 August and 778 on 26 August — drained by a
 sync run on 23 August — but the newest row is from that date, so it has been refilling at roughly
