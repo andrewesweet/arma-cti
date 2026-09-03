@@ -8,7 +8,7 @@
   every status-based class is decided from that one parsed value with no
   free-text marker consulted: a `429` classifies `quota_exhausted`; a 401,
   402, 403 or 408 classifies `provider_error`, the availability family, so an
-  expired OAuth token no longer counts against a profile's quality; every
+  expired OAuth token does not count against a profile's quality; every
   other 4xx classifies `provider_refused`, so the lane breaker counts it and
   three consecutive refusals trip the quality rule, hold the lane, and
   escalate; a 5xx (500-599) classifies `provider_error`, a transient that must
