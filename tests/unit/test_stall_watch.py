@@ -649,7 +649,16 @@ def test_the_seam_refuses_a_worktree_it_cannot_read_a_head_from(tmp_path: Path) 
 
 
 def test_the_seam_reads_the_worktree_and_types_the_stall_itself(tmp_path: Path) -> None:
-    """One foreground pass over a real dirty worktree, end to end."""
+    """One foreground pass over a real dirty worktree, end to end.
+
+    quarantined: #428 — one observed red (the loop's stdout was not the STALL
+    line) in a full `just fast`, and never reproduced: 455 runs of the exact
+    arrangement under the gate's own `-n auto` load, 0 reds. The mechanism the
+    marker serves is the flake list a `just brief` derives from open issues, so
+    a dispatched reader quotes this issue for its one sanctioned retry. Remove
+    the marker when a reproduction exists and the synchronisation is fixed, or
+    when the arrangement is made deterministic by construction.
+    """
     worktree, watch_dir, runs = tmp_path / "wt", tmp_path / "watch", tmp_path / "runs"
     head = a_repo_with_one_commit(worktree)
     (worktree / "addons").mkdir()
