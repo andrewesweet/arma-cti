@@ -6101,7 +6101,10 @@ def classify_finished_run(record: Path, returncode: int) -> tuple[str, float | N
     The log is read rather than the child's pipes captured, because the seam already
     redirects everything the run says into `dispatch.log` and putting a second copy in
     memory would change what a live `tail -f` on that file shows. An unreadable log is
-    the same as an unfamiliar one: `unclassified`, which moves no streak.
+    the same as an unfamiliar one: `unclassified`, which moves no streak. Only the
+    retained tail is handed over and only its terminal line is classified
+    (`breaker.classify_run`), so a provider-shaped line the run survived never types
+    this run as the provider's failure.
     """
     log = record / "dispatch.log"
     try:

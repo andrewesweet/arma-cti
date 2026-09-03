@@ -1224,7 +1224,6 @@ QUOTA_MARKERS: Final = (
     # exactly this sentence and no marker above caught it.
     "hit your usage limit",
     "rate limit exceeded",
-    "429",
     "quota exceeded",
     "insufficient quota",
     "out of credits",
@@ -1234,22 +1233,25 @@ PROVIDER_ERROR_MARKERS: Final = (
     "connection reset",
     "could not connect",
     "internal server error",
-    "500 ",
-    "502 ",
-    "503 ",
-    "504 ",
     # #420: the overload body `API Error: 529 [1305][The service may be temporarily
     # overloaded, please try again later]` matched none of the markers above and read
     # `unclassified` — a provider-side overload counted against the lane's work. The
     # code and the body phrase are both pinned so the mapping is not re-derived from a
     # log the next time z.ai has a bad ten minutes.
-    "529 ",
     "temporarily overloaded",
     "bad gateway",
     "service unavailable",
     "network error",
     "timed out",
 )
+# The status shorthands the two lists used to carry as free text — `429` and the
+# marker-known 5xx codes — as whole numbers instead. A substring marker read inside a
+# longer run: `API Error: 4290` contains `429` and `API Error: 1500` contains `500 `,
+# and neither is a status the provider returned. The lookarounds refuse a digit on
+# either side, the same refusal `PROVIDER_STATUS_PATTERN`'s lookarounds make, so a
+# code that would truncate to a known status reads nothing here.
+QUOTA_STATUS_NUMBER: Final = re.compile(r"(?<!\d)429(?!\d)")
+PROVIDER_ERROR_STATUS_NUMBERS: Final = re.compile(r"(?<!\d)(?:500|502|503|504|529)(?!\d)")
 # A status code the provider's own endpoint returned is *typed by what the status means*
 # rather than left `unclassified` or collapsed into one class (#696's owner ruling on the
 # original criterion, which had demanded the 529 be a refusal too): a non-429 4xx is the
@@ -1260,11 +1262,13 @@ PROVIDER_ERROR_MARKERS: Final = (
 # only a human clears. A status outside both ranges (a 3xx redirect, say) fits the shape
 # but no row and stays `unclassified`, where somebody investigates it. The two prefixes
 # are the only shapes observed, both from #696's two lanes (`ERROR: unexpected status 404
-# Not Found` from Codex; Claude Code's `API Error: <code>`, whose 529 shape the markers
-# above already pin). Checked *after* both marker lists on purpose, so a 429 keeps
+# Not Found` from Codex; Claude Code's `API Error: <code>`, whose 529 shape the bounded
+# numbers above already pin). Checked *after* both marker lists on purpose, so a 429 keeps
 # `quota_exhausted` and a marker-known 5xx keeps `provider_error` — the stronger class
 # wins, and a bare status code in the child's own output (a test count, a line number)
-# matches nothing here because the prefixes are required. Parsing the run's own output
+# matches nothing here because the prefixes are required. Every list above reads only the
+# run's *terminal* line — see `_terminal_line` — so a provider-shaped line the run survived
+# never types a failure the provider did not cause. Parsing the run's own output
 # stays the mechanism rather than a per-adapter typed result: the runners are external
 # binaries whose log is the only channel a headless dispatch has, so an adapter result
 # would parse this same prose one layer earlier and add a surface for it (#696).
@@ -1285,19 +1289,44 @@ PROVIDER_ERROR_STATUS_RANGE: Final = range(500, 600)
 LIMIT_EPOCH_SEPARATOR: Final = "usage limit reached|"
 
 
+def _terminal_line(output: str) -> str:
+    """Return the last non-empty line of a run's output, lowercased for matching.
+
+    The provider failure that killed a run is the last thing the run said; anything the
+    child printed *after* a provider-shaped line means the run survived that line, so it
+    is not the failure. Matching the whole tail instead let one `API Error: 404` inside
+    the child's own failure output — or a non-terminal provider warning — take a
+    child-owned failure over and read as a refusal nobody investigated (#696's round
+    four). What follows a run's last word is unwritten, so a trailing empty line is
+    skipped and an output of nothing classifies as nothing.
+    """
+    for line in reversed(output.splitlines()):
+        if line.strip():
+            return line.lower()
+    return ""
+
+
 def classify_run(returncode: int, output: str) -> tuple[str, float | None]:
     """Read a finished dispatch's exit code and output into an outcome and a reset time.
 
     Returns `(outcome, reset_at)`. This is the 429-reactive path the issue names as the
     degraded fallback: with no quota tap wired, this is how a lane's exhaustion is
     learned at all — late, because it costs a dispatch to find out, but not blind.
+
+    Only the run's terminal line is classified (`_terminal_line`): a provider failure is
+    the provider's death of the run, so a provider-shaped line anywhere earlier is a
+    warning the run survived, and the child's own last word keeps its classification.
     """
     if returncode == 0:
         return OK, None
-    text = output.lower()
-    if any(marker in text for marker in QUOTA_MARKERS):
+    text = _terminal_line(output)
+    if any(marker in text for marker in QUOTA_MARKERS) or (
+        QUOTA_STATUS_NUMBER.search(text) is not None
+    ):
         return QUOTA_EXHAUSTED, _limit_epoch(text)
-    if any(marker in text for marker in PROVIDER_ERROR_MARKERS):
+    if any(marker in text for marker in PROVIDER_ERROR_MARKERS) or (
+        PROVIDER_ERROR_STATUS_NUMBERS.search(text) is not None
+    ):
         return PROVIDER_ERROR, None
     match = PROVIDER_STATUS_PATTERN.search(text)
     if match is not None:

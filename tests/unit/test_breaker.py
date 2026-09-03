@@ -942,10 +942,18 @@ OVERLOAD_BODY: Final = (
     "API Error: 529 [1305][The service may be temporarily overloaded, please try again later]"
 )
 
-# The exact line one real Codex 404 produced (#696), spelled once for the same reason the
+# The line one real Codex 404 produced (#696), spelled once for the same reason the
 # body above is: the classification row and the end-to-end trip test beside it must pin
-# the same bytes. `...` elides a long response id, not anything the classifier reads.
+# the same bytes. `...` elides a long response id, so these are an elision and not the
+# captured bytes — the constant claims only that this shape classifies `provider_refused`,
+# never that it is what the log carried. The digit-bearing id in the second constant is
+# the elision's proof: status-like digit runs inside the id must not change the verdict,
+# because the classifier reads the whole terminal line.
 CODEX_NOT_FOUND_BODY: Final = "ERROR: unexpected status 404 Not Found: ... url: https://chatgpt.com/backend-api/codex/responses"
+CODEX_NOT_FOUND_WITH_RESPONSE_ID: Final = (
+    "ERROR: unexpected status 404 Not Found: resp_4291500529"
+    " url: https://chatgpt.com/backend-api/codex/responses"
+)
 
 
 @pytest.mark.parametrize(
@@ -960,6 +968,7 @@ CODEX_NOT_FOUND_BODY: Final = "ERROR: unexpected status 404 Not Found: ... url: 
         (1, "API Error: 503 Service Unavailable", breaker.PROVIDER_ERROR),
         (1, OVERLOAD_BODY, breaker.PROVIDER_ERROR),
         (1, CODEX_NOT_FOUND_BODY, breaker.PROVIDER_REFUSED),
+        (1, CODEX_NOT_FOUND_WITH_RESPONSE_ID, breaker.PROVIDER_REFUSED),
         (1, "API Error: 404 model not found", breaker.PROVIDER_REFUSED),
         # Ordering, not just membership: a status line that the stronger class also
         # claims must lose to it, or a 429 would count as a refusal and a 5xx as both.
@@ -981,6 +990,11 @@ CODEX_NOT_FOUND_BODY: Final = "ERROR: unexpected status 404 Not Found: ... url: 
         (1, "API Error: 600", breaker.UNCLASSIFIED),
         (1, "unexpected status 6000", breaker.UNCLASSIFIED),
         (1, "API Error: 4041 model not found", breaker.UNCLASSIFIED),
+        # The free-text markers match whole numbers, not substrings: `4290` contains
+        # `429` and `1500` contains `500`, and neither truncation is a status the
+        # provider returned, so neither may take the class its fragment would claim.
+        (1, "API Error: 4290", breaker.UNCLASSIFIED),
+        (1, "API Error: 1500 ", breaker.UNCLASSIFIED),
         # A refusal shape requires its prefix; a bare status-like number in the child's
         # own failure output is the child's own work and must keep reading unclassified
         # so somebody investigates it.
@@ -994,6 +1008,39 @@ def test_a_finished_runs_own_output_is_classified_narrowly(
 ) -> None:
     """Narrow on purpose: an output nobody can place moves no streak."""
     assert breaker.classify_run(returncode, output)[0] == expected
+
+
+def test_a_provider_line_the_run_survived_does_not_take_the_childs_failure_over() -> None:
+    """#696 round four: only the run's terminal line is classified, never the whole tail.
+
+    Both mixed logs are the swallow the whole-tail match produced: a child that prints a
+    provider-shaped line, keeps working, and then fails on its own; and a non-terminal
+    provider warning followed by a real child failure. A red read as `provider_refused`
+    is a red nobody investigates, so each must keep the child's classification — and the
+    third log is the true positive the scoping must not lose, where the provider really
+    is the last speaker.
+    """
+    survived = (
+        "reading CLAUDE.md\n"
+        "API Error: 429 rate limit exceeded\n"
+        "retrying\n"
+        "FAILED tests/unit/test_x.py - assert 2 == 404\n"
+    )
+    assert breaker.classify_run(1, survived) == (breaker.UNCLASSIFIED, None)
+    warned = (
+        "unexpected status 503 Service Unavailable\n"
+        "backed off and retried\n"
+        "the agent decided the issue was already done\n"
+    )
+    assert breaker.classify_run(1, warned) == (breaker.UNCLASSIFIED, None)
+    terminal = f"reading CLAUDE.md\nrunning the gate\n{CODEX_NOT_FOUND_BODY}\n"
+    assert breaker.classify_run(1, terminal) == (breaker.PROVIDER_REFUSED, None)
+
+
+def test_an_output_that_ends_nowhere_classifies_as_nothing() -> None:
+    """A tail of empty lines, or no output at all, is an output with no last word."""
+    assert breaker.classify_run(1, "\n \n") == (breaker.UNCLASSIFIED, None)
+    assert breaker.classify_run(1, "") == (breaker.UNCLASSIFIED, None)
 
 
 def test_the_limit_line_hands_over_its_own_reset_epoch() -> None:
