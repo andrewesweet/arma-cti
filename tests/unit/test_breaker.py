@@ -1118,7 +1118,7 @@ def test_a_limit_with_no_epoch_yields_no_reset_rather_than_a_computed_one() -> N
 # original test asserted it: the 529's availability hold opens without an escalation
 # and says so by staying `None` here.
 @pytest.mark.parametrize(
-    ("output", "lane", "rule", "failure_class", "escalated", "quality_streak"),
+    "case",
     [
         (OVERLOAD_BODY, "zai", "provider_errors", "infra_unavailable", None, None),
         (CODEX_NOT_FOUND_BODY, "codex", "quality", "provider_refused", True, None),
@@ -1127,14 +1127,10 @@ def test_a_limit_with_no_epoch_yields_no_reset_rather_than_a_computed_one() -> N
 )
 def test_three_runs_of_one_terminal_line_trip_the_rule_their_family_owes(
     tmp_path: Path,
-    output: str,
-    lane: str,
-    rule: str,
-    failure_class: str,
-    escalated: bool | None,
-    quality_streak: int | None,
+    case: tuple[str, str, str, str, bool | None, int | None],
 ) -> None:
     """Each family's line reaches its own rule, and never another family's."""
+    output, lane, rule, failure_class, escalated, quality_streak = case
     state = store(tmp_path)
     circuit = feed(state, lane, [breaker.classify_run(1, output)[0]] * 3)
     assert circuit is not None
