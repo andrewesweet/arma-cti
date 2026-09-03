@@ -1266,9 +1266,18 @@ PROVIDER_ERROR_MARKERS: Final = (
 # where a status would sit, a truncated one — is `unclassified` there too rather than a
 # marker's guess (`PROVIDER_STATUS_SHAPE`), because the provider did say a status and
 # we failed to read it; guessing from the body after that is how round five's collision
-# was built. An unanchored shape elsewhere on the line, a bare status code in the
-# child's own output (a test count, a line number), and a status outside the bands
-# below all read `unclassified`, where somebody investigates. Every list above reads
+# was built. An unanchored shape elsewhere on the line — the child's own failure
+# quoting a provider shape — and a bare status code in the child's own output (a test
+# count, a line number) both fall past the two anchored matches above. The shape
+# yields nothing there, so the marker lists still run, and they match anywhere in the
+# line: such a line classifies by whatever marker words it carries, `provider_error`
+# for `internal server error`, `quota_exhausted` for `out of credits`. That fuzziness
+# is the fallback's own and is accepted rather than fixed, because a line with no
+# parseable status is exactly what the markers exist for; what bounds it is that
+# neither class is a refusal streak, so no quality trip — the one a human clears —
+# can be built from the child's own words. Only a line carrying neither a status
+# shape nor a marker reads `unclassified`, where somebody investigates. Every list
+# above reads
 # only the run's *terminal* line — see `_terminal_line` — so a provider-shaped line the
 # run survived never types a failure the provider did not cause. Parsing the run's own
 # output stays the mechanism rather than a per-adapter typed result: the runners are
