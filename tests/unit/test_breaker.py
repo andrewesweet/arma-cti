@@ -978,14 +978,18 @@ CODEX_NOT_FOUND_WITH_RESPONSE_ID: Final = (
         # cannot outrank it.
         (
             1,
-            "ERROR: unexpected status 404 Not Found: resp_a429b"
-            " url: https://chatgpt.com/backend-api/codex/responses",
+            (
+                "ERROR: unexpected status 404 Not Found: resp_a429b"
+                " url: https://chatgpt.com/backend-api/codex/responses"
+            ),
             breaker.PROVIDER_REFUSED,
         ),
         (
             1,
-            "ERROR: unexpected status 404 Not Found: resp_a500b"
-            " url: https://chatgpt.com/backend-api/codex/responses",
+            (
+                "ERROR: unexpected status 404 Not Found: resp_a500b"
+                " url: https://chatgpt.com/backend-api/codex/responses"
+            ),
             breaker.PROVIDER_REFUSED,
         ),
         # Ordering, not just membership: a status line that the stronger class also
