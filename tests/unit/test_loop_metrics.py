@@ -36,9 +36,11 @@ def _dispatch(  # noqa: PLR0913 — fixture fields mirror the durable dispatch s
     ledger: dict[str, object] | None = None,
     ended_minute: int | None = None,
     omit_ended_at: bool = False,
+    worktree: str | None = None,
 ) -> None:
     """Arrange a dispatch plan, a completed result and an optional ledger row."""
     directory = root / identifier
+    resolved = worktree if worktree is not None else f"/repo/.claude/worktrees/issue-{issue}"
     _write(
         directory / "dispatch.json",
         {
@@ -46,6 +48,7 @@ def _dispatch(  # noqa: PLR0913 — fixture fields mirror the durable dispatch s
             "issue": issue,
             "seat": seat,
             "planned_at": _at(minute),
+            "worktree": resolved,
         },
     )
     result: dict[str, object] = {"started_at": _at(minute), "outcome": "ok"}
@@ -419,49 +422,66 @@ def test_worktree_owing_done_joins_registrations_to_attested_landings(
 ) -> None:
     """A registration counts when its issue has any landing attested by the end."""
     dispatch_root = tmp_path / "dispatches"
-    _dispatch(dispatch_root, "i50", 50, "implementer", 0, ledger=_landed_ledger(11))
-    _dispatch(dispatch_root, "i51", 51, "implementer", 0)
-    _dispatch(dispatch_root, "i53", 53, "implementer", 0, ledger=_landed_ledger(20))
-    # Issue 54 landed inside the window and again after it; either landing settles it.
-    _dispatch(dispatch_root, "i54", 54, "implementer", 0, ledger=_landed_ledger(9))
-    _dispatch(dispatch_root, "i54-r2", 54, "review", 0, ledger=_landed_ledger(25))
-    inputs = METRICS.read_inputs(dispatch_root, tmp_path / "review", tmp_path / "queue")
-    porcelain = "\n".join(
-        [
-            "worktree /repo",
-            f"HEAD {'0' * 40}",
-            "branch refs/heads/main",
-            "",
-            "worktree /repo/.claude/worktrees/issue-50",
-            f"HEAD {'1' * 40}",
-            "detached",
-            "",
-            "worktree /repo/.claude/worktrees/review-50-r2",
-            f"HEAD {'2' * 40}",
-            "detached",
-            "",
-            "worktree /repo/.claude/worktrees/issue-51",
-            f"HEAD {'3' * 40}",
-            "detached",
-            "",
-            "worktree /repo/.claude/worktrees/issue-53",
-            f"HEAD {'4' * 40}",
-            "detached",
-            "",
-            "worktree /repo/.claude/worktrees/issue-54",
-            f"HEAD {'6' * 40}",
-            "detached",
-            "",
-            "worktree /repo/.codex/9f2/arma-cti",
-            f"HEAD {'5' * 40}",
-            "detached",
-        ]
+    _dispatch(
+        dispatch_root,
+        "i50",
+        50,
+        "implementer",
+        0,
+        ledger=_landed_ledger(11),
+        worktree="/repo/.claude/worktrees/issue-50",
     )
+    _dispatch(
+        dispatch_root,
+        "i51",
+        51,
+        "implementer",
+        0,
+        worktree="/repo/.claude/worktrees/issue-51",
+    )
+    _dispatch(
+        dispatch_root,
+        "i53",
+        53,
+        "implementer",
+        0,
+        ledger=_landed_ledger(20),
+        worktree="/repo/.claude/worktrees/issue-53",
+    )
+    # Issue 54 landed inside the window and again after it; either landing settles it.
+    _dispatch(
+        dispatch_root,
+        "i54",
+        54,
+        "implementer",
+        0,
+        ledger=_landed_ledger(9),
+        worktree="/repo/.claude/worktrees/issue-54",
+    )
+    _dispatch(
+        dispatch_root,
+        "i54-r2",
+        54,
+        "review",
+        0,
+        ledger=_landed_ledger(25),
+        worktree="/repo/.claude/worktrees/review-54-r2",
+    )
+    # An unnamed tree registers but cannot join to a landing.
+    _dispatch(
+        dispatch_root,
+        "u1",
+        55,
+        "implementer",
+        0,
+        worktree="/repo/.claude/worktrees/dispatch-d-20260827-103751-65cbec",
+    )
+    inputs = METRICS.read_inputs(dispatch_root, tmp_path / "review", tmp_path / "queue")
     monkeypatch.setattr(
         METRICS,
         "_issue_registrations",
-        # the sweep is stubbed so the join runs over a fixed table
-        lambda _repo: METRICS._parse_issue_registrations(porcelain),  # noqa: SLF001
+        # the live sweep is never consulted on a bounded window; pin that
+        lambda _repo: pytest.fail("live sweep must not run for a bounded window"),  # noqa: SLF001
     )
 
     window = METRICS.Window(0.0, METRICS.parse_timestamp(_at(15)), explicit=True)
@@ -471,25 +491,68 @@ def test_worktree_owing_done_joins_registrations_to_attested_landings(
         if line.startswith("stock worktrees_owing_done")
     )
 
-    assert "level=3 " in line  # 50, review-50-r2, and 54; 53 landed after the end
+    assert "level=3 " in line  # 50, review-54-r2, and 54; 53 landed after the end
     assert "registrations=6 excluded_without_issue_name=1" in line
     assert "setpoint=at_most_0 status=above_setpoint alarm=3" in line
-    assert "registration_basis=current_snapshot bias=mixed net_direction=undetermined" in line
+    assert "registration_basis=dispatch_records_through_boundary" in line
     assert (
         "bias_paths=unmaterialised_ledger_landings:under_counts,"
         "closed_issue_without_landing:under_counts,"
         "issue_reopened_after_landing:over_counts,"
         "landed_issue_still_open:over_counts,"
-        "registrations_removed_since_boundary:under_counts,"
-        "registrations_added_since_boundary:over_counts"
+        "hand_made_registrations_without_dispatch:under_counts,"
+        "worktrees_removed_before_boundary:over_counts"
     ) in line
     # The temporal caveat is its own field, not a suffix of the basis value:
     # assert the field boundary, not merely the token.
-    assert " temporal=live_registration_sweep_not_as_of_window_end" in line
-    assert "_live_registration_sweep" not in line
+    assert " temporal=hand_made_registrations_absent_from_dispatch_records" in line
     assert "landing_basis=ledger_landed_at " in line
     assert "tracker_closure_unseen " in line
     assert "bias=under_counts" not in line
+
+
+def test_worktree_stock_registration_after_boundary_leaves_the_past_level_alone(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Adding a registration after a bounded window cannot move that window's level."""
+    dispatch_root = tmp_path / "dispatches"
+    _dispatch(
+        dispatch_root,
+        "early",
+        60,
+        "implementer",
+        0,
+        ledger=_landed_ledger(5),
+        worktree="/repo/.claude/worktrees/issue-60",
+    )
+    # Planned after the boundary: no registration may be reconstructed from it.
+    _dispatch(
+        dispatch_root,
+        "late",
+        61,
+        "implementer",
+        40,
+        worktree="/repo/.claude/worktrees/issue-61",
+    )
+    inputs = METRICS.read_inputs(dispatch_root, tmp_path / "review", tmp_path / "queue")
+    monkeypatch.setattr(
+        METRICS,
+        "_issue_registrations",
+        # the live sweep is never consulted on a bounded window; pin that
+        lambda _repo: pytest.fail("live sweep must not run for a bounded window"),  # noqa: SLF001
+    )
+
+    window = METRICS.Window(0.0, METRICS.parse_timestamp(_at(15)), explicit=True)
+    line = next(
+        line
+        for line in METRICS.stock_lines(inputs, tmp_path, window)
+        if line.startswith("stock worktrees_owing_done")
+    )
+
+    assert "level=1" in line  # the late tree is invisible as of minute 15
+    assert "registrations=1 excluded_without_issue_name=0" in line
+    assert "registration_basis=dispatch_records_through_boundary" in line
+    assert " temporal=hand_made_registrations_absent_from_dispatch_records" in line
 
 
 def test_issue_registrations_skip_main_checkout_and_name_unjoinable() -> None:
@@ -546,26 +609,17 @@ def test_worktree_stock_names_the_commit_timestamp_proxy(
             "materialised_at": _at(4),
             "gate": {"outcome": "landed", "landed": {"sha": "b" * 40}},
         },
+        worktree="/repo/.claude/worktrees/review-60b",
     )
     monkeypatch.setattr(
         METRICS, "_commit_timestamp", lambda _repo, _sha: METRICS.parse_timestamp(_at(9))
     )
     inputs = METRICS.read_inputs(dispatch_root, tmp_path / "review", tmp_path / "queue")
-    porcelain = "\n".join(
-        [
-            "worktree /repo",
-            f"HEAD {'0' * 40}",
-            "branch refs/heads/main",
-            "",
-            "worktree /repo/.claude/worktrees/review-60b",
-            f"HEAD {'7' * 40}",
-            "detached",
-        ]
-    )
     monkeypatch.setattr(
         METRICS,
         "_issue_registrations",
-        lambda _repo: METRICS._parse_issue_registrations(porcelain),  # noqa: SLF001
+        # the live sweep is never consulted on a bounded window; pin that
+        lambda _repo: pytest.fail("live sweep must not run for a bounded window"),  # noqa: SLF001
     )
 
     window = METRICS.Window(0.0, METRICS.parse_timestamp(_at(15)), explicit=True)
@@ -728,13 +782,56 @@ def test_worktree_stock_names_unreadable_registrations(
 
     line = next(
         line
-        for line in METRICS.stock_lines(inputs, tmp_path, METRICS.Window(0.0, 2.0, explicit=True))
+        for line in METRICS.stock_lines(inputs, tmp_path, METRICS.Window(0.0, None, explicit=True))
         if line.startswith("stock worktrees_owing_done")
     )
 
     assert "level=unrecorded setpoint=at_most_0 status=unrecorded" in line
     assert "reason=worktree_registrations_unreadable" in line
     assert "bias=under_counts" not in line
+
+
+def test_worktree_stock_diagnoses_a_damaged_worktree_field(
+    tmp_path: Path,
+) -> None:
+    """A record whose worktree field is damaged is diagnosed, never a tree."""
+    dispatch_root = tmp_path / "dispatches"
+    _dispatch(
+        dispatch_root,
+        "placed",
+        90,
+        "implementer",
+        0,
+        ledger=_landed_ledger(5),
+        worktree="/repo/.claude/worktrees/issue-90",
+    )
+    directory = dispatch_root / "damaged"
+    _write(
+        directory / "dispatch.json",
+        {
+            "dispatch_id": "damaged",
+            "issue": 93,
+            "seat": "implementer",
+            "planned_at": _at(1),
+            "worktree": 7,
+        },
+    )
+    _write(directory / "result.json", {"started_at": _at(1), "outcome": "ok", "ended_at": _at(2)})
+    inputs = METRICS.read_inputs(dispatch_root, tmp_path / "review", tmp_path / "queue")
+
+    window = METRICS.Window(0.0, METRICS.parse_timestamp(_at(15)), explicit=True)
+    line = next(
+        line
+        for line in METRICS.stock_lines(inputs, tmp_path, window)
+        if line.startswith("stock worktrees_owing_done")
+    )
+
+    assert "level=1" in line  # only the record that placed a tree joins
+    assert "registrations=1" in line
+    assert any(
+        "dispatch=damaged field=worktree status=unreadable reason=not_a_string" in diagnostic
+        for diagnostic in inputs.diagnostics
+    )
 
 
 def test_queue_stock_requires_a_counted_non_boolean_baseline() -> None:
@@ -770,7 +867,7 @@ def test_stock_lines_report_blocked_queue_and_ruled_alarm_statuses(
         diagnostics=(),
     )
 
-    lines = METRICS.stock_lines(inputs, tmp_path, METRICS.Window(0.0, 2.0, explicit=True))
+    lines = METRICS.stock_lines(inputs, tmp_path, METRICS.Window(0.0, None, explicit=True))
     joined = "\n".join(lines)
 
     assert "stock ready_work level=2 setpoint=>=3 status=below_alarm" in joined

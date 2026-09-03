@@ -102,6 +102,10 @@ class DispatchRecord(NamedTuple):
     landed_sha: str | None
     landed_at: float | None
     path: Path
+    # The tree the dispatch was planned into, read for the worktree stock's
+    # as-of reconstruction.  Optional because only that reconstruction reads
+    # it; a record without one cannot place a tree and is diagnosed at read.
+    worktree: str | None = None
 
 
 class IndependentFinding(NamedTuple):
@@ -359,6 +363,19 @@ def read_dispatches(root: Path, diagnostics: list[str]) -> tuple[DispatchRecord,
         if planned_at is None:
             diagnostics.append(f"dispatch={dispatch_id} status=unreadable reason=planned_at")
             continue
+        raw_worktree = document.get("worktree")
+        if raw_worktree is None:
+            worktree = None
+            diagnostics.append(
+                f"dispatch={dispatch_id} field=worktree status=unreadable reason=absent"
+            )
+        elif not isinstance(raw_worktree, str) or not raw_worktree:
+            worktree = None
+            diagnostics.append(
+                f"dispatch={dispatch_id} field=worktree status=unreadable reason=not_a_string"
+            )
+        else:
+            worktree = raw_worktree
         result_state, started, ended = _read_result(dispatch_dir, diagnostics, dispatch_id)
         ledger, materialised, landed_sha, landed_at = _ledger_fields(
             dispatch_dir, diagnostics, dispatch_id, issue
@@ -377,6 +394,7 @@ def read_dispatches(root: Path, diagnostics: list[str]) -> tuple[DispatchRecord,
                 landed_sha,
                 landed_at,
                 dispatch_dir,
+                worktree,
             )
         )
     records.sort(key=lambda record: (record.planned_at, record.dispatch_id))
@@ -1447,6 +1465,31 @@ def _issue_registrations(repo: Path) -> tuple[tuple[Path, int | None], ...] | No
     return _parse_issue_registrations(stdout)
 
 
+def _registrations_from_records(
+    dispatches: tuple[DispatchRecord, ...], boundary: float | None
+) -> tuple[tuple[Path, int | None], ...]:
+    """Reconstruct the registration table as of a boundary from dispatch records.
+
+    A tree registers when a dispatch naming it had been planned by the
+    boundary: `just worktree add` runs before the plan is written, so
+    ``planned_at`` never precedes the tree it names.  Deduplicated on the
+    path string, first-seen order.  Reconstructed, never swept — no live
+    filesystem read takes part.
+    """
+    registrations: list[tuple[Path, int | None]] = []
+    seen: set[str] = set()
+    for dispatch in dispatches:
+        if boundary is not None and dispatch.planned_at > boundary:
+            continue
+        worktree = dispatch.worktree
+        if worktree is None or worktree in seen:
+            continue
+        seen.add(worktree)
+        match = ISSUE_WORKTREE_NAME.match(Path(worktree).name)
+        registrations.append((Path(worktree), int(match.group(1)) if match else None))
+    return tuple(registrations)
+
+
 def _worktree_stock(
     dispatches: tuple[DispatchRecord, ...], repo: Path, window: Window
 ) -> WorktreeStock:
@@ -1476,26 +1519,45 @@ def _worktree_stock(
     assumed: a ledger-recorded landing time, a commit-timestamp stand-in, a
     mix of the two, or none at all when no landing participated.
 
-    The registration table is a current snapshot no durable record replays
-    historically, like the acceptance lint's repository read, so a window
-    with a boundary in the past is **not** an as-of answer: the landing half
-    is read at the boundary and the registration half is read now.  That
-    split is emitted as its own field rather than folded into the preceding
-    one, so a machine reader can parse the caveat instead of swallowing it
-    into the basis value (runs_in_flight's split between
-    derived_from_result_end_timestamps and _file_presence).
+    The registration table is read differently by boundary.  A window with no
+    end extends to now, so the live sweep **is** the as-of answer and the
+    current snapshot is read through `_issue_registrations`.  A window with
+    an end in the past is reconstructed from the dispatch records instead,
+    through `_registrations_from_records`: `~/.arma-cti/dispatches/` is
+    durable and timestamped, every record names the tree its dispatch was
+    planned into, and `just worktree add` runs before the plan is written, so
+    a record with ``planned_at <= end`` is evidence the tree existed at the
+    boundary.  That split is emitted as its own field rather than folded
+    into the preceding one, so a machine reader can parse the read's basis
+    instead of swallowing it into the basis value (runs_in_flight's split
+    between derived_from_result_end_timestamps and _file_presence).
+
+    The reconstruction is an approximation with two named error paths: a
+    hand-made tree with no dispatch behind it is invisible to the records
+    (under-counts), and a tree whose record began by the boundary but which
+    was removed again before it still counts (over-counts) — no record
+    carries the removal.  A record that cannot place a tree at all (no
+    readable ``worktree`` field) is diagnosed at read and contributes
+    nothing, so it cannot invent a registration.
     """
-    registrations = _issue_registrations(repo)
-    if registrations is None:
-        return WorktreeStock(
-            StockReading(
-                None, "unrecorded", "unrecorded", "unrecorded", "worktree_registrations_unreadable"
-            ),
-            0,
-            0,
-        )
     landings = _landing_times(dispatches, repo, [])
     end = window.end
+    if end is None:
+        registrations = _issue_registrations(repo)
+        if registrations is None:
+            return WorktreeStock(
+                StockReading(
+                    None,
+                    "unrecorded",
+                    "unrecorded",
+                    "unrecorded",
+                    "worktree_registrations_unreadable",
+                ),
+                0,
+                0,
+            )
+    else:
+        registrations = _registrations_from_records(dispatches, end)
     owing = 0
     unjoinable = 0
     proxied = 0
@@ -1524,13 +1586,13 @@ def _worktree_stock(
         basis = " landing_basis=ledger_landed_at"
     if proxied:
         basis += " proxy_bias=reads_early_over_counts_near_boundary"
-    # The landing half honours the boundary; the registration half cannot — the
-    # table is read live and nothing replays it — so a past boundary makes the
-    # level a mixed-time read.  Emitted as its own key=value field: appended
-    # straight onto the basis value it would be unparsable, and a caveat no
-    # field boundary marks is one a machine reader silently swallows.
+    # Emitted as its own key=value field, never folded into the basis value:
+    # a caveat no field boundary marks is one a machine reader silently
+    # swallows.  With the records-derived registration half the read honours
+    # the boundary on both halves, so the field narrows to the one
+    # approximation the records cannot repair — hand-made trees.
     temporal = (
-        " temporal=live_registration_sweep_not_as_of_window_end" if window.end is not None else ""
+        " temporal=hand_made_registrations_absent_from_dispatch_records" if end is not None else ""
     )
     return WorktreeStock(
         StockReading(
@@ -1554,9 +1616,10 @@ def _worktree_bias_text(window: Window) -> str:
     reader leaning on it would misread a disagreeing number.  Four
     magnitudes-unknown paths are always in play — the two unmaterialisation
     and closure-mismatch paths, since a landing is only ever a proxy for the
-    tracker's own closure — and the sweep-liveness pair joins them only where
-    the window ends in the past, when the registration half is read after its
-    own boundary.
+    tracker's own closure.  A past boundary reconstructs the registration
+    half from the dispatch records and adds its two reconstruction paths;
+    the live sweep (no boundary) adds none, because the snapshot is the
+    as-of answer for a window that ends now.
     """
     paths = [
         "unmaterialised_ledger_landings:under_counts",
@@ -1566,11 +1629,13 @@ def _worktree_bias_text(window: Window) -> str:
     ]
     if window.end is not None:
         paths += [
-            "registrations_removed_since_boundary:under_counts",
-            "registrations_added_since_boundary:over_counts",
+            "hand_made_registrations_without_dispatch:under_counts",
+            "worktrees_removed_before_boundary:over_counts",
         ]
     return (
-        " registration_basis=current_snapshot bias=mixed net_direction=undetermined"
+        " registration_basis="
+        + ("dispatch_records_through_boundary" if window.end is not None else "current_snapshot")
+        + " bias=mixed net_direction=undetermined"
         f" bias_paths={','.join(paths)}"
     )
 
