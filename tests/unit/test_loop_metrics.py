@@ -477,13 +477,18 @@ def test_worktree_owing_done_joins_registrations_to_attested_landings(
     assert "registration_basis=current_snapshot bias=mixed net_direction=undetermined" in line
     assert (
         "bias_paths=unmaterialised_ledger_landings:under_counts,"
+        "closed_issue_without_landing:under_counts,"
         "issue_reopened_after_landing:over_counts,"
+        "landed_issue_still_open:over_counts,"
         "registrations_removed_since_boundary:under_counts,"
         "registrations_added_since_boundary:over_counts"
     ) in line
-    assert "live_registration_sweep_not_as_of_window_end" in line
-    assert "landing_basis=ledger_landed_at" in line
-    assert "tracker_closure_unseen" in line
+    # The temporal caveat is its own field, not a suffix of the basis value:
+    # assert the field boundary, not merely the token.
+    assert " temporal=live_registration_sweep_not_as_of_window_end" in line
+    assert "_live_registration_sweep" not in line
+    assert "landing_basis=ledger_landed_at " in line
+    assert "tracker_closure_unseen " in line
     assert "bias=under_counts" not in line
 
 
@@ -575,6 +580,101 @@ def test_worktree_stock_names_the_commit_timestamp_proxy(
     assert "proxy_bias=reads_early_over_counts_near_boundary" in line
 
 
+def test_worktree_stock_names_a_mixed_landing_basis(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Attested and proxy landings together report the mix, not the louder half."""
+    dispatch_root = tmp_path / "dispatches"
+    _dispatch(dispatch_root, "att", 80, "implementer", 0, ledger=_landed_ledger(5))
+    _dispatch(
+        dispatch_root,
+        "mix",
+        81,
+        "implementer",
+        0,
+        ledger={
+            "materialised_at": _at(4),
+            "gate": {"outcome": "landed", "landed": {"sha": "c" * 40}},
+        },
+    )
+    monkeypatch.setattr(
+        METRICS, "_commit_timestamp", lambda _repo, _sha: METRICS.parse_timestamp(_at(9))
+    )
+    inputs = METRICS.read_inputs(dispatch_root, tmp_path / "review", tmp_path / "queue")
+    porcelain = "\n".join(
+        [
+            "worktree /repo",
+            f"HEAD {'0' * 40}",
+            "branch refs/heads/main",
+            "",
+            "worktree /repo/.claude/worktrees/issue-80",
+            f"HEAD {'9' * 40}",
+            "detached",
+            "",
+            "worktree /repo/.claude/worktrees/issue-81",
+            f"HEAD {'a' * 40}",
+            "detached",
+        ]
+    )
+    monkeypatch.setattr(
+        METRICS,
+        "_issue_registrations",
+        lambda _repo: METRICS._parse_issue_registrations(porcelain),  # noqa: SLF001
+    )
+
+    line = next(
+        line
+        for line in METRICS.stock_lines(inputs, tmp_path, METRICS.Window(0.0, None, explicit=False))
+        if line.startswith("stock worktrees_owing_done")
+    )
+
+    assert "level=2" in line
+    assert "landing_basis=mixed_commit_timestamp_and_ledger_landed_at" in line
+    assert "proxy_bias=reads_early_over_counts_near_boundary" in line
+    assert "landing_basis=ledger_landed_at" not in line.replace(
+        "mixed_commit_timestamp_and_ledger_landed_at", ""
+    )
+    assert "temporal=" not in line
+
+
+def test_worktree_stock_without_a_qualifying_landing_names_no_basis(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A level no landing participated in borrows neither basis label."""
+    dispatch_root = tmp_path / "dispatches"
+    # Issue 90 has a registration but its dispatch never landed.
+    _dispatch(dispatch_root, "nope", 90, "implementer", 0)
+    inputs = METRICS.read_inputs(dispatch_root, tmp_path / "review", tmp_path / "queue")
+    porcelain = "\n".join(
+        [
+            "worktree /repo",
+            f"HEAD {'0' * 40}",
+            "branch refs/heads/main",
+            "",
+            "worktree /repo/.claude/worktrees/issue-90",
+            f"HEAD {'b' * 40}",
+            "detached",
+        ]
+    )
+    monkeypatch.setattr(
+        METRICS,
+        "_issue_registrations",
+        lambda _repo: METRICS._parse_issue_registrations(porcelain),  # noqa: SLF001
+    )
+
+    line = next(
+        line
+        for line in METRICS.stock_lines(inputs, tmp_path, METRICS.Window(0.0, None, explicit=False))
+        if line.startswith("stock worktrees_owing_done")
+    )
+
+    assert "level=0" in line
+    assert "landing_basis=none_no_qualifying_landing" in line
+    assert "ledger_landed_at" not in line
+    assert "commit_timestamp" not in line
+    assert "proxy_bias" not in line
+
+
 def test_worktree_stock_current_window_states_its_two_bias_paths(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -608,12 +708,15 @@ def test_worktree_stock_current_window_states_its_two_bias_paths(
     assert "level=1" in line
     assert (
         "bias_paths=unmaterialised_ledger_landings:under_counts,"
-        "issue_reopened_after_landing:over_counts"
+        "closed_issue_without_landing:under_counts,"
+        "issue_reopened_after_landing:over_counts,"
+        "landed_issue_still_open:over_counts"
     ) in line
     assert "bias=mixed net_direction=undetermined" in line
     assert "not_as_of_window_end" not in line
     assert "registrations_removed_since_boundary" not in line
-    assert "landing_basis=ledger_landed_at" in line
+    assert "landing_basis=ledger_landed_at " in line
+    assert "temporal=" not in line
 
 
 def test_worktree_stock_names_unreadable_registrations(

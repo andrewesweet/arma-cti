@@ -71,11 +71,13 @@ average.** Interventions aimed at the median will not find it.
 
 The worktree stock deserves the same kind of note. `just loop-metrics` now derives it locally
 (#672): every registered worktree whose name carries an issue number (`issue-N`, `review-N…`)
-counts when a ledger row attests `gate=landed` for that issue, so a landing whose ledger row was
-never materialised is invisible to it and the level under-counts the tracker's answer (an issue
-reopened after its landing can push it the other way) — the report line says so in its own bytes
-(`bias=under_counts`). The frozen **17** above was measured before this derivation existed, so it
-is not directly comparable to the reader's figure.
+counts when a ledger row attests `gate=landed` for that issue. The level is a proxy for the
+tracker's answer, and the report discloses every way that proxy can err — landings invisible
+for want of a materialised ledger row, issues closed without a landing, issues landed but not
+yet closed, issues reopened after landing, and, for a past window, registrations that changed
+since the boundary — while claiming no single net direction. The frozen **17** above was
+measured before this derivation existed, so it is not directly comparable to the reader's
+figure.
 
 The ledger stock deserves a note. It held 6 rows on 22 August and 778 on 26 August — drained by a
 sync run on 23 August — but the newest row is from that date, so it has been refilling at roughly

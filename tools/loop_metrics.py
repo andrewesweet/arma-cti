@@ -1458,23 +1458,32 @@ def _worktree_stock(
     still counts.  The tracker's own closure is deliberately unseen — the
     reader makes no network call.
 
-    The level's error direction is not one direction and the reason says so
-    rather than picking one.  Under-counting paths: a landing whose ledger
-    row was never materialised is invisible here (195 such rows at #602's
-    review), and for a past window a tree unregistered since the boundary is
-    already gone from the sweep.  Over-counting paths: an issue reopened
-    after its landing still holds a counted registration, the commit
-    timestamp proxy reads no later than the true landing so near a boundary
-    it can pull a landing inside it, and for a past window a tree
-    registered since the boundary counts although it did not exist at it.
-    Because the magnitudes of those paths are unknowable from these records,
-    no net direction is claimed.
+    The level is a **proxy** for the tracker's answer and the reason says so
+    rather than picking one error direction.  Under-counting paths: a landing
+    whose ledger row was never materialised is invisible here (195 such rows
+    at #602's review), an issue closed with no landing at all is never joined,
+    and for a past window a tree unregistered since the boundary is already
+    gone from the sweep.  Over-counting paths: an issue landed but still open
+    — including the `just land` exit-2 state before its own close step — still
+    holds a counted registration, an issue reopened after its landing does
+    too, the commit timestamp proxy reads no later than the true landing so
+    near a boundary it can pull a landing inside it, and for a past window a
+    tree registered since the boundary counts although it did not exist at
+    it.  Because the magnitudes of those paths are unknowable from these
+    records, no net direction is claimed.
+
+    The basis the landing timestamps were read on is reported per level, not
+    assumed: a ledger-recorded landing time, a commit-timestamp stand-in, a
+    mix of the two, or none at all when no landing participated.
 
     The registration table is a current snapshot no durable record replays
     historically, like the acceptance lint's repository read, so a window
     with a boundary in the past is **not** an as-of answer: the landing half
-    is read at the boundary and the registration half is read now, and the
-    reason names that split rather than letting the line read as-of.
+    is read at the boundary and the registration half is read now.  That
+    split is emitted as its own field rather than folded into the preceding
+    one, so a machine reader can parse the caveat instead of swallowing it
+    into the basis value (runs_in_flight's split between
+    derived_from_result_end_timestamps and _file_presence).
     """
     registrations = _issue_registrations(repo)
     if registrations is None:
@@ -1489,7 +1498,8 @@ def _worktree_stock(
     end = window.end
     owing = 0
     unjoinable = 0
-    proxy = False
+    proxied = 0
+    attested = 0
     for _, issue in registrations:
         if issue is None:
             unjoinable += 1
@@ -1499,17 +1509,29 @@ def _worktree_stock(
         )
         if qualifying:
             owing += 1
-            proxy = proxy or any(not landing.attested for landing in qualifying)
-    basis = (
-        " landing_basis=commit_timestamp proxy_bias=reads_early_over_counts_near_boundary"
-        if proxy
-        else " landing_basis=ledger_landed_at"
-    )
+            proxied += sum(not landing.attested for landing in qualifying)
+            attested += sum(landing.attested for landing in qualifying)
+    # A level no landing participated in must not borrow the attested label:
+    # no landing timestamp was read at all.  A mix of the two bases is its
+    # own value, not the louder of its halves.
+    if not proxied and not attested:
+        basis = " landing_basis=none_no_qualifying_landing"
+    elif proxied and attested:
+        basis = " landing_basis=mixed_commit_timestamp_and_ledger_landed_at"
+    elif proxied:
+        basis = " landing_basis=commit_timestamp"
+    else:
+        basis = " landing_basis=ledger_landed_at"
+    if proxied:
+        basis += " proxy_bias=reads_early_over_counts_near_boundary"
     # The landing half honours the boundary; the registration half cannot — the
     # table is read live and nothing replays it — so a past boundary makes the
-    # level a mixed-time read and the reason says so (runs_in_flight's split
-    # between derived_from_result_end_timestamps and _file_presence).
-    temporal = "_live_registration_sweep_not_as_of_window_end" if window.end is not None else ""
+    # level a mixed-time read.  Emitted as its own key=value field: appended
+    # straight onto the basis value it would be unparsable, and a caveat no
+    # field boundary marks is one a machine reader silently swallows.
+    temporal = (
+        " temporal=live_registration_sweep_not_as_of_window_end" if window.end is not None else ""
+    )
     return WorktreeStock(
         StockReading(
             owing,
@@ -1529,14 +1551,18 @@ def _worktree_bias_text(window: Window) -> str:
 
     One token per path with the direction it pushes, because a bare
     ``bias=under_counts`` would be false for the paths that over-count and a
-    reader leaning on it would misread a disagreeing number.  The two
-    magnitudes-unknown paths are always in play; the sweep-liveness pair
-    joins them only where the window ends in the past, when the registration
-    half is read after its own boundary.
+    reader leaning on it would misread a disagreeing number.  Four
+    magnitudes-unknown paths are always in play — the two unmaterialisation
+    and closure-mismatch paths, since a landing is only ever a proxy for the
+    tracker's own closure — and the sweep-liveness pair joins them only where
+    the window ends in the past, when the registration half is read after its
+    own boundary.
     """
     paths = [
         "unmaterialised_ledger_landings:under_counts",
+        "closed_issue_without_landing:under_counts",
         "issue_reopened_after_landing:over_counts",
+        "landed_issue_still_open:over_counts",
     ]
     if window.end is not None:
         paths += [
