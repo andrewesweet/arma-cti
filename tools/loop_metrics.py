@@ -1456,17 +1456,25 @@ def _worktree_stock(
     ``gate=landed`` with **any** landing at or before the window's end — an
     issue that landed inside the window and again after it has landed, so it
     still counts.  The tracker's own closure is deliberately unseen — the
-    reader makes no network call — and the registration table is a current
-    snapshot no durable record replays historically, like the acceptance
-    lint's repository read.  The level under-counts the tracker's answer: a
-    landing whose ledger row was never materialised is invisible here (195
-    such rows at #602's review), while the reverse error — a counted
-    registration whose issue was reopened after the landing — needs an issue
-    to come back, which is far rarer.
+    reader makes no network call.
 
-    Where no ledger row carried ``landed_at``, the landing time is the commit
-    timestamp and the reason says so: that proxy reads no later than the true
-    landing, so near a boundary it can over-count the level.
+    The level's error direction is not one direction and the reason says so
+    rather than picking one.  Under-counting paths: a landing whose ledger
+    row was never materialised is invisible here (195 such rows at #602's
+    review), and for a past window a tree unregistered since the boundary is
+    already gone from the sweep.  Over-counting paths: an issue reopened
+    after its landing still holds a counted registration, the commit
+    timestamp proxy reads no later than the true landing so near a boundary
+    it can pull a landing inside it, and for a past window a tree
+    registered since the boundary counts although it did not exist at it.
+    Because the magnitudes of those paths are unknowable from these records,
+    no net direction is claimed.
+
+    The registration table is a current snapshot no durable record replays
+    historically, like the acceptance lint's repository read, so a window
+    with a boundary in the past is **not** an as-of answer: the landing half
+    is read at the boundary and the registration half is read now, and the
+    reason names that split rather than letting the line read as-of.
     """
     registrations = _issue_registrations(repo)
     if registrations is None:
@@ -1497,6 +1505,11 @@ def _worktree_stock(
         if proxy
         else " landing_basis=ledger_landed_at"
     )
+    # The landing half honours the boundary; the registration half cannot — the
+    # table is read live and nothing replays it — so a past boundary makes the
+    # level a mixed-time read and the reason says so (runs_in_flight's split
+    # between derived_from_result_end_timestamps and _file_presence).
+    temporal = "_live_registration_sweep_not_as_of_window_end" if window.end is not None else ""
     return WorktreeStock(
         StockReading(
             owing,
@@ -1504,10 +1517,35 @@ def _worktree_stock(
             "unrecorded",
             "unrecorded",
             "registered_issue_worktrees_joined_to_ledger_attested_landings"
-            f"_tracker_closure_unseen{basis}",
+            f"_tracker_closure_unseen{basis}{temporal}",
         ),
         len(registrations),
         unjoinable,
+    )
+
+
+def _worktree_bias_text(window: Window) -> str:
+    """Name the level's error paths and refuse a single net direction.
+
+    One token per path with the direction it pushes, because a bare
+    ``bias=under_counts`` would be false for the paths that over-count and a
+    reader leaning on it would misread a disagreeing number.  The two
+    magnitudes-unknown paths are always in play; the sweep-liveness pair
+    joins them only where the window ends in the past, when the registration
+    half is read after its own boundary.
+    """
+    paths = [
+        "unmaterialised_ledger_landings:under_counts",
+        "issue_reopened_after_landing:over_counts",
+    ]
+    if window.end is not None:
+        paths += [
+            "registrations_removed_since_boundary:under_counts",
+            "registrations_added_since_boundary:over_counts",
+        ]
+    return (
+        " registration_basis=current_snapshot bias=mixed net_direction=undetermined"
+        f" bias_paths={','.join(paths)}"
     )
 
 
@@ -1587,11 +1625,7 @@ def stock_lines(inputs: Inputs, repo: Path, window: Window) -> list[str]:
             f"excluded_without_issue_name={worktrees.unjoinable} "
             "flow_creation=unrecorded flow_clearing=unrecorded trend=unrecorded "
             f"reason={worktrees.reading.reason}"
-            + (
-                " registration_basis=current_snapshot bias=under_counts"
-                if worktrees.reading.level is not None
-                else ""
-            )
+            + (_worktree_bias_text(window) if worktrees.reading.level is not None else "")
         ),
         (
             f"stock dispatches_without_ledger level={_level_text(ledger.level)} "

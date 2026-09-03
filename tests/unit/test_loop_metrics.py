@@ -474,9 +474,17 @@ def test_worktree_owing_done_joins_registrations_to_attested_landings(
     assert "level=3 " in line  # 50, review-50-r2, and 54; 53 landed after the end
     assert "registrations=6 excluded_without_issue_name=1" in line
     assert "setpoint=at_most_0 status=above_setpoint alarm=3" in line
-    assert "registration_basis=current_snapshot bias=under_counts" in line
+    assert "registration_basis=current_snapshot bias=mixed net_direction=undetermined" in line
+    assert (
+        "bias_paths=unmaterialised_ledger_landings:under_counts,"
+        "issue_reopened_after_landing:over_counts,"
+        "registrations_removed_since_boundary:under_counts,"
+        "registrations_added_since_boundary:over_counts"
+    ) in line
+    assert "live_registration_sweep_not_as_of_window_end" in line
     assert "landing_basis=ledger_landed_at" in line
     assert "tracker_closure_unseen" in line
+    assert "bias=under_counts" not in line
 
 
 def test_issue_registrations_skip_main_checkout_and_name_unjoinable() -> None:
@@ -565,6 +573,47 @@ def test_worktree_stock_names_the_commit_timestamp_proxy(
     assert "level=1" in line
     assert "landing_basis=commit_timestamp" in line
     assert "proxy_bias=reads_early_over_counts_near_boundary" in line
+
+
+def test_worktree_stock_current_window_states_its_two_bias_paths(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Without a boundary the sweep is the answer: two paths, no as-of caveat."""
+    dispatch_root = tmp_path / "dispatches"
+    _dispatch(dispatch_root, "cur", 70, "implementer", 0, ledger=_landed_ledger(3))
+    inputs = METRICS.read_inputs(dispatch_root, tmp_path / "review", tmp_path / "queue")
+    porcelain = "\n".join(
+        [
+            "worktree /repo",
+            f"HEAD {'0' * 40}",
+            "branch refs/heads/main",
+            "",
+            "worktree /repo/.claude/worktrees/issue-70",
+            f"HEAD {'8' * 40}",
+            "detached",
+        ]
+    )
+    monkeypatch.setattr(
+        METRICS,
+        "_issue_registrations",
+        lambda _repo: METRICS._parse_issue_registrations(porcelain),  # noqa: SLF001
+    )
+
+    line = next(
+        line
+        for line in METRICS.stock_lines(inputs, tmp_path, METRICS.Window(0.0, None, explicit=False))
+        if line.startswith("stock worktrees_owing_done")
+    )
+
+    assert "level=1" in line
+    assert (
+        "bias_paths=unmaterialised_ledger_landings:under_counts,"
+        "issue_reopened_after_landing:over_counts"
+    ) in line
+    assert "bias=mixed net_direction=undetermined" in line
+    assert "not_as_of_window_end" not in line
+    assert "registrations_removed_since_boundary" not in line
+    assert "landing_basis=ledger_landed_at" in line
 
 
 def test_worktree_stock_names_unreadable_registrations(
