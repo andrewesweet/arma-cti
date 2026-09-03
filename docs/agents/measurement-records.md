@@ -49,16 +49,22 @@ invocations is not evidence of a clean run, it is a transcript this module canno
 Chosen: **the record carries a generated `transcript-audit` block, and a checker regenerates
 it.** `tools/transcript_audit.py`:
 
-- `emit` derives the transcript from the worktree, extracts every invocation, and prints the
-  block — one row per invocation, each row carrying its transcript line, timestamp, tool,
-  command head and output head, with named truncation (`…`). Deterministic by construction:
-  no generation timestamp, so a re-run over the same transcript renders byte-identically.
-- `verify` regenerates the block and refuses `record_block_modified` (a block that was
-  edited — omission is this code's shape: the #695 test removes the `fatal: invalid
-  upstream` row and verify goes red), `record_block_missing`, `record_block_ambiguous`, and
-  — over the prose outside the block — `claim_not_in_transcript` for a full SHA or a
-  backticked `git` command no transcript row carries. Both #695 shapes are caught, and both
-  are pinned by tests named for the case (`test_six_nine_five_*`).
+- `emit` derives the transcript from the worktree, extracts every invocation it can recover,
+  and prints the block — one row per invocation, each row carrying its transcript line,
+  timestamp, tool, command and output, with named truncation (`…`) in the rendered cells.
+  An invocation whose `tool_result` never arrived renders a **missing-output row**, never a
+  silent drop: dropping it would re-create the omission this checker exists to catch.
+  Deterministic by construction: no generation timestamp, so a re-run over the same
+  transcript renders byte-identically.
+- `verify` reads the transcript the record's block binds itself to — the block header names
+  the transcript file and its full SHA-256 — refuses `transcript_changed` where that file's
+  content has moved since the record was rendered, regenerates the block and refuses
+  `record_block_modified` (a block that was edited — omission is this code's shape: the
+  #695 test removes the `fatal: invalid upstream` row and verify goes red),
+  `record_block_missing`, `record_block_ambiguous`, and — over the prose outside the block
+  — `claim_not_in_transcript` for a full SHA or a backticked `git` command no transcript row
+  carries. Both #695 shapes are caught, and both are pinned by tests named for the case
+  (`test_six_nine_five_*`).
 
 Why the alternatives lost:
 
@@ -83,7 +89,7 @@ Why the alternatives lost:
 session could not run it on 2026-09-03 (`uv run python tools/…` refused, measured). So:
 
 - **Strong form** — a tool-generated `transcript-audit` block in the record, verified at
-  review by `uv run python tools/transcript_audit.py verify --record <file> --worktree <path>`.
+  review by `just transcript-audit verify --record <file> --worktree <path>`.
   The reviewer's or orchestrator's session, where approvals exist, runs it.
 - **Citation form** — where emit could not run, the record's invocation evidence is cited to
   transcript lines with verbatim quotes, and the record says so plainly. A record with
@@ -100,22 +106,41 @@ beside the gate report.
   measurement record's invocation evidence is citation-form only.
 - **Not a gate leg.** The checker never blocks a landing; it sharpens a review. Making it
   one is the `CLAUDE.md` change above, taken deliberately not now.
-- **Heads are bounded.** Command and output cells truncate at named limits (200/400
-  characters) with `…`; the row is a pointer to the transcript line, not a replacement for
-  it. A claim inside the truncated tail is not found by the prose scan — resolve the line.
-- **The newest-JSONL derivation** can name the wrong file if two sessions overlap in one
-  worktree, which the #105 protocol forbids; if it happens, `verify` still holds the
-  guarantee for the transcript it does read, and the block's `sha256` prefix names the file
-  it was rendered from.
+- **Heads are bounded in the rendered rows only.** Command and output cells truncate at
+  named limits (200/400 characters) with `…`; the row is a pointer to the transcript line,
+  not a replacement for it. Verification searches the full command and output text, so a
+  claim resolved by text past the rendered bound is still found — the scan does not accuse
+  a claim the transcript carries merely because rendering bounded it.
+- **The newest-JSONL derivation is `emit`'s, and its residual gap is stated.** `verify` never
+  runs the derivation: the record's block binds itself to its producing transcript by file
+  name and full SHA-256, so a later retry or fix session in the same worktree does not
+  become the producer `verify` reads, and a transcript whose content has moved refuses
+  `transcript_changed`. What the binding cannot guarantee is the *first* selection: `emit`
+  takes the newest JSONL, which names the wrong session only where two sessions overlap one
+  worktree, which the #105 protocol forbids — if it happens anyway, the block still carries
+  the full digest of whatever file it was rendered from, so the record says exactly which
+  transcript it is bound to and a reader can name the wrongness rather than discover it.
+- **The record can also arrive as stdin** — `--record -`, for the reviewer holding a record
+  that reached them as comment text. The record text is read, never written; the same
+  checks run over it.
 - **The transcript format is Claude Code's own**, not a contract this repo holds. A format
   change refuses `harness_unsupported` or `transcript_malformed` — a loud gap, not a silent
   pass.
 
 ## Using it
 
-    uv run python tools/transcript_audit.py emit   --worktree <path> [--projects-root D]
-    uv run python tools/transcript_audit.py verify --record <file> --worktree <path>
+    just transcript-audit emit   --worktree <path> [--projects-root D]
+    just transcript-audit verify --record <file> --worktree <path>
+    just transcript-audit verify --record - --worktree <path>     # record on stdin
 
 Exit 0 with `record_audit=ok rows=<n>` when the record holds; exit 1 with one
 `record_audit=red code=…` line per problem, or `record_audit=refused code=…` where the
 audit could not answer at all. Read-only: it writes nothing and gates nothing.
+
+The citation form's first applied instance — the appendix on #698's thread — was found
+inaccurate at review (grep counts read as event counts; a hand-taken digest that did not
+cover the stated line count; outcome coordinates pointing at the invocation line rather
+than the output line), and was corrected by regenerating it with this tool. The form
+stays: where `emit` cannot run, a record's invocation evidence is cited to transcript
+lines with verbatim quotes, and the record says so plainly — but the citation is now
+checked the same way, by regenerating it, before the record is quoted.

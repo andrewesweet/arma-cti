@@ -987,6 +987,17 @@ gate-clock-history:
 loop-metrics *args:
     uv run python tools/loop_metrics.py "$@"
 
+# Check a measurement record against the dispatch transcript that produced it (#698).
+# A record composed by the agent that produced it is a self-report; this is the
+# mechanical half — emit renders the block from the transcript, verify checks a
+# record against the transcript its block binds itself to. Both verbs read; neither
+# writes anything anywhere.
+#   just transcript-audit emit   --worktree W
+#   just transcript-audit verify --record F --worktree W   (or --record - for stdin)
+[positional-arguments]
+transcript-audit *args:
+    uv run python tools/transcript_audit.py "$@"
+
 # The recovery runbook's two computable procedures (#253, orchestration-design §4).
 # No Arma, no lock, no turn held open; both verbs are reads and neither writes
 # anything anywhere.
