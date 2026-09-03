@@ -538,13 +538,17 @@ def _read_delivery(path: Path) -> policy.WorkRunFact:
     if run.dispatch_id is None or run.dispatch_id != path.parent.name:
         _fact_fail(f"source={path}: delivery dispatch_id")
     # A standalone delivery reports progress but cannot prove terminal
-    # scheduling facts.  Keep those claims at their safe defaults; the policy
-    # releases capacity only from a positively corroborated terminal result.
+    # scheduling facts.  The `live_work_runs` release disjuncts read only
+    # `landed_sha`, `result_published`, and `recovery_kind` as delivery
+    # authority, so clear all three here.  A later field is safe by default
+    # because it cannot release capacity until added to a release disjunct;
+    # revisit this list when that happens.
+    conflict = run.delivery_conflict or policy.delivery_identity_conflict(run)
     run = replace(run, landed_sha=None, recovery_kind=None, result_published=False)
     return replace(
         run,
         state=policy.derived_work_run_state(run),
-        delivery_conflict=run.delivery_conflict or policy.delivery_identity_conflict(run),
+        delivery_conflict=conflict,
     )
 
 

@@ -250,10 +250,11 @@ def live_work_runs(facts: ControlFacts) -> tuple[WorkRunFact, ...]:
     """Return every run that still owns a Work Item scheduling slot.
 
     A run stays live unless one of the release disjuncts below positively
-    proves a complete landing or a typed non-result with its corroborating
-    terminal fact.  A state or delivery field that does not satisfy one of
-    those disjuncts holds the slot, including fields added to the delivery
-    schema later.
+    proves one of three grounds: a complete landing, a Work Item already
+    complete and therefore owning no slot to reacquire, or a typed non-result
+    carrying its corroborating terminal fact.  A state or delivery field that
+    does not satisfy one of those disjuncts holds the slot, including fields
+    added to the delivery schema later.
     """
     return tuple(
         run

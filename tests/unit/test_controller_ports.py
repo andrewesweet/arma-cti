@@ -209,6 +209,42 @@ def test_dispatch_delivery_collector_reads_typed_candidate_evidence(tmp_path: Pa
     assert observed[0].delivery_conflict is False
 
 
+def test_standalone_delivery_conflict_survives_landing_claim_clear(tmp_path: Path) -> None:
+    """Compute identity conflicts before clearing standalone landing authority.
+
+    The existing delivery tests use one SHA for every identity field, so they
+    cannot observe the conflict disappearing when ``landed_sha`` is cleared.
+    """
+    record = tmp_path / "dispatches" / "d-1"
+    record.mkdir(parents=True)
+    candidate = "a" * 40
+    delivery = {
+        "schema": ports.DELIVERY_SCHEMA,
+        "work_run": {
+            "key": "run-1",
+            "state": "landed",
+            "work_item_key": "item-1",
+            "dispatch_id": "d-1",
+            "candidate_sha": candidate,
+            "reviewed_sha": candidate,
+            "review_status": "cleared",
+            "review_dispatch_id": "review-1",
+            "adjudication_sha": candidate,
+            "adjudication_status": "cleared",
+            "gate_sha": candidate,
+            "gate_status": "passed",
+            "landed_sha": "b" * 40,
+            "close_evidence_sha": candidate,
+        },
+    }
+    (record / "delivery.json").write_text(json.dumps(delivery) + "\n", encoding="utf-8")
+
+    observed = ports.DispatchDeliveryFactCollector(tmp_path / "dispatches").collect(())
+
+    assert observed[0].landed_sha is None
+    assert observed[0].delivery_conflict is True
+
+
 def test_standalone_delivery_cannot_publish_a_result_or_release_a_slot(tmp_path: Path) -> None:
     record = tmp_path / "dispatches" / "d-1"
     record.mkdir(parents=True)
