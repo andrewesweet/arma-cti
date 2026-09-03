@@ -1083,7 +1083,7 @@ class Landing(NamedTuple):
 
 def _landing_times(
     dispatches: tuple[DispatchRecord, ...], repo: Path, diagnostics: list[str]
-) -> dict[int, tuple[Landing, ...]]:
+) -> tuple[dict[int, tuple[Landing, ...]], dict[int, set[str]]]:
     """Join landed ledger SHAs to commit timestamps, caching each SHA read.
 
     Every attested landing is kept, not just the latest: the worktree stock
@@ -1091,9 +1091,15 @@ def _landing_times(
     land twice (#486 carries two distinct landed SHAs).  Keeping the latest
     alone made such an issue read as never having landed whenever its later
     landing fell past the boundary.
+
+    The second mapping carries each issue's landed SHAs whose time could not
+    be read.  An unreadable landing is not an absent one, so it is returned
+    unresolved rather than dropped — a consumer that dropped it would read
+    damaged evidence as a healthy zero.
     """
     cache: dict[str, float | None] = {}
     times: dict[int, list[Landing]] = {}
+    unresolved: dict[int, set[str]] = {}
     for dispatch in dispatches:
         if dispatch.landed_sha is None:
             continue
@@ -1107,9 +1113,10 @@ def _landing_times(
                 diagnostics.append(
                     f"landing issue={dispatch.issue} sha={dispatch.landed_sha} status=unrecorded"
                 )
-        if landed_at is not None:
-            times.setdefault(dispatch.issue, []).append(Landing(landed_at, attested))
-    return {issue: tuple(landings) for issue, landings in times.items()}
+                unresolved.setdefault(dispatch.issue, set()).add(dispatch.landed_sha)
+                continue
+        times.setdefault(dispatch.issue, []).append(Landing(landed_at, attested))
+    return {issue: tuple(landings) for issue, landings in times.items()}, unresolved
 
 
 def _git_text(repo: Path, args: list[str]) -> str | None:
@@ -1146,7 +1153,7 @@ def cycle_lines(
             starts[dispatch.issue] = min(
                 starts.get(dispatch.issue, dispatch.planned_at), dispatch.planned_at
             )
-    landings = _landing_times(dispatches, repo, diagnostics)
+    landings, _ = _landing_times(dispatches, repo, diagnostics)
     values: list[float] = []
     for issue, issue_landings in landings.items():
         if issue not in starts:
@@ -1474,11 +1481,12 @@ def _registrations_from_records(
 ) -> tuple[tuple[Path, int | None], ...]:
     """Reconstruct the registration table as of a boundary from dispatch records.
 
-    A tree registers when a dispatch naming it had been planned by the
-    boundary: `just worktree add` runs before the plan is written, so
-    ``planned_at`` never precedes the tree it names.  Deduplicated on the
-    path string, first-seen order.  Reconstructed, never swept — no live
-    filesystem read takes part.
+    ``planned_at`` is a lower bound on a tree's existence, never a creation
+    time: `just worktree add` creates the tree before the first dispatch
+    naming it is planned, so a tree that existed at the boundary can have no
+    record there yet and is omitted.  Deduplicated on the path string,
+    first-seen order.  Reconstructed, never swept — no live filesystem read
+    takes part.
     """
     registrations: list[tuple[Path, int | None]] = []
     seen: set[str] = set()
@@ -1494,10 +1502,48 @@ def _registrations_from_records(
     return tuple(registrations)
 
 
+def _join_registrations(
+    registrations: tuple[tuple[Path, int | None], ...],
+    landings: dict[int, tuple[Landing, ...]],
+    unresolved: dict[int, set[str]],
+    end: float | None,
+) -> tuple[int, int, bool, int, int]:
+    """Count the owing registrations and their landing-time bases.
+
+    An unreadable landing that is a tree's only candidate leaves ``damaged``
+    set: whether it settled the issue by the boundary is unknown, so the
+    caller reports the level unknown rather than a zero that reads as
+    health.  A landing whose time did resolve settles its tree regardless of
+    any sibling that did not.
+    """
+    owing = 0
+    unjoinable = 0
+    damaged = False
+    proxied = 0
+    attested = 0
+    for _, issue in registrations:
+        if issue is None:
+            unjoinable += 1
+            continue
+        qualifying = tuple(
+            landing for landing in landings.get(issue, ()) if end is None or landing.at <= end
+        )
+        if not qualifying and issue in unresolved:
+            damaged = True
+        if qualifying:
+            owing += 1
+            proxied += sum(not landing.attested for landing in qualifying)
+            attested += sum(landing.attested for landing in qualifying)
+    return owing, unjoinable, damaged, proxied, attested
+
+
 def _worktree_stock(
-    dispatches: tuple[DispatchRecord, ...], repo: Path, window: Window
+    dispatches: tuple[DispatchRecord, ...],
+    repo: Path,
+    window: Window,
+    diagnostics: list[str],
 ) -> WorktreeStock:
-    """Join current registrations to ledger-attested landings at the window end.
+    """Join registrations to ledger-attested landings at the window end.
 
     A registration counts when its issue name matches a ledger row attesting
     ``gate=landed`` with **any** landing at or before the window's end — an
@@ -1505,19 +1551,23 @@ def _worktree_stock(
     still counts.  The tracker's own closure is deliberately unseen — the
     reader makes no network call.
 
+    A landed SHA whose time cannot be read is not an absent landing.  Where
+    such a record is the only landing that could settle a registered issue,
+    the level is unknown — never zero, which would read as health — and each
+    damaged record is diagnosed beside the report.  A landing whose time did
+    resolve settles the level regardless of any sibling that did not.
+
     The level is a **proxy** for the tracker's answer and the reason says so
     rather than picking one error direction.  Under-counting paths: a landing
     whose ledger row was never materialised is invisible here (195 such rows
-    at #602's review), an issue closed with no landing at all is never joined,
-    and for a past window a tree unregistered since the boundary is already
-    gone from the sweep.  Over-counting paths: an issue landed but still open
-    — including the `just land` exit-2 state before its own close step — still
-    holds a counted registration, an issue reopened after its landing does
-    too, the commit timestamp proxy reads no later than the true landing so
-    near a boundary it can pull a landing inside it, and for a past window a
-    tree registered since the boundary counts although it did not exist at
-    it.  Because the magnitudes of those paths are unknowable from these
-    records, no net direction is claimed.
+    at #602's review), and an issue closed with no landing at all is never
+    joined.  Over-counting paths: an issue landed but still open — including
+    the `just land` exit-2 state before its own close step — still holds a
+    counted registration, an issue reopened after its landing does too, and
+    the commit timestamp proxy reads no later than the true landing so near
+    a boundary it can pull a landing inside it.  Because the magnitudes of
+    those paths are unknowable from these records, no net direction is
+    claimed.
 
     The basis the landing timestamps were read on is reported per level, not
     assumed: a ledger-recorded landing time, a commit-timestamp stand-in, a
@@ -1536,15 +1586,17 @@ def _worktree_stock(
     instead of swallowing it into the basis value (runs_in_flight's split
     between derived_from_result_end_timestamps and _file_presence).
 
-    The reconstruction is an approximation with two named error paths: a
+    The reconstruction is an approximation with three named error paths: a
     hand-made tree with no dispatch behind it is invisible to the records
-    (under-counts), and a tree whose record began by the boundary but which
-    was removed again before it still counts (over-counts) — no record
-    carries the removal.  A record that cannot place a tree at all (no
-    readable ``worktree`` field) is diagnosed at read and contributes
+    (under-counts); so is a tree created before the first dispatch naming it
+    was planned, because ``planned_at`` is a lower bound on existence rather
+    than a creation time (under-counts); and a tree whose record began by the
+    boundary but which was removed again before it still counts (over-counts)
+    — no record carries the removal.  A record that cannot place a tree at
+    all (no readable ``worktree`` field) is diagnosed at read and contributes
     nothing, so it cannot invent a registration.
     """
-    landings = _landing_times(dispatches, repo, [])
+    landings, unresolved = _landing_times(dispatches, repo, diagnostics)
     end = window.end
     if end is None:
         registrations = _issue_registrations(repo)
@@ -1562,21 +1614,21 @@ def _worktree_stock(
             )
     else:
         registrations = _registrations_from_records(dispatches, end)
-    owing = 0
-    unjoinable = 0
-    proxied = 0
-    attested = 0
-    for _, issue in registrations:
-        if issue is None:
-            unjoinable += 1
-            continue
-        qualifying = tuple(
-            landing for landing in landings.get(issue, ()) if end is None or landing.at <= end
+    owing, unjoinable, damaged, proxied, attested = _join_registrations(
+        registrations, landings, unresolved, end
+    )
+    if damaged:
+        return WorktreeStock(
+            StockReading(
+                None,
+                "unrecorded",
+                "unrecorded",
+                "unrecorded",
+                "landing_time_unresolved",
+            ),
+            len(registrations),
+            unjoinable,
         )
-        if qualifying:
-            owing += 1
-            proxied += sum(not landing.attested for landing in qualifying)
-            attested += sum(landing.attested for landing in qualifying)
     # A level no landing participated in must not borrow the attested label:
     # no landing timestamp was read at all.  A mix of the two bases is its
     # own value, not the louder of its halves.
@@ -1593,10 +1645,15 @@ def _worktree_stock(
     # Emitted as its own key=value field, never folded into the basis value:
     # a caveat no field boundary marks is one a machine reader silently
     # swallows.  With the records-derived registration half the read honours
-    # the boundary on both halves, so the field narrows to the one
-    # approximation the records cannot repair — hand-made trees.
+    # the boundary on both halves, so the field narrows to the trees the
+    # records cannot place at the boundary — hand-made ones, and ones created
+    # before their first dispatch was planned (`planned_at` bounds existence
+    # from below, it does not date creation).
     temporal = (
-        " temporal=hand_made_registrations_absent_from_dispatch_records" if end is not None else ""
+        " temporal=hand_made_registrations_absent_from_dispatch_records,"
+        "trees_created_before_their_first_dispatch"
+        if end is not None
+        else ""
     )
     return WorktreeStock(
         StockReading(
@@ -1621,7 +1678,7 @@ def _worktree_bias_text(window: Window) -> str:
     magnitudes-unknown paths are always in play — the two unmaterialisation
     and closure-mismatch paths, since a landing is only ever a proxy for the
     tracker's own closure.  A past boundary reconstructs the registration
-    half from the dispatch records and adds its two reconstruction paths;
+    half from the dispatch records and adds its three reconstruction paths;
     the live sweep (no boundary) adds none, because the snapshot is the
     as-of answer for a window that ends now.
     """
@@ -1634,6 +1691,7 @@ def _worktree_bias_text(window: Window) -> str:
     if window.end is not None:
         paths += [
             "hand_made_registrations_without_dispatch:under_counts",
+            "tree_created_before_first_dispatch:under_counts",
             "worktrees_removed_before_boundary:over_counts",
         ]
     return (
@@ -1673,14 +1731,18 @@ def _level_text(level: int | None) -> str:
     return str(level) if level is not None else "unrecorded"
 
 
-def stock_lines(inputs: Inputs, repo: Path, window: Window) -> list[str]:
+def stock_lines(
+    inputs: Inputs, repo: Path, window: Window, diagnostics: list[str] | None = None
+) -> list[str]:
     """Render end-window stock levels separately from their flows."""
     ready = _queue_stock(inputs.queue_rows, "ready_work", window)
     blocked = _queue_stock(inputs.queue_rows, "dispatch_slot", window)
     runs, runs_excluded = _dispatch_stock(inputs.dispatches, window)
     ledger, ledger_excluded = _ledger_stock(inputs.dispatches, window)
     provisional, provisional_reason = _provisional_stock(repo)
-    worktrees = _worktree_stock(inputs.dispatches, repo, window)
+    worktrees = _worktree_stock(
+        inputs.dispatches, repo, window, [] if diagnostics is None else diagnostics
+    )
     open_findings, open_work_items, findings_excluded = _open_findings_level(
         _selected_loops(inputs, window)
     )
@@ -1774,7 +1836,7 @@ def report_lines(inputs: Inputs, repo: Path, window: Window) -> tuple[str, ...]:
         *clean_round_lines(selected_loops),
         *cycle_lines(inputs.dispatches, repo, window, diagnostics),
         *return_lines(inputs.dispatches, window),
-        *stock_lines(inputs, repo, window),
+        *stock_lines(inputs, repo, window, diagnostics),
         *delivery_gap_lines(),
         (
             "metric_scope self_review=injection,catch,dismissal,clean_round; "

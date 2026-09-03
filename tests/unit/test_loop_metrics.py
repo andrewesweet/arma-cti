@@ -498,6 +498,7 @@ def test_worktree_owing_done_joins_registrations_to_attested_landings(
         "issue_reopened_after_landing:over_counts,"
         "landed_issue_still_open:over_counts,"
         "hand_made_registrations_without_dispatch:under_counts,"
+        "tree_created_before_first_dispatch:under_counts,"
         "worktrees_removed_before_boundary:over_counts"
     ) in line
     # The temporal caveat is its own field, not a suffix of the basis value:
@@ -549,7 +550,132 @@ def test_worktree_stock_registration_after_boundary_leaves_the_past_level_alone(
     assert "level=1" in line  # the late tree is invisible as of minute 15
     assert "registrations=1 excluded_without_issue_name=0" in line
     assert "registration_basis=dispatch_records_through_boundary" in line
-    assert " temporal=hand_made_registrations_absent_from_dispatch_records" in line
+    assert " temporal=hand_made_registrations_absent_from_dispatch_records," in line
+    assert "trees_created_before_their_first_dispatch" in line
+
+
+def test_worktree_stock_names_the_planned_at_undercount(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A tree created before its first dispatch is a second under-counted path."""
+    dispatch_root = tmp_path / "dispatches"
+    # The tree is created at minute 10 (`just worktree add`), its first dispatch
+    # is planned at minute 20, and the boundary sits at minute 15: the tree
+    # existed at the boundary but no record places it there yet, because
+    # `planned_at` bounds existence from below rather than dating creation.
+    _dispatch(
+        dispatch_root,
+        "late",
+        61,
+        "implementer",
+        20,
+        worktree="/repo/.claude/worktrees/issue-61",
+    )
+    inputs = METRICS.read_inputs(dispatch_root, tmp_path / "review", tmp_path / "queue")
+    monkeypatch.setattr(
+        METRICS,
+        "_issue_registrations",
+        # the live sweep is never consulted on a bounded window; pin that
+        lambda _repo: pytest.fail("live sweep must not run for a bounded window"),
+    )
+
+    window = METRICS.Window(0.0, METRICS.parse_timestamp(_at(15)), explicit=True)
+    line = next(
+        line
+        for line in METRICS.stock_lines(inputs, tmp_path, window)
+        if line.startswith("stock worktrees_owing_done")
+    )
+
+    assert "level=0" in line  # the reconstruction cannot see the tree; the bias fields say so
+    assert "tree_created_before_first_dispatch:under_counts" in line
+    assert " temporal=hand_made_registrations_absent_from_dispatch_records," in line
+    assert "trees_created_before_their_first_dispatch" in line
+
+
+def test_worktree_stock_unreadable_landing_is_unknown_never_zero(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A landed SHA whose time cannot be read leaves the level unknown, never zero."""
+    dispatch_root = tmp_path / "dispatches"
+    # The canonical schema has no `landed_at`: `gate=landed` with a SHA and no
+    # time is well-formed input, and the commit lookup failing must not read as
+    # an absent landing.
+    _dispatch(
+        dispatch_root,
+        "opaque",
+        61,
+        "implementer",
+        0,
+        ledger={
+            "materialised_at": _at(4),
+            "gate": {"outcome": "landed", "landed": {"sha": "d" * 40}},
+        },
+        worktree="/repo/.claude/worktrees/issue-61",
+    )
+    monkeypatch.setattr(METRICS, "_commit_timestamp", lambda _repo, _sha: None)
+    inputs = METRICS.read_inputs(dispatch_root, tmp_path / "review", tmp_path / "queue")
+    diagnostics: list[str] = []
+
+    window = METRICS.Window(0.0, METRICS.parse_timestamp(_at(15)), explicit=True)
+    line = next(
+        line
+        for line in METRICS.stock_lines(inputs, tmp_path, window, diagnostics)
+        if line.startswith("stock worktrees_owing_done")
+    )
+
+    assert "level=unrecorded setpoint=at_most_0 status=unrecorded" in line
+    assert "level=0" not in line
+    assert "status=at_setpoint" not in line
+    assert "reason=landing_time_unresolved" in line
+    assert "landing_basis" not in line
+    assert "bias_paths" not in line
+    assert any(
+        diagnostic.startswith("landing issue=61 sha=") and diagnostic.endswith("status=unrecorded")
+        for diagnostic in diagnostics
+    )
+
+
+def test_worktree_stock_resolved_landing_settles_a_level_despite_a_sibling(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """One unresolved landing makes the whole level unknown — never a partial count."""
+    dispatch_root = tmp_path / "dispatches"
+    _dispatch(
+        dispatch_root,
+        "readable",
+        62,
+        "implementer",
+        0,
+        ledger=_landed_ledger(5),
+        worktree="/repo/.claude/worktrees/issue-62",
+    )
+    _dispatch(
+        dispatch_root,
+        "opaque",
+        63,
+        "implementer",
+        0,
+        ledger={
+            "materialised_at": _at(4),
+            "gate": {"outcome": "landed", "landed": {"sha": "e" * 40}},
+        },
+        worktree="/repo/.claude/worktrees/issue-63",
+    )
+    monkeypatch.setattr(METRICS, "_commit_timestamp", lambda _repo, _sha: None)
+    inputs = METRICS.read_inputs(dispatch_root, tmp_path / "review", tmp_path / "queue")
+
+    window = METRICS.Window(0.0, METRICS.parse_timestamp(_at(15)), explicit=True)
+    line = next(
+        line
+        for line in METRICS.stock_lines(inputs, tmp_path, window)
+        if line.startswith("stock worktrees_owing_done")
+    )
+
+    # Issue 62's landing resolved, but issue 63's tree has no readable landing,
+    # so no count that silently dropped it may be emitted: the level is unknown
+    # stock-wide, not per tree.
+    assert "level=unrecorded" in line
+    assert "reason=landing_time_unresolved" in line
 
 
 def test_issue_registrations_skip_main_checkout_and_name_unjoinable() -> None:
