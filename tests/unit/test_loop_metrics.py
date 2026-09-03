@@ -507,11 +507,12 @@ def test_worktree_owing_done_joins_registrations_to_attested_landings(
         "closed_issue_without_landing:under_counts,"
         "issue_reopened_after_landing:over_counts,"
         "landed_issue_still_open:over_counts,"
+        "registrations_without_issue_name:under_counts,"
         "landing_time_unreadable:under_counts,"
+        "unreadable_worktree_field:under_counts,"
         "hand_made_registrations_without_dispatch:under_counts,"
         "tree_created_before_first_dispatch:under_counts,"
-        "worktrees_removed_before_boundary:over_counts,"
-        "unreadable_worktree_field:under_counts"
+        "worktrees_removed_before_boundary:over_counts"
     ) in line
     # The temporal caveat is its own field, not a suffix of the basis value:
     # assert the field boundary, not merely the token.
@@ -683,7 +684,7 @@ def test_worktree_stock_resolved_landing_settles_its_tree_despite_an_unresolved_
 def test_worktree_stock_damages_are_named_once_per_report(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """`report_lines` derives the landing evidence twice; one damage is named once."""
+    """One derivation serves the whole report; one damage is named once."""
     dispatch_root = tmp_path / "dispatches"
     _dispatch(
         dispatch_root,
@@ -706,6 +707,85 @@ def test_worktree_stock_damages_are_named_once_per_report(
     landing_lines = [line for line in lines if line.startswith("landing issue=64 sha=")]
     assert len(landing_lines) == 1
     assert landing_lines[0].endswith("status=unrecorded")
+
+
+def test_landing_evidence_is_derived_once_per_report(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """`report_lines` hands one derivation to both consumers; the git reads do not repeat."""
+    dispatch_root = tmp_path / "dispatches"
+    _dispatch(
+        dispatch_root,
+        "twice",
+        65,
+        "implementer",
+        0,
+        ledger=_landed_ledger(6),
+        worktree="/repo/.claude/worktrees/issue-65",
+    )
+    inputs = METRICS.read_inputs(dispatch_root, tmp_path / "review", tmp_path / "queue")
+    real_landing_times = METRICS._landing_times  # noqa: SLF001 — the derivation under count
+    calls: list[int] = []
+
+    def counting(dispatches: tuple, repo: Path, diagnostics: list[str]) -> METRICS.LandingEvidence:
+        calls.append(1)
+        return real_landing_times(dispatches, repo, diagnostics)
+
+    monkeypatch.setattr(METRICS, "_landing_times", counting)
+
+    window = METRICS.Window(0.0, METRICS.parse_timestamp(_at(15)), explicit=True)
+    METRICS.report_lines(inputs, tmp_path, window)
+
+    assert len(calls) == 1
+
+
+def test_unjoinable_registration_keeps_the_setpoint_unclaimed(tmp_path: Path) -> None:
+    """A registration that cannot join is an exclusion the level could still feel."""
+    dispatch_root = tmp_path / "dispatches"
+    # An unnamed tree registers but can never join; it may well be landed and
+    # owing cleanup, so a zero that claimed the setpoint would read it as health.
+    _dispatch(
+        dispatch_root,
+        "unnamed",
+        56,
+        "implementer",
+        0,
+        worktree="/repo/.claude/worktrees/dispatch-d-20260827-103751-65cbec",
+    )
+    inputs = METRICS.read_inputs(dispatch_root, tmp_path / "review", tmp_path / "queue")
+
+    window = METRICS.Window(0.0, METRICS.parse_timestamp(_at(15)), explicit=True)
+    line = _worktree_line(inputs, tmp_path, window)
+
+    assert "level=0 " in line
+    assert "registrations=1" in line
+    assert "excluded_without_issue_name=1" in line
+    assert "status=unresolved" in line
+    assert "status=at_setpoint" not in line
+
+
+def test_worktree_exclusions_derive_every_disclosure_from_one_structure() -> None:
+    """Total, line fields and bias tokens all read the same categories."""
+    exclusions = METRICS.WorktreeExclusions(
+        without_issue_name=1, without_landing_time=2, without_readable_worktree=3
+    )
+
+    assert exclusions.total == 6
+    assert dict(exclusions.fields) == {
+        "excluded_without_issue_name": 1,
+        "excluded_without_landing_time": 2,
+        "excluded_without_readable_worktree": 3,
+    }
+    assert exclusions.bias_paths(reconstruction=False) == (
+        "registrations_without_issue_name:under_counts",
+        "landing_time_unreadable:under_counts",
+    )
+    assert exclusions.bias_paths(reconstruction=True) == (
+        "registrations_without_issue_name:under_counts",
+        "landing_time_unreadable:under_counts",
+        "unreadable_worktree_field:under_counts",
+    )
+    assert METRICS.WorktreeExclusions().total == 0
 
 
 def test_issue_registrations_skip_main_checkout_and_name_unjoinable() -> None:
@@ -902,6 +982,7 @@ def test_worktree_stock_current_window_states_its_bias_paths(
         "closed_issue_without_landing:under_counts,"
         "issue_reopened_after_landing:over_counts,"
         "landed_issue_still_open:over_counts,"
+        "registrations_without_issue_name:under_counts,"
         "landing_time_unreadable:under_counts"
     ) in line
     assert "bias=mixed net_direction=undetermined" in line
