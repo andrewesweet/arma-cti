@@ -242,7 +242,14 @@ def test_unlisted_item_without_priority_stays_before_an_extremely_large_rank() -
 
 def test_new_work_run_keeps_terminal_history_but_replaces_a_live_duplicate() -> None:
     item = policy.WorkItemFact("item", "open", issue=1)
-    old_terminal = policy.WorkRunFact("old-terminal", "landed", work_item_key="item", issue=1)
+    old_terminal = policy.WorkRunFact(
+        "old-terminal",
+        "non_result",
+        work_item_key="item",
+        issue=1,
+        failure_class="quota_exhausted",
+        result_published=True,
+    )
     old_live = policy.WorkRunFact("old-live", "running", work_item_key="item", issue=1)
     current = coordination_facts((item,), runs=(old_terminal, old_live), limit=3)
     action = policy.launch_action(current, item)

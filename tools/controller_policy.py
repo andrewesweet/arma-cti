@@ -16,8 +16,8 @@ BLOCKED_EXTERNAL: Final = "blocked_external"
 NO_ELIGIBLE_WORK_ITEM: Final = "no_eligible_work_item"
 
 # These vocabularies are intentionally local to the pure reducer.  The delivery
-# protocol may add richer states later, but a state outside the live set is not
-# silently treated as a live process by this scheduling slice.
+# protocol may add richer states later; scheduling fails closed below, so a new
+# state or field cannot release capacity until a positive release proof uses it.
 OPEN_WORK_ITEM_STATES: Final = frozenset({"open", "ready"})
 COMPLETE_WORK_ITEM_STATES: Final = frozenset(
     {"complete", "completed", "closed", "done", "landed", "satisfied"}
@@ -247,34 +247,26 @@ def snapshot_document(snapshot: CoordinationSnapshot) -> dict[str, object]:
 
 
 def live_work_runs(facts: ControlFacts) -> tuple[WorkRunFact, ...]:
-    """Return every run that still owns a Work Item scheduling slot."""
+    """Return every run that still owns a Work Item scheduling slot.
+
+    A run stays live unless one of the release disjuncts below positively
+    proves a complete landing or a typed non-result with its corroborating
+    terminal fact.  A state or delivery field that does not satisfy one of
+    those disjuncts holds the slot, including fields added to the delivery
+    schema later.
+    """
     return tuple(
         run
         for run in facts.work_runs
-        if (
+        if not (
             (
-                run.state in LIVE_WORK_RUN_STATES
-                and not (
-                    run.state == "interrupted"
-                    and run.recovery_kind is not None
-                    and run.recovery_kind not in {"still_live", "unproven"}
-                )
-            )
-            or (
                 run.state == LANDED
                 and run.landed_sha is not None
-                and not completion_ready(run)
-                and not _completed_item_owns_no_slot(run, facts.work_items)
+                and (completion_ready(run) or _completed_item_owns_no_slot(run, facts.work_items))
             )
-            # A published result is the dispatcher's own terminal record:
-            # recovery never classifies such a run (the ports adapter
-            # refuses it), so only that recorded fact releases its slot.
-            # The fact is read from the result itself and carried forward by
-            # the merge; it is never inferred from state or failure class.
             or (
                 run.failure_class in NON_RESULT_CLASSES
-                and run.recovery_kind not in RECOVERY_RELAUNCH_KINDS
-                and not run.result_published
+                and (run.result_published or run.recovery_kind in RECOVERY_RELAUNCH_KINDS)
             )
         )
     )
