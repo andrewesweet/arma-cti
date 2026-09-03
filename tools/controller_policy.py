@@ -249,12 +249,13 @@ def snapshot_document(snapshot: CoordinationSnapshot) -> dict[str, object]:
 def live_work_runs(facts: ControlFacts) -> tuple[WorkRunFact, ...]:
     """Return every run that still owns a Work Item scheduling slot.
 
-    A run stays live unless one of the release disjuncts below positively
-    proves one of three grounds: a complete landing, a Work Item already
-    complete and therefore owning no slot to reacquire, or a typed non-result
-    carrying its corroborating terminal fact.  A state or delivery field that
-    does not satisfy one of those disjuncts holds the slot, including fields
-    added to the delivery schema later.
+    A run stays live unless the first disjunct below sees state ``LANDED`` and
+    a non-``None`` ``landed_sha``, then satisfies either ``completion_ready``
+    or a matching Work Item that is complete and therefore owns no slot to
+    reacquire.  The second disjunct requires a failure class in
+    ``NON_RESULT_CLASSES`` and its corroborating terminal fact.  A state or
+    delivery field that does not satisfy one of those disjuncts holds the slot,
+    including fields added to the delivery schema later.
     """
     return tuple(
         run
