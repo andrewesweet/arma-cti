@@ -165,14 +165,14 @@ def run_with_lines(
 
 
 def why(records: dict[str, str]) -> str:
-    """Say what a run recorded, for the assertion that expected it to pass (#233).
+    """Return recorded failure details for assertion diagnostics.
 
     `assert records["verdict"] == "PASS"` on its own prints `'FAIL' == 'PASS'`
     and nothing else, which is what #233's one sighting left behind: a red under
     full-suite load whose class was never captured, so an ordering interaction
-    and a genuine race in the code under test read identically afterwards. Every
-    caller that expects a pass names this, so the next occurrence carries the
-    class the failure-class table sends its reader on.
+    and a genuine race in the code under test read identically afterwards.
+    Callers name this where a red would otherwise print only the compared strings;
+    the #668 node does.
     """
     return f"{records.get('failure_class')}: {records.get('failure_detail')}"
 
@@ -192,6 +192,12 @@ def with_networking_mode(tmp_path: Path, mode: str) -> str:
     [
         ("FAIL class=timeout probe_never_finished", "timeout"),
         ("FAIL class=oracle_disagreement telemetry_disagrees", "oracle_disagreement"),
+        # flake baseline: #668
+        # Baseline 2026-09-03 at 65574aef for this exact node: target alone,
+        # serial (-n0), 30 runs, 0 reds; target alone under two deliberate CPU
+        # workers, serial (-n0), 20 runs, 0 reds; module alone, xdist worksteal,
+        # 10 runs, 0 reds; full `just unit`, 1 run, 0 reds; two concurrent full
+        # `just unit` runs, 2 runs, 0 reds. Not reproduced; no cause demonstrated.
         ("FAIL class=node_crashed the_node_went", "node_crashed"),
         # No class declared is still an assertion — the old behaviour, kept.
         ("FAIL nothing_matched expected=3 got=0", "assertion_failed"),
@@ -201,9 +207,9 @@ def test_an_in_mission_fail_keeps_the_class_the_world_declared(
     tmp_path: Path, line: str, expected: str
 ) -> None:
     records = run_with_lines(tmp_path, [line])
-    assert records["verdict"] == "FAIL"
-    assert records["failure_class"] == expected
-    assert records["_returncode"] == "1"
+    assert records["verdict"] == "FAIL", why(records)
+    assert records["failure_class"] == expected, why(records)
+    assert records["_returncode"] == "1", why(records)
 
 
 def test_a_typoed_in_mission_class_is_caught_at_the_boundary(tmp_path: Path) -> None:
