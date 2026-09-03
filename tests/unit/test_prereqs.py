@@ -546,15 +546,7 @@ def test_the_tap_refreshes_oauth_usage_off_the_status_line_path(tmp_path: Path) 
         },
     )
     deadline = time.monotonic() + 2
-    # Poll on the *content*, not on existence: the fake creates the marker with `>`
-    # (which truncates and makes it exist) a moment before its printf lands, so an
-    # existence poll can read the file between the two and see the args line without
-    # the payload line. Waiting for the bytes the assertions already require keeps the
-    # sync honest — the assertions themselves are unchanged, and a marker that never
-    # carries the payload still fails, exactly as before. Baseline: #699.
-    while time.monotonic() < deadline:
-        if marker.exists() and marker.read_text(encoding="utf-8").endswith(f"{payload}\n"):
-            break
+    while not marker.exists() and time.monotonic() < deadline:
         time.sleep(0.01)
 
     assert done.stdout == f"{payload}\n"
