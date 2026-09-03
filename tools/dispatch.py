@@ -2538,11 +2538,7 @@ def contradicted_refusal(seat: Seat, reviewed: str, issue: int, authorship: Auth
     )
 
 
-def profile_lineage(
-    name: str,
-    *,
-    retired_profiles: Mapping[str, RetiredProfile] = RETIRED_PROFILES,
-) -> tuple[str, ...]:
+def profile_lineage(name: str) -> tuple[str, ...]:
     """Return the name and every name the rename chain replaced it with, newest last (#413).
 
     The result spans the whole chain, not the retired half of it: the name itself (live or
@@ -2555,19 +2551,15 @@ def profile_lineage(
     in the table is a registry bug, and it stops the walk rather than looping on it.
     """
     chain = [name]
-    while chain[-1] in retired_profiles:
-        successor = retired_profiles[chain[-1]].successor
+    while chain[-1] in RETIRED_PROFILES:
+        successor = RETIRED_PROFILES[chain[-1]].successor
         if successor in chain:
             break
         chain.append(successor)
     return tuple(chain)
 
 
-def resolved_profile(
-    name: str,
-    *,
-    retired_profiles: Mapping[str, RetiredProfile] = RETIRED_PROFILES,
-) -> Profile | None:
+def resolved_profile(name: str) -> Profile | None:
     """Return the registry entry a name resolves to for reading records (#413).
 
     The name itself where it is registered, else the successor a rename left.
@@ -2578,7 +2570,7 @@ def resolved_profile(
     name whose chain resolves to nothing registered returns `None`, which every caller
     treats as unplaceable rather than as empty.
     """
-    for candidate in reversed(profile_lineage(name, retired_profiles=retired_profiles)):
+    for candidate in reversed(profile_lineage(name)):
         if candidate in PROFILES:
             return PROFILES[candidate]
     return None

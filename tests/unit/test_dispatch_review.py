@@ -1316,28 +1316,38 @@ def test_a_subject_declared_in_the_new_name_still_contradicts_old_name_records(
 # ------------------------------------------------------- #414: follow-ups to the retirement map
 
 
-def test_a_two_hop_registry_lineage_terminates_at_the_live_profile() -> None:
-    """A retired intermediate name may leave ``PROFILES`` before the live end of its chain.
+def test_a_two_hop_registry_lineage_excludes_the_live_profile_end_to_end(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A two-hop chain reaches review exclusion, not only the lineage helper.
 
-    The fixture extends the real retirement map with the predecessor of its real retired
-    entry: ``zai-glm51-max`` → ``zai-glm52-max`` → ``zai-glm53-max``. The intermediate name
-    is absent from the real ``PROFILES`` map, so an immediate-successor assertion would reject
-    this registry-shaped two-hop case even though the resolver reaches its live end.
+    The fixture extends the real retirement map with ``zai-glm51-max`` → ``zai-glm52-max``
+    → ``zai-glm53-max``. Records carry both retired names so the first name can be declared
+    as the reviewed subject on a complete read. The seat offers only the live end; ``plan_for``
+    must therefore refuse with the whole chain in ``excluded=`` and an empty candidate walk.
     """
-    retirement_map = {
-        **dispatch.RETIRED_PROFILES,
-        "zai-glm51-max": dispatch.RetiredProfile("zai-glm52-max", "2026-08-05"),
-    }
-
-    lineage = dispatch.profile_lineage("zai-glm51-max", retired_profiles=retirement_map)
-
-    assert lineage == ("zai-glm51-max", "zai-glm52-max", "zai-glm53-max")
-    assert lineage[1] not in dispatch.PROFILES
-    assert lineage[-1] in dispatch.PROFILES
-    assert (
-        dispatch.resolved_profile("zai-glm51-max", retired_profiles=retirement_map)
-        is dispatch.PROFILES["zai-glm53-max"]
+    monkeypatch.setitem(
+        dispatch.RETIRED_PROFILES,
+        "zai-glm51-max",
+        dispatch.RetiredProfile("zai-glm52-max", "2026-08-05"),
     )
+    dispatch_record(tmp_path, profile="zai-glm52-max", lane="zai")
+    dispatch_record(
+        tmp_path,
+        "d-20260812-000001-bbbbbb",
+        profile="zai-glm51-max",
+        lane="zai",
+    )
+    substitute_review_seat(monkeypatch, "zai-glm53-max")
+
+    plan, _, refusal = plan_for(tmp_path, reviewing="zai-glm51-max")
+
+    assert plan is None
+    assert refusal is not None
+    assert refusal.kind == "review_same_profile"
+    assert "why=list_offers_nothing_else" in refusal.found
+    assert "excluded=zai-glm51-max zai-glm52-max zai-glm53-max" in refusal.found
+    assert "candidates=none" in refusal.found
 
 
 def test_a_cycle_in_the_map_stops_the_walk_and_refuses_the_subject(
