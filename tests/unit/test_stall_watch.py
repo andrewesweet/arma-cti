@@ -651,7 +651,7 @@ def test_the_seam_refuses_a_worktree_it_cannot_read_a_head_from(tmp_path: Path) 
 def test_the_seam_reads_the_worktree_and_types_the_stall_itself(tmp_path: Path) -> None:
     """One foreground pass over a real dirty worktree, end to end.
 
-    quarantined: #428 tests/unit/test_stall_watch.py::test_stall_watch —
+    quarantined: #428 tests/unit/test_stall_watch.py::test_the_seam_reads_the_worktree_and_types_the_stall_itself —
     one observed red (the loop's stdout was not the STALL
     line) in a full `just fast`, and never reproduced: 455 runs of the exact
     arrangement under the gate's own `-n auto` load, 0 reds. The mechanism the

@@ -479,6 +479,20 @@ _NODE_SEGMENT: Final = r"[A-Za-z0-9_.\-]+(?:\[[^\]\n]*\])?"
 NODE_ID: Final = re.compile(r"\b" + _MODULE + r"(?:::" + _NODE_SEGMENT + r")+")
 
 
+def parse_node_id(text: str) -> tuple[str, str] | None:
+    """Read the first exact node ID in `text` as `(module, test)`, or None where none.
+
+    One parser for every surface that quotes a selector — a flake issue's body and a
+    quarantine marker alike — so two inputs cannot disagree about what an exact
+    selector is (#428 round six).
+    """
+    node = NODE_ID.search(text)
+    if not node:
+        return None
+    module, _, test = node.group(0).partition("::")
+    return module, test
+
+
 class Flake(NamedTuple):
     """One open flake, as a briefing names it."""
 
@@ -514,9 +528,9 @@ def select_flakes(rows: Sequence[Mapping[str, object]]) -> tuple[Flake, ...]:
         # the title first and then the body, with the module read from the body. Several
         # node IDs take the first in document order — the body's first reproduction is the
         # canonical one, and the order is a decision a reader can reproduce.
-        node = NODE_ID.search(body)
+        node = parse_node_id(body)
         if node:
-            module, _, test = node.group(0).partition("::")
+            module, test = node
         else:
             named = FLAKE_TEST.search(title) or FLAKE_TEST.search(body)
             module_match = TEST_MODULE.search(body)
@@ -559,10 +573,10 @@ def scan_quarantined(repo: Path = REPO) -> tuple[Flake, ...]:
         except OSError:
             continue
         for marker in QUARANTINE.finditer(text):
-            node = NODE_ID.search(marker.group("rest"))
-            if not node:
+            parsed = parse_node_id(marker.group("rest"))
+            if not parsed:
                 continue
-            module, _, test = node.group(0).partition("::")
+            module, test = parsed
             found.append(Flake(issue=int(marker.group("issue")), test=test, module=module))
     return tuple(sorted(found))
 

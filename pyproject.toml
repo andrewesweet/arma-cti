@@ -71,6 +71,12 @@ ignore = [
 ]
 # Standalone build tools, run as scripts rather than imported.
 "tools/*.py" = ["INP001"]
+# The quarantine marker reads its node ID from one physical line (scan_quarantined's
+# grammar), and the one live marker names a test whose node ID is 90 characters — 108
+# with the marker's own prefix, over this limit at any indent. Splitting the ID across
+# lines would make it a different, truncated ID that names no test, so the file is
+# exempted rather than the ID mangled (#428 round six).
+"tests/unit/test_stall_watch.py" = ["E501"]
 # This file is a command coordinator: it prints its machine contract and keeps
 # validation ladders together so their typed failures cannot drift by helper.
 "tools/machine_b.py" = ["C901", "FBT001", "PLR0911", "PLR0912", "PLR0915", "T201"]

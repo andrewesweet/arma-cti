@@ -28,6 +28,7 @@ ones. A worktree path is the near-miss there, because every brief already quotes
 
 from __future__ import annotations
 
+import ast
 import json
 import os
 import subprocess
@@ -699,6 +700,40 @@ def test_the_marker_scan_reads_the_tree_s_tests_and_nothing_else(tmp_path: Path)
         'X = "quarantined: #9 tests/unit/test_watch.py::test_the_seam"\n', encoding="utf-8"
     )
     assert brief.scan_quarantined(tmp_path) == ()
+
+
+def collected_test_names(path: Path) -> set[str]:
+    """Collect the test names pytest reads from `path`, from its own syntax tree."""
+    tree = ast.parse(path.read_text(encoding="utf-8"))
+    return {
+        node.name
+        for node in ast.walk(tree)
+        if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef) and node.name.startswith("test")
+    }
+
+
+def test_every_committed_quarantine_marker_names_a_test_its_own_file_collects() -> None:
+    """A marker whose node ID names no test in its own file must never land.
+
+    Round five made marker data win over the issue body, so the marker this tree
+    carried — its node ID inherited from the issue title — re-rendered the fiction
+    round one rendered, and the synthetic cases above passed happily beside it. The
+    check runs over the real markers in this tree, not over fixtures, because that is
+    where the wrong one actually lived.
+    """
+    offenders: list[str] = []
+    for path in sorted((REPO / "tests").rglob("*.py")):
+        text = path.read_text(encoding="utf-8")
+        collected = collected_test_names(path)
+        for marker in brief.QUARANTINE.finditer(text):
+            parsed = brief.parse_node_id(marker.group("rest"))
+            if parsed is None:
+                continue
+            module, test = parsed
+            expected_module = path.relative_to(REPO).as_posix()
+            if module != expected_module or test.partition("[")[0] not in collected:
+                offenders.append(f"{path.name}: {module}::{test}")
+    assert offenders == []
 
 
 # ------------------------------------------------------------------------------ the seat
