@@ -22,9 +22,6 @@ OPEN_WORK_ITEM_STATES: Final = frozenset({"open", "ready"})
 COMPLETE_WORK_ITEM_STATES: Final = frozenset(
     {"complete", "completed", "closed", "done", "landed", "satisfied"}
 )
-LIVE_WORK_RUN_STATES: Final = frozenset(
-    {"planned", "starting", "launching", "running", "stalled", "interrupted", "reviewed", "gated"}
-)
 NON_RESULT_CLASSES: Final = frozenset(
     {
         "infra_unavailable",
@@ -246,32 +243,41 @@ def snapshot_document(snapshot: CoordinationSnapshot) -> dict[str, object]:
     }
 
 
+def work_run_owns_slot(run: WorkRunFact, items: tuple[WorkItemFact, ...] = ()) -> bool:
+    """Return whether one Work Run still owns a Work Item scheduling slot.
+
+    This is the one statement of "live": capacity accounting and queue-holder
+    matching both ask it, so the two can never disagree again.  A run stays
+    live unless one of two positive disjuncts releases it.  The first sees
+    state ``LANDED`` and a non-``None`` ``landed_sha``, then satisfies either
+    ``completion_ready`` or a matching Work Item that is complete and
+    therefore owns no slot to reacquire.  The second sees terminal evidence:
+    a recovery verdict in ``RECOVERY_RELAUNCH_KINDS`` — the kinds that
+    conclude rather than observe — or a ``failure_class`` in
+    ``NON_RESULT_CLASSES`` whose result was published.  A terminal verdict
+    releases whatever ``failure_class`` the delivery typed, because the
+    verdict, not the class text, is the fact that ends the run (#690); a
+    state or delivery field that satisfies neither disjunct still holds the
+    slot, including fields added to the delivery schema later.
+    """
+    released = (
+        run.state == LANDED
+        and run.landed_sha is not None
+        and (completion_ready(run) or _completed_item_owns_no_slot(run, items))
+    ) or (
+        run.recovery_kind in RECOVERY_RELAUNCH_KINDS
+        or (run.failure_class in NON_RESULT_CLASSES and run.result_published)
+    )
+    return not released
+
+
 def live_work_runs(facts: ControlFacts) -> tuple[WorkRunFact, ...]:
     """Return every run that still owns a Work Item scheduling slot.
 
-    A run stays live unless the first disjunct below sees state ``LANDED`` and
-    a non-``None`` ``landed_sha``, then satisfies either ``completion_ready``
-    or a matching Work Item that is complete and therefore owns no slot to
-    reacquire.  The second disjunct requires a failure class in
-    ``NON_RESULT_CLASSES`` and its corroborating terminal fact.  A state or
-    delivery field that does not satisfy one of those disjuncts holds the slot,
-    including fields added to the delivery schema later.
+    The rule is ``work_run_owns_slot``'s, stated once at its disjuncts; this
+    applies it across the snapshot's Work Runs.
     """
-    return tuple(
-        run
-        for run in facts.work_runs
-        if not (
-            (
-                run.state == LANDED
-                and run.landed_sha is not None
-                and (completion_ready(run) or _completed_item_owns_no_slot(run, facts.work_items))
-            )
-            or (
-                run.failure_class in NON_RESULT_CLASSES
-                and (run.result_published or run.recovery_kind in RECOVERY_RELAUNCH_KINDS)
-            )
-        )
-    )
+    return tuple(run for run in facts.work_runs if work_run_owns_slot(run, facts.work_items))
 
 
 def occupied_capacity(facts: ControlFacts) -> int:
