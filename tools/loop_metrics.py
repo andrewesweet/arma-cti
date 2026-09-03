@@ -329,6 +329,22 @@ def _ledger_fields(  # noqa: PLR0911 — each typed absence is a distinct durabl
     return True, materialised, sha, landed_at
 
 
+def _worktree_field(
+    document: dict[str, object], dispatch_id: str, diagnostics: list[str]
+) -> str | None:
+    """Read one plan's ``worktree`` field, naming damage instead of inventing a tree."""
+    raw = document.get("worktree")
+    if raw is None:
+        diagnostics.append(f"dispatch={dispatch_id} field=worktree status=unreadable reason=absent")
+        return None
+    if not isinstance(raw, str) or not raw:
+        diagnostics.append(
+            f"dispatch={dispatch_id} field=worktree status=unreadable reason=not_a_string"
+        )
+        return None
+    return raw
+
+
 def read_dispatches(root: Path, diagnostics: list[str]) -> tuple[DispatchRecord, ...]:
     """Read all dispatch plans and their local result/ledger companions."""
     if not root.exists():
@@ -363,19 +379,7 @@ def read_dispatches(root: Path, diagnostics: list[str]) -> tuple[DispatchRecord,
         if planned_at is None:
             diagnostics.append(f"dispatch={dispatch_id} status=unreadable reason=planned_at")
             continue
-        raw_worktree = document.get("worktree")
-        if raw_worktree is None:
-            worktree = None
-            diagnostics.append(
-                f"dispatch={dispatch_id} field=worktree status=unreadable reason=absent"
-            )
-        elif not isinstance(raw_worktree, str) or not raw_worktree:
-            worktree = None
-            diagnostics.append(
-                f"dispatch={dispatch_id} field=worktree status=unreadable reason=not_a_string"
-            )
-        else:
-            worktree = raw_worktree
+        worktree = _worktree_field(document, dispatch_id, diagnostics)
         result_state, started, ended = _read_result(dispatch_dir, diagnostics, dispatch_id)
         ledger, materialised, landed_sha, landed_at = _ledger_fields(
             dispatch_dir, diagnostics, dispatch_id, issue

@@ -5,12 +5,9 @@ from __future__ import annotations
 import json
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
-from typing import TYPE_CHECKING
 
+import pytest
 from conftest import load_tool
-
-if TYPE_CHECKING:
-    import pytest
 
 METRICS = load_tool("loop_metrics")
 
@@ -481,7 +478,7 @@ def test_worktree_owing_done_joins_registrations_to_attested_landings(
         METRICS,
         "_issue_registrations",
         # the live sweep is never consulted on a bounded window; pin that
-        lambda _repo: pytest.fail("live sweep must not run for a bounded window"),  # noqa: SLF001
+        lambda _repo: pytest.fail("live sweep must not run for a bounded window"),
     )
 
     window = METRICS.Window(0.0, METRICS.parse_timestamp(_at(15)), explicit=True)
@@ -539,7 +536,7 @@ def test_worktree_stock_registration_after_boundary_leaves_the_past_level_alone(
         METRICS,
         "_issue_registrations",
         # the live sweep is never consulted on a bounded window; pin that
-        lambda _repo: pytest.fail("live sweep must not run for a bounded window"),  # noqa: SLF001
+        lambda _repo: pytest.fail("live sweep must not run for a bounded window"),
     )
 
     window = METRICS.Window(0.0, METRICS.parse_timestamp(_at(15)), explicit=True)
@@ -619,7 +616,7 @@ def test_worktree_stock_names_the_commit_timestamp_proxy(
         METRICS,
         "_issue_registrations",
         # the live sweep is never consulted on a bounded window; pin that
-        lambda _repo: pytest.fail("live sweep must not run for a bounded window"),  # noqa: SLF001
+        lambda _repo: pytest.fail("live sweep must not run for a bounded window"),
     )
 
     window = METRICS.Window(0.0, METRICS.parse_timestamp(_at(15)), explicit=True)
