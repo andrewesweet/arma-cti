@@ -612,6 +612,13 @@ def _plant(
     return ports.dispatch_stop.Machine(procfs=tmp_path / "proc", self_pid=1)
 
 
+# quarantined: #687
+# Baseline 2026-09-03: target alone, serial (-n0), 200 runs, 0 reds; target module alone,
+# xdist parallel (worksteal, -n auto), 50 runs, 0 reds; full `just unit`, xdist parallel
+# (worksteal, -n auto) plus Rust, 10 runs, 0 reds. Box had 12 CPUs; load averages at
+# block starts were 1.43/1.40/1.82, 2.09/1.64/1.85 and 20.71/10.18/5.08. Contention
+# varied and was high during the full-tier block. Not reproduced; no cause demonstrated.
+# Failure class: flake_quarantine.
 def test_a_healthy_dispatch_that_dies_before_the_next_cycle_resolves(tmp_path: Path) -> None:
     """The #625 sequence, through the real classifier: healthy at cycle N, dead at N+1.
 
