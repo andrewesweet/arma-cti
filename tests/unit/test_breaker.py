@@ -229,8 +229,11 @@ def test_three_provider_errors_far_apart_still_hold_the_lane() -> None:
 
 
 def test_an_intervening_non_provider_outcome_clears_the_provider_error_streak() -> None:
-    """The only sanctioned reset: a classified outcome of another kind is evidence
-    the lane answered, so it clears the streak — whatever the intervals."""
+    """A classified outcome of another kind is the only sanctioned reset.
+
+    It is evidence the lane answered, so it clears the streak — whatever the
+    intervals on either side of it.
+    """
     circuit = breaker.Circuit()
     for offset in (0.0, 2 * HOUR):
         circuit, _ = breaker.advance(
