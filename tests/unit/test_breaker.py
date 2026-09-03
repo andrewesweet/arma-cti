@@ -22,7 +22,7 @@ import os
 import subprocess
 import sys
 import time
-from typing import TYPE_CHECKING, Any, Self
+from typing import TYPE_CHECKING, Any, NamedTuple, Self
 
 import pytest
 from conftest import REPO, load_tool
@@ -1006,6 +1006,7 @@ CODEX_NOT_FOUND_WITH_RESPONSE_ID: Final = (
         # client error and a 600 the first code past the server band, and neither the
         # band edges nor a longer digit run may read as the code its first three
         # digits would truncate to.
+        (1, "unexpected status 400 Bad Request", breaker.PROVIDER_REFUSED),
         (1, "unexpected status 499 (client closed)", breaker.PROVIDER_REFUSED),
         (1, "API Error: 500", breaker.PROVIDER_ERROR),
         (1, "API Error: 501 not implemented", breaker.PROVIDER_ERROR),
@@ -1041,14 +1042,24 @@ CODEX_NOT_FOUND_WITH_RESPONSE_ID: Final = (
         (1, "API Error: 4290 rate limit exceeded", breaker.UNCLASSIFIED),
         # A refusal shape requires its prefix at the line's start: the provider said it
         # there, and nowhere else. A bare status-like number in the child's own failure
-        # output, and the child's own terminal failure quoting a provider shape, are
-        # the child's own work and must keep reading unclassified so somebody
-        # investigates them.
+        # output, and a child's own terminal failure quoting a provider shape that
+        # carries no marker word, stay unclassified so somebody investigates them. The
+        # marker fallback matches anywhere in the line, though, so the same quoted
+        # shape carrying a marker word classifies by that word — the fallback's own
+        # fuzziness, accepted because neither class is a refusal streak.
         (1, "FAILED tests/unit/test_x.py - assert 2 == 404", breaker.UNCLASSIFIED),
         (
             1,
             'FAILED tests/unit/test_x.py - AssertionError: expected "API Error: 404"',
             breaker.UNCLASSIFIED,
+        ),
+        (
+            1,
+            (
+                'FAILED tests/unit/test_x.py - AssertionError: expected "API Error: 404'
+                ' internal server error"'
+            ),
+            breaker.PROVIDER_ERROR,
         ),
         (1, 'assert got == "unexpected status 500"', breaker.UNCLASSIFIED),
         (1, "the agent decided the issue was already done", breaker.UNCLASSIFIED),
@@ -1116,20 +1127,57 @@ def test_a_limit_with_no_epoch_yields_no_reset_rather_than_a_computed_one() -> N
 # read `unclassified` too and now counts down the quality rule, the one a human clears;
 # the 401 is the round-five correction — an expired token counted against quality until
 # the auth family moved to availability (ADR-0061; ADR-0066 Decision 3), and its
-# quality streak must show it never moved. `escalated` is asserted only where a case's
-# original test asserted it: the 529's availability hold opens without an escalation
-# and says so by staying `None` here.
+# quality streak must show it never moved.
+class TerminalLineCase(NamedTuple):
+    """One staged death, with the assertions it opts into named beside it.
+
+    An unset `escalated` or `quality_streak` skips that one assertion; it never
+    asserts the field's absence.
+    """
+
+    output: str
+    lane: str
+    rule: str
+    failure_class: str
+    escalated: bool | None = None
+    quality_streak: int | None = None
+
+
+# quality streak must show it never moved. Every one of these holds opens escalated,
+# because `PROVIDER_ERROR_RULE` and `QUALITY_RULE` both carry `escalates=True` and
+# clearing either is a human act; a case leaves `escalated` unset only where it
+# asserts nothing about it, and `None` there skips the assertion rather than
+# asserting its absence.
 @pytest.mark.parametrize(
     "case",
     [
-        (OVERLOAD_BODY, "zai", "provider_errors", "infra_unavailable", None, None),
-        (CODEX_NOT_FOUND_BODY, "codex", "quality", "provider_refused", True, None),
-        ("API Error: 401 Unauthorized", "codex", "provider_errors", "infra_unavailable", True, 0),
+        TerminalLineCase(
+            output=OVERLOAD_BODY,
+            lane="zai",
+            rule="provider_errors",
+            failure_class="infra_unavailable",
+            escalated=True,
+        ),
+        TerminalLineCase(
+            output=CODEX_NOT_FOUND_BODY,
+            lane="codex",
+            rule="quality",
+            failure_class="provider_refused",
+            escalated=True,
+        ),
+        TerminalLineCase(
+            output="API Error: 401 Unauthorized",
+            lane="codex",
+            rule="provider_errors",
+            failure_class="infra_unavailable",
+            escalated=True,
+            quality_streak=0,
+        ),
     ],
 )
 def test_three_runs_of_one_terminal_line_trip_the_rule_their_family_owes(
     tmp_path: Path,
-    case: tuple[str, str, str, str, bool | None, int | None],
+    case: TerminalLineCase,
 ) -> None:
     """Each family's line reaches its own rule, and never another family's."""
     output, lane, rule, failure_class, escalated, quality_streak = case
