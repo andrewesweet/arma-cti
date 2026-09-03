@@ -4205,7 +4205,7 @@ def _harness_publish(tree: Path, issue: int) -> tuple[tuple[str, ...], int]:
             "it as well: the next dispatch into this tree refuses "
             "`dispatch_message_present` until it is gone (#560).",
         )
-    pushed = review_exchange.exchange(tree, issue)
+    pushed = review_exchange.exchange(tree, issue, allow_external_worktree=True)
     return (
         ("harness_commit=committed", f"commit={committed}", *pushed.lines),
         pushed.code,

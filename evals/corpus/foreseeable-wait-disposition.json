@@ -18,7 +18,7 @@
       "file": "context/agents-md-imperatives-only.md",
       "derived_from": {
         "repo_file": "AGENTS.md",
-        "sha256": "484d24cc09f3ca8350e51b1581487f47717134458d278d512bbcaf22ada0e067"
+        "sha256": "ab1d7734947153491cedf7f5b425807dc6d7971b7e1f7dc6468ea2fb58143d73"
       }
     },
     { "id": "absent", "file": null }

@@ -544,6 +544,11 @@ def main_checkout(cwd: Path) -> Path:
     return registrations[0].path
 
 
+def issue_worktree(root: Path, issue: int) -> Path:
+    """Return the canonical linked worktree path for an issue."""
+    return root / WORKTREES / f"issue-{issue}"
+
+
 def read_preflight(path: Path) -> Preflight | None:
     """Read one tree's `git status --porcelain`, or `None` where the read itself failed.
 
